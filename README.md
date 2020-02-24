@@ -1,10 +1,9 @@
 meta-testing
 ============
 
-> A shareable integrated testing framework for Yocto based projects
-
 [![build status](http://mod.lge.com:40000/hub/yocto/meta-testing/badges/master/build.svg)](http://mod.lge.com:40000/hub/yocto/meta-testing/commits/master)
-[![coverage report](http://mod.lge.com:40000/hub/yocto/meta-testing/badges/master/coverage.svg)](http://mod.lge.com:40000/hub/yocto/meta-testing/commits/master)
+
+> A shareable integrated testing framework for Yocto based projects
 
 
 About
