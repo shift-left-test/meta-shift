@@ -1,0 +1,3 @@
+DEPENDS_prepend = "\
+    googletest \
+    "
