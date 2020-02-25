@@ -1,7 +1,7 @@
 meta-testing
 ============
 
-[![build status](http://mod.lge.com:40000/hub/yocto/meta-testing/badges/master/build.svg)](http://mod.lge.com:40000/hub/yocto/meta-testing/commits/master)
+[![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-testing)](http://10.177.233.77:8080/job/meta-testing/)
 
 > A shareable integrated testing framework for Yocto based projects
 
@@ -33,3 +33,4 @@ Licenses
 --------
 
 This project source code is available under MIT license. See [LICENSE](LICENSE).
+
