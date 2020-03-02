@@ -181,3 +181,8 @@ tags
 .vim
 
 # End of https://www.gitignore.io/api/vim,emacs,python
+
+
+# OE ignores
+oe-logs
+oe-workdir
