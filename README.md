@@ -29,6 +29,12 @@ How to add the layer to your build
     $ bitbake-layers add-layer meta-testing
 
 
+How to run tests
+----------------
+
+    $ ./test/yoctotest.py
+
+
 Licenses
 --------
 
