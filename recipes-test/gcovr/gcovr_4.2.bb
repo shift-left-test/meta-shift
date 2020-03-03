@@ -14,6 +14,6 @@ DEPENDS += "${PYTHON_PN}-pytest-runner-native"
 
 inherit setuptools3
 
-RDEPENDS_${PN} += "python3-jinja2 python3-lxml"
+RDEPENDS_${PN} += "python3-lxml"
 
 BBCLASSEXTEND = "native nativesdk"
