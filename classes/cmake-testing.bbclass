@@ -1,5 +1,6 @@
 DEPENDS_prepend = "\
-    googletest \
+    gtest \
+    gmock \
     cppcheck-native \
     cpplint-native \
     gcovr-native \
@@ -8,10 +9,9 @@ DEPENDS_prepend = "\
 
 do_test() {
     cd ${B}
-
-    ctest --debug
+    ctest --output-on-failure
 }
 
 addtask test after do_build
 
-EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${RECIPE_SYSROOT}'"
+EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
