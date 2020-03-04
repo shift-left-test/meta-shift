@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/cmake:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append_class-nativesdk = " \
     file://CMakeUtils.cmake \
