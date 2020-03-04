@@ -5,6 +5,7 @@ DEPENDS_prepend = "\
     cpplint-native \
     gcovr-native \
     qemu-native \
+    doxygen-native \
     "
 
 EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
