@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/cmake:"
 
 SRC_URI_append = " \
     file://CMakeUtils.cmake \
