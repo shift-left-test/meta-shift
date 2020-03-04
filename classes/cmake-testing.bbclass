@@ -7,11 +7,11 @@ DEPENDS_prepend = "\
     qemu-native \
     "
 
+EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
+
 do_test() {
-    cd ${B}
-    ctest --output-on-failure
+    bbnote "Running tests"
+    cmake --build '${B}' --target test
 }
 
-addtask test after do_build
-
-EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
+addtask test after do_package before do_packagedata
