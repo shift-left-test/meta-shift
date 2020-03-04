@@ -17,7 +17,7 @@ do_test() {
     cmake --build '${B}' --target test
 }
 
-addtask test after do_package before do_packagedata
+addtask test after do_package
 
 
 do_install_append() {

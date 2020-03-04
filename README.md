@@ -22,6 +22,14 @@ Supported tools
 * CMakeUtils
 
 
+Requirements
+------------
+
+The following meta-layer is necessary in order to install the python based tools
+
+* meta-python (meta-openembedded)
+
+
 How to add the layer to your build
 ----------------------------------
 

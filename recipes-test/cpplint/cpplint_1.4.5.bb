@@ -10,10 +10,6 @@ SRC_URI = "git://github.com/cpplint/cpplint.git;protocol=https;tag=${PV};nobranc
 
 S = "${WORKDIR}/git"
 
-DEPENDS += "${PYTHON_PN}-pytest-runner-native"
-
 inherit setuptools3
-
-FILES_${PN} += "${datadir}"
 
 BBCLASSEXTEND = "native nativesdk"
