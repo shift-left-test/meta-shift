@@ -17,8 +17,13 @@ do_test() {
     cmake --build '${B}' --target test
 }
 
-addtask test after do_package
+do_coverage() {
+    export GCOV=${TARGET_PREFIX}gcov
+    gcovr -r ${WORKDIR}
+}
 
+addtask test after do_package
+addtask coverage after do_package
 
 do_install_append() {
     bbnote "Install test files"

@@ -10,8 +10,15 @@ SRC_URI = "git://github.com/gcovr/gcovr.git;protocol=https;tag=${PV};nobranch=1"
 
 S = "${WORKDIR}/git"
 
-inherit setuptools3
+DEPENDS += "\
+    ${PYTHON_PN}-pytest-runner-native \
+    ${PYTHON_PN}-jinja2 \
+    ${PYTHON_PN}-lxml \
+    ${PYTHON_PN}-markupsafe \
+"
 
-RDEPENDS_${PN} += "python3-jinja2 python3-lxml"
+inherit setuptools
+
+RDEPENDS_${PN} += "${PYTHON_PN}-jinja2 ${PYTHON_PN}-lxml"
 
 BBCLASSEXTEND = "native nativesdk"
