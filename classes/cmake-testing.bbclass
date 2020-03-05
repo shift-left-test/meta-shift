@@ -19,7 +19,7 @@ do_test() {
 
 do_coverage() {
     export GCOV=${TARGET_PREFIX}gcov
-    gcovr -r ${WORKDIR}
+    gcovr -r ${WORKDIR} --gcov-ignore-parse-errors
 }
 
 addtask test after do_package
