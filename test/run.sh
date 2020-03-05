@@ -7,8 +7,9 @@ fi
 
 POKY_DIR="$1"
 BUILD_RES="$HOME/build-res"
-POKY_URL="http://$USER@mod.lge.com:2222/~sunggon82.kim/poky.git -b zeus"
-META_OE_URL="http://$USER@mod.lge.com:2222/~sunggon82.kim/meta-openembedded.git -b zeus"
+TARGET_BRANCH="zeus"
+POKY_URL="http://mod.lge.com/hub/sunggon82.kim/poky.git"
+META_OE_URL="http://mod.lge.com/hub/sunggon82.kim/meta-openembedded.git"
 CPUS="$(nproc --all)"
 SCRIPTFILE=$(realpath $0)
 META_OE_DIR=$POKY_DIR/meta-openembedded
@@ -21,8 +22,8 @@ if [ -d $POKY_DIR ]; then
 fi
 
 echo "$0: Clone the poky workspace"
-git clone $POKY_URL $POKY_DIR
-git clone $META_OE_URL $META_OE_DIR
+git clone $POKY_URL $POKY_DIR -b $TARGET_BRANCH
+git clone $META_OE_URL $META_OE_DIR -b $TARGET_BRANCH
 
 echo "$0: sourcing the oe-init-build-env"
 . $POKY_DIR/oe-init-build-env
