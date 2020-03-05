@@ -7,8 +7,8 @@ fi
 
 POKY_DIR="$1"
 BUILD_RES="$HOME/build-res"
-POKY_URL="ssh://git@mod.lge.com:2222/~sunggon82.kim/poky.git -b zeus"
-META_OE_URL="ssh://git@mod.lge.com:2222/~sunggon82.kim/meta-openembedded.git -b zeus"
+POKY_URL="http://$USER@mod.lge.com:2222/~sunggon82.kim/poky.git -b zeus"
+META_OE_URL="http://$USER@mod.lge.com:2222/~sunggon82.kim/meta-openembedded.git -b zeus"
 CPUS="$(nproc --all)"
 SCRIPTFILE=$(realpath $0)
 META_OE_DIR=$POKY_DIR/meta-openembedded
