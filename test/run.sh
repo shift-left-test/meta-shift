@@ -7,10 +7,11 @@ fi
 
 POKY_DIR="$1"
 BUILD_RES="$HOME/build-res"
-POKY_URL="git://git.yoctoproject.org/poky.git"
-POKY_BUNDLE="$BUILD_RES/poky.bundle"
+POKY_URL="ssh://git@mod.lge.com:2222/~sunggon82.kim/poky.git -b zeus"
+META_OE_URL="ssh://git@mod.lge.com:2222/~sunggon82.kim/meta-openembedded.git -b zeus"
 CPUS="$(nproc --all)"
 SCRIPTFILE=$(realpath $0)
+META_OE_DIR=$POKY_DIR/meta-openembedded
 META_TESTING_DIR="$(dirname $(dirname $SCRIPTFILE))"
 META_TEST_DIR="$(dirname $(dirname $SCRIPTFILE))/test/meta-test"
 
@@ -19,21 +20,15 @@ if [ -d $POKY_DIR ]; then
     rm -rf $POKY_DIR
 fi
 
-echo "$0: Prepare poky bundle"
-if [ ! -f $POKY_BUNDLE ]; then
-    echo "Unable to locate the poky bundle."
-    TEMPDIR=$(mktemp -d)
-    git clone $POKY_URL $TEMPDIR
-    git --git-dir=$TEMPDIR/.git bundle create $POKY_BUNDLE --all
-    rm -rf $TEMPDIR
-fi
-
 echo "$0: Clone the poky workspace"
-git clone $POKY_BUNDLE $POKY_DIR
+git clone $POKY_URL $POKY_DIR
+git clone $META_OE_URL $META_OE_DIR
 
 echo "$0: sourcing the oe-init-build-env"
 . $POKY_DIR/oe-init-build-env
 
+bitbake-layers add-layer $META_OE_DIR/meta-oe
+bitbake-layers add-layer $META_OE_DIR/meta-python
 bitbake-layers add-layer $META_TESTING_DIR
 bitbake-layers add-layer $META_TEST_DIR
 

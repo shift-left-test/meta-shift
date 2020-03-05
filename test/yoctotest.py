@@ -13,6 +13,7 @@ class YoctoTestCase(unittest.TestCase):
     BITBAKE_S_SH = os.path.join(os.path.dirname(__file__), "bitbake-s.sh")
     WORKDIR = os.path.join(tempfile.gettempdir(), "test_meta-testing")
     SDK_HOST_PACKAGES = ""
+    SDK_TARGET_PACKAGES = ""
     BITBAKE_RECIPES = ""
 
     @classmethod
@@ -28,13 +29,18 @@ class YoctoTestCase(unittest.TestCase):
             return proc.communicate()
 
         if os.path.exists(YoctoTestCase.WORKDIR):
+            print "Remove the existing work directory: %s" % YoctoTestCase.WORKDIR
             shutil.rmtree(YoctoTestCase.WORKDIR)
         
         command = "%s %s" % (YoctoTestCase.RUN_SH, YoctoTestCase.WORKDIR)
         proc = subprocess.Popen(command, shell = True)
         proc.wait()
 
-        YoctoTestCase.SDK_HOST_PACKAGES = readFile(os.path.join(YoctoTestCase.WORKDIR, "tmp/deploy/sdk/poky-glibc-x86_64-core-image-minimal-aarch64-qemuarm64-toolchain-3.0+snapshot.host.manifest"))
+
+        host_manifest = "tmp/deploy/sdk/poky-glibc-x86_64-core-image-minimal-aarch64-qemuarm64-toolchain-3.0.2.host.manifest"
+        target_manifest  = "tmp/deploy/sdk/poky-glibc-x86_64-core-image-minimal-aarch64-qemuarm64-toolchain-3.0.2.target.manifest"
+        YoctoTestCase.SDK_HOST_PACKAGES = readFile(os.path.join(YoctoTestCase.WORKDIR, host_manifest))
+        YoctoTestCase.SDK_TARGET_PACKAGES = readFile(os.path.join(YoctoTestCase.WORKDIR, target_manifest))
         YoctoTestCase.BITBAKE_RECIPES = execute("%s %s" % (YoctoTestCase.BITBAKE_S_SH, YoctoTestCase.WORKDIR))[0]
 
         
@@ -67,6 +73,7 @@ class YoctoTestCase(unittest.TestCase):
         assert "googletest-native" in self.BITBAKE_RECIPES
         assert "nativesdk-googletest" in self.BITBAKE_RECIPES
 
+    @unittest.skip("WIP: googletest recipe")
     def testGoogleTestRecipeFoundInSDKPackages(self):
         assert "nativesdk-googletest x86_64_nativesdk 1.10.0" in self.SDK_HOST_PACKAGES
 
