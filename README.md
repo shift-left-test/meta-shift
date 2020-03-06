@@ -40,7 +40,7 @@ How to add the layer to your build
 How to run tests
 ----------------
 
-    $ ./test/yoctotest.py
+    $ ./test/run-test.py
 
 
 Licenses
