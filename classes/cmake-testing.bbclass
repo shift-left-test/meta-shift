@@ -30,6 +30,6 @@ do_install_append() {
     mkdir -p ${D}/opt/tests/${PN}
     
     for i in `find ${B}/ -type f -regex '.*[tT]est'`; do
-      install -m 0755 ${i} ${D}/opt/tests/${PN}
+      install -m 0755 ${i} ${D}/opt/tests/${PN}/
     done
 }
