@@ -20,6 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
+
+# Prevent from multiple inclusion
+if(DEFINED CMAKE_UTILS_INCLUDED)
+  return()
+endif()
+
+set(CMAKE_UTILS_INCLUDED ON)
+
+
 include(CMakeParseArguments)
 include(GNUInstallDirs)
 
