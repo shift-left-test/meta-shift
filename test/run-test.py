@@ -12,7 +12,7 @@ class YoctoTestCase(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        defaultVersions = "morty,sumo,zeus"
+        defaultVersions = "morty,zeus"
         cls.VERSIONS = os.getenv("VERSIONS", defaultVersions).split(",")
         
         for version in cls.VERSIONS:
@@ -115,7 +115,6 @@ class YoctoTestCase(unittest.TestCase):
         for version in self.VERSIONS:
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("cmake-native")
-            assert ENV["sdk"].packages().contains("nativesdk-cmake")
 
             do_install = ENV["env"].shell().execute("bitbake -e cmake-native -c install").stdout
             assert do_install.contains("file://CMakeUtils.cmake")
