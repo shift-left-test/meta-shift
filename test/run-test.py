@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import yoctotest
 import unittest
 from collections import defaultdict
@@ -9,11 +10,13 @@ class YoctoTestCase(unittest.TestCase):
     """ List of Yocto Releases:
     "morty", "pyro", "rocko", "sumo", "thud", "warrior", "zeus"
     """
-    VERSIONS = ["zeus"]
+    VERSIONS = []
     DATA = defaultdict(dict)
     
     @classmethod
     def setUpClass(cls):
+        cls.VERSIONS = os.getenv("VERSIONS", "zeus").split(",")
+        
         for version in cls.VERSIONS:
             cls.DATA[version]["env"] = yoctotest.YoctoTestEnvironment(version)
 

@@ -44,6 +44,10 @@ The following command runs the tests of all supported Yocto versions
 
     $ ./test/run-test.py
 
+The following command runs the tests for specific Yocto version
+
+    $ VERSIONS=morty ./test/run-test.py
+
 
 Licenses
 --------
