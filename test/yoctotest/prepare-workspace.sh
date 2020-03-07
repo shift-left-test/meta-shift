@@ -18,12 +18,10 @@ while getopts ":w:b:" options; do
     esac
 done
 
-POKY_URL="http://mod.lge.com/hub/sunggon82.kim/poky.git"
-META_OE_URL="http://mod.lge.com/hub/sunggon82.kim/meta-openembedded.git"
+POKY_URL="http://mod.lge.com/hub/yocto/poky.git"
+META_OE_URL="http://mod.lge.com/hub/yocto/meta-openembedded.git"
 CPUS="$(nproc --all)"
-
 TOPDIR=$(dirname $(dirname $(dirname $(realpath $0))))
-META_TEST_DIR=$TOPDIR/test/meta-test
 
 if [ -d $WORKSPACE ]; then
     echo "Remove the existing workspace: $WORKSPACE"
@@ -40,10 +38,11 @@ echo "Construct meta-layers"
 bitbake-layers add-layer $WORKSPACE/meta-openembedded/meta-oe
 bitbake-layers add-layer $WORKSPACE/meta-openembedded/meta-python
 bitbake-layers add-layer $TOPDIR
-bitbake-layers add-layer $META_TEST_DIR
+bitbake-layers add-layer $TOPDIR/test/meta-temp
 
 echo "Update build/conf/local.conf"
 {
+    echo "CORE_IMAGE_EXTRA_INSTALL += \"cpp-project\""
     echo "MACHINE = \"qemuarm64\""
     echo "DL_DIR = \"$HOME/build-res/downloads\""
     echo "SSTATE_DIR = \"$HOME/build-res/sstate-cache\""
