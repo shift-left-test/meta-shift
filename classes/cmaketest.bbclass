@@ -18,12 +18,13 @@ cmaketest_do_test() {
     cmake --build '${B}' --target test
 }
 
+addtask test after do_package
+
 cmaketest_do_coverage() {
     export GCOV=${TARGET_PREFIX}gcov
     gcovr -r ${WORKDIR} --gcov-ignore-parse-errors
 }
 
-addtask test after do_package
-addtask coverage after do_package
+addtask coverage after do_test
 
 EXPORT_FUNCTIONS do_test do_coverage
