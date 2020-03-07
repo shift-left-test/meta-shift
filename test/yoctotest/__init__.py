@@ -6,21 +6,6 @@ import subprocess
 import tempfile
 
 
-class YoctoDependsInfo(object):
-    def __init__(self, workspace):
-        self.workspace = workspace
-
-    def readFile(self, path):
-        with open(os.path.join(self.workspace, path), "r") as f:
-            return f.read()
-
-    def buildlist(self):
-        return self.readFile(os.path.join(self.workspace, "build/pn-buildlist"))
-
-    def taskdepends(self):
-        return self.readFile(os.path.join(self.workspace, "build/task-depends.dot"))
-
-
 class Output(object):
     """The console output holder class.
 
@@ -71,6 +56,21 @@ class Output(object):
         """
         return self.output
 
+
+class YoctoBuildInfo(object):
+    def __init__(self, workspace):
+        self.workspace = workspace
+
+    def readFile(self, path):
+        with open(os.path.join(self.workspace, path), "r") as f:
+            return f.read()
+
+    def packages(self):
+        return Output(self.readFile(os.path.join(self.workspace, "build/pn-buildlist")))
+
+    def tasks(self):
+        return Output(self.readFile(os.path.join(self.workspace, "build/task-depends.dot")))
+
     
 class Phase(object):
     def __init__(self, outputs):
@@ -105,8 +105,8 @@ class YoctoTestEnvironment(object):
     PREPARE_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prepare-workspace.sh")
 
     def __init__(self, branch = "zeus"):
-        self.workspace = os.path.join(*[tempfile.gettempdir(), "meta-testing", branch])
-        self.branch = branch
+        self.workspace = os.path.join(*[tempfile.gettempdir(), "meta-testing", branch.lower()])
+        self.branch = branch.lower()
 
         if os.path.exists(self.workspace):
             print("Remove the existing workspace: %s" % self.workspace)
@@ -115,12 +115,9 @@ class YoctoTestEnvironment(object):
         subprocess.Popen("{0} -w {1} -b {2}".format(self.PREPARE_SCRIPT, self.workspace, self.branch), shell = True).wait()
 
     def shell(self):
-        return YoctoShell(self.workspace) 
+        return YoctoShell(self.workspace)
 
-    def image(self):
-        self.shell().run("bitbake core-image-minimal -g")
-        return YoctoDependsInfo(self.workspace)
 
-    def sdk(self):
-        self.shell().run("bitbake core-image-minimal -c populate_sdk -g")
-        return YoctoDependsInfo(self.workspace)
+    def parse(self, target):
+        YoctoShell(self.workspace).run("bitbake {0} -g".format(target))
+        return YoctoBuildInfo(self.workspace)

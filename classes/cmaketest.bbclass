@@ -10,14 +10,15 @@ DEPENDS_prepend = "\
     doxygen-native \
     "
 
+EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=ON"
 EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
 
-do_test() {
+cmaketest_do_test() {
     bbnote "Run tests"
     cmake --build '${B}' --target test
 }
 
-do_coverage() {
+cmaketest_do_coverage() {
     export GCOV=${TARGET_PREFIX}gcov
     gcovr -r ${WORKDIR} --gcov-ignore-parse-errors
 }
@@ -25,11 +26,4 @@ do_coverage() {
 addtask test after do_package
 addtask coverage after do_package
 
-do_install_append() {
-    bbnote "Install test files"
-    mkdir -p ${D}/opt/tests/${PN}
-    
-    for i in `find ${B}/ -type f -regex '.*[tT]est'`; do
-      install -m 0755 ${i} ${D}/opt/tests/${PN}/
-    done
-}
+EXPORT_FUNCTIONS do_test do_coverage
