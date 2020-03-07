@@ -7,15 +7,13 @@ from collections import defaultdict
 
 
 class YoctoTestCase(unittest.TestCase):
-    """ List of Yocto Releases:
-    "morty", "pyro", "rocko", "sumo", "thud", "warrior", "zeus"
-    """
     VERSIONS = []
     DATA = defaultdict(dict)
     
     @classmethod
     def setUpClass(cls):
-        cls.VERSIONS = os.getenv("VERSIONS", "zeus").split(",")
+        defaultVersions = "morty,zeus"
+        cls.VERSIONS = os.getenv("VERSIONS", defaultVersions).split(",")
         
         for version in cls.VERSIONS:
             cls.DATA[version]["env"] = yoctotest.YoctoTestEnvironment(version)
@@ -117,7 +115,6 @@ class YoctoTestCase(unittest.TestCase):
         for version in self.VERSIONS:
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("cmake-native")
-            assert ENV["sdk"].packages().contains("nativesdk-cmake")
 
             do_install = ENV["env"].shell().execute("bitbake -e cmake-native -c install").stdout
             assert do_install.contains("file://CMakeUtils.cmake")

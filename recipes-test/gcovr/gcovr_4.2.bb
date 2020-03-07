@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/gcovr/gcovr.git;protocol=https;tag=${PV};nobranch=1"
 
 S = "${WORKDIR}/git"
 
-inherit setuptools3
+inherit setuptools
 
 DEPENDS += "\
     ${PYTHON_PN}-pytest-runner-native \
