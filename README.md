@@ -42,11 +42,11 @@ How to run tests
 
 The following command runs the tests of all supported Yocto versions
 
-    $ ./test/run-test.py
+    $ ./test/YoctoTestCase.py
 
 The following command runs the tests for specific Yocto version
 
-    $ VERSIONS=morty ./test/run-test.py
+    $ VERSIONS=morty ./test/YoctoTestCase.py
 
 
 Licenses

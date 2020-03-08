@@ -12,7 +12,7 @@ class YoctoTestCase(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        defaultVersions = "morty,zeus"
+        defaultVersions = "morty,rocko,thud,zeus"
         cls.VERSIONS = os.getenv("VERSIONS", defaultVersions).split(",")
         
         for version in cls.VERSIONS:
