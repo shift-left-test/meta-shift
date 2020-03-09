@@ -89,13 +89,11 @@ class YoctoTestCase(unittest.TestCase):
     def testGoogleTestRecipe(self):
         for version in self.VERSIONS:
             ENV = self.DATA[version]
-            assert ENV["recipes"].contains("googletest")
-            assert ENV["recipes"].contains("googletest-native")
-            assert ENV["recipes"].contains("nativesdk-googletest")
-            assert ENV["image"].packages().contains("googletest")
-            assert ENV["sdk"].packages().contains("googletest")
-            
-            assert ENV["env"].shell().execute("bitbake googletest").stderr.empty()
+            assert ENV["recipes"].containsAny("gtest", "googletest")
+            assert ENV["recipes"].containsAny("gtest-native", "googletest-native")
+            assert ENV["recipes"].containsAny("nativesdk-gtest", "nativesdk-googletest")
+            assert ENV["image"].packages().containsAny("gtest", "googletest")
+            assert ENV["sdk"].packages().containsAny("gtest", "googletest")
 
     def testDoxygenRecipe(self):
         for version in self.VERSIONS:
