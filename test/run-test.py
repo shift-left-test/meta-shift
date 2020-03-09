@@ -1,9 +1,16 @@
 #!/usr/bin/python
 
+import logging
 import os
 import yoctotest
 import unittest
 from collections import defaultdict
+
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    datefmt='%m-%d %H:%M')
+logger = logging.getLogger(__name__)
 
 
 class YoctoTestCase(unittest.TestCase):
@@ -12,7 +19,7 @@ class YoctoTestCase(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        defaultVersions = "morty,zeus"
+        defaultVersions = "morty,thud,zeus"
         cls.VERSIONS = os.getenv("VERSIONS", defaultVersions).split(",")
         
         for version in cls.VERSIONS:
@@ -20,6 +27,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def setUp(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             ENV["recipes"] = ENV["env"].shell().execute("bitbake -s").stdout
             ENV["image"] = ENV["env"].parse("core-image-minimal")
@@ -27,6 +36,8 @@ class YoctoTestCase(unittest.TestCase):
  
     def testCppProjectBuildable(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["image"].packages().contains("cpp-project")
 
@@ -46,6 +57,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def testCppcheckRecipe(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("cppcheck")
             assert ENV["recipes"].contains("cppcheck-native")
@@ -59,6 +72,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def testCpplintRecipe(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("cpplint")
             assert ENV["recipes"].contains("cpplint-native")
@@ -72,6 +87,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def testGcovrRecipe(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("gcovr")
             assert ENV["recipes"].contains("gcovr-native")
@@ -88,6 +105,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def testGoogleTestRecipe(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["recipes"].containsAny("gtest", "googletest")
             assert ENV["recipes"].containsAny("gtest-native", "googletest-native")
@@ -97,6 +116,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def testDoxygenRecipe(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("doxygen")
             assert ENV["recipes"].contains("doxygen-native")
@@ -111,6 +132,8 @@ class YoctoTestCase(unittest.TestCase):
 
     def testCMakeUtilsRecipe(self):
         for version in self.VERSIONS:
+            logging.info("CURRENT VERSION: {}".format(version))
+            
             ENV = self.DATA[version]
             assert ENV["recipes"].contains("cmake-native")
 
