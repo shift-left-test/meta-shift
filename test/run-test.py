@@ -36,7 +36,7 @@ class YoctoTestCase(unittest.TestCase):
             assert project.packages().contains("cppcheck-native")
             assert project.packages().contains("cpplint-native")
             assert project.packages().contains("gcovr-native")
-            assert project.packages().contains("googletest")
+            assert project.packages().containsAny("gtest", "googletest")
 
             pkgs = ENV["env"].shell().execute("oe-pkgdata-util list-pkg-files cpp-project").stdout
             assert pkgs.contains("/usr/bin/OperatorTest")
