@@ -15,8 +15,8 @@ This project aims to provide an easy way to set up a group of dev/test tools for
 Supported tools
 ---------------
 
-* gtest (1.10.0)
-* gmock (1.10.0)
+* gtest (1.8.0)
+* gmock (1.8.0)
 * cppcheck (1.90)
 * cpplint (1.4.5)
 * CMakeUtils
