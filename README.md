@@ -27,6 +27,7 @@ Requirements
 
 The following meta-layer is necessary in order to install the python based tools
 
+* meta-oe (meta-openembedded)
 * meta-python (meta-openembedded)
 
 
