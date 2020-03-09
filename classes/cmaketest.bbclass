@@ -10,11 +10,12 @@ DEPENDS_prepend = "\
     doxygen-native \
     "
 
+EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=DEBUG"
 EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=ON"
+EXTRA_OECMAKE += "-DENABLE_TEST=ON" 
 EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
 
 cmaketest_do_test() {
-    bbnote "Run tests"
     cmake --build '${B}' --target test
 }
 
