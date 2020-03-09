@@ -6,4 +6,4 @@ SRC_URI = "git://mod.lge.com/hub/yocto/cpp-project.git;protocol=http;tag=${PV};n
 S = "${WORKDIR}/git"
 
 inherit cmake
-inherit cmake_test
+inherit cmaketest
