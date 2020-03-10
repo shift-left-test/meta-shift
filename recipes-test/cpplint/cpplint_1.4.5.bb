@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 inherit setuptools
 
 DEPENDS += "\
-    ${PYTHON_PN}-pytest-runner-native \
+    ${PYTHON_PN}-pytest-runner \
 "
 
 BBCLASSEXTEND = "native nativesdk"
