@@ -13,10 +13,18 @@ S = "${WORKDIR}/git"
 inherit setuptools
 
 DEPENDS += "\
-    ${PYTHON_PN}-pytest-runner-native \
+    ${PYTHON_PN}-pytest-runner \
     ${PYTHON_PN}-jinja2 \
     ${PYTHON_PN}-lxml \
     ${PYTHON_PN}-markupsafe \
+    ${PYTHON_PN}-setuptools \
+"
+
+RDEPENDS_${PN}_class-nativesdk += "\
+    nativesdk-${PYTHON_PN}-jinja2 \
+    nativesdk-${PYTHON_PN}-lxml \
+    nativesdk-${PYTHON_PN}-markupsafe \
+    nativesdk-${PYTHON_PN}-setuptools \
 "
 
 BBCLASSEXTEND = "native nativesdk"
