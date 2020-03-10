@@ -44,6 +44,16 @@ else()
   message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 endif()
 
+# Set cross-compiling emulator if available
+if(DEFINED CMAKE_CROSSCOMPILING_EMULATOR)
+  message(STATUS "Found cross-compiling emulator: TRUE")
+else()
+  if(DEFINED ENV{CROSSCOMPILING_EMULATOR} AND DEFINED ENV{SDKTARGETSYSROOT})
+    message(STATUS "Found cross-compiling emulator: TRUE")
+    set(CMAKE_CROSSCOMPILING_EMULATOR "$ENV{CROSSCOMPILING_EMULATOR};-L;$ENV{SDKTARGETSYSROOT}")
+  endif()
+endif()
+
 # Set code coverage options to the default flags
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -g -fprofile-arcs -ftest-coverage")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -fprofile-arcs -ftest-coverage")
