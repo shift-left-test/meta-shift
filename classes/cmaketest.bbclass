@@ -10,9 +10,10 @@ DEPENDS_prepend = "\
     doxygen-native \
     "
 
+EXTRA_OECMAKE += "-DENABLE_TEST=ON"
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=DEBUG"
 EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=ON"
-EXTRA_OECMAKE += "-DENABLE_TEST=ON" 
+EXTRA_OECMAKE += "-DCMAKE_INSTALL_TESTDIR=/opt/tests/${PN}"
 EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${HOST_ARCH};-L;${STAGING_DIR_TARGET}'"
 
 cmaketest_do_test() {
@@ -27,5 +28,7 @@ cmaketest_do_coverage() {
 }
 
 addtask coverage after do_test
+
+FILES_${PN} += "/opt/tests/${PN}"
 
 EXPORT_FUNCTIONS do_test do_coverage
