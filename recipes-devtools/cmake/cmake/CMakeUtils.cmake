@@ -54,6 +54,9 @@ else()
   endif()
 endif()
 
+# Set the default installation directory for tests
+set(CMAKE_INSTALL_TESTDIR "tests" CACHE STRING "Default installation directory for tests")
+
 # Set code coverage options to the default flags
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -g -fprofile-arcs -ftest-coverage")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -fprofile-arcs -ftest-coverage")
@@ -200,11 +203,15 @@ function(build_executable)
     target_link_libraries(${BUILD_NAME}
       PRIVATE GTest::GTest GMock::GMock GMock::Main ${CMAKE_THREAD_LIBS_INIT})
     gtest_add_tests(${BUILD_NAME} "" AUTO)
-  endif()
 
     install(
       TARGETS ${BUILD_NAME}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_TESTDIR})
+  else()
+    install(
+      TARGETS ${BUILD_NAME}
       RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  endif()
 
   if(BUILD_PREFIX)
     set_target_properties(${BUILD_NAME} PROPERTIES PREFIX ${BUILD_PREFIX})
