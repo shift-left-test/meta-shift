@@ -19,6 +19,7 @@ addtask test after do_compile do_populate_sysroot
 cmaketest_do_test[nostamp] = "1"
 cmaketest_do_test() {
     export GTEST_OUTPUT="${GTEST_OUTPUT}/${PN}/"
+    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
     cmake --build '${B}' --target test
 }
 
