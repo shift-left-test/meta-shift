@@ -79,11 +79,7 @@ class YoctoTestCase(unittest.TestCase):
             assert ENV["recipes"].contains("cpplint-native")
             assert ENV["recipes"].contains("nativesdk-cpplint")
             assert ENV["sdk"].packages().contains("nativesdk-cpplint")
-
             assert ENV["env"].shell().execute("bitbake cpplint-native").stderr.empty()
-
-            native = ENV["env"].parse("cpplint-native")
-            assert native.packages().contains("pytest-runner-native")
 
     def testGcovrRecipe(self):
         for version in self.VERSIONS:
@@ -94,14 +90,7 @@ class YoctoTestCase(unittest.TestCase):
             assert ENV["recipes"].contains("gcovr-native")
             assert ENV["recipes"].contains("nativesdk-gcovr")
             assert ENV["sdk"].packages().contains("nativesdk-gcovr")
-
             assert ENV["env"].shell().execute("bitbake gcovr-native").stderr.empty()
-
-            native = ENV["env"].parse("gcovr-native")
-            assert native.packages().contains("pytest-runner-native")
-            assert native.packages().contains("jinja2-native")
-            assert native.packages().contains("lxml-native")
-            assert native.packages().contains("markupsafe-native")
 
     def testGoogleTestRecipe(self):
         for version in self.VERSIONS:
