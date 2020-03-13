@@ -18,7 +18,7 @@ EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TARGET_ARCH};-L;${STAG
 addtask test after do_populate_sysroot
 cmaketest_do_test[nostamp] = "1"
 cmaketest_do_test() {
-    export GTEST_OUTPUT="${GTEST_OUTPUT}"
+    export GTEST_OUTPUT="${GTEST_OUTPUT}/${PN}/"
     cmake --build '${B}' --target test
 }
 
