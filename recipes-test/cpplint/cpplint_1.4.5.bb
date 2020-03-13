@@ -10,10 +10,13 @@ SRC_URI = "git://github.com/cpplint/cpplint.git;protocol=https;tag=${PV};nobranc
 
 S = "${WORKDIR}/git"
 
-inherit setuptools
+DEPENDS = "python-native"
 
-DEPENDS += "\
-    ${PYTHON_PN}-pytest-runner \
-"
+do_install() {
+    install -d ${D}${bindir}
+    install -m 755 ${B}/cpplint.py ${D}${bindir}/
+}
+
+FILES_${PN} ="${bindir}"
 
 BBCLASSEXTEND = "native nativesdk"
