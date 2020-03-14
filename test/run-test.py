@@ -66,15 +66,10 @@ def test_gcovr_nativesdk(yocto):
     assert yocto["sdk"].packages().contains("nativesdk-gcovr")
     assert yocto["env"].shell().execute("bitbake nativesdk-gcovr").stderr.empty()
 
-def test_gtest(yocto):
+def test_googletest(yocto):
     assert yocto["recipes"].containsAny("gtest", "googletest")
     assert yocto["image"].packages().containsAny("gtest", "googletest")
     assert yocto["sdk"].packages().containsAny("gtest", "googletest")
-
-def test_gmock(yocto):
-    assert yocto["recipes"].containsAny("gmock", "googletest")
-    assert yocto["image"].packages().containsAny("gmock", "googletest")
-    assert yocto["sdk"].packages().containsAny("gmock", "googletest")
 
 def test_doxygen_native(yocto):
     assert yocto["recipes"].contains("doxygen-native")
