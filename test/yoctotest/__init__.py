@@ -60,19 +60,20 @@ class Output(object):
 
 class YoctoBuildInfo(object):
     def __init__(self, workspace):
+        def readFile(path):
+            with open(path, "r") as f:
+                return f.read()
         self.workspace = workspace
-
-    def readFile(self, path):
-        with open(os.path.join(self.workspace, path), "r") as f:
-            return f.read()
+        self.buildlist = Output(readFile(os.path.join(self.workspace, "build/pn-buildlist")))
+        self.taskdeps = Output(readFile(os.path.join(self.workspace, "build/task-depends.dot")))
 
     def packages(self):
-        return Output(self.readFile(os.path.join(self.workspace, "build/pn-buildlist")))
+        return self.buildlist
 
     def tasks(self):
-        return Output(self.readFile(os.path.join(self.workspace, "build/task-depends.dot")))
+        return self.taskdeps
 
-    
+
 class Phase(object):
     def __init__(self, outputs):
         """Default constructor
@@ -82,11 +83,11 @@ class Phase(object):
         """
         self.stdout = Output(outputs[0])
         self.stderr = Output(outputs[1])
-   
-    
+
+
 class YoctoShell(object):
     COMMAND_WRAPPER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "command-wrapper.sh")
-    
+
     def __init__(self, workspace):
         self.workspace = workspace
 
@@ -101,7 +102,7 @@ class YoctoShell(object):
                                 stderr = subprocess.PIPE)
         return Phase(proc.communicate())
 
-    
+
 class YoctoTestEnvironment(object):
     PREPARE_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prepare-workspace.sh")
 

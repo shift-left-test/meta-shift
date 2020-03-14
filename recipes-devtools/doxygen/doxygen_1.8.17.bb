@@ -12,6 +12,6 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/${BPN}/${BP}.src.tar.gz \
 SRC_URI[md5sum] = "7997a15c73a8bd6d003eaba5c2ee2b47"
 SRC_URI[sha256sum] = "2cba988af2d495541cbbe5541b3bee0ee11144dcb23a81eada19f5501fd8b599"
 
-inherit cmake pythonnative
+inherit cmake python3native
 
 BBCLASSEXTEND = "native nativesdk"
