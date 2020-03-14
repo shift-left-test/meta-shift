@@ -104,12 +104,6 @@ def test_CMakeUtils_nativesdk(yocto):
     assert environ.contains("export CROSSCOMPILING_EMULATOR")
     assert environ.contains("CMakeUtils.sh")
 
-def test_core_image_minimal(yocto):
-    assert yocto["env"].shell().execute("bitbake core-image-minimal").stderr.empty()
-
-def test_populate_sdk(yocto):
-    assert yocto["env"].shell().execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
-
 
 if __name__ == "__main__":
     pytest.main(["-x", "-v", "-s", __file__])

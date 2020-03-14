@@ -21,7 +21,7 @@ done
 POKY_URL="http://mod.lge.com/hub/yocto/poky.git"
 META_OE_URL="http://mod.lge.com/hub/yocto/meta-openembedded.git"
 META_TEMP_URL="http://mod.lge.com/hub/yocto/meta-temp.git"
-CPUS="$(($(nproc) / 2))"
+CPUS="$(nproc --all)"
 TOPDIR=$(dirname $(dirname $(dirname $(realpath $0))))
 
 if [ -d $WORKSPACE ]; then
