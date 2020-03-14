@@ -1,135 +1,109 @@
 #!/usr/bin/python
 
-import logging
-import os
+import pytest
 import yoctotest
-import unittest
-from collections import defaultdict
 
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(message)s',
-                    datefmt='%m-%d %H:%M')
-logger = logging.getLogger(__name__)
+class YoctoProject(dict):
+    def __init__(self, codename):
+        self["env"] = yoctotest.YoctoTestEnvironment(codename)
+        self["recipes"] = self["env"].shell().execute("bitbake -s").stdout
+        self["image"] = self["env"].parse("core-image-minimal")
+        self["sdk"] = self["env"].parse("core-image-minimal -c populate_sdk")
 
 
-class YoctoTestCase(unittest.TestCase):
-    VERSIONS = []
-    DATA = defaultdict(dict)
+@pytest.fixture(scope="module", params=["morty", "zeus"])
+def yocto(request):
+    return YoctoProject(request.param)
 
-    @classmethod
-    def setUpClass(cls):
-        defaultVersions = "morty,zeus"
-        cls.VERSIONS = os.getenv("VERSIONS", defaultVersions).split(",")
 
-        for version in cls.VERSIONS:
-            cls.DATA[version]["env"] = yoctotest.YoctoTestEnvironment(version)
+def test_cppproject(yocto):
+    assert yocto["image"].packages().contains("cpp-project")
+    assert yocto["env"].shell().execute("bitbake cpp-project").stderr.empty()
 
-    def setUp(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
+    project = yocto["env"].parse("cpp-project")
+    assert project.packages().containsAny("gtest", "googletest")
+    assert project.packages().contains("cppcheck-native")
+    assert project.packages().contains("cpplint-native")
+    assert project.packages().contains("gcovr-native")
+    assert project.packages().contains("qemu-native")
+    assert project.packages().contains("doxygen-native")
 
-            ENV = self.DATA[version]
-            ENV["recipes"] = ENV["env"].shell().execute("bitbake -s").stdout
-            ENV["image"] = ENV["env"].parse("core-image-minimal")
-            ENV["sdk"] = ENV["env"].parse("core-image-minimal -c populate_sdk")
+    pkgs = yocto["env"].shell().execute("oe-pkgdata-util list-pkg-files cpp-project").stdout
+    assert pkgs.contains("/opt/tests/cpp-project/OperatorTest")
+    assert pkgs.contains("/usr/bin/program")
+    assert pkgs.contains("/usr/lib/libplus.so.1")
+    assert pkgs.contains("/usr/lib/libplus.so.1.0.0")
 
-    def testCppProjectBuildable(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
+def test_cppcheck_native(yocto):
+    assert yocto["recipes"].contains("cppcheck-native")
+    assert yocto["env"].shell().execute("bitbake cppcheck-native").stderr.empty()
+    project = yocto["env"].parse("cppcheck-native")
+    project.packages().contains("libpcre-native")
 
-            ENV = self.DATA[version]
-            assert ENV["image"].packages().contains("cpp-project")
+def test_cppcheck_nativesdk(yocto):
+    assert yocto["recipes"].contains("nativesdk-cppcheck")
+    assert yocto["sdk"].packages().contains("nativesdk-cppcheck")
+    assert yocto["env"].shell().execute("bitbake nativesdk-cppcheck").stderr.empty()
+    project = yocto["env"].parse("nativesdk-cppcheck")
+    project.packages().contains("nativesdk-libpcre")
 
-            assert ENV["env"].shell().execute("bitbake cpp-project").stderr.empty()
+def test_cpplint_native(yocto):
+    assert yocto["recipes"].contains("cpplint-native")
+    assert yocto["env"].shell().execute("bitbake cpplint-native").stderr.empty()
 
-            project = ENV["env"].parse("cpp-project")
-            assert project.packages().contains("cppcheck-native")
-            assert project.packages().contains("cpplint-native")
-            assert project.packages().contains("gcovr-native")
-            assert project.packages().containsAny("gtest", "googletest")
+def test_cpplint_nativesdk(yocto):
+    assert yocto["recipes"].contains("nativesdk-cpplint")
+    assert yocto["sdk"].packages().contains("nativesdk-cpplint")
+    assert yocto["env"].shell().execute("bitbake nativesdk-cpplint").stderr.empty()
 
-            pkgs = ENV["env"].shell().execute("oe-pkgdata-util list-pkg-files cpp-project").stdout
-            assert pkgs.contains("/opt/tests/cpp-project/OperatorTest")
-            assert pkgs.contains("/usr/bin/program")
-            assert pkgs.contains("/usr/lib/libplus.so.1")
-            assert pkgs.contains("/usr/lib/libplus.so.1.0.0")
+def test_gcovr_native(yocto):
+    assert yocto["recipes"].contains("gcovr-native")
+    assert yocto["env"].shell().execute("bitbake gcovr-native").stderr.empty()
 
-    def testCppcheckRecipe(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
+def test_gcovr_nativesdk(yocto):
+    assert yocto["recipes"].contains("nativesdk-gcovr")
+    assert yocto["sdk"].packages().contains("nativesdk-gcovr")
+    assert yocto["env"].shell().execute("bitbake nativesdk-gcovr").stderr.empty()
 
-            ENV = self.DATA[version]
-            assert ENV["recipes"].contains("cppcheck")
-            assert ENV["recipes"].contains("cppcheck-native")
-            assert ENV["recipes"].contains("nativesdk-cppcheck")
-            assert ENV["sdk"].packages().contains("nativesdk-cppcheck")
+def test_gtest(yocto):
+    assert yocto["recipes"].containsAny("gtest", "googletest")
+    assert yocto["image"].packages().containsAny("gtest", "googletest")
+    assert yocto["sdk"].packages().containsAny("gtest", "googletest")
 
-            assert ENV["env"].shell().execute("bitbake cppcheck-native").stderr.empty()
+def test_gmock(yocto):
+    assert yocto["recipes"].containsAny("gmock", "googletest")
+    assert yocto["image"].packages().containsAny("gmock", "googletest")
+    assert yocto["sdk"].packages().containsAny("gmock", "googletest")
 
-            native = ENV["env"].parse("cppcheck-native")
-            assert native.packages().contains("libpcre-native")
+def test_doxygen_native(yocto):
+    assert yocto["recipes"].contains("doxygen-native")
+    assert yocto["env"].shell().execute("bitbake doxygen-native").stderr.empty()
+    project = yocto["env"].parse("doxygen-native")
+    assert project.packages().contains("flex-native")
+    assert project.packages().contains("bison-native")
 
-    def testCpplintRecipe(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
+def test_doxygen_nativesdk(yocto):
+    assert yocto["recipes"].contains("nativesdk-doxygen")
+    assert yocto["sdk"].packages().contains("nativesdk-doxygen")
+    assert yocto["env"].shell().execute("bitbake nativesdk-doxygen").stderr.empty()
 
-            ENV = self.DATA[version]
-            assert ENV["recipes"].contains("cpplint")
-            assert ENV["recipes"].contains("cpplint-native")
-            assert ENV["recipes"].contains("nativesdk-cpplint")
-            assert ENV["sdk"].packages().contains("nativesdk-cpplint")
-            assert ENV["env"].shell().execute("bitbake cpplint-native").stderr.empty()
+def test_CMakeUtils_native(yocto):
+    assert yocto["recipes"].contains("cmake-native")
+    assert yocto["env"].shell().execute("bitbake cmake-native").stderr.empty()
+    environ = yocto["env"].shell().execute("bitbake -e cmake-native -c install").stdout
+    assert environ.contains("file://CMakeUtils.cmake")
+    assert environ.contains("file://FindGMock.cmake")
 
-    def testGcovrRecipe(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
-
-            ENV = self.DATA[version]
-            assert ENV["recipes"].contains("gcovr")
-            assert ENV["recipes"].contains("gcovr-native")
-            assert ENV["recipes"].contains("nativesdk-gcovr")
-            assert ENV["sdk"].packages().contains("nativesdk-gcovr")
-            assert ENV["env"].shell().execute("bitbake gcovr-native").stderr.empty()
-
-    def testGoogleTestRecipe(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
-
-            ENV = self.DATA[version]
-            assert ENV["recipes"].containsAny("gtest", "googletest")
-            assert ENV["recipes"].containsAny("gtest-native", "googletest-native")
-            assert ENV["recipes"].containsAny("nativesdk-gtest", "nativesdk-googletest")
-            assert ENV["image"].packages().containsAny("gtest", "googletest")
-            assert ENV["sdk"].packages().containsAny("gtest", "googletest")
-
-    def testDoxygenRecipe(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
-
-            ENV = self.DATA[version]
-            assert ENV["recipes"].contains("doxygen")
-            assert ENV["recipes"].contains("doxygen-native")
-            assert ENV["recipes"].contains("nativesdk-doxygen")
-            assert ENV["sdk"].packages().contains("nativesdk-doxygen")
-
-            assert ENV["env"].shell().execute("bitbake doxygen-native").stderr.empty()
-
-            native = ENV["env"].parse("doxygen-native")
-            assert native.packages().contains("flex-native")
-            assert native.packages().contains("bison-native")
-
-    def testCMakeUtilsRecipe(self):
-        for version in self.VERSIONS:
-            logging.info("CURRENT VERSION: {}".format(version))
-
-            ENV = self.DATA[version]
-            assert ENV["recipes"].contains("cmake-native")
-
-            do_install = ENV["env"].shell().execute("bitbake -e cmake-native -c install").stdout
-            assert do_install.contains("file://CMakeUtils.cmake")
-            assert do_install.contains("file://FindGMock.cmake")
+def test_CMakeUtils_nativesdk(yocto):
+    assert yocto["recipes"].contains("nativesdk-cmake")
+    assert yocto["env"].shell().execute("bitbake nativesdk-cmake").stderr.empty()
+    environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmake -c install").stdout
+    assert environ.contains("file://CMakeUtils.cmake")
+    assert environ.contains("file://FindGMock.cmake")
+    assert environ.contains("export CROSSCOMPILING_EMULATOR")
+    assert environ.contains("CMakeUtils.sh")
 
 
 if __name__ == "__main__":
-    unittest.main()
+    pytest.main(["-x", "-v", "-s", __file__])

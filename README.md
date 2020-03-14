@@ -41,17 +41,12 @@ How to add the layer to your build
 How to run tests
 ----------------
 
-The following command runs the tests of all supported Yocto versions
+The following command runs the tests of all supported Yocto code names
 
     $ ./test/run-test.py
-
-The following command runs the tests for specific Yocto version
-
-    $ VERSIONS=morty ./test/run-test.py
 
 
 Licenses
 --------
 
 This project source code is available under MIT license. See [LICENSE](LICENSE).
-
