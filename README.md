@@ -15,10 +15,13 @@ This project aims to provide an easy way to set up a group of dev/test tools for
 Supported tools
 ---------------
 
-* gtest (1.8.0)
-* gmock (1.8.0)
 * cppcheck (1.90)
 * cpplint (1.4.5)
+* gtest (via meta-openembedded)
+* gmock (via meta-openembedded)
+* gcovr (3.4)
+* doxygen (1.8.17)
+* cmake (via meta)
 * CMakeUtils
 
 
