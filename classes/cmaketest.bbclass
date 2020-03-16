@@ -8,6 +8,7 @@ DEPENDS_prepend = "\
     gcovr-native \
     qemu-native \
     doxygen-native \
+    cmakeutils-native \
     "
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=DEBUG"
