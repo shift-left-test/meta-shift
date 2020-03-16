@@ -12,7 +12,7 @@ class YoctoProject(dict):
         self["sdk"] = self["env"].parse("core-image-minimal -c populate_sdk")
 
 
-@pytest.fixture(scope="module", params=["morty", "rocko", "thud", "zeus"])
+@pytest.fixture(scope="module", params=["morty", "rocko"])
 def yocto(request):
     return YoctoProject(request.param)
 
@@ -35,6 +35,24 @@ def test_cpp_project(yocto):
     assert pkgs.contains("/usr/bin/program")
     assert pkgs.contains("/usr/lib/libplus.so.1")
     assert pkgs.contains("/usr/lib/libplus.so.1.0.0")
+
+def test_do_test(yocto):
+    command = "bitbake cpp-project -c test -v"
+    expected = "100% tests passed, 0 tests failed out of 2"
+    assert yocto["env"].shell().execute(command).stdout.contains(expected)
+    assert yocto["env"].shell().execute(command).stdout.contains(expected)
+
+def test_do_coverage(yocto):
+    command = "bitbake cpp-project -c coverage -v"
+    expected = "GCC Code Coverage Report"
+    assert yocto["env"].shell().execute(command).stdout.contains(expected)
+    assert yocto["env"].shell().execute(command).stdout.contains(expected)
+
+def test_do_testall(yocto):
+    command = "bitbake core-image-minimal -c testall -v"
+    expected = "100% tests passed, 0 tests failed out of 2"
+    assert yocto["env"].shell().execute(command).stdout.contains(expected)
+    assert yocto["env"].shell().execute(command).stdout.contains(expected)
 
 def test_cppcheck_native(yocto):
     assert yocto["recipes"].contains("cppcheck-native")
