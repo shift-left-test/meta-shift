@@ -17,7 +17,7 @@ def yocto(request):
     return YoctoProject(request.param)
 
 
-def test_cppproject(yocto):
+def test_cpp_project(yocto):
     assert yocto["image"].packages().contains("cpp-project")
     assert yocto["env"].shell().execute("bitbake cpp-project").stderr.empty()
 
@@ -84,13 +84,13 @@ def test_doxygen_nativesdk(yocto):
     assert yocto["sdk"].packages().contains("nativesdk-doxygen")
     assert yocto["env"].shell().execute("bitbake nativesdk-doxygen").stderr.empty()
 
-def test_CMakeUtils_native(yocto):
+def test_cmakeutils_native(yocto):
     assert yocto["recipes"].contains("cmakeutils-native")
     assert yocto["env"].shell().execute("bitbake cmakeutils-native").stderr.empty()
     project = yocto["env"].parse("cmakeutils-native")
     project.packages().contains("cmake-native")
 
-def test_CMakeUtils_nativesdk(yocto):
+def test_cmakeutils_nativesdk(yocto):
     assert yocto["recipes"].contains("nativesdk-cmakeutils")
     assert yocto["env"].shell().execute("bitbake nativesdk-cmakeutils").stderr.empty()
     project = yocto["env"].parse("nativesdk-cmakeutils")
