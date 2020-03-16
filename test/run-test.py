@@ -12,12 +12,12 @@ class YoctoProject(dict):
         self["sdk"] = self["env"].parse("core-image-minimal -c populate_sdk")
 
 
-@pytest.fixture(scope="module", params=["morty", "pyro", "rocko", "sumo", "thud", "warrior", "zeus"])
+@pytest.fixture(scope="module", params=["morty", "rocko", "thud", "zeus"])
 def yocto(request):
     return YoctoProject(request.param)
 
 
-def test_cppproject(yocto):
+def test_cpp_project(yocto):
     assert yocto["image"].packages().contains("cpp-project")
     assert yocto["env"].shell().execute("bitbake cpp-project").stderr.empty()
 
@@ -28,6 +28,7 @@ def test_cppproject(yocto):
     assert project.packages().contains("gcovr-native")
     assert project.packages().contains("qemu-native")
     assert project.packages().contains("doxygen-native")
+    assert project.packages().contains("cmakeutils-native")
 
     pkgs = yocto["env"].shell().execute("oe-pkgdata-util list-pkg-files cpp-project").stdout
     assert pkgs.contains("/opt/tests/cpp-project/OperatorTest")
@@ -83,22 +84,21 @@ def test_doxygen_nativesdk(yocto):
     assert yocto["sdk"].packages().contains("nativesdk-doxygen")
     assert yocto["env"].shell().execute("bitbake nativesdk-doxygen").stderr.empty()
 
-def test_CMakeUtils_native(yocto):
-    assert yocto["recipes"].contains("cmake-native")
-    assert yocto["env"].shell().execute("bitbake cmake-native").stderr.empty()
-    environ = yocto["env"].shell().execute("bitbake -e cmake-native -c install").stdout
-    assert environ.contains("file://CMakeUtils.cmake")
-    assert environ.contains("file://FindGMock.cmake")
+def test_cmakeutils_native(yocto):
+    assert yocto["recipes"].contains("cmakeutils-native")
+    assert yocto["env"].shell().execute("bitbake cmakeutils-native").stderr.empty()
+    project = yocto["env"].parse("cmakeutils-native")
+    project.packages().contains("cmake-native")
 
-def test_CMakeUtils_nativesdk(yocto):
-    assert yocto["recipes"].contains("nativesdk-cmake")
-    assert yocto["env"].shell().execute("bitbake nativesdk-cmake").stderr.empty()
-    environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmake -c install").stdout
-    assert environ.contains("file://CMakeUtils.cmake")
-    assert environ.contains("file://FindGMock.cmake")
+def test_cmakeutils_nativesdk(yocto):
+    assert yocto["recipes"].contains("nativesdk-cmakeutils")
+    assert yocto["env"].shell().execute("bitbake nativesdk-cmakeutils").stderr.empty()
+    project = yocto["env"].parse("nativesdk-cmakeutils")
+    project.packages().contains("nativesdk-cmake")
+    environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmakeutils -c install").stdout
     assert environ.contains("export CROSSCOMPILING_EMULATOR")
     assert environ.contains("CMakeUtils.sh")
 
 
 if __name__ == "__main__":
-    pytest.main(["-x", "-v", "-s", __file__])
+    pytest.main(["-x", "-v", __file__])
