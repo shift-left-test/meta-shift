@@ -36,6 +36,12 @@ def test_cpp_project(yocto):
     assert pkgs.contains("/usr/lib/libplus.so.1")
     assert pkgs.contains("/usr/lib/libplus.so.1.0.0")
 
+def test_populate_image(yocto):
+    assert yocto["env"].shell().execute("bitbake core-image-minimal").stderr.empty()
+
+def test_populate_sdk(yocto):
+    assert yocto["env"].shell().execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
+
 def test_do_test(yocto):
     command = "bitbake cpp-project -c test -v"
     expected = "100% tests passed, 0 tests failed out of 2"
