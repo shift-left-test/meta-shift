@@ -64,14 +64,14 @@ def test_cppcheck_native(yocto):
     assert yocto["recipes"].contains("cppcheck-native")
     assert yocto["env"].shell().execute("bitbake cppcheck-native").stderr.empty()
     project = yocto["env"].parse("cppcheck-native")
-    project.packages().contains("libpcre-native")
+    assert project.packages().contains("libpcre-native")
 
 def test_cppcheck_nativesdk(yocto):
     assert yocto["recipes"].contains("nativesdk-cppcheck")
     assert yocto["sdk"].packages().contains("nativesdk-cppcheck")
     assert yocto["env"].shell().execute("bitbake nativesdk-cppcheck").stderr.empty()
     project = yocto["env"].parse("nativesdk-cppcheck")
-    project.packages().contains("nativesdk-libpcre")
+    assert project.packages().contains("nativesdk-libpcre")
 
 def test_cpplint_native(yocto):
     assert yocto["recipes"].contains("cpplint-native")
@@ -85,11 +85,17 @@ def test_cpplint_nativesdk(yocto):
 def test_gcovr_native(yocto):
     assert yocto["recipes"].contains("gcovr-native")
     assert yocto["env"].shell().execute("bitbake gcovr-native").stderr.empty()
+    project = yocto["env"].parse("gcovr-native")
+    assert project.packages().contains("python-jinja2-native")
+    assert project.packages().contains("python-lxml-native")
 
 def test_gcovr_nativesdk(yocto):
     assert yocto["recipes"].contains("nativesdk-gcovr")
     assert yocto["sdk"].packages().contains("nativesdk-gcovr")
     assert yocto["env"].shell().execute("bitbake nativesdk-gcovr").stderr.empty()
+    project = yocto["env"].parse("nativesdk-gcovr")
+    assert project.packages().contains("nativesdk-python-jinja2")
+    assert project.packages().contains("nativesdk-python-lxml")
 
 def test_googletest(yocto):
     assert yocto["recipes"].containsAny("gtest", "googletest")
@@ -112,13 +118,13 @@ def test_cmakeutils_native(yocto):
     assert yocto["recipes"].contains("cmakeutils-native")
     assert yocto["env"].shell().execute("bitbake cmakeutils-native").stderr.empty()
     project = yocto["env"].parse("cmakeutils-native")
-    project.packages().contains("cmake-native")
+    assert project.packages().contains("cmake-native")
 
 def test_cmakeutils_nativesdk(yocto):
     assert yocto["recipes"].contains("nativesdk-cmakeutils")
     assert yocto["env"].shell().execute("bitbake nativesdk-cmakeutils").stderr.empty()
     project = yocto["env"].parse("nativesdk-cmakeutils")
-    project.packages().contains("nativesdk-cmake")
+    assert project.packages().contains("nativesdk-cmake")
     environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmakeutils -c install").stdout
     assert environ.contains("export CROSSCOMPILING_EMULATOR")
     assert environ.contains("CMakeUtils.sh")
