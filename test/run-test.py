@@ -31,7 +31,7 @@ def test_cpp_project(yocto):
     assert project.packages().contains("cmakeutils-native")
 
     pkgs = yocto["env"].shell().execute("oe-pkgdata-util list-pkg-files cpp-project").stdout
-    assert pkgs.contains("/opt/tests/cpp-project/OperatorTest")
+    assert pkgs.contains("/opt/tests/cpp-project-0.1.0-r0/OperatorTest")
     assert pkgs.contains("/usr/bin/program")
     assert pkgs.contains("/usr/lib/libplus.so.1")
     assert pkgs.contains("/usr/lib/libplus.so.1.0.0")
