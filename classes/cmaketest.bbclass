@@ -27,6 +27,7 @@ do_test[nostamp] = "1"
 
 addtask coverage after do_test
 cmaketest_do_coverage() {
+    bbplain "*** Measure code coverage ***"
     export GCOV=${TARGET_PREFIX}gcov
     gcovr -r ${WORKDIR}
 }
