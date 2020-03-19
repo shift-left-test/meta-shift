@@ -18,10 +18,14 @@ EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TARGET_ARCH};-L;${STAG
 
 addtask test after do_compile do_populate_sysroot
 cmaketest_do_test() {
-    bbplain "*** Run tests ***"
-    export GTEST_OUTPUT="${GTEST_OUTPUT}/${PN}/"
+    if [ ! -z "${GTEST_OUTPUT}" ]; then
+        export GTEST_OUTPUT="${GTEST_OUTPUT}/${PN}/"
+    fi
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
-    cmake --build '${B}' --target test
+    cmake --build ${B} --target test -- ARGS="--output-on-failure" |
+    while read line; do
+        bbplain "$line"
+    done
 }
 do_test[nostamp] = "1"
 
@@ -29,7 +33,17 @@ addtask coverage after do_test
 cmaketest_do_coverage() {
     bbplain "*** Measure code coverage ***"
     export GCOV=${TARGET_PREFIX}gcov
-    gcovr -r ${WORKDIR}
+    if [ ! -z "${GCOVR_OUTPUT}" ]; then
+        mkdir -p "${GCOVR_OUTPUT}/${PN}"
+        gcovr -r ${WORKDIR} \
+              --xml "${GCOVR_OUTPUT}/${PN}/coverage.xml" \
+              --html-details "${GCOVR_OUTPUT}/${PN}/coverage.html" \
+              --json -o "${GCOVR_OUTPUT}/${PN}/coverage.json"
+    fi
+    gcovr -r ${WORKDIR} |
+    while read line; do
+        bbplain "$line"
+    done
 }
 do_coverage[nostamp] = "1"
 
