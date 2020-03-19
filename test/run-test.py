@@ -12,7 +12,7 @@ class YoctoProject(dict):
         self["sdk"] = self["env"].parse("core-image-minimal -c populate_sdk")
 
 
-@pytest.fixture(scope="module", params=["morty", "rocko"])
+@pytest.fixture(scope="module", params=["morty"])
 def yocto(request):
     return YoctoProject(request.param)
 

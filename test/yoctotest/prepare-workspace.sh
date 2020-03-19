@@ -51,5 +51,4 @@ echo "Update build/conf/local.conf"
     echo "BB_GENERATE_MIRROR_TARBALLS = \"1\""
     echo "BB_NUMBER_THREADS = \"${CPUS}\""
     echo "PARALLEL_MAKE = \"-j ${CPUS}\""
-    echo "INHERIT += \"testall\""
 } >> $WORKSPACE/build/conf/local.conf
