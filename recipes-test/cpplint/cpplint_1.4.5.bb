@@ -6,17 +6,22 @@ BUGTRACKER = "https://github.com/cpplint/cpplint/issues"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a58572e3501e262ddd5da01be644887d"
 
-SRC_URI = "git://github.com/cpplint/cpplint.git;protocol=https;tag=${PV};nobranch=1"
+inherit pypi setuptools
 
-S = "${WORKDIR}/git"
+PYPI_PACKAGE = "cpplint"
 
-DEPENDS = "python-native"
+SRC_URI += "file://0001-remove-pytest-runner-dependency.patch"
 
-do_install() {
-    install -d ${D}${bindir}
-    install -m 755 ${B}/cpplint.py ${D}${bindir}/
+SRC_URI[md5sum] = "1762216775e1666bbba3e5a3a92e82f9"
+SRC_URI[sha256sum] = "08b384606136146ac1d32a2ffb60623a5dc1b20434588eaa0fa12a6e24eb3bf5"
+
+RDEPENDS_${PN} += "${PYTHON_PN}-setuptools"
+
+# To fix the nativesdk recipe shebang path bug of distutils for Yocto morty
+do_install_append_class-nativesdk() {
+    for i in ${D}${bindir}/* ; do \
+        sed -i -e s:${bindir}/env:${USRBINPATH}/env:g $i
+    done
 }
-
-FILES_${PN} ="${bindir}"
 
 BBCLASSEXTEND = "native nativesdk"
