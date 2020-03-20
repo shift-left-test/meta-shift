@@ -44,7 +44,7 @@ def test_populate_sdk(yocto):
 
 def test_do_test(yocto):
     command = "bitbake cpp-project -c test -v"
-    expected = "100% tests passed, 0 tests failed out of 2"
+    expected = "50% tests passed, 2 tests failed out of 4"
     assert yocto["env"].shell().execute(command).stdout.contains(expected)
     assert yocto["env"].shell().execute(command).stdout.contains(expected)
 
@@ -56,7 +56,7 @@ def test_do_coverage(yocto):
 
 def test_do_testall(yocto):
     command = "bitbake core-image-minimal -c testall -v"
-    expected = "100% tests passed, 0 tests failed out of 2"
+    expected = "50% tests passed, 2 tests failed out of 4"
     assert yocto["env"].shell().execute(command).stdout.contains(expected)
     assert yocto["env"].shell().execute(command).stdout.contains(expected)
 
