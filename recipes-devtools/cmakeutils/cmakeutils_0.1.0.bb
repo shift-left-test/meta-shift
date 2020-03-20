@@ -26,7 +26,7 @@ do_install() {
 
 do_install_append_class-nativesdk() {
     mkdir -p ${D}${SDKPATHNATIVE}/environment-setup.d
-    echo "export CROSSCOMPILING_EMULATOR=qemu-${TARGET_ARCH}" > ${WORKDIR}/git/scripts/CMakeUtils.sh
+    echo "export CROSSCOMPILING_EMULATOR=qemu-${TUNE_ARCH}" > ${WORKDIR}/git/scripts/CMakeUtils.sh
     install -m 644 ${WORKDIR}/git/scripts/CMakeUtils.sh ${D}${SDKPATHNATIVE}/environment-setup.d/
 }
 
