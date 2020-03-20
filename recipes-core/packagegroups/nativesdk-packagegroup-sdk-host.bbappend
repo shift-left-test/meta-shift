@@ -4,5 +4,6 @@ RDEPENDS_${PN}_append = "\
     nativesdk-gcovr \
     nativesdk-qemu \
     nativesdk-doxygen \
+    nativesdk-cmake \
     nativesdk-cmakeutils \
     "
