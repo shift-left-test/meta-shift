@@ -19,7 +19,10 @@ EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TUNE_ARCH};-L;${STAGIN
 addtask test after do_compile do_populate_sysroot
 cmaketest_do_test() {
     if [ ! -z "${GTEST_OUTPUT}" ]; then
-        export GTEST_OUTPUT="${GTEST_OUTPUT}/${PF}/"
+    export GTEST_OUTPUT="xml:${GTEST_OUTPUT}/${PF}/"
+        for i in ${GTEST_OUTPUT}/${PF}/*.xml; do
+            rm -f $i
+        done
     fi
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
     cmake --build ${B} --target test -- ARGS="--output-on-failure" |
