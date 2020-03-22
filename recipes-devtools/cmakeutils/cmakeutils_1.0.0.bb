@@ -10,7 +10,7 @@ SRC_URI = "git://mod.lge.com/hub/yocto/CMakeUtils.git;protocol=http;tag=${PV};no
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "cmake"
+DEPENDS = "cmake-native"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
