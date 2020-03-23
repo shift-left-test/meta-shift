@@ -38,11 +38,12 @@ cmaketest_do_coverage() {
     if [ ! -z "${GCOVR_OUTPUT}" ]; then
         mkdir -p "${GCOVR_OUTPUT}/${PF}"
         gcovr -r ${WORKDIR} \
+              --gcov-ignore-parse-errors \
               --xml "${GCOVR_OUTPUT}/${PF}/coverage.xml" \
               --html-details "${GCOVR_OUTPUT}/${PF}/coverage.html" \
               --json -o "${GCOVR_OUTPUT}/${PF}/coverage.json"
     fi
-    gcovr -r ${WORKDIR} |
+    gcovr -r ${WORKDIR} --gcov-ignore-parse-errors |
     while read line; do
         bbplain "$line"
     done
