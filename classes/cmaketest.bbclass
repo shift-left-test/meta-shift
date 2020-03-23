@@ -19,10 +19,12 @@ EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TUNE_ARCH};-L;${STAGIN
 addtask test after do_compile do_populate_sysroot
 cmaketest_do_test() {
     if [ ! -z "${GTEST_OUTPUT}" ]; then
-    export GTEST_OUTPUT="xml:${GTEST_OUTPUT}/${PF}/"
-        for i in ${GTEST_OUTPUT}/${PF}/*.xml; do
-            rm -f $i
-        done
+        local OUTPUT_DIR="${GTEST_OUTPUT}/${PF}"
+        export GTEST_OUTPUT="xml:${OUTPUT_DIR}/"
+        if [ -d "${OUTPUT_DIR}" ]; then
+            bbplain "Removing: ${OUTPUT_DIR}"
+            rm -rf "${OUTPUT_DIR}"
+        fi
     fi
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
     cmake --build ${B} --target test -- ARGS="--output-on-failure" |
@@ -36,12 +38,16 @@ addtask coverage after do_test
 cmaketest_do_coverage() {
     export GCOV=${TARGET_PREFIX}gcov
     if [ ! -z "${GCOVR_OUTPUT}" ]; then
-        mkdir -p "${GCOVR_OUTPUT}/${PF}"
+        local OUTPUT_DIR="${GCOVR_OUTPUT}/${PF}"
+        if [ -d "${OUTPUT_DIR}" ]; then
+            bbplain "Removing: ${OUTPUT_DIR}"
+            rm -rf "${OUTPUT_DIR}"
+        fi
+        mkdir -p "${OUTPUT_DIR}"
         gcovr -r ${WORKDIR} \
-              --gcov-ignore-parse-errors \
-              --xml "${GCOVR_OUTPUT}/${PF}/coverage.xml" \
-              --html-details "${GCOVR_OUTPUT}/${PF}/coverage.html" \
-              --json -o "${GCOVR_OUTPUT}/${PF}/coverage.json"
+              --xml "${OUTPUT_DIR}/coverage.xml" \
+              --html-details "${OUTPUT_DIR}/coverage.html" \
+              --json -o "${OUTPUT_DIR}/coverage.json"
     fi
     gcovr -r ${WORKDIR} --gcov-ignore-parse-errors |
     while read line; do
