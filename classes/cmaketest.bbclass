@@ -45,8 +45,7 @@ cmaketest_do_coverage() {
         mkdir -p "${OUTPUT_DIR}"
         gcovr -r ${WORKDIR} \
               --xml "${OUTPUT_DIR}/coverage.xml" \
-              --html-details "${OUTPUT_DIR}/coverage.html" \
-              --json -o "${OUTPUT_DIR}/coverage.json"
+              --html-details "${OUTPUT_DIR}/coverage.html"
     fi
     gcovr -r ${WORKDIR} --gcov-ignore-parse-errors |
     while read line; do
