@@ -126,8 +126,8 @@ def test_cmakeutils_nativesdk(yocto):
     project = yocto["env"].parse("nativesdk-cmakeutils")
     assert project.packages().contains("nativesdk-cmake")
     environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmakeutils -c install").stdout
-    assert environ.contains("export CROSSCOMPILING_EMULATOR")
-    assert environ.contains("CMakeUtils.sh")
+    assert environ.contains("CMAKE_CROSSCOMPILING_EMULATOR")
+    assert environ.contains("crosscompiling_emulator.cmake")
 
 
 if __name__ == "__main__":

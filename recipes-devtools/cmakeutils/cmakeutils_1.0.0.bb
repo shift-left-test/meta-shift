@@ -25,14 +25,13 @@ do_install() {
 }
 
 do_install_append_class-nativesdk() {
-    mkdir -p ${D}${SDKPATHNATIVE}/environment-setup.d
-    echo "export CROSSCOMPILING_EMULATOR=qemu-${TUNE_ARCH}" > ${WORKDIR}/git/scripts/CMakeUtils.sh
-    install -m 644 ${WORKDIR}/git/scripts/CMakeUtils.sh ${D}${SDKPATHNATIVE}/environment-setup.d/
+    echo "SET(CMAKE_CROSSCOMPILING_EMULATOR \"qemu-${TUNE_ARCH};-L;""$""ENV{SDKTARGETSYSROOT}\")" > ${WORKDIR}/crosscompiling_emulator.cmake
+    mkdir -p ${D}${datadir}/cmake/OEToolchainConfig.cmake.d
+    install -m 644 ${WORKDIR}/crosscompiling_emulator.cmake ${D}${datadir}/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake
 }
 
 FILES_${PN} = "\
     ${datadir} \
-    ${SDKPATHNATIVE}/environment-setup.d/ \
     "
 
 BBCLASSEXTEND = "native nativesdk"
