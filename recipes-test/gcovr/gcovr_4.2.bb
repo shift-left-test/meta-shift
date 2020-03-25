@@ -26,11 +26,17 @@ RDEPENDS_${PN} += "\
     ${PYTHON_PN}-markupsafe \
 "
 
-# To fix the nativesdk recipe shebang path bug of distutils for Yocto morty
 do_install_append_class-nativesdk() {
+    # To fix the nativesdk recipe shebang path bug of distutils for Yocto morty
     for i in ${D}${bindir}/* ; do
         sed -i -e s:${bindir}/env:${USRBINPATH}/env:g $i
     done
+
+    echo "export GCOV=""$""{TARGET_PREFIX}gcov" > ${WORKDIR}/gcovr.sh
+    mkdir -p ${D}${SDKPATHNATIVE}/environment-setup.d/
+    install -m 644 ${WORKDIR}/gcovr.sh ${D}${SDKPATHNATIVE}/environment-setup.d/gcovr.sh
 }
+
+FILES_${PN}_append_class-nativesdk = " ${SDKPATHNATIVE}"
 
 BBCLASSEXTEND = "native nativesdk"
