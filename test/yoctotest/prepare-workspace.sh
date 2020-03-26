@@ -54,4 +54,6 @@ echo "Update build/conf/local.conf"
     echo "BB_GENERATE_MIRROR_TARBALLS = \"1\""
     echo "BB_NUMBER_THREADS = \"${CPUS}\""
     echo "PARALLEL_MAKE = \"-j ${CPUS}\""
+    echo "GTEST_OUTPUT = \"${TOPDIR}/report/gtest\""
+    echo "GCOVR_OUTPUT = \"${TOPDIR}/report/gcovr\""
 } >> $WORKSPACE/build/conf/local.conf
