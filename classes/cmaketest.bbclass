@@ -32,6 +32,7 @@ cmaketest_do_test() {
     done
 }
 do_test[nostamp] = "1"
+do_test[doc] = "Runs tests for the target"
 
 addtask coverage after do_test
 cmaketest_do_coverage() {
@@ -53,6 +54,7 @@ cmaketest_do_coverage() {
     done
 }
 do_coverage[nostamp] = "1"
+do_coverage[doc] = "Measures code coverage metrics for the target"
 
 FILES_${PN} += "/opt/tests/${PF}"
 
