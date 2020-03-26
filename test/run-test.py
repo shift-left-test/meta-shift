@@ -28,7 +28,7 @@ def test_cpp_project(yocto):
     assert project.packages().contains("gcovr-native")
     assert project.packages().contains("qemu-native")
     assert project.packages().contains("doxygen-native")
-    assert project.packages().contains("cmakeutils-native")
+    assert project.packages().contains("cmake-native")
 
     pkgs = yocto["env"].shell().execute("oe-pkgdata-util list-pkg-files cpp-project").stdout
     assert pkgs.contains("/opt/tests/cpp-project-1.0.0-r0/OperatorTest")
@@ -115,19 +115,20 @@ def test_doxygen_nativesdk(yocto):
     assert yocto["env"].shell().execute("bitbake nativesdk-doxygen").stderr.empty()
 
 def test_cmakeutils_native(yocto):
-    assert yocto["recipes"].contains("cmakeutils-native")
-    assert yocto["env"].shell().execute("bitbake cmakeutils-native").stderr.empty()
-    project = yocto["env"].parse("cmakeutils-native")
-    assert project.packages().contains("cmake-native")
+    assert yocto["recipes"].contains("cmake-native")
+    assert yocto["env"].shell().execute("bitbake cmake-native").stderr.empty()
+    environ = yocto["env"].shell().execute("bitbake -e cmake-native -c install").stdout
+    assert environ.contains("CMakeUtils.cmake")
+    assert environ.contains("FindGMock.cmake")
 
 def test_cmakeutils_nativesdk(yocto):
-    assert yocto["recipes"].contains("nativesdk-cmakeutils")
-    assert yocto["env"].shell().execute("bitbake nativesdk-cmakeutils").stderr.empty()
-    project = yocto["env"].parse("nativesdk-cmakeutils")
-    assert project.packages().contains("nativesdk-cmake")
-    environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmakeutils -c install").stdout
+    assert yocto["recipes"].contains("nativesdk-cmake")
+    assert yocto["env"].shell().execute("bitbake nativesdk-cmake").stderr.empty()
+    environ = yocto["env"].shell().execute("bitbake -e nativesdk-cmake -c install").stdout
     assert environ.contains("CMAKE_CROSSCOMPILING_EMULATOR")
     assert environ.contains("crosscompiling_emulator.cmake")
+    assert environ.contains("CMakeUtils.cmake")
+    assert environ.contains("FindGMock.cmake")
 
 
 if __name__ == "__main__":

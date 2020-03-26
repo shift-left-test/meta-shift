@@ -8,7 +8,7 @@ DEPENDS_prepend = "\
     gcovr-native \
     qemu-native \
     doxygen-native \
-    cmakeutils-native \
+    cmake-native \
     "
 
 EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=ON"
