@@ -25,11 +25,19 @@ cmaketest_do_test() {
             rm -rf "${OUTPUT_DIR}"
         fi
     fi
+
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
     cmake --build ${B} --target test -- ARGS="--output-on-failure" |
     while read line; do
         bbplain "$line"
     done
+
+    if [ ! -z "${GTEST_OUTPUT}" ]; then
+        local OUTPUT_DIR="${GTEST_OUTPUT}/${PF}"
+        for i in "${OUTPUT_DIR}/*.xml"; do
+            sed -i "s|classname=\"|classname=\"${PN}.|g" $i
+        done
+    fi
 }
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
@@ -48,10 +56,16 @@ cmaketest_do_coverage() {
               --xml "${OUTPUT_DIR}/coverage.xml" \
               --html-details "${OUTPUT_DIR}/coverage.html"
     fi
+
     gcovr -r ${WORKDIR} --gcov-ignore-parse-errors |
     while read line; do
         bbplain "$line"
     done
+
+    if [ ! -z "${GCOVR_OUTPUT}" ]; then
+        local OUTPUT_DIR="${GCOVR_OUTPUT}/${PF}"
+        sed -i "s|<package name=\"|<package name=\"${PN}.|g" "${OUTPUT_DIR}/coverage.xml"
+    fi
 }
 do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage metrics for the target"
