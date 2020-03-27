@@ -186,3 +186,4 @@ tags
 # OE ignores
 oe-logs
 oe-workdir
+report/
