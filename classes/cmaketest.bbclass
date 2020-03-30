@@ -34,6 +34,10 @@ cmaketest_do_test() {
 
     if [ ! -z "${GTEST_OUTPUT}" ]; then
         local OUTPUT_DIR="${GTEST_OUTPUT}/${PF}"
+        if [ ! -d "${OUTPUT_DIR}" ]; then
+          bbwarn "No test report files generated at ${OUTPUT_DIR}"
+          return
+        fi
         for i in "${OUTPUT_DIR}/*.xml"; do
             sed -i "s|classname=\"|classname=\"${PN}.|g" $i
         done
@@ -64,6 +68,10 @@ cmaketest_do_coverage() {
 
     if [ ! -z "${GCOVR_OUTPUT}" ]; then
         local OUTPUT_DIR="${GCOVR_OUTPUT}/${PF}"
+        if [ ! -f "${OUTPUT_DIR}/coverage.xml" ]; then
+          bbwarn "No coverage report files generated at ${OUTPUT_DIR}"
+          return
+        fi
         sed -i "s|<package name=\"|<package name=\"${PN}.|g" "${OUTPUT_DIR}/coverage.xml"
     fi
 }
