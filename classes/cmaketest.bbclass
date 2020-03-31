@@ -17,9 +17,9 @@ EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TUNE_ARCH};-L;${STAGIN
 
 addtask test after do_compile do_populate_sysroot
 cmaketest_do_test() {
-    if [ ! -z "${GTEST_OUTPUT}" ]; then
-        local OUTPUT_DIR="${GTEST_OUTPUT}/${PF}"
-        export GTEST_OUTPUT="xml:${OUTPUT_DIR}/"
+    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+        local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
+        export TEST_RESULT_OUTPUT="xml:${OUTPUT_DIR}/"
         if [ -d "${OUTPUT_DIR}" ]; then
             bbplain "Removing: ${OUTPUT_DIR}"
             rm -rf "${OUTPUT_DIR}"
@@ -32,8 +32,8 @@ cmaketest_do_test() {
         bbplain "$line"
     done
 
-    if [ ! -z "${GTEST_OUTPUT}" ]; then
-        local OUTPUT_DIR="${GTEST_OUTPUT}/${PF}"
+    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+        local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
         if [ ! -d "${OUTPUT_DIR}" ]; then
           bbwarn "No test report files generated at ${OUTPUT_DIR}"
           return
@@ -49,8 +49,8 @@ do_test[doc] = "Runs tests for the target"
 addtask coverage after do_test
 cmaketest_do_coverage() {
     export GCOV=${TARGET_PREFIX}gcov
-    if [ ! -z "${GCOVR_OUTPUT}" ]; then
-        local OUTPUT_DIR="${GCOVR_OUTPUT}/${PF}"
+    if [ ! -z "${TEST_COVERAGE_OUTPUT}" ]; then
+        local OUTPUT_DIR="${TEST_COVERAGE_OUTPUT}/${PF}"
         if [ -d "${OUTPUT_DIR}" ]; then
             bbplain "Removing: ${OUTPUT_DIR}"
             rm -rf "${OUTPUT_DIR}"
@@ -66,8 +66,8 @@ cmaketest_do_coverage() {
         bbplain "$line"
     done
 
-    if [ ! -z "${GCOVR_OUTPUT}" ]; then
-        local OUTPUT_DIR="${GCOVR_OUTPUT}/${PF}"
+    if [ ! -z "${TEST_COVERAGE_OUTPUT}" ]; then
+        local OUTPUT_DIR="${TEST_COVERAGE_OUTPUT}/${PF}"
         if [ ! -f "${OUTPUT_DIR}/coverage.xml" ]; then
           bbwarn "No coverage report files generated at ${OUTPUT_DIR}"
           return
