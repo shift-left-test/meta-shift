@@ -19,7 +19,7 @@ addtask test after do_compile do_populate_sysroot
 cmaketest_do_test() {
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
         local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
-        export TEST_RESULT_OUTPUT="xml:${OUTPUT_DIR}/"
+        export GTEST_OUTPUT="xml:${OUTPUT_DIR}/"
         if [ -d "${OUTPUT_DIR}" ]; then
             bbplain "Removing: ${OUTPUT_DIR}"
             rm -rf "${OUTPUT_DIR}"
