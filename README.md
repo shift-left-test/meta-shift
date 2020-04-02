@@ -46,7 +46,7 @@ How to run tests
 
 The following command runs the tests of all supported Yocto code names
 
-    $ ./test/run-test.py
+    $ py.test test/
 
 
 Licenses
