@@ -105,6 +105,26 @@ class FileOutput(Output):
         return "{0}: {1}".format(self.filename, super(FileOutput, self).__repr__())
 
 
+class Files(object):
+    def __init__(self, builddir):
+        self.builddir = builddir
+
+    def __repr__(self):
+        return "Files: ['builddir': {0}]".format(self.builddir)
+
+    def exists(self, path):
+        return os.path.exists(os.path.join(self.builddir, path))
+
+    def read(self, path):
+        f = os.path.join(self.builddir, path)
+        assert os.path.exists(f)
+        return FileOutput(f)
+
+    def rmdir(self, path):
+        f = os.path.join(self.builddir, path)
+        if os.path.exists(f):
+            shutil.rmtree(f)
+
 class Outputs(object):
     def __init__(self, kwargs = {}):
         self.outputs = {}
@@ -189,7 +209,9 @@ class BuildEnvironment(object):
 
     @property
     def shell(self):
-        return Shell(os.path.join(self.repodir, "poky/oe-init-build-env"), self.builddir)
+        f = os.path.join(self.repodir, "poky/oe-init-build-env")
+        assert os.path.exists(f)
+        return Shell(f, self.builddir)
 
     @property
     def files(self):
