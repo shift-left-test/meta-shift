@@ -107,7 +107,7 @@ class YoctoTestEnvironment(object):
     PREPARE_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prepare-workspace.sh")
 
     def __init__(self, branch = "zeus"):
-        self.workspace = os.path.join(*[tempfile.gettempdir(), getpass.getuser(), "meta-testing", branch.lower().strip()])
+        self.workspace = os.path.join(*[tempfile.gettempdir(), getpass.getuser(), "meta-shift", branch.lower().strip()])
         self.branch = branch.lower()
 
         if os.path.exists(self.workspace):

@@ -1,5 +1,5 @@
-meta-testing
-============
+meta-shift
+==========
 
 [![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-testing)](http://10.177.233.77:8080/job/meta-testing/)
 
@@ -37,8 +37,8 @@ The following meta-layer is necessary in order to install the python based tools
 How to add the layer to your build
 ----------------------------------
 
-    $ git clone http://mod.lge.com/hub/yocto/meta-testing.git
-    $ bitbake-layers add-layer meta-testing
+    $ git clone http://mod.lge.com/hub/yocto/meta-shift.git
+    $ bitbake-layers add-layer meta-shift
 
 
 How to run tests
