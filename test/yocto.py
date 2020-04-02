@@ -177,7 +177,7 @@ class BuildEnvironment(object):
         self.repodir = os.path.join(*[tempfile.gettempdir(), "meta-shift-repos", getpass.getuser()])
         self.branch = branch
         self.conf = os.path.join(*[os.path.dirname(__file__), "conf", conf])
-        self.builddir = tempfile.mkdtemp(dir=self.repodir)
+        self.builddir = tempfile.mkdtemp()
         TempDirectories.append(self.builddir)
 
         mini_mcf = os.path.join(os.path.dirname(__file__), "mini-mcf.py")
