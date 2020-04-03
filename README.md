@@ -44,7 +44,7 @@ How to add the layer to your build
 How to run tests
 ----------------
 
-The following command runs the tests of all supported Yocto code names
+The following command runs all tests
 
     $ py.test test/
 
