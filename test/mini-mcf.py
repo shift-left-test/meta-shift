@@ -44,16 +44,23 @@ def getopts():
 def execute(cmd):
     return subprocess.call(cmd, shell=True)
 
-def cleanup(repodir, directory):
-    for d in [repodir, directory]:
-        if os.path.exists(d):
-            logger.info("Remove the previously populated directory: {}".format(d))
-            shutil.rmtree(d)
+def cleanup(d):
+    if os.path.exists(d):
+        logger.info("Remove the previously populated directory: {}".format(d))
+        shutil.rmtree(d)
 
 def downloadRepos(repodir, branch):
     for name, repo in repos.items():
         path = os.path.join(repodir, repo["location"])
-        execute("git clone {} -b {} {}".format(repo["url"], branch, path))
+        logger.info("REPO: {}".format(path))
+        if os.path.exists(path):
+            olddir = os.getcwd()
+            os.chdir(path)
+            execute("git pull --all")
+            execute("git checkout {}".format(branch))
+            os.chdir(olddir)
+        else:
+            execute("git clone {} -b {} {}".format(repo["url"], branch, path))
 
 def initBuildEnv(repodir, directory):
     path = os.path.join(repodir, repos["poky"]["location"])
@@ -92,7 +99,7 @@ if __name__ == "__main__":
     options = getopts()
 
     logger.info("Clean up previous directories...")
-    cleanup(options.repodir, options.directory)
+    cleanup(options.directory)
     logger.info("Done.")
 
     logger.info("Downloading repos at {0}...".format(options.repodir))
