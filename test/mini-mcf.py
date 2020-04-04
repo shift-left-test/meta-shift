@@ -11,7 +11,7 @@ import json
 import logging
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="[ %(levelname)s ] %(message)s")
 logger = logging.getLogger(__name__)
 
 PWD = os.path.dirname(os.path.abspath(__file__))
@@ -44,11 +44,13 @@ def getopts():
 def execute(cmd):
     return subprocess.call(cmd, shell=True)
 
-def downloadRepos(repodir, branch):
-    if os.path.exists(REPO_BASE_DIR):
-        logger.info("Remove the git repositories: {}".format(REPO_BASE_DIR))
-        shutil.rmtree(REPO_BASE_DIR)
+def cleanup(repodir, directory):
+    for d in [repodir, directory]:
+        if os.path.exists(d):
+            logger.info("Remove the previously populated directory: {}".format(d))
+            shutil.rmtree(d)
 
+def downloadRepos(repodir, branch):
     for name, repo in repos.items():
         path = os.path.join(repodir, repo["location"])
         execute("git clone {} -b {} {}".format(repo["url"], branch, path))
@@ -77,8 +79,21 @@ def configure(repodir, directory, filename):
             f.write('{} = "{}"\n'.format(key, value.replace("${HOME}", os.path.expanduser("~"))))
 
 
+def printBashUsage(repodir, directory):
+    print("""
+    ### Shell environment set up for builds ###
+
+    source {0}/poky/oe-init-build-env {1}
+
+    """.format(repodir, directory))
+
+
 if __name__ == "__main__":
     options = getopts()
+
+    logger.info("Clean up previous directories...")
+    cleanup(options.repodir, options.directory)
+    logger.info("Done.")
 
     logger.info("Downloading repos at {0}...".format(options.repodir))
     downloadRepos(options.repodir, options.branch)
@@ -91,3 +106,5 @@ if __name__ == "__main__":
     logger.info("Configuring files...")
     configure(options.repodir, options.directory, options.filename)
     logger.info("Done.")
+
+    printBashUsage(options.repodir, options.directory)
