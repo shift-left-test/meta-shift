@@ -533,7 +533,13 @@ endfunction()
 function(enable_doxygen)
   find_package(Doxygen)
 
-  if(DOXYGEN_FOUND)
+  if(NOT DOXYGEN_FOUND)
+    message(WARNING "Unable to locate the doxygen executable")
+    add_custom_target(doc)
+  elseif(NOT EXISTS ${CMAKE_SOURCE_DIR}/Doxyfile.in)
+    message(WARNING "Unable to locate the Doxyfile.in")
+    add_custom_target(doc)
+  else()
     configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
 
     add_custom_target(doc
@@ -542,7 +548,5 @@ function(enable_doxygen)
       COMMENT "Generating API documentation with Doxygen"
       VERBATIM
       )
-  else()
-    add_custom_target(doc)
   endif()
 endfunction()
