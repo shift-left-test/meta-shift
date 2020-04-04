@@ -3,13 +3,13 @@ meta-shift
 
 [![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-testing)](http://10.177.233.77:8080/job/meta-testing/)
 
-> A shareable integrated testing framework for Yocto based projects
+> Shift-left testing project for the Yocto project
 
 
 About
 -----
 
-This project aims to provide an easy way to set up a group of dev/test tools for Yocto based projects
+This project aims to support the practice of [shift-left testing](https://en.wikipedia.org/wiki/Shift-left_testing) by providing a group of dev/test tools for the Yocto project.
 
 
 Supported tools
@@ -19,6 +19,7 @@ Supported tools
 * cpplint (1.4.5)
 * gtest (via meta-openembedded)
 * gmock (via meta-openembedded)
+* qemu-native (via meta)
 * gcovr (3.4)
 * doxygen (1.8.17)
 * cmake (via meta)
@@ -28,7 +29,7 @@ Supported tools
 Requirements
 ------------
 
-The following meta-layer is necessary in order to install the python based tools
+The following meta-layers are necessary in order to install the tools provided by this meta-layer
 
 * meta-oe (meta-openembedded)
 * meta-python (meta-openembedded)
@@ -47,6 +48,8 @@ How to run tests
 The following command runs all tests
 
     $ py.test test/
+
+You may also run an individual test suite by executing the python test script directly
 
 
 Licenses
