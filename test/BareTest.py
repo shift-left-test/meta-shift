@@ -4,23 +4,21 @@ import pytest
 import unittest
 import yocto
 
+BRANCH = "morty"
+CONFIG = "bare.conf"
 
-class BareBuildTest(unittest.TestCase):
+class core_image_minimal(unittest.TestCase):
     def setUp(self):
-        self.build = yocto.BuildEnvironment(branch="morty", conf="bare.conf")
+        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
 
-    def test_populate_image(self):
+    def test_populate(self):
         assert self.build.shell.execute("bitbake core-image-minimal").stderr.empty()
-        assert not self.build.files.read("buildhistory/images/qemuarm64/glibc/core-image-minimal/image-info.txt").contains("cpp-project")
-        assert not self.build.files.read("buildhistory/images/qemuarm64/glibc/core-image-minimal/installed-packages.txt").contains("cpp-project-1.0.0-r0.aarch64.rpm")
+
+        files = self.build.files.read("buildhistory/images/qemuarm64/glibc/core-image-minimal/image-info.txt")
+        assert not files.containsAny("sample-project", "cpp-project", "sqlite3logger")
+
         assert not self.build.files.exists("buildhistory/packages/aarch64-poky-linux/gtest/latest")
         assert not self.build.files.exists("buildhistory/packages/aarch64-poky-linux/gmock/latest")
-
-        files = self.build.files.read("buildhistory/images/qemuarm64/glibc/core-image-minimal/files-in-image.txt")
-        assert not files.contains("./opt/tests/cpp-project-1.0.0-r0/OperatorTest")
-        assert not files.contains("./usr/bin/program")
-        assert not files.contains("./usr/lib/libplus.so.1")
-        assert not files.contains("./usr/lib/libplus.so.1.0.0")
 
     def test_populate_sdk(self):
         assert self.build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
@@ -87,34 +85,13 @@ class BareBuildTest(unittest.TestCase):
         assert self.build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT}")')
 
     def test_cpp_project(self):
-        assert not self.build.shell.execute("bitbake cpp-project").stderr.empty()
+        o = self.build.shell.execute("bitbake cpp-project")
+        assert o["stderr"].contains("ERROR: Nothing PROVIDES 'cpp-project'")
 
-    def test_do_test(self):
-        command = "bitbake cpp-project -c test"
-        expected = "50% tests passed, 2 tests failed out of 4"
-        assert not self.build.shell.execute(command).stdout.contains(expected)
-        assert not self.build.files.exists("report/test_result/cpp-project-1.0.0-r0/OperatorTest.xml")
-
-    def test_do_coverage(self):
-        command = "bitbake cpp-project -c coverage"
-        expected = "GCC Code Coverage Report"
-        assert not self.build.shell.execute(command).stdout.contains(expected)
-        assert not self.build.files.exists("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml")
-
-    def test_do_testall(self):
-        command = "bitbake core-image-minimal -c testall"
-        expected = "50% tests passed, 2 tests failed out of 4"
-        assert not self.build.shell.execute(command).stdout.contains(expected)
-        assert not self.build.files.exists("report/test_result/cpp-project-1.0.0-r0/OperatorTest.xml")
-        assert not self.build.files.exists("report/test_result/sample-project-1.0.0-r0/SampleTest.xml")
-
-    def test_do_coverageall(self):
-        command = "bitbake core-image-minimal -c coverageall"
-        expected = "GCC Code Coverage Report"
-        assert not self.build.shell.execute(command).stdout.contains(expected)
-        assert not self.build.files.exists("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml")
-        assert not self.build.files.exists("report/test_coverage/sample-project-1.0.0-r0/coverage.xml")
+    def test_sqlite3logger(self):
+        o = self.build.shell.execute("bitbake sqlite3logger")
+        assert o["stderr"].contains("ERROR: Nothing PROVIDES 'sqlite3logger'")
 
 
 if __name__ == "__main__":
-    pytest.main(["-x", "-v", __file__])
+    pytest.main(["-v", __file__])
