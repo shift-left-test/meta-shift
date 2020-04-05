@@ -9,7 +9,7 @@ REPORT_CONFIG = "cmake/testable.conf"
 NO_REPORT_CONFIG = "cmake/noreport.conf"
 
 
-class Report(unittest.TestCase):
+class TestReport(unittest.TestCase):
     def setUp(self):
         self.build = yocto.BuildEnvironment(branch=BRANCH, conf=REPORT_CONFIG)
 
@@ -37,7 +37,7 @@ class Report(unittest.TestCase):
         assert self.build.files.read("report/test_coverage/stringutils-0.0.1-r0/coverage.xml").contains('<package name="stringutils.git.include.util"')
 
 
-class NoReport(unittest.TestCase):
+class NoTestReport(unittest.TestCase):
     def setUp(self):
         self.build = yocto.BuildEnvironment(branch=BRANCH, conf=NO_REPORT_CONFIG)
 

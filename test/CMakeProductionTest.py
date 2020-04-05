@@ -42,8 +42,17 @@ class core_image_minimal(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c coverageall")
-        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Succeeded\n" \
-                                    "NOTE: Tasks Summary: Attempted 1 tasks of which 0 didn't need to be rerun and all succeeded.")
+        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Started\n" \
+                                    "NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Succeeded\n")
+
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c doc")
+        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target core-image-minimal")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c docall")
+        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Started\n" \
+                                    "NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Succeeded\n")
 
 
 class cpp_project(unittest.TestCase):
@@ -79,6 +88,15 @@ class cpp_project(unittest.TestCase):
         o = self.build.shell.execute("bitbake cpp-project -c coverageall")
         assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Succeeded")
+
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake cpp-project -c doc")
+        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target cpp-project")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake cpp-project -c docall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Started\n" \
+                                    "NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Succeeded")
 
 
 class sqlite3logger(unittest.TestCase):
@@ -116,6 +134,15 @@ class sqlite3logger(unittest.TestCase):
         o = self.build.shell.execute("bitbake sqlite3logger -c coverageall")
         assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
+
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c doc")
+        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target sqlite3logger")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c docall")
+        assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Started\n" \
+                                    "NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Succeeded")
 
 
 if __name__ == "__main__":

@@ -80,4 +80,15 @@ do_coverage[doc] = "Measures code coverage metrics for the target"
 
 FILES_${PN} += "/opt/tests/${PF}"
 
-EXPORT_FUNCTIONS do_test do_coverage
+addtask doc after do_configure
+cmaketest_do_doc() {
+    cmake --build ${B} --target doc |
+    while read line; do
+        bbplain "$line"
+    done
+}
+do_doc[nostamp] = "1"
+do_doc[doc] = "Generates documents for the target"
+
+
+EXPORT_FUNCTIONS do_test do_coverage do_doc

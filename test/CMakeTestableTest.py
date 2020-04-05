@@ -54,6 +54,18 @@ class core_image_minimal(unittest.TestCase):
                                        "stringutils-0.0.1-r0 do_test: Running tests...",
                                        "stringutils-0.0.1-r0 do_coverage: GCC Code Coverage Report")
 
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c doc")
+        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target core-image-minimal")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c docall")
+        assert o["stdout"].containsAll("NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Started",
+                                       "cpp-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "sample-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "sqlite3wrapper-0.1.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Succeeded")
+
 
 class cpp_project(unittest.TestCase):
     def setUp(self):
@@ -93,6 +105,16 @@ class cpp_project(unittest.TestCase):
                                        "cpp-project-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake cpp-project -c doc")
+        assert o["stdout"].contains("cpp-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake cpp-project -c docall")
+        assert o["stdout"].containsAll("NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Started",
+                                       "cpp-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Succeeded")
+
 
 class sqlite3logger(unittest.TestCase):
     def setUp(self):
@@ -120,7 +142,7 @@ class sqlite3logger(unittest.TestCase):
 
     def test_do_testall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c testall")
-        assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Started\n",
+        assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Started",
                                        "stringutils-0.0.1-r0 do_test: Running tests...",
                                        "sqlite3wrapper-0.1.0-r0 do_test: Running tests...",
                                        "NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Succeeded")
@@ -131,12 +153,22 @@ class sqlite3logger(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c coverageall")
-        assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Started\n",
+        assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Started",
                                        "stringutils-0.0.1-r0 do_test: Running tests...",
                                        "stringutils-0.0.1-r0 do_coverage: GCC Code Coverage Report",
                                        "sqlite3wrapper-0.1.0-r0 do_test: Running tests...",
                                        "sqlite3wrapper-0.1.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
+
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c doc")
+        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target sqlite3logger")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c docall")
+        assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Started",
+                                       "sqlite3wrapper-0.1.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Succeeded")
 
 
 if __name__ == "__main__":
