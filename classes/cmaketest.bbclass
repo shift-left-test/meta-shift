@@ -11,6 +11,9 @@ DEPENDS_prepend = "\
     cmake-native \
     "
 
+OECMAKE_C_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
+OECMAKE_CXX_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
+
 EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=ON"
 EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TUNE_ARCH};-L;${STAGING_DIR_TARGET}'"
 
