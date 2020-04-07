@@ -55,7 +55,7 @@ def downloadRepos(repodir, branch):
     for name, repo in repos.items():
         path = os.path.join(repodir, repo["location"])
         logger.info("REPO: {}".format(path))
-        execute("git clone {} -b {} {}".format(repo["url"], branch, path))
+        execute("git clone --depth 1 {} -b {} {}".format(repo["url"], branch, path))
 
 def initBuildEnv(repodir, directory):
     path = os.path.join(repodir, repos["poky"]["location"])
