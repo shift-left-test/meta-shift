@@ -22,6 +22,7 @@ repos = {
     "poky": { "url": "http://mod.lge.com/hub/yocto/poky.git", "location": "poky", "layer": "poky/meta" },
     "meta-oe": { "url": "http://mod.lge.com/hub/yocto/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-oe" },
     "meta-python": { "url": "http://mod.lge.com/hub/yocto/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-python" },
+    "meta-qt5": { "url": "http://mod.lge.com/hub/yocto/meta-qt5.git", "location": "meta-qt5", "layer": "meta-qt5" },
     "meta-sample": { "url": "http://mod.lge.com/hub/yocto/meta-sample.git", "location": "meta-sample", "layer": "meta-sample" },
     "meta-sample-test": { "url": "http://mod.lge.com/hub/yocto/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test" },
 }
