@@ -5,8 +5,8 @@ import unittest
 import yocto
 
 BRANCH = "morty"
-REPORT_CONFIG = "cmake/testable.conf"
-NO_REPORT_CONFIG = "cmake/noreport.conf"
+REPORT_CONFIG = "cmake/report.conf"
+NO_REPORT_CONFIG = "cmake/testable.conf"
 
 
 class TestReport(unittest.TestCase):

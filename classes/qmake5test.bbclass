@@ -58,8 +58,8 @@ qmake5test_do_coverage() {
         bbplain "$line"
     done
 
-    if [ ! -z "${GCOVR_OUTPUT}" ]; then
-        local OUTPUT_DIR="${GCOVR_OUTPUT}/${PF}"
+    if [ ! -z "${TEST_COVERAGE_OUTPUT}" ]; then
+        local OUTPUT_DIR="${TEST_COVERAGE_OUTPUT}/${PF}"
         sed -i "s|<package name=\"|<package name=\"${PN}.|g" "${OUTPUT_DIR}/coverage.xml"
     fi
 }
