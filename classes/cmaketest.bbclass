@@ -12,7 +12,6 @@ DEPENDS_prepend = "\
     "
 
 EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=ON"
-EXTRA_OECMAKE += "-DCMAKE_INSTALL_TESTDIR=/opt/tests/${PF}"
 EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TUNE_ARCH};-L;${STAGING_DIR_TARGET}'"
 
 addtask test after do_compile do_populate_sysroot
@@ -77,8 +76,6 @@ cmaketest_do_coverage() {
 }
 do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage metrics for the target"
-
-FILES_${PN} += "/opt/tests/${PF}"
 
 addtask doc after do_configure
 cmaketest_do_doc() {

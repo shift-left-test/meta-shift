@@ -47,9 +47,6 @@ else()
   message(STATUS "Found cross-compiling emulator: FALSE")
 endif()
 
-# Set the default installation directory for tests
-set(CMAKE_INSTALL_TESTDIR "tests" CACHE PATH "Default installation directory for tests")
-
 # Set the default build type
 macro(set_default_build_type BUILD_TYPE)
   if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -205,10 +202,6 @@ function(build_executable)
     target_link_libraries(${BUILD_NAME}
       PRIVATE GTest::GTest GMock::GMock GMock::Main ${CMAKE_THREAD_LIBS_INIT})
     gtest_add_tests(${BUILD_NAME} "" AUTO)
-
-    install(
-      TARGETS ${BUILD_NAME}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_TESTDIR})
   else()
     install(
       TARGETS ${BUILD_NAME}

@@ -14,9 +14,9 @@ qmake5test_do_test() {
     export QT_PLUGIN_PATH=${STAGING_DIR_TARGET}${libdir}/plugins
     export QML_IMPORT_PATH=${STAGING_DIR_TARGET}${libdir}/qml
     export QML2_IMPORT_PATH=$QML2_IMPORT_PATH:${STAGING_DIR_TARGET}${libdir}/qml
-    
+
     export TESTRUNNER="qemu-${TUNE_ARCH} -L '${STAGING_DIR_TARGET}'"
-    
+
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
         export TESTARGS="-platform offscreen -xunitxml -o test_result.xml"
     else
@@ -66,6 +66,6 @@ qmake5test_do_coverage() {
 do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage metrics for the target"
 
-FILES_${PN} += "/opt/tests/${PF}"
+FILES_${PN} += "${OE_QMAKE_PATH_TESTS}"
 
 EXPORT_FUNCTIONS do_test do_coverage
