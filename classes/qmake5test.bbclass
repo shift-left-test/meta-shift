@@ -31,7 +31,9 @@ qmake5test_do_test() {
 
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
         cd ${B}
-        find * -name "test_result.xml" -exec install -m 644 -D "{}" "${TEST_RESULT_OUTPUT}/${PF}/{}" \;
+        find * -name "test_result.xml" \
+            -exec sed -r -i 's|(<testsuite.*name=")(.*")|\1${PN}\.\2|g' {} \; \
+            -exec install -m 644 -D "{}" "${TEST_RESULT_OUTPUT}/${PF}/{}" \;
     fi
 }
 do_test[nostamp] = "1"
