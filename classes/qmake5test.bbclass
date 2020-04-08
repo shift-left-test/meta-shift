@@ -19,6 +19,7 @@ qmake5test_do_test() {
     export TESTRUNNER="qemu-${TUNE_ARCH} -L '${STAGING_DIR_TARGET}'"
 
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+        bbplain "Generating the test result report"
         export TESTARGS="-platform offscreen -xunitxml -o test_result.xml"
     else
         export TESTARGS="-platform offscreen"
