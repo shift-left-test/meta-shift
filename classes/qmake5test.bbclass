@@ -7,6 +7,7 @@ DEPENDS_prepend = "\
     "
 
 EXTRA_QMAKEVARS_PRE += "CONFIG+=gcov"
+EXTRA_QMAKEVARS_PRE += "CONFIG+=insignificant_test"
 
 addtask test after do_compile do_populate_sysroot
 qmake5test_do_test() {
@@ -23,7 +24,7 @@ qmake5test_do_test() {
         export TESTARGS="-platform offscreen"
     fi
 
-    make -k check |
+    make --quiet check |
     while read line; do
         bbplain "$line"
     done || true
