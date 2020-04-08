@@ -61,10 +61,14 @@ class core_image_minimal(unittest.TestCase):
     def test_do_docall(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c docall")
         assert o["stdout"].containsAll("NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Started",
-                                       "cpp-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
-                                       "sample-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
-                                       "sqlite3wrapper-0.1.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "cpp-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
+                                       "sample-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
+                                       "sqlite3wrapper-0.1.0-r0 do_doc: Generating API documentation with Doxygen",
                                        "NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Succeeded")
+        assert self.build.files.exists("report/doxygen/cpp-project-1.0.0-r0/html/index.html")
+        assert self.build.files.exists("report/doxygen/sample-project-1.0.0-r0/html/index.html")
+        assert self.build.files.exists("report/doxygen/sqlite3wrapper-0.1.0-r0/html/index.html")
+
 
 
 class cpp_project(unittest.TestCase):
@@ -107,12 +111,12 @@ class cpp_project(unittest.TestCase):
 
     def test_do_doc(self):
         o = self.build.shell.execute("bitbake cpp-project -c doc")
-        assert o["stdout"].contains("cpp-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen")
+        assert o["stdout"].contains("cpp-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen")
 
     def test_do_docall(self):
         o = self.build.shell.execute("bitbake cpp-project -c docall")
         assert o["stdout"].containsAll("NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Started",
-                                       "cpp-project-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "cpp-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
                                        "NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Succeeded")
 
 
@@ -167,7 +171,7 @@ class sqlite3logger(unittest.TestCase):
     def test_do_docall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c docall")
         assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Started",
-                                       "sqlite3wrapper-0.1.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "sqlite3wrapper-0.1.0-r0 do_doc: Generating API documentation with Doxygen",
                                        "NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Succeeded")
 
 

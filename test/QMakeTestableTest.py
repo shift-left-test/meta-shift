@@ -48,12 +48,12 @@ class core_image_minimal(unittest.TestCase):
         o = self.build.shell.execute("bitbake core-image-minimal -c doc")
         assert o["stderr"].contains("ERROR: Task do_doc does not exist for target core-image-minimal")
 
-    @unittest.skip("WIP")
     def test_do_docall(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c docall")
         assert o["stdout"].containsAll("NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Started",
-                                       "cpp-project-qt5-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "cpp-project-qt5-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
                                        "NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Succeeded")
+        assert self.build.files.exists("report/doxygen/cpp-project-qt5-1.0.0-r0/html/index.html")
 
 
 class cpp_project_qt5(unittest.TestCase):
@@ -95,16 +95,14 @@ class cpp_project_qt5(unittest.TestCase):
                                        "cpp-project-qt5-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Succeeded")
 
-    @unittest.skip("WIP")
     def test_do_doc(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c doc")
-        assert o["stdout"].contains("cpp-project-qt5-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen")
+        assert o["stdout"].contains("cpp-project-qt5-1.0.0-r0 do_doc: Generating API documentation with Doxygen")
 
-    @unittest.skip("WIP")
     def test_do_docall(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c docall")
         assert o["stdout"].containsAll("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Started",
-                                       "cpp-project-qt5-1.0.0-r0 do_doc: [100%] Generating API documentation with Doxygen",
+                                       "cpp-project-qt5-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
                                        "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Succeeded")
 
 

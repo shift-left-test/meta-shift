@@ -82,12 +82,10 @@ class cpp_project_qt5(unittest.TestCase):
         assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Succeeded")
 
-    @unittest.skip("WIP")
     def test_do_doc(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c doc")
         assert o["stderr"].contains("ERROR: Task do_doc does not exist for target cpp-project-qt5")
 
-    @unittest.skip("WIP")
     def test_do_docall(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c docall")
         assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Started\n" \

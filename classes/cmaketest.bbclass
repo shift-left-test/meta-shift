@@ -82,7 +82,20 @@ do_coverage[doc] = "Measures code coverage metrics for the target"
 
 addtask doc after do_configure
 cmaketest_do_doc() {
-    cmake --build ${B} --target doc |
+    if [ ! -f "${S}/Doxyfile" ]; then
+        bbplain "No Doxyfile found. Skip generating the doxygen documents"
+        return
+    fi
+    if [ -z "${DOXYGEN_OUTPUT}" ]; then
+        bbwarn "No DOXYGEN_OUTPUT variable found. Use the default path (${TOPDIR}/report/doxygen)"
+        DOXYGEN_OUTPUT="${TOPDIR}/report/doxygen"
+    fi
+
+    cd ${S}
+    local OUTPUT_DIR="${DOXYGEN_OUTPUT}/${PF}"
+    mkdir -p "${OUTPUT_DIR}"
+    bbplain "Generating API documentation with Doxygen"
+    (cat "${S}/Doxyfile" ; echo "OUTPUT_DIRECTORY = ${OUTPUT_DIR}") | doxygen - |
     while read line; do
         bbplain "$line"
     done
