@@ -57,6 +57,12 @@ class core_image_minimal(unittest.TestCase):
     def test_gcovr_nativesdk(self):
         assert self.build.shell.execute("bitbake nativesdk-gcovr").stderr.empty()
 
+    def test_lcov_native(self):
+        assert self.build.shell.execute("bitbake lcov-native").stderr.empty()
+
+    def test_lcov_nativesdk(self):
+        assert self.build.shell.execute("bitbake nativesdk-lcov").stderr.empty()
+
     def test_googletest(self):
         assert self.build.shell.execute("bitbake gtest").stderr.empty()
         assert self.build.shell.execute("bitbake gmock").stderr.empty()

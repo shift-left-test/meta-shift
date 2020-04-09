@@ -65,7 +65,8 @@ class cpp_project_qt5(unittest.TestCase):
 
         project = self.build.parse("cpp-project-qt5")
         assert project.packages.contains("qtbase")
-        assert project.packages.contains("gcovr-native")
+        assert project.packages.contains("lcov-native")
+        assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
         assert project.packages.contains("doxygen-native")
 

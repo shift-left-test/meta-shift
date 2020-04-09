@@ -19,22 +19,22 @@ class TestReport(unittest.TestCase):
         assert self.build.files.read("report/test_result/sample-project-1.0.0-r0/SampleTest.xml").contains('classname="sample-project.SqrtTest"')
         assert self.build.files.read("report/test_result/sqlite3wrapper-0.1.0-r0/SQLite3WrapperTest.exe.xml").contains('classname="sqlite3wrapper.DatabaseTest"')
         assert self.build.files.read("report/test_result/stringutils-0.0.1-r0/unittest.bin.xml").contains('classname="stringutils.StringTest"')
-        assert self.build.files.read("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml").contains('<package name="cpp-project.git.minus.src"')
-        assert self.build.files.read("report/test_coverage/sample-project-1.0.0-r0/coverage.xml").contains('<package name="sample-project.git.abs.src"')
-        assert self.build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('<package name="sqlite3wrapper.git.include.SQLite3Wrapper"')
-        assert self.build.files.read("report/test_coverage/stringutils-0.0.1-r0/coverage.xml").contains('<package name="stringutils.git.include.util"')
+        assert self.build.files.read("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml").contains('name="cpp-project.minus.src"')
+        assert self.build.files.read("report/test_coverage/sample-project-1.0.0-r0/coverage.xml").contains('name="sample-project.abs.src"')
+        assert self.build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.include.SQLite3Wrapper"')
+        assert self.build.files.read("report/test_coverage/stringutils-0.0.1-r0/coverage.xml").contains('name="stringutils.include.util"')
 
     def test_cpp_project_do_coverageall(self):
         o = self.build.shell.execute("bitbake cpp-project -c coverageall")
         assert self.build.files.read("report/test_result/cpp-project-1.0.0-r0/OperatorTest.xml").contains('classname="cpp-project.PlusTest"')
-        assert self.build.files.read("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml").contains('<package name="cpp-project.git.minus.src"')
+        assert self.build.files.read("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml").contains('name="cpp-project.minus.src"')
 
     def test_sqlite3logger_do_coverageall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c coverageall")
         assert self.build.files.read("report/test_result/sqlite3wrapper-0.1.0-r0/SQLite3WrapperTest.exe.xml").contains('classname="sqlite3wrapper.DatabaseTest"')
         assert self.build.files.read("report/test_result/stringutils-0.0.1-r0/unittest.bin.xml").contains('classname="stringutils.StringTest"')
-        assert self.build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('<package name="sqlite3wrapper.git.include.SQLite3Wrapper"')
-        assert self.build.files.read("report/test_coverage/stringutils-0.0.1-r0/coverage.xml").contains('<package name="stringutils.git.include.util"')
+        assert self.build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.include.SQLite3Wrapper"')
+        assert self.build.files.read("report/test_coverage/stringutils-0.0.1-r0/coverage.xml").contains('name="stringutils.include.util"')
 
 
 class NoTestReport(unittest.TestCase):

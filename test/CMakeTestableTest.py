@@ -83,7 +83,8 @@ class cpp_project(unittest.TestCase):
         assert project.packages.containsAny("gtest", "googletest")
         assert project.packages.contains("cppcheck-native")
         assert project.packages.contains("cpplint-native")
-        assert project.packages.contains("gcovr-native")
+        assert project.packages.contains("lcov-native")
+        assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
         assert project.packages.contains("doxygen-native")
 
@@ -132,11 +133,12 @@ class sqlite3logger(unittest.TestCase):
         assert project.packages.contains("stringutils")
         assert project.packages.contains("sqlite3wrapper")
 
-        # List of indirect dependent packages
+        # List of indirectly dependent packages
         assert project.packages.containsAny("gtest", "googletest")
         assert project.packages.contains("cppcheck-native")
         assert project.packages.contains("cpplint-native")
-        assert project.packages.contains("gcovr-native")
+        assert project.packages.contains("lcov-native")
+        assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
         assert project.packages.contains("doxygen-native")
 

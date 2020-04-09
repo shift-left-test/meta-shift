@@ -67,7 +67,8 @@ class cpp_project(unittest.TestCase):
         assert not project.packages.containsAny("gtest", "googletest")
         assert not project.packages.contains("cppcheck-native")
         assert not project.packages.contains("cpplint-native")
-        assert not project.packages.contains("gcovr-native")
+        assert not project.packages.contains("lcov-native")
+        assert not project.packages.contains("lcov-cobertura-native")
         assert not project.packages.contains("qemu-native")
         assert not project.packages.contains("doxygen-native")
 

@@ -17,13 +17,15 @@ Supported tools
 
 * cppcheck (1.90)
 * cpplint (1.4.5)
-* gtest (via meta-openembedded)
-* gmock (via meta-openembedded)
+* gtest (via meta-oe)
+* gmock (via meta-oe)
 * qemu-native (via meta)
 * gcovr (3.4)
+* lcov (via meta-oe)
 * doxygen (1.8.17)
 * cmake (via meta)
 * CMakeUtils
+* qmake5 (via meta-qt5)
 
 
 Requirements

@@ -1,7 +1,8 @@
 inherit qmake5
 
 DEPENDS_prepend = "\
-    gcovr-native \
+    lcov-native \
+    lcov-cobertura-native \
     qemu-native \
     doxygen-native \
     "
@@ -26,7 +27,7 @@ qmake5test_do_test() {
     fi
 
     make --quiet check |
-    while read line; do
+    while IFS= read line; do
         bbplain "$line"
     done || true
 
@@ -42,29 +43,49 @@ do_test[doc] = "Runs tests for the target"
 
 addtask coverage after do_test
 qmake5test_do_coverage() {
-    export GCOV=${TARGET_PREFIX}gcov
-    if [ ! -z "${TEST_COVERAGE_OUTPUT}" ]; then
-        local OUTPUT_DIR="${TEST_COVERAGE_OUTPUT}/${PF}"
-        if [ -d "${OUTPUT_DIR}" ]; then
-            bbplain "Removing: ${OUTPUT_DIR}"
-            rm -rf "${OUTPUT_DIR}"
-        fi
-        mkdir -p "${OUTPUT_DIR}"
-        gcovr -r ${WORKDIR} \
-              --gcov-ignore-parse-errors \
-              --xml "${OUTPUT_DIR}/coverage.xml" \
-              --html "${OUTPUT_DIR}/coverage.html"
-    fi
+    local LCOV_DATAFILE_TOTAL="${B}/coverage_total.info"
+    local LCOV_DATAFILE="${B}/coverage.info"
 
-    gcovr -r ${WORKDIR} \
-          --gcov-ignore-parse-errors |
-    while read line; do
+    rm -f ${LCOV_DATAFILE_TOTAL}
+    rm -f ${LCOV_DATAFILE}
+
+    lcov -c -d ${B} -o ${LCOV_DATAFILE_TOTAL} \
+        --ignore-errors gcov \
+        --gcov-tool ${TARGET_PREFIX}gcov \
+        --rc lcov_branch_coverage=1
+
+    lcov --extract ${LCOV_DATAFILE_TOTAL} \
+        --rc lcov_branch_coverage=1 \
+        "${S}/*" -o ${LCOV_DATAFILE}
+
+    bbplain "GCC Code Coverage Report"
+
+    lcov --list ${LCOV_DATAFILE} --rc lcov_branch_coverage=1 |
+    while IFS= read line; do
         bbplain "$line"
     done
 
     if [ ! -z "${TEST_COVERAGE_OUTPUT}" ]; then
         local OUTPUT_DIR="${TEST_COVERAGE_OUTPUT}/${PF}"
-        sed -i "s|<package name=\"|<package name=\"${PN}.|g" "${OUTPUT_DIR}/coverage.xml"
+        local COBERTURA_FILE="${OUTPUT_DIR}/coverage.xml"
+
+        rm -rf ${OUTPUT_DIR}
+
+        genhtml ${LCOV_DATAFILE} \
+            --output-directory ${OUTPUT_DIR} \
+            --ignore-errors source \
+            --rc genhtml_branch_coverage=1
+
+        cd ${S}
+        nativepython -m lcov_cobertura ${LCOV_DATAFILE} \
+            --demangle \
+            --output ${COBERTURA_FILE}
+
+        if [ ! -f "${COBERTURA_FILE}" ]; then
+          bbwarn "No coverage report files generated at ${OUTPUT_DIR}"
+          return
+        fi
+        sed -r -i 's|(<package.*name=\")(.*")|\1${PN}\.\2|g' "${OUTPUT_DIR}/coverage.xml"
     fi
 }
 do_coverage[nostamp] = "1"
