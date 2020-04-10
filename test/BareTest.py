@@ -7,20 +7,16 @@ import yocto
 BRANCH = "morty"
 CONFIG = "bare.conf"
 
-class core_image_minimal(unittest.TestCase):
-    def setUp(self):
-        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
 
-    def test_populate(self):
+class core_image_minimal(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+
+    def test_do_build(self):
         assert self.build.shell.execute("bitbake core-image-minimal").stderr.empty()
 
-        files = self.build.files.read("buildhistory/images/qemuarm64/glibc/core-image-minimal/image-info.txt")
-        assert not files.containsAny("sample-project", "cpp-project", "sqlite3logger")
-
-        assert not self.build.files.exists("buildhistory/packages/aarch64-poky-linux/gtest/latest")
-        assert not self.build.files.exists("buildhistory/packages/aarch64-poky-linux/gmock/latest")
-
-    def test_populate_sdk(self):
+    def test_do_populate_sdk(self):
         assert self.build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
         pkgs = self.build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/host/installed-packages.txt")
@@ -29,6 +25,7 @@ class core_image_minimal(unittest.TestCase):
         assert pkgs.contains("nativesdk-cpplint-1.4.5-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-doxygen-1.8.17-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-gcovr-4.2-r0.x86_64_nativesdk.rpm")
+        assert pkgs.contains("nativesdk-lcov-1.11-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-qemu-2.7.0-r1.x86_64_nativesdk.rpm")
 
         pkgs = self.build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/target/installed-packages.txt")
@@ -89,14 +86,6 @@ class core_image_minimal(unittest.TestCase):
         assert self.build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
         f = "tmp/sysroots/x86_64-nativesdk-pokysdk-linux/opt/poky/2.2.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
         assert self.build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT}")')
-
-    def test_cpp_project(self):
-        o = self.build.shell.execute("bitbake cpp-project")
-        assert o["stderr"].contains("ERROR: Nothing PROVIDES 'cpp-project'")
-
-    def test_sqlite3logger(self):
-        o = self.build.shell.execute("bitbake sqlite3logger")
-        assert o["stderr"].contains("ERROR: Nothing PROVIDES 'sqlite3logger'")
 
 
 if __name__ == "__main__":

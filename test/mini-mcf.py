@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 PWD = os.path.dirname(os.path.abspath(__file__))
 REPO_BASE_DIR = os.path.join(*[tempfile.gettempdir(), "meta-shift-repos", getpass.getuser()])
 DEFAULT_BRANCH = "morty"
+DEFAULT_DIR = "build"
 
 repos = {
     "poky": { "url": "http://mod.lge.com/hub/yocto/poky.git", "location": "poky", "layer": "poky/meta" },
@@ -38,8 +39,8 @@ def getopts():
     parser = argparse.ArgumentParser()
     parser.add_argument("-b", dest="branch", default=DEFAULT_BRANCH, help="Name of the branch to checkout for the git repositories (default: %s)" % DEFAULT_BRANCH)
     parser.add_argument("-c", type=exist_file, dest="filename", required=True, help="Configuration file path")
-    parser.add_argument("-d", type=str, dest="directory", required=True, help="Path to populate the build directory")
-    parser.add_argument("-r", dest="repodir", help="Path to download the git repositories (default: %s)" % REPO_BASE_DIR, default=REPO_BASE_DIR)
+    parser.add_argument("-d", type=str, dest="directory", default=DEFAULT_DIR, help="Path to populate the build directory (default: %s)" % DEFAULT_DIR)
+    parser.add_argument("-r", dest="repodir", default=REPO_BASE_DIR, help="Path to download the git repositories (default: %s)" % REPO_BASE_DIR)
     return parser.parse_args()
 
 def execute(cmd):
@@ -82,8 +83,7 @@ def configure(repodir, directory, filename):
 
 
 def printBashUsage(repodir, directory):
-    print("""
-    ### Shell environment set up for builds ###
+    print("""\n\n\n### Shell environment set up command ###
 
     source {0}/poky/oe-init-build-env {1}
 
