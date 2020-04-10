@@ -22,7 +22,7 @@ class TestReport(unittest.TestCase):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c coverageall")
         assert self.build.files.exists("report/test_result/cpp-project-qt5-1.0.0-r0/tests/minus_test/test_result.xml")
         assert self.build.files.exists("report/test_result/cpp-project-qt5-1.0.0-r0/tests/plus_test/test_result.xml")
-        assert self.build.files.read("report/test_coverage/cpp-project-qt5-1.0.0-r0/coverage.xml").contains('<package name="cpp-project-qt5.build.minus"')
+        assert self.build.files.exists("report/test_coverage/cpp-project-qt5-1.0.0-r0/coverage.xml")
 
 
 class NoTestReport(unittest.TestCase):
