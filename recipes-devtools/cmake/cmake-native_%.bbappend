@@ -1,12 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/cmake:"
-
-SRC_URI_append = " \
-    file://CMakeUtils.cmake \
-    file://FindGMock.cmake \
+SRC_URI_append_class-native = " \
+    git://mod.lge.com/hub/yocto/CMakeUtils.git;protocol=http;tag=1.0.0;nobranch=1;destsuffix=cmakeutils \
 "
 
 do_install_append() {
     mkdir -p ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules
-    install -m 644 ${WORKDIR}/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
-    install -m 644 ${WORKDIR}/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
+    install -m 644 ${WORKDIR}/cmakeutils/scripts/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
+    install -m 644 ${WORKDIR}/cmakeutils/scripts/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
 }

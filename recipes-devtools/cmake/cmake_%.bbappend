@@ -1,14 +1,11 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/cmake:"
-
 SRC_URI_append_class-nativesdk = " \
-    file://CMakeUtils.cmake \
-    file://FindGMock.cmake \
+    git://mod.lge.com/hub/yocto/CMakeUtils.git;protocol=http;tag=1.0.0;nobranch=1;destsuffix=cmakeutils \
 "
 
 do_install_append_class-nativesdk() {
     mkdir -p ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules
-    install -m 644 ${WORKDIR}/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
-    install -m 644 ${WORKDIR}/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
+    install -m 644 ${WORKDIR}/cmakeutils/scripts/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
+    install -m 644 ${WORKDIR}/cmakeutils/scripts/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
 
     echo "SET(CMAKE_CROSSCOMPILING_EMULATOR \"qemu-${TUNE_ARCH};-L;""$""ENV{SDKTARGETSYSROOT}\")" > ${WORKDIR}/crosscompiling_emulator.cmake
     mkdir -p ${D}${datadir}/cmake/OEToolchainConfig.cmake.d
