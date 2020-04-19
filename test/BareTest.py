@@ -87,6 +87,10 @@ class core_image_minimal(unittest.TestCase):
         f = "tmp/sysroots/x86_64-nativesdk-pokysdk-linux/opt/poky/2.2.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
         assert self.build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT}")')
 
+    def test_fff(self):
+        assert self.build.shell.execute("bitbake fff").stderr.empty()
+        files = self.build.shell.execute("oe-pkgdata-util list-pkg-files -p fff").stdout
+        assert files.contains("/usr/include/fff/fff.h")
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])
