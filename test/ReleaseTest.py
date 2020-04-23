@@ -20,6 +20,7 @@ class core_image_minimal(unittest.TestCase):
         assert files.containsAll("sample-project-1.0.0-r0.aarch64.rpm",
                                  "cpp-project-1.0.0-r0.aarch64.rpm",
                                  "cpp-project-qt5-1.0.0-r0.aarch64.rpm",
+                                 "cpp-project-autotools-1.0.0-r0.aarch64.rpm",
                                  "sqlite3logger-1.0.0-r0.aarch64.rpm",
                                  "libsqlite3wrapper0-0.1.0-r0.aarch64.rpm")
 
@@ -171,6 +172,45 @@ class cpp_project_qt5(unittest.TestCase):
         assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Started\n" \
                                     "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Succeeded")
 
+
+class cpp_project_autotools(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+
+    def test_do_build(self):
+        assert self.build.shell.execute("bitbake cpp-project-autotools").stderr.empty()
+
+        project = self.build.parse("cpp-project-autotools")
+        assert not project.packages.contains("lcov-native")
+        assert not project.packages.containsAny("gtest", "googletest")
+
+    def test_do_test(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c test")
+        assert o["stderr"].contains("ERROR: Task do_test does not exist for target cpp-project-autotools")
+
+    def test_do_testall(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c testall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_testall: Started\n" \
+                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_testall: Succeeded")
+
+    def test_do_coverage(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c coverage")
+        assert o["stderr"].contains("ERROR: Task do_coverage does not exist for target cpp-project-autotools")
+
+    def test_do_coverageall(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c coverageall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Started\n" \
+                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Succeeded")
+
+    def test_do_doc(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c doc")
+        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target cpp-project-autotools")
+
+    def test_do_docall(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c docall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_docall: Started\n" \
+                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_docall: Succeeded")
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])
