@@ -1,22 +1,23 @@
 inherit qmake5
 inherit shifttest
 
-DEPENDS_prepend = "\
-    gtest \
-    gmock \
-    "
-
 EXTRA_QMAKEVARS_PRE += "CONFIG+=gcov"
 EXTRA_QMAKEVARS_PRE += "CONFIG+=insignificant_test"
 
 FILES_${PN} += "${OE_QMAKE_PATH_TESTS}"
 
-qmake5test_do_test() {
+qmake5test_qtest_update_xmls() {
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
-        local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
-        export GTEST_OUTPUT="xml:${OUTPUT_DIR}/"
-        rm -rf "${OUTPUT_DIR}"
+        find * -name "test_result.xml" \
+            -exec sed -r -i 's|(<testsuite.*name=")(.*")|\1${PN}\.\2|g' {} \; \
+            -exec install -m 644 -D "{}" "${TEST_RESULT_OUTPUT}/${PF}/{}" \;
     fi
+}
+
+qmake5test_do_test() {
+    shifttest_prepare_output_dir
+
+    shifttest_prepare_env
 
     export QT_PLUGIN_PATH=${STAGING_DIR_TARGET}${libdir}/plugins
     export QML_IMPORT_PATH=${STAGING_DIR_TARGET}${libdir}/qml
@@ -31,27 +32,10 @@ qmake5test_do_test() {
     fi
 
     cd ${B}
-
     make --quiet check | shifttest_print_lines
 
-    if [ -z "${TEST_RESULT_OUTPUT}" ]; then
-        return
-    fi
-
-    local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
-
-    if [ ! -d "${OUTPUT_DIR}" ]; then
-        bbwarn "No test report files generated at ${OUTPUT_DIR}"
-        return
-    fi
-
-    for i in "${OUTPUT_DIR}/*.xml"; do
-        sed -i "s|classname=\"|classname=\"${PN}.|g" $i
-    done
-
-    find * -name "test_result.xml" \
-        -exec sed -r -i 's|(<testsuite.*name=")(.*")|\1${PN}\.\2|g' {} \; \
-        -exec install -m 644 -D "{}" "${OUTPUT_DIR}/{}" \;
+    shifttest_gtest_update_xmls
+    qmake5test_qtest_update_xmls
 }
 
 qmake5test_do_coverage() {

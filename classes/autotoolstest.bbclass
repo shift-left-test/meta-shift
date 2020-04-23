@@ -1,11 +1,6 @@
 inherit autotools
 inherit shifttest
 
-DEPENDS_prepend = "\
-    gtest \
-    gmock \
-    "
-
 do_configure_prepend() {
     # add coverage flags to cxxflags & cflags
     if [[ -v CXXFLAGS ]]; then
@@ -38,7 +33,7 @@ do_configure_append() {
     # revert 'automake' new_rt_path_for_test-driver.patch'
     cd ${B}
     find . -name Makefile \
-        -exec sed -r -i 's|(top_builddir)(.*test-driver)|top_srcdir\2|g' {} \; 
+        -exec sed -r -i 's|(top_builddir)(.*test-driver)|top_srcdir\2|g' {} \;
 
     # create custom log_compiler for qemu usermode return
     echo "
@@ -52,36 +47,18 @@ qemu-${TUNE_ARCH} -L ${STAGING_DIR_TARGET} ""$""TARGET" > ${WORKDIR}/test-runner
 }
 
 autotoolstest_do_test() {
-    export LOG_COMPILER='${WORKDIR}/test-runner.sh'
+    shifttest_prepare_output_dir
 
-    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
-        local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
-        export GTEST_OUTPUT="xml:${OUTPUT_DIR}/"
-        rm -rf "${OUTPUT_DIR}"
-    fi
+    shifttest_prepare_env
+    export LOG_COMPILER='${WORKDIR}/test-runner.sh'
 
     cd ${B}
 
-    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
-    
     # Do not use '-e' option of 'make'.
     make check || true
     find . -name "test-suite.log" -exec cat {} \; | shifttest_print_lines
 
-    if [ -z "${TEST_RESULT_OUTPUT}" ]; then
-        return
-    fi
-
-    local OUTPUT_DIR="${TEST_RESULT_OUTPUT}/${PF}"
-
-    if [ ! -d "${OUTPUT_DIR}" ]; then
-        bbwarn "No test report files generated at ${OUTPUT_DIR}"
-        return
-    fi
-
-    for i in "${OUTPUT_DIR}/*.xml"; do
-        sed -i "s|classname=\"|classname=\"${PN}.|g" $i
-    done
+    shifttest_gtest_update_xmls
 }
 
 autotoolstest_do_coverage() {

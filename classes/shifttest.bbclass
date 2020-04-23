@@ -1,15 +1,38 @@
+DEPENDS_prepend = "\
+    gtest \
+    gmock \
+    lcov-native \
+    lcov-cobertura-native \
+    qemu-native \
+    doxygen-native \
+    "
+
 shifttest_print_lines() {
     while IFS= read line; do
         bbplain "$line"
     done
 }
 
-DEPENDS_prepend = "\
-    lcov-native \
-    lcov-cobertura-native \
-    qemu-native \
-    doxygen-native \
-    "
+shifttest_prepare_output_dir() {
+    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+        rm -rf "${TEST_RESULT_OUTPUT}/${PF}"
+        mkdir -p "${TEST_RESULT_OUTPUT}"
+    fi
+}
+
+shifttest_prepare_env() {
+    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+        export GTEST_OUTPUT="xml:${TEST_RESULT_OUTPUT}/${PF}/"
+    fi
+    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
+}
+
+shifttest_gtest_update_xmls() {
+    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+      find "${TEST_RESULT_OUTPUT}/${PF}" -name "*.xml" \
+          -exec sed -i "s|classname=\"|classname=\"${PN}.|g" {} \;
+    fi
+}
 
 addtask test after do_compile do_populate_sysroot
 do_test[nostamp] = "1"
@@ -91,7 +114,8 @@ shifttest_do_doc() {
     cd ${S}
 
     local OUTPUT_DIR="${DOXYGEN_OUTPUT}/${PF}"
-    mkdir -p "${OUTPUT_DIR}"
+    rm -rf ${OUTPUT_DIR}
+    mkdir -p ${OUTPUT_DIR}
     bbplain "Generating API documentation with Doxygen"
     (cat "${S}/Doxyfile" ; echo "OUTPUT_DIRECTORY = ${OUTPUT_DIR}") | doxygen - | shifttest_print_lines
 }

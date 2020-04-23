@@ -91,3 +91,6 @@ class cpp_project_autotools(unittest.TestCase):
     def test_do_docall(self):
         assert self.build.shell.execute("bitbake cpp-project-autotools -c docall").stderr.empty()
         assert self.build.files.exists("report/doxygen/cpp-project-autotools-1.0.0-r0/html/index.html")
+
+if __name__ == "__main__":
+    pytest.main(["-v", __file__])
