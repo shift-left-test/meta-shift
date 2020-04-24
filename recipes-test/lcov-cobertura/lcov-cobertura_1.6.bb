@@ -1,7 +1,7 @@
 SUMMARY = "LCOV to Cobertura XML converter"
 HOMEPAGE = "https://eriwen.github.com/lcov-to-cobertura-xml/"
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=136e4f49dbf29942c572a3a8f6e88a77"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=a09cec46daff2efa2376aaa93df30e16"
 
 inherit pypi setuptools
 
