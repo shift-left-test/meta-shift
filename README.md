@@ -1,7 +1,7 @@
 meta-shift
 ==========
 
-[![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-testing)](http://10.177.233.77:8080/job/meta-testing/)
+[![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-shift)](http://10.177.233.77:8080/job/meta-shift/)
 
 > Shift-left testing project for the Yocto project
 
@@ -23,9 +23,10 @@ Supported tools
 * gcovr (3.4)
 * lcov (via meta-oe)
 * doxygen (1.8.17)
+* autotools (via meta)
 * cmake (via meta)
-* CMakeUtils
 * qmake5 (via meta-qt5)
+* CMakeUtils
 
 
 Requirements
@@ -35,6 +36,7 @@ The following meta-layers are necessary in order to install the tools provided b
 
 * meta-oe (meta-openembedded)
 * meta-python (meta-openembedded)
+* meta-qt5 (meta-qt5)
 
 
 How to add the layer to your build
@@ -52,6 +54,12 @@ The following command runs all tests
     $ py.test test/
 
 You may also run an individual test suite by executing the python test script directly
+
+
+Documentation
+-------------
+
+Please refer to the [wiki link](http://mod.lge.com/hub/yocto/meta-shift/-/wikis/home) for more useful information.
 
 
 Licenses
