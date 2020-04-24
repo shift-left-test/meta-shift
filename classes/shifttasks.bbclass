@@ -24,3 +24,12 @@ do_docall[doc] = "Generates documents for all recipes required to build the targ
 do_docall() {
     :
 }
+
+addtask purgeall
+do_purgeall[recrdeptask] = "do_purgeall do_cleanall"
+do_purgeall[recideptask] = "do_${BB_DEFAULT_TASK}"
+do_purgeall[nostamp] = "1"
+do_purgeall[doc] = "Removes all output files, shared state cache, and downloaded source files for all recipes required to build the target"
+do_purgeall() {
+    :
+}
