@@ -16,6 +16,7 @@ cmaketest_do_test() {
     shifttest_prepare_env
     cmake --build ${B} --target test -- ARGS="--output-on-failure" | shifttest_print_lines
     shifttest_gtest_update_xmls
+    shifttest_check_output_dir
 }
 
 cmaketest_do_coverage() {

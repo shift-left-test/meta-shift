@@ -59,6 +59,7 @@ autotoolstest_do_test() {
     find . -name "test-suite.log" -exec cat {} \; | shifttest_print_lines
 
     shifttest_gtest_update_xmls
+    shifttest_check_output_dir
 }
 
 autotoolstest_do_coverage() {

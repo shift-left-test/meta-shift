@@ -36,6 +36,7 @@ qmake5test_do_test() {
 
     shifttest_gtest_update_xmls
     qmake5test_qtest_update_xmls
+    shifttest_check_output_dir
 }
 
 qmake5test_do_coverage() {

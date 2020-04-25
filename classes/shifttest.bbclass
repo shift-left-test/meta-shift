@@ -13,11 +13,19 @@ shifttest_print_lines() {
     done
 }
 
+
+addtask test after do_compile do_populate_sysroot
+do_test[nostamp] = "1"
+do_test[doc] = "Runs tests for the target"
+
+shifttest_do_test() {
+    bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
+}
+
 shifttest_prepare_output_dir() {
-    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
-        rm -rf "${TEST_RESULT_OUTPUT}/${PF}"
-        mkdir -p "${TEST_RESULT_OUTPUT}"
-    fi
+    [ -z "${TEST_RESULT_OUTPUT}" ] && return
+    rm -rf "${TEST_RESULT_OUTPUT}/${PF}"
+    mkdir -p "${TEST_RESULT_OUTPUT}"
 }
 
 shifttest_prepare_env() {
@@ -32,18 +40,16 @@ shifttest_prepare_env() {
 }
 
 shifttest_gtest_update_xmls() {
-    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
-      find "${TEST_RESULT_OUTPUT}/${PF}" -name "*.xml" \
-          -exec sed -i "s|classname=\"|classname=\"${PN}.|g" {} \;
-    fi
+    [ -z "${TEST_RESULT_OUTPUT}" ] && return
+    [ ! -d "${TEST_RESULT_OUTPUT}/${PF}" ] && return
+    find "${TEST_RESULT_OUTPUT}/${PF}" -name "*.xml" \
+        -exec sed -i "s|classname=\"|classname=\"${PN}.|g" {} \;
 }
 
-addtask test after do_compile do_populate_sysroot
-do_test[nostamp] = "1"
-do_test[doc] = "Runs tests for the target"
-
-shifttest_do_test() {
-    bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
+shifttest_check_output_dir() {
+    [ -z "${TEST_RESULT_OUTPUT}" ] && return
+    [ -d "${TEST_RESULT_OUTPUT}/${PF}" ] && return
+    bbwarn "No test report files found at ${TEST_RESULT_OUTPUT}/${PF}"
 }
 
 
