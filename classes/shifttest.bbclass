@@ -64,6 +64,11 @@ shifttest_do_coverage() {
     rm -f ${LCOV_DATAFILE_TOTAL}
     rm -f ${LCOV_DATAFILE}
 
+    if [ -z "$(find ${B} -name *.gcda -type f)" ]; then
+        bbwarn "No .gcda files found at ${B}"
+        return
+    fi
+
     lcov -c -d ${B} -o ${LCOV_DATAFILE_TOTAL} \
         --ignore-errors gcov \
         --gcov-tool ${TARGET_PREFIX}gcov \
