@@ -27,7 +27,7 @@ do_configure_append() {
         export CFLAGS="$CFLAGS_ORI"
         unset CFLAGS_ORI
     else
-        unset CFLAGS_ORI
+        unset CFLAGS
     fi
 
     # revert 'automake' new_rt_path_for_test-driver.patch'
