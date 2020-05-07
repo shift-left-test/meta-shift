@@ -23,8 +23,4 @@ cmaketest_do_coverage() {
     shifttest_do_coverage
 }
 
-cmaketest_do_doc() {
-    shifttest_do_doc
-}
-
-EXPORT_FUNCTIONS do_test do_coverage do_doc
+EXPORT_FUNCTIONS do_test do_coverage

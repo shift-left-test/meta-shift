@@ -43,8 +43,4 @@ qmake5test_do_coverage() {
     shifttest_do_coverage
 }
 
-qmake5test_do_doc() {
-    shifttest_do_doc
-}
-
-EXPORT_FUNCTIONS do_test do_coverage do_doc
+EXPORT_FUNCTIONS do_test do_coverage

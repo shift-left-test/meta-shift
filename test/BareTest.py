@@ -23,7 +23,6 @@ class core_image_minimal(unittest.TestCase):
         assert pkgs.contains("nativesdk-cmake-3.6.1-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-cppcheck-1.90-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-cpplint-1.4.5-r0.x86_64_nativesdk.rpm")
-        assert pkgs.contains("nativesdk-doxygen-1.8.17-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-gcovr-4.2-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-lcov-1.11-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-qemu-2.7.0-r1.x86_64_nativesdk.rpm")
@@ -69,12 +68,6 @@ class core_image_minimal(unittest.TestCase):
 
     def test_qemu_nativesdk(self):
         assert self.build.shell.execute("bitbake nativesdk-qemu").stderr.empty()
-
-    def test_doxygen_native(self):
-        assert self.build.shell.execute("bitbake doxygen-native").stderr.empty()
-
-    def test_doxygen_nativesdk(self):
-        assert self.build.shell.execute("bitbake nativesdk-doxygen").stderr.empty()
 
     def test_cmakeutils_native(self):
         assert self.build.shell.execute("bitbake cmake-native").stderr.empty()

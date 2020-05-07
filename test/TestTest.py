@@ -65,25 +65,6 @@ class core_image_minimal(unittest.TestCase):
                                        "cpp-project-autotools-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Succeeded")
 
-    def test_do_doc(self):
-        o = self.build.shell.execute("bitbake core-image-minimal -c doc")
-        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target core-image-minimal")
-
-    def test_do_docall(self):
-        o = self.build.shell.execute("bitbake core-image-minimal -c docall")
-        assert o["stdout"].containsAll("NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Started",
-                                       "cpp-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "sample-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "sqlite3wrapper-0.1.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "cpp-project-qt5-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "cpp-project-autotools-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "NOTE: recipe core-image-minimal-1.0-r0: task do_docall: Succeeded")
-        assert self.build.files.exists("report/doxygen/cpp-project-1.0.0-r0/html/index.html")
-        assert self.build.files.exists("report/doxygen/sample-project-1.0.0-r0/html/index.html")
-        assert self.build.files.exists("report/doxygen/sqlite3wrapper-0.1.0-r0/html/index.html")
-        assert self.build.files.exists("report/doxygen/cpp-project-qt5-1.0.0-r0/html/index.html")
-        assert self.build.files.exists("report/doxygen/cpp-project-autotools-1.0.0-r0/html/index.html")
-
 
 class cpp_project(unittest.TestCase):
     @classmethod
@@ -101,7 +82,6 @@ class cpp_project(unittest.TestCase):
         assert project.packages.contains("lcov-native")
         assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
-        assert project.packages.contains("doxygen-native")
 
     def test_do_test(self):
         o = self.build.shell.execute("bitbake cpp-project -c test")
@@ -125,16 +105,6 @@ class cpp_project(unittest.TestCase):
                                        "cpp-project-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Succeeded")
 
-    def test_do_doc(self):
-        o = self.build.shell.execute("bitbake cpp-project -c doc")
-        assert o["stdout"].contains("cpp-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen")
-
-    def test_do_docall(self):
-        o = self.build.shell.execute("bitbake cpp-project -c docall")
-        assert o["stdout"].containsAll("NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Started",
-                                       "cpp-project-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "NOTE: recipe cpp-project-1.0.0-r0: task do_docall: Succeeded")
-
 
 class sqlite3logger(unittest.TestCase):
     @classmethod
@@ -156,7 +126,6 @@ class sqlite3logger(unittest.TestCase):
         assert project.packages.contains("lcov-native")
         assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
-        assert project.packages.contains("doxygen-native")
 
     def test_do_test(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c test")
@@ -182,16 +151,6 @@ class sqlite3logger(unittest.TestCase):
                                        "sqlite3wrapper-0.1.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
 
-    def test_do_doc(self):
-        o = self.build.shell.execute("bitbake sqlite3logger -c doc")
-        assert o["stderr"].contains("ERROR: Task do_doc does not exist for target sqlite3logger")
-
-    def test_do_docall(self):
-        o = self.build.shell.execute("bitbake sqlite3logger -c docall")
-        assert o["stdout"].containsAll("NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Started",
-                                       "sqlite3wrapper-0.1.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "NOTE: recipe sqlite3logger-1.0.0-r0: task do_docall: Succeeded")
-
 
 class cpp_project_qt5(unittest.TestCase):
     @classmethod
@@ -206,7 +165,6 @@ class cpp_project_qt5(unittest.TestCase):
         assert project.packages.contains("lcov-native")
         assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
-        assert project.packages.contains("doxygen-native")
 
     def test_do_test(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c test")
@@ -234,16 +192,6 @@ class cpp_project_qt5(unittest.TestCase):
                                        "cpp-project-qt5-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Succeeded")
 
-    def test_do_doc(self):
-        o = self.build.shell.execute("bitbake cpp-project-qt5 -c doc")
-        assert o["stdout"].contains("cpp-project-qt5-1.0.0-r0 do_doc: Generating API documentation with Doxygen")
-
-    def test_do_docall(self):
-        o = self.build.shell.execute("bitbake cpp-project-qt5 -c docall")
-        assert o["stdout"].containsAll("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Started",
-                                       "cpp-project-qt5-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_docall: Succeeded")
-
 
 class cpp_project_autotools(unittest.TestCase):
     @classmethod
@@ -258,7 +206,6 @@ class cpp_project_autotools(unittest.TestCase):
         assert project.packages.contains("lcov-native")
         assert project.packages.contains("lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
-        assert project.packages.contains("doxygen-native")
 
     def test_do_test(self):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c test")
@@ -281,16 +228,6 @@ class cpp_project_autotools(unittest.TestCase):
                                        "cpp-project-autotools-1.0.0-r0 do_test:    program 1.0: test/test-suite.log",
                                        "cpp-project-autotools-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Succeeded")
-
-    def test_do_doc(self):
-        o = self.build.shell.execute("bitbake cpp-project-autotools -c doc")
-        assert o["stdout"].contains("cpp-project-autotools-1.0.0-r0 do_doc: Generating API documentation with Doxygen")
-
-    def test_do_docall(self):
-        o = self.build.shell.execute("bitbake cpp-project-autotools -c docall")
-        assert o["stdout"].containsAll("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_docall: Started",
-                                       "cpp-project-autotools-1.0.0-r0 do_doc: Generating API documentation with Doxygen",
-                                       "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_docall: Succeeded")
 
 
 if __name__ == "__main__":

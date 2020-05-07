@@ -22,7 +22,6 @@ Supported tools
 * qemu-native (via meta)
 * gcovr (3.4)
 * lcov (via meta-oe)
-* doxygen (1.8.17)
 * autotools (via meta)
 * cmake (via meta)
 * qmake5 (via meta-qt5)

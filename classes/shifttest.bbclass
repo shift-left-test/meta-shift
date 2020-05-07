@@ -4,7 +4,6 @@ DEPENDS_prepend = "\
     lcov-native \
     lcov-cobertura-native \
     qemu-native \
-    doxygen-native \
     "
 
 shifttest_print_lines() {
@@ -108,29 +107,4 @@ shifttest_do_coverage() {
     fi
 
     sed -r -i 's|(<package.*name=\")(.*")|\1${PN}\.\2|g' "${OUTPUT_DIR}/coverage.xml"
-}
-
-
-addtask doc after do_configure
-do_doc[nostamp] = "1"
-do_doc[doc] = "Generates documents for the target"
-
-shifttest_do_doc() {
-    if [ ! -f "${S}/Doxyfile" ]; then
-        bbplain "No Doxyfile found. Skip generating the doxygen documents"
-        return
-    fi
-
-    if [ -z "${DOXYGEN_OUTPUT}" ]; then
-        bbwarn "No DOXYGEN_OUTPUT variable found. Use the default path (${TOPDIR}/report/doxygen)"
-        DOXYGEN_OUTPUT="${TOPDIR}/report/doxygen"
-    fi
-
-    cd ${S}
-
-    local OUTPUT_DIR="${DOXYGEN_OUTPUT}/${PF}"
-    rm -rf ${OUTPUT_DIR}
-    mkdir -p ${OUTPUT_DIR}
-    bbplain "Generating API documentation with Doxygen"
-    (cat "${S}/Doxyfile" ; echo "OUTPUT_DIRECTORY = ${OUTPUT_DIR}") | doxygen - | shifttest_print_lines
 }

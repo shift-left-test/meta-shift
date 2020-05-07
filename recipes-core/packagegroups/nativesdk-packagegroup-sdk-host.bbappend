@@ -5,6 +5,5 @@ RDEPENDS_${PN}_append = "\
     nativesdk-lcov \
     nativesdk-lcov-cobertura \
     nativesdk-qemu \
-    nativesdk-doxygen \
     nativesdk-cmake \
     "

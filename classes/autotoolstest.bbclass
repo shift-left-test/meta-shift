@@ -66,8 +66,4 @@ autotoolstest_do_coverage() {
     shifttest_do_coverage
 }
 
-autotoolstest_do_doc() {
-    shifttest_do_doc
-}
-
-EXPORT_FUNCTIONS do_test do_coverage do_doc
+EXPORT_FUNCTIONS do_test do_coverage
