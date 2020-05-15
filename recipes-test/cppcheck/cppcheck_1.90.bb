@@ -19,6 +19,7 @@ DEPENDS = "libpcre"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 EXTRA_OEMAKE = "HAVE_RULES=yes"
+EXTRA_OEMAKE_class-native += "FILESDIR=${bindir}"
 
 do_compile() {
 	oe_runmake
