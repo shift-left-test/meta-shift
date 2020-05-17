@@ -13,27 +13,18 @@ S = "${WORKDIR}/git"
 
 inherit pkgconfig
 
-DEPENDS = "libpcre"
-
-## no debug packages
-INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-
-EXTRA_OEMAKE = "HAVE_RULES=yes"
-EXTRA_OEMAKE_class-native += "FILESDIR=${bindir}"
+PACKAGECONFIG ??= "rules"
+PACKAGECONFIG[rules] = "HAVE_RULES=yes,,libpcre"
+PACKAGECONFIG[z3] = "USE_Z3=yes,,z3"
 
 do_compile() {
-	oe_runmake
+    oe_runmake ${PACKAGECONFIG_CONFARGS} FILESDIR=${datadir}
 }
-
-FILES_${PN} = "${bindir}/** ${datadir}"
 
 do_install() {
-    install -d ${D}${bindir}
-    install -d ${D}${datadir}
-    install ${B}/cppcheck ${D}${bindir}
-    cp -R ${B}/addons ${D}${bindir}
-    cp -R ${B}/cfg ${D}${bindir}
-    install -D ${B}/htmlreport/cppcheck-htmlreport ${D}${bindir}
+    oe_runmake install DESTDIR=${D} FILESDIR=${datadir} PREFIX=${prefix}
 }
+
+FILES_${PN} = "${bindir} ${datadir}"
 
 BBCLASSEXTEND = "native nativesdk"

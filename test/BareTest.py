@@ -21,7 +21,7 @@ class core_image_minimal(unittest.TestCase):
 
         pkgs = self.build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/host/installed-packages.txt")
         assert pkgs.contains("nativesdk-cmake-3.6.1-r0.x86_64_nativesdk.rpm")
-        assert pkgs.contains("nativesdk-cppcheck-1.90-r0.x86_64_nativesdk.rpm")
+        assert pkgs.contains("nativesdk-cppcheck-2.0-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-cpplint-1.4.5-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-gcovr-4.2-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-lcov-1.11-r0.x86_64_nativesdk.rpm")

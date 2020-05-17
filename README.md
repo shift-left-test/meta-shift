@@ -15,7 +15,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 Supported tools
 ---------------
 
-* cppcheck (1.90)
+* cppcheck (2.0)
 * cpplint (1.4.5)
 * gtest (via meta-oe)
 * gmock (via meta-oe)
