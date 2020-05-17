@@ -157,7 +157,7 @@ class cpp_project_qt5(unittest.TestCase):
     def setUpClass(cls):
         cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
 
-    def test_populate(self):
+    def test_build(self):
         assert self.build.shell.execute("bitbake cpp-project-qt5").stderr.empty()
 
         project = self.build.parse("cpp-project-qt5")
