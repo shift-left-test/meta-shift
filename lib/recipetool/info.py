@@ -94,6 +94,10 @@ def retrieve(args):
     pn = args.recipename
     recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, pn)
     
+    if recipefile is None:
+        print("Fail to find recipefile for '{}'".format(pn))
+        return
+
     appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)
     recipedata = oe.recipeutils.parse_recipe(tinfoil.cooker, recipefile, appendfiles)
     recipename = tinfoil.cooker_data.pkg_fn[recipefile]
