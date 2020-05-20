@@ -1,4 +1,4 @@
 RDEPENDS_${PN} += "\
-    gtest \
     gmock \
-    "
+    gtest \
+"

@@ -1,22 +1,20 @@
-DEPENDS += "\
-    perl \
-"
+DEPENDS += "perl"
 
-RDEPENDS_${PN}_class-native = " \
-    perl-native \
+RDEPENDS_${PN}_class-native = "\
+    perl-module-digest-sha-native \
     perl-module-filehandle-native \
     perl-module-getopt-std-native \
-    perl-module-digest-sha-native \
+    perl-native \
 "
 
-RDEPENDS_${PN}_class-nativesdk = " \
+RDEPENDS_${PN}_class-nativesdk = "\
     nativesdk-perl \
+    nativesdk-perl-module-digest-md5 \
+    nativesdk-perl-module-digest-sha \
+    nativesdk-perl-module-file-spec-functions \
+    nativesdk-perl-module-file-temp \
     nativesdk-perl-module-filehandle \
     nativesdk-perl-module-getopt-std \
-    nativesdk-perl-module-digest-sha \
-    nativesdk-perl-module-digest-md5 \
-    nativesdk-perl-module-file-temp \
-    nativesdk-perl-module-file-spec-functions \
 "
 
 BBCLASSEXTEND = "native nativesdk"

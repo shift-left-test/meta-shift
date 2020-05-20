@@ -1,8 +1,9 @@
 SUMMARY = "cppcheck - Static code analyzer for C/C++"
 DESCRIPTION = "Cppcheck is a static analysis tool for C/C++ code"
+AUTHOR = "The cppcheck team"
 HOMEPAGE = "http://cppcheck.sourceforge.net/"
-SECTION = "devel"
 BUGTRACKER = "https://trac.cppcheck.net/"
+SECTION = "devel"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
