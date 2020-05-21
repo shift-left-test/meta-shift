@@ -2,8 +2,11 @@ DEPENDS_prepend = "\
     gtest \
     gmock \
     lcov-native \
-    lcov-cobertura-native \
+    python-lcov-cobertura-native \
     qemu-native \
+    cppcheck-native \
+    cpplint-native \
+    sage-native \
     "
 
 shifttest_print_lines() {
@@ -12,6 +15,19 @@ shifttest_print_lines() {
     done
 }
 
+addtask checkcode after do_compile
+do_checkcode[nostamp] = "1"
+do_checkcode[doc] = "Runs static analysis for the target"
+
+shifttest_do_checkcode() {
+    if [ ! -z "${CHECK_CODE_OUTPUT}" ]; then
+        rm -rf "${CHECK_CODE_OUTPUT}/${PF}"
+        mkdir -p "${CHECK_CODE_OUTPUT}/${PF}"
+        local OUTPUT_PATH_OPTION="--output-path=${CHECK_CODE_OUTPUT}/${PF}"
+    fi
+
+    sage --source ${S} --build ${B} ${OUTPUT_PATH_OPTION} ${CHECK_CODE_TOOLS} | shifttest_print_lines
+}
 
 addtask test after do_compile do_populate_sysroot
 do_test[nostamp] = "1"

@@ -6,6 +6,10 @@ EXTRA_QMAKEVARS_PRE += "CONFIG+=insignificant_test"
 
 FILES_${PN} += "${OE_QMAKE_PATH_TESTS}"
 
+qmake5test_do_checkcode() {
+    shifttest_do_checkcode
+}
+
 qmake5test_qtest_update_xmls() {
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
         find * -name "test_result.xml" \
@@ -43,4 +47,4 @@ qmake5test_do_coverage() {
     shifttest_do_coverage
 }
 
-EXPORT_FUNCTIONS do_test do_coverage
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage

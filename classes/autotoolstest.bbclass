@@ -46,6 +46,10 @@ qemu-${TUNE_ARCH} -L ${STAGING_DIR_TARGET} ""$""TARGET" > ${WORKDIR}/test-runner
     chmod 755 ${WORKDIR}/test-runner.sh
 }
 
+autotoolstest_do_checkcode() {
+    shifttest_do_checkcode
+}
+
 autotoolstest_do_test() {
     shifttest_prepare_output_dir
 
@@ -66,4 +70,4 @@ autotoolstest_do_coverage() {
     shifttest_do_coverage
 }
 
-EXPORT_FUNCTIONS do_test do_coverage
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage

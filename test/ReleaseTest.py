@@ -24,6 +24,15 @@ class core_image_minimal(unittest.TestCase):
                                  "sqlite3logger-1.0.0-r0.aarch64.rpm",
                                  "libsqlite3wrapper0-0.1.0-r0.aarch64.rpm")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c checkcode")
+        assert o["stderr"].contains("ERROR: Task do_checkcode does not exist for target core-image-minimal")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c checkcodeall")
+        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_checkcodeall: Started\n" \
+                                    "NOTE: recipe core-image-minimal-1.0-r0: task do_checkcodeall: Succeeded")
+
     def test_do_test(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c test")
         assert o["stderr"].contains("ERROR: Task do_test does not exist for target core-image-minimal")
@@ -73,6 +82,15 @@ class cpp_project(unittest.TestCase):
         assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake cpp-project -c checkcode")
+        assert o["stderr"].contains("ERROR: Task do_checkcode does not exist for target cpp-project")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake cpp-project -c checkcodeall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_checkcodeall: Started\n" \
+                                    "NOTE: recipe cpp-project-1.0.0-r0: task do_checkcodeall: Succeeded")
+
 
 class sqlite3logger(unittest.TestCase):
     @classmethod
@@ -106,6 +124,15 @@ class sqlite3logger(unittest.TestCase):
         assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c checkcode")
+        assert o["stderr"].contains("ERROR: Task do_checkcode does not exist for target sqlite3logger")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c checkcodeall")
+        assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_checkcodeall: Started\n" \
+                                    "NOTE: recipe sqlite3logger-1.0.0-r0: task do_checkcodeall: Succeeded")
+
 
 class cpp_project_qt5(unittest.TestCase):
     @classmethod
@@ -137,6 +164,14 @@ class cpp_project_qt5(unittest.TestCase):
         assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake cpp-project-qt5 -c checkcode")
+        assert o["stderr"].contains("ERROR: Task do_checkcode does not exist for target cpp-project-qt5")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake cpp-project-qt5 -c checkcodeall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_checkcodeall: Started\n" \
+                                    "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_checkcodeall: Succeeded")
 
 class cpp_project_autotools(unittest.TestCase):
     @classmethod
@@ -167,6 +202,15 @@ class cpp_project_autotools(unittest.TestCase):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c coverageall")
         assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Started\n" \
                                     "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Succeeded")
+
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c checkcode")
+        assert o["stderr"].contains("ERROR: Task do_checkcode does not exist for target cpp-project-autotools")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c checkcodeall")
+        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_checkcodeall: Started\n" \
+                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_checkcodeall: Succeeded")
 
 
 if __name__ == "__main__":

@@ -25,6 +25,21 @@ class core_image_minimal(unittest.TestCase):
         assert self.build.files.read("report/test_coverage/cpp-project-qt5-1.0.0-r0/coverage.xml").contains('name="cpp-project-qt5.plus.src"')
         assert self.build.files.read("report/test_coverage/cpp-project-autotools-1.0.0-r0/coverage.xml").contains('name="cpp-project-autotools.plus.src"')
 
+    def test_do_checkcodeall(self):
+        assert self.build.shell.execute("bitbake core-image-minimal -c checkcodeall").stderr.empty()
+
+        # check cppcheck report
+        assert self.build.files.read("report/test_check/cpp-project-1.0.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/sample-project-1.0.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/sqlite3wrapper-0.1.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/stringutils-0.0.1-r0/cppcheck_report.xml").contains('cppcheck version="')
+
+        #check cpplint report
+        assert self.build.files.read("report/test_check/cpp-project-1.0.0-r0/cpplint_report.txt")
+        assert self.build.files.read("report/test_check/sample-project-1.0.0-r0/cpplint_report.txt")
+        assert self.build.files.read("report/test_check/sqlite3wrapper-0.1.0-r0/cpplint_report.txt")
+        assert self.build.files.read("report/test_check/stringutils-0.0.1-r0/cpplint_report.txt")
+
 
 class cpp_project(unittest.TestCase):
     def setUp(self):
@@ -34,6 +49,11 @@ class cpp_project(unittest.TestCase):
         assert self.build.shell.execute("bitbake cpp-project -c coverageall").stderr.empty()
         assert self.build.files.read("report/test_result/cpp-project-1.0.0-r0/OperatorTest.xml").contains('classname="cpp-project.PlusTest"')
         assert self.build.files.read("report/test_coverage/cpp-project-1.0.0-r0/coverage.xml").contains('name="cpp-project.minus.src"')
+
+    def test_do_checkcodeall(self):
+        assert self.build.shell.execute("bitbake cpp-project -c checkcodeall").stderr.empty()
+        assert self.build.files.read("report/test_check/cpp-project-1.0.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/cpp-project-1.0.0-r0/cpplint_report.txt")
 
 
 class sqlite3logger(unittest.TestCase):
@@ -47,6 +67,13 @@ class sqlite3logger(unittest.TestCase):
         assert self.build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.include.SQLite3Wrapper"')
         assert self.build.files.read("report/test_coverage/stringutils-0.0.1-r0/coverage.xml").contains('name="stringutils.include.util"')
 
+    def test_do_checkcodeall(self):
+        assert self.build.shell.execute("bitbake sqlite3logger -c checkcodeall").stderr.empty()
+        assert self.build.files.read("report/test_check/sqlite3wrapper-0.1.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/stringutils-0.0.1-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/sqlite3wrapper-0.1.0-r0/cpplint_report.txt")
+        assert self.build.files.read("report/test_check/stringutils-0.0.1-r0/cpplint_report.txt")
+
 
 class cpp_project_qt5(unittest.TestCase):
     def setUp(self):
@@ -58,6 +85,11 @@ class cpp_project_qt5(unittest.TestCase):
         assert self.build.files.exists("report/test_result/cpp-project-qt5-1.0.0-r0/tests/plus_test/test_result.xml")
         assert self.build.files.read("report/test_coverage/cpp-project-qt5-1.0.0-r0/coverage.xml").contains('name="cpp-project-qt5.plus.src"')
 
+    def test_do_checkcodeall(self):
+        assert self.build.shell.execute("bitbake cpp-project-qt5 -c checkcodeall").stderr.empty()
+        assert self.build.files.read("report/test_check/cpp-project-qt5-1.0.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/cpp-project-qt5-1.0.0-r0/cpplint_report.txt")
+
 
 class cpp_project_autotools(unittest.TestCase):
     def setUp(self):
@@ -67,6 +99,11 @@ class cpp_project_autotools(unittest.TestCase):
         assert self.build.shell.execute("bitbake cpp-project-autotools -c coverageall").stderr.empty()
         assert self.build.files.exists("report/test_result/cpp-project-autotools-1.0.0-r0/operatorTest.xml")
         assert self.build.files.read("report/test_coverage/cpp-project-autotools-1.0.0-r0/coverage.xml").contains('name="cpp-project-autotools.plus.src"')
+
+    def test_do_checkcodeall(self):
+        assert self.build.shell.execute("bitbake cpp-project-autotools -c checkcodeall").stderr.empty()
+        assert self.build.files.read("report/test_check/cpp-project-autotools-1.0.0-r0/cppcheck_report.xml").contains('cppcheck version=')
+        assert self.build.files.read("report/test_check/cpp-project-autotools-1.0.0-r0/cpplint_report.txt")
 
 
 if __name__ == "__main__":

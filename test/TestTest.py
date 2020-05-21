@@ -65,6 +65,23 @@ class core_image_minimal(unittest.TestCase):
                                        "cpp-project-autotools-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c checkcode")
+        assert o["stderr"].contains("ERROR: Task do_checkcode does not exist for target core-image-minimal")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake core-image-minimal -c checkcodeall")
+        assert o["stdout"].containsAll("cpp-project-qt5-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-qt5-1.0.0-r0 do_checkcode: * cpplint is running...",
+                                       "sample-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "sample-project-1.0.0-r0 do_checkcode: * cpplint is running...",
+                                       "cpp-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-1.0.0-r0 do_checkcode: * cpplint is running...",
+                                       "sqlite3wrapper-0.1.0-r0 do_checkcode: * cppcheck is running...",
+                                       "sqlite3wrapper-0.1.0-r0 do_checkcode: * cpplint is running...",
+                                       "cpp-project-autotools-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-autotools-1.0.0-r0 do_checkcode: * cpplint is running...")
+
 
 class cpp_project(unittest.TestCase):
     @classmethod
@@ -80,8 +97,9 @@ class cpp_project(unittest.TestCase):
         assert project.packages.contains("cppcheck-native")
         assert project.packages.contains("cpplint-native")
         assert project.packages.contains("lcov-native")
-        assert project.packages.contains("lcov-cobertura-native")
+        assert project.packages.contains("python-lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
+        assert project.packages.contains("sage-native")
 
     def test_do_test(self):
         o = self.build.shell.execute("bitbake cpp-project -c test")
@@ -105,6 +123,17 @@ class cpp_project(unittest.TestCase):
                                        "cpp-project-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake cpp-project -c checkcode")
+        assert o["stdout"].containsAll("cpp-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-1.0.0-r0 do_checkcode: * cpplint is running...")
+
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake cpp-project -c checkcodeall")
+        assert o["stdout"].containsAll("cpp-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-1.0.0-r0 do_checkcode: * cpplint is running...")
+
 
 class sqlite3logger(unittest.TestCase):
     @classmethod
@@ -124,7 +153,7 @@ class sqlite3logger(unittest.TestCase):
         assert project.packages.contains("cppcheck-native")
         assert project.packages.contains("cpplint-native")
         assert project.packages.contains("lcov-native")
-        assert project.packages.contains("lcov-cobertura-native")
+        assert project.packages.contains("python-lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
 
     def test_do_test(self):
@@ -151,6 +180,17 @@ class sqlite3logger(unittest.TestCase):
                                        "sqlite3wrapper-0.1.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c checkcode")
+        assert o["stderr"].containsAll("ERROR: Task do_checkcode does not exist for target sqlite3logger")
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake sqlite3logger -c checkcodeall")
+        assert o["stdout"].containsAll("stringutils-0.0.1-r0 do_checkcode: * cppcheck is running...",
+                                       "stringutils-0.0.1-r0 do_checkcode: * cpplint is running...",
+                                       "sqlite3wrapper-0.1.0-r0 do_checkcode: * cppcheck is running...",
+                                       "sqlite3wrapper-0.1.0-r0 do_checkcode: * cpplint is running...")
+
 
 class cpp_project_qt5(unittest.TestCase):
     @classmethod
@@ -163,7 +203,7 @@ class cpp_project_qt5(unittest.TestCase):
         project = self.build.parse("cpp-project-qt5")
         assert project.packages.contains("qtbase")
         assert project.packages.contains("lcov-native")
-        assert project.packages.contains("lcov-cobertura-native")
+        assert project.packages.contains("python-lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
 
     def test_do_test(self):
@@ -192,6 +232,17 @@ class cpp_project_qt5(unittest.TestCase):
                                        "cpp-project-qt5-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Succeeded")
 
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake cpp-project-qt5 -c checkcode")
+        assert o["stdout"].containsAll("cpp-project-qt5-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-qt5-1.0.0-r0 do_checkcode: * cpplint is running...")
+
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake cpp-project-qt5 -c checkcodeall")
+        assert o["stdout"].containsAll("cpp-project-qt5-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-qt5-1.0.0-r0 do_checkcode: * cpplint is running...")
+
 
 class cpp_project_autotools(unittest.TestCase):
     @classmethod
@@ -204,7 +255,7 @@ class cpp_project_autotools(unittest.TestCase):
         project = self.build.parse("cpp-project-autotools")
         assert project.packages.containsAny("gtest", "googletest")
         assert project.packages.contains("lcov-native")
-        assert project.packages.contains("lcov-cobertura-native")
+        assert project.packages.contains("python-lcov-cobertura-native")
         assert project.packages.contains("qemu-native")
 
     def test_do_test(self):
@@ -228,6 +279,17 @@ class cpp_project_autotools(unittest.TestCase):
                                        "cpp-project-autotools-1.0.0-r0 do_test:    program 1.0: test/test-suite.log",
                                        "cpp-project-autotools-1.0.0-r0 do_coverage: GCC Code Coverage Report",
                                        "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Succeeded")
+
+    def test_do_checkcode(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c checkcode")
+        assert o["stdout"].containsAll("cpp-project-autotools-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-autotools-1.0.0-r0 do_checkcode: * cpplint is running...")
+
+
+    def test_do_checkcodeall(self):
+        o = self.build.shell.execute("bitbake cpp-project-autotools -c checkcodeall")
+        assert o["stdout"].containsAll("cpp-project-autotools-1.0.0-r0 do_checkcode: * cppcheck is running...",
+                                       "cpp-project-autotools-1.0.0-r0 do_checkcode: * cpplint is running...")
 
 
 if __name__ == "__main__":

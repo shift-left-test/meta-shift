@@ -1,3 +1,12 @@
+addtask checkcodeall
+do_checkcodeall[recrdeptask] = "do_checkcodeall do_checkcode"
+do_checkcodeall[recideptask] = "do_${BB_DEFAULT_TASK}"
+do_checkcodeall[nostamp] = "1"
+do_checkcodeall[doc] = "Runs check for all recipes required to build the target"
+do_checkcodeall() {
+    :
+}
+
 addtask testall
 do_testall[recrdeptask] = "do_testall do_test"
 do_testall[recideptask] = "do_${BB_DEFAULT_TASK}"
