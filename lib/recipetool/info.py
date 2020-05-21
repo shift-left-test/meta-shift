@@ -1,6 +1,6 @@
-# Recipe creation tool - recipe infomation retrive plugin
+# Recipe creation tool - recipe infomation retrieval plugin
 #
-# Copyright (C) 
+# Copyright (C) 2020 Sung Gon Kim
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -93,7 +93,7 @@ def retrieve(args):
 
     pn = args.recipename
     recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, pn)
-    
+
     if recipefile is None:
         print("Fail to find recipefile for '{}'".format(pn))
         return
@@ -133,7 +133,6 @@ def retrieve(args):
         if recipename == pn:
             continue
 
-        #sys.stdout.write("----deps: %s\n" % tinfoil.cooker_data.deps[fn])
         if any((prov in tinfoil.cooker_data.deps[fn]) for prov in provides):
             dependedby.append(pn)
 
@@ -150,7 +149,7 @@ def retrieve(args):
 def register_commands(subparsers):
     parser_info = subparsers.add_parser('info',
                                           help='Retrieve recipe information',
-                                          description='Retrive recipe file-path, version, meta-layer, append-file, dependency, inherits, etc.')
-    parser_info.add_argument('-j', '--json', help='Dump as json format', action='store_true')
+                                          description='Retrieve recipe file-path, version, meta-layer, append-file, dependencies, inherits, etc.')
+    parser_info.add_argument('-j', '--json', help='Dump as the json format', action='store_true')
     parser_info.add_argument('recipename', help='Recipe name to retrieve')
     parser_info.set_defaults(func=retrieve, parserecipes=True)

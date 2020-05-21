@@ -11,9 +11,9 @@ RDEPENDS_${PN}_class-nativesdk = "\
     nativesdk-perl \
     nativesdk-perl-module-digest-md5 \
     nativesdk-perl-module-digest-sha \
+    nativesdk-perl-module-filehandle \
     nativesdk-perl-module-file-spec-functions \
     nativesdk-perl-module-file-temp \
-    nativesdk-perl-module-filehandle \
     nativesdk-perl-module-getopt-std \
 "
 
