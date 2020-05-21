@@ -86,6 +86,10 @@ class ReporterJson(Reporter):
 
 
 def retrieve(args):
+    def is_testable(recipefile):
+        return any("shifttest" == os.path.splitext(os.path.basename(inherit_class))[0] for
+                   inherit_class in tinfoil.cooker_data.inherits.get(recipefile, []))
+
     if args.json:
         reporter = ReporterJson()
     else:
@@ -106,11 +110,15 @@ def retrieve(args):
     reporter.add_value("Name", recipename)
     reporter.add_value("Summary", recipedata.getVar("SUMMARY", True))
     reporter.add_value("Description", recipedata.getVar("DESCRIPTION", True))
+    reporter.add_value("Author", recipedata.getVar("AUTHOR", True))
+    reporter.add_value("Homepage", recipedata.getVar("HOMEPAGE", True))
+    reporter.add_value("Bugtracker", recipedata.getVar("BUGTRACKER", True))
     reporter.add_value("Section", recipedata.getVar("SECTION", True))
     reporter.add_value("License", recipedata.getVar("LICENSE", True))
     reporter.add_value("Version", recipedata.getVar("PV", True))
     reporter.add_value("Revision", recipedata.getVar("PR", True))
     reporter.add_value("Layer", bb.utils.get_file_layer(recipefile, tinfoil.config_data))
+    reporter.add_value("Testable", is_testable(recipefile))
 
     reporter.section("Additional Information")
     reporter.add_value("BBFile", recipefile)
