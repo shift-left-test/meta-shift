@@ -19,11 +19,11 @@ PACKAGECONFIG[rules] = "HAVE_RULES=yes,,libpcre"
 PACKAGECONFIG[z3] = "USE_Z3=yes,,z3"
 
 do_compile() {
-    oe_runmake ${PACKAGECONFIG_CONFARGS} FILESDIR=${datadir}
+    oe_runmake ${PACKAGECONFIG_CONFARGS}
 }
 
 do_install() {
-    oe_runmake install DESTDIR=${D} FILESDIR=${datadir} PREFIX=${prefix}
+    oe_runmake install DESTDIR=${D} FILESDIR=${bindir} PREFIX=${prefix}
 }
 
 FILES_${PN} = "${bindir} ${datadir}"
