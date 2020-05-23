@@ -30,8 +30,7 @@ class core_image_minimal(unittest.TestCase):
 
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c checkcodeall")
-        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_checkcodeall: Started\n" \
-                                    "NOTE: recipe core-image-minimal-1.0-r0: task do_checkcodeall: Succeeded")
+        assert o["stdout"].contains("WARNING: core-image-minimal-1.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
     def test_do_test(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c test")
@@ -39,8 +38,7 @@ class core_image_minimal(unittest.TestCase):
 
     def test_do_testall(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c testall")
-        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_testall: Started\n" \
-                                    "NOTE: recipe core-image-minimal-1.0-r0: task do_testall: Succeeded")
+        assert o["stdout"].contains("WARNING: core-image-minimal-1.0-r0 do_testall: No recipes found to run 'do_test' task.")
 
     def test_do_coverage(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c coverage")
@@ -48,8 +46,7 @@ class core_image_minimal(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c coverageall")
-        assert o["stdout"].contains("NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Started\n" \
-                                    "NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Succeeded\n")
+        assert o["stdout"].contains("WARNING: core-image-minimal-1.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
 
 class cpp_project(unittest.TestCase):
@@ -70,8 +67,7 @@ class cpp_project(unittest.TestCase):
 
     def test_do_testall(self):
         o = self.build.shell.execute("bitbake cpp-project -c testall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_testall: Started\n" \
-                                    "NOTE: recipe cpp-project-1.0.0-r0: task do_testall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
 
     def test_do_coverage(self):
         o = self.build.shell.execute("bitbake cpp-project -c coverage")
@@ -79,8 +75,7 @@ class cpp_project(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake cpp-project -c coverageall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Started\n" \
-                                    "NOTE: recipe cpp-project-1.0.0-r0: task do_coverageall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
     def test_do_checkcode(self):
         o = self.build.shell.execute("bitbake cpp-project -c checkcode")
@@ -88,8 +83,7 @@ class cpp_project(unittest.TestCase):
 
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake cpp-project -c checkcodeall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-1.0.0-r0: task do_checkcodeall: Started\n" \
-                                    "NOTE: recipe cpp-project-1.0.0-r0: task do_checkcodeall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 
 class sqlite3logger(unittest.TestCase):
@@ -112,8 +106,7 @@ class sqlite3logger(unittest.TestCase):
 
     def test_do_testall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c testall")
-        assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Started\n" \
-                                    "NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Succeeded")
+        assert o["stdout"].contains("WARNING: sqlite3logger-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
 
     def test_do_coverage(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c coverage")
@@ -121,8 +114,7 @@ class sqlite3logger(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c coverageall")
-        assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Started\n" \
-                                    "NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
+        assert o["stdout"].contains("WARNING: sqlite3logger-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
     def test_do_checkcode(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c checkcode")
@@ -130,8 +122,7 @@ class sqlite3logger(unittest.TestCase):
 
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake sqlite3logger -c checkcodeall")
-        assert o["stdout"].contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_checkcodeall: Started\n" \
-                                    "NOTE: recipe sqlite3logger-1.0.0-r0: task do_checkcodeall: Succeeded")
+        assert o["stdout"].contains("WARNING: sqlite3logger-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 
 class cpp_project_qt5(unittest.TestCase):
@@ -152,8 +143,7 @@ class cpp_project_qt5(unittest.TestCase):
 
     def test_do_testall(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c testall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_testall: Started\n" \
-                                    "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_testall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-qt5-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
 
     def test_do_coverage(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c coverage")
@@ -161,8 +151,7 @@ class cpp_project_qt5(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c coverageall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Started\n" \
-                                    "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_coverageall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-qt5-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
     def test_do_checkcode(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c checkcode")
@@ -170,8 +159,7 @@ class cpp_project_qt5(unittest.TestCase):
 
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake cpp-project-qt5 -c checkcodeall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_checkcodeall: Started\n" \
-                                    "NOTE: recipe cpp-project-qt5-1.0.0-r0: task do_checkcodeall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-qt5-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 class cpp_project_autotools(unittest.TestCase):
     @classmethod
@@ -191,8 +179,7 @@ class cpp_project_autotools(unittest.TestCase):
 
     def test_do_testall(self):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c testall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_testall: Started\n" \
-                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_testall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-autotools-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
 
     def test_do_coverage(self):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c coverage")
@@ -200,8 +187,7 @@ class cpp_project_autotools(unittest.TestCase):
 
     def test_do_coverageall(self):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c coverageall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Started\n" \
-                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_coverageall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-autotools-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
     def test_do_checkcode(self):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c checkcode")
@@ -209,8 +195,7 @@ class cpp_project_autotools(unittest.TestCase):
 
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake cpp-project-autotools -c checkcodeall")
-        assert o["stdout"].contains("NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_checkcodeall: Started\n" \
-                                    "NOTE: recipe cpp-project-autotools-1.0.0-r0: task do_checkcodeall: Succeeded")
+        assert o["stdout"].contains("WARNING: cpp-project-autotools-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 
 if __name__ == "__main__":
