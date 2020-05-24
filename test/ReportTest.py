@@ -3,14 +3,12 @@
 import pytest
 import unittest
 import yocto
-
-BRANCH = "morty"
-CONFIG = "report.conf"
+from configure import config
 
 
 class core_image_minimal(unittest.TestCase):
     def setUp(self):
-        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        self.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["report"])
 
     def test_do_coverageall(self):
         assert self.build.shell.execute("bitbake core-image-minimal -c coverageall").stderr.empty()
@@ -43,7 +41,7 @@ class core_image_minimal(unittest.TestCase):
 
 class cpp_project(unittest.TestCase):
     def setUp(self):
-        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        self.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["report"])
 
     def test_do_coverageall(self):
         assert self.build.shell.execute("bitbake cpp-project -c coverageall").stderr.empty()
@@ -58,7 +56,7 @@ class cpp_project(unittest.TestCase):
 
 class sqlite3logger(unittest.TestCase):
     def setUp(self):
-        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        self.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["report"])
 
     def test_do_coverageall(self):
         assert self.build.shell.execute("bitbake sqlite3logger -c coverageall").stderr.empty()
@@ -77,7 +75,7 @@ class sqlite3logger(unittest.TestCase):
 
 class cpp_project_qt5(unittest.TestCase):
     def setUp(self):
-        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        self.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["report"])
 
     def test_do_coverageall(self):
         assert self.build.shell.execute("bitbake cpp-project-qt5 -c coverageall").stderr.empty()
@@ -93,7 +91,7 @@ class cpp_project_qt5(unittest.TestCase):
 
 class cpp_project_autotools(unittest.TestCase):
     def setUp(self):
-        self.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        self.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["report"])
 
     def test_do_coverageall(self):
         assert self.build.shell.execute("bitbake cpp-project-autotools -c coverageall").stderr.empty()

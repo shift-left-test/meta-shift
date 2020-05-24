@@ -3,15 +3,13 @@
 import pytest
 import unittest
 import yocto
-
-BRANCH = "morty"
-CONFIG = "bare.conf"
+from configure import config
 
 
 class core_image_minimal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["bare"])
 
     def test_do_build(self):
         assert self.build.shell.execute("bitbake core-image-minimal").stderr.empty()

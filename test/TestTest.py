@@ -3,15 +3,13 @@
 import pytest
 import unittest
 import yocto
-
-BRANCH = "morty"
-CONFIG = "test.conf"
+from configure import config
 
 
 class core_image_minimal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
 
     def test_do_build(self):
         assert self.build.shell.execute("bitbake core-image-minimal").stderr.empty()
@@ -86,7 +84,7 @@ class core_image_minimal(unittest.TestCase):
 class cpp_project(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
 
     def test_do_build(self):
         assert self.build.shell.execute("bitbake cpp-project").stderr.empty()
@@ -138,7 +136,7 @@ class cpp_project(unittest.TestCase):
 class sqlite3logger(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
 
     def test_do_build(self):
         assert self.build.shell.execute("bitbake sqlite3logger").stderr.empty()
@@ -195,7 +193,7 @@ class sqlite3logger(unittest.TestCase):
 class cpp_project_qt5(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
 
     def test_build(self):
         assert self.build.shell.execute("bitbake cpp-project-qt5").stderr.empty()
@@ -247,7 +245,7 @@ class cpp_project_qt5(unittest.TestCase):
 class cpp_project_autotools(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=BRANCH, conf=CONFIG)
+        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
 
     def test_do_build(self):
         assert self.build.shell.execute("bitbake cpp-project-autotools").stderr.empty()

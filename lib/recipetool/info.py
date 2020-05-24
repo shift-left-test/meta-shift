@@ -1,19 +1,24 @@
-# Recipe creation tool - recipe infomation retrieval plugin
+# MIT License
 #
-# Copyright (C) 2020 Sung Gon Kim
+# Copyright (c) 2020 Sung Gon Kim
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 2 as
-# published by the Free Software Foundation.
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 #
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
 import sys
 import os
@@ -30,7 +35,7 @@ import json
 logger = logging.getLogger('recipetool')
 
 tinfoil = None
-plugins = None
+
 
 def tinfoil_init(instance):
     global tinfoil
@@ -43,7 +48,6 @@ class Reporter:
 
     def section(self, section_name):
         self.result.append("\n%s\n%s\n" % (section_name, ('-' * len(section_name))))
-
 
     def add_value(self, key, value):
         if isinstance(value, dict):
@@ -69,16 +73,13 @@ class ReporterJson(Reporter):
         self.result = {}
         self.current_section = None
 
-
     def section(self, section_name):
         self.current_section = {}
         self.result[section_name] = self.current_section
 
-
     def add_value(self, key, value):
         self.current_section[key] = value
         pass
-
 
     def dump(self):
         sys.stdout.write(json.dumps(self.result, indent=2))
@@ -156,8 +157,8 @@ def retrieve(args):
 
 def register_commands(subparsers):
     parser_info = subparsers.add_parser('info',
-                                          help='Retrieve recipe information',
-                                          description='Retrieve recipe file-path, version, meta-layer, append-file, dependencies, inherits, etc.')
+                                        help='Retrieve recipe information',
+                                        description='Retrieve recipe file-path, version, meta-layer, append-file, dependencies, inherits, etc.')
     parser_info.add_argument('-j', '--json', help='Dump as the json format', action='store_true')
     parser_info.add_argument('recipename', help='Recipe name to retrieve')
     parser_info.set_defaults(func=retrieve, parserecipes=True)
