@@ -194,7 +194,7 @@ class BuildInfo(object):
 
 class BuildEnvironment(object):
     def __init__(self, branch, conf):
-        self.repodir = os.path.join(*[tempfile.gettempdir(), "meta-shift-repos", getpass.getuser()])
+        self.repodir = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
         self.branch = branch
         self.conf = os.path.join(*[os.path.dirname(__file__), conf])
         self.builddir = tempfile.mkdtemp()
