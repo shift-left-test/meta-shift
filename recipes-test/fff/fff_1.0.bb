@@ -7,7 +7,9 @@ SECTION = "devel"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ae0c5f671972941881237cb85e1c74b2"
 
-SRC_URI = "git://github.com/meekrosoft/fff.git;protocol=https;tag=v${PV};nobranch=1"
+SRC_URI = "git://github.com/meekrosoft/fff.git;protocol=https;nobranch=1"
+
+SRCREV = "995f26b93955601e9a0570faf8f171316edfe055"
 
 S = "${WORKDIR}/git"
 

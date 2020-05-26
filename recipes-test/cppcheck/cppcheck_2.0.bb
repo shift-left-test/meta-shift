@@ -7,8 +7,10 @@ SECTION = "devel"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
-SRC_URI = "git://github.com/danmar/cppcheck.git;protocol=https;tag=${PV} \
+SRC_URI = "git://github.com/danmar/cppcheck.git;protocol=https;nobranch=1 \
            file://0001-Makefile-fixes.patch"
+
+SRCREV = "aad6dc4367b253c221f7354b342d3000ba61aabb"
 
 S = "${WORKDIR}/git"
 

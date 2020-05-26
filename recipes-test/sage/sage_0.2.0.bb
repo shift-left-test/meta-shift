@@ -13,7 +13,9 @@ DEPENDS_prepend = "\
     cpplint \
 "
 
-SRC_URI = "git://mod.lge.com/hub/yocto/addons/sage.git;protocol=http;tag=${PV}"
+SRC_URI = "git://mod.lge.com/hub/yocto/addons/sage.git;protocol=http;nobranch=1"
+
+SRCREV = "e6fd38fe858439013a6dcf6bfb4a038f4069a2e7"
 
 S = "${WORKDIR}/git"
 
