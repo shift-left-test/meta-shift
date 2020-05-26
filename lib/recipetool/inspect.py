@@ -86,7 +86,7 @@ class ReporterJson(Reporter):
         sys.stdout.write("\n")
 
 
-def retrieve(args):
+def inspect(args):
     def is_testable(recipefile):
         return any("shifttest" == os.path.splitext(os.path.basename(inherit_class))[0] for
                    inherit_class in tinfoil.cooker_data.inherits.get(recipefile, []))
@@ -156,9 +156,9 @@ def retrieve(args):
 
 
 def register_commands(subparsers):
-    parser_info = subparsers.add_parser('info',
-                                        help='Retrieve recipe information',
-                                        description='Retrieve recipe file-path, version, meta-layer, append-file, dependencies, inherits, etc.')
-    parser_info.add_argument('-j', '--json', help='Dump as the json format', action='store_true')
-    parser_info.add_argument('recipename', help='Recipe name to retrieve')
-    parser_info.set_defaults(func=retrieve, parserecipes=True)
+    parser = subparsers.add_parser('inspect',
+                                   help='Inspect recipe information',
+                                   description='Inspect recipe file-path, version, meta-layer, append-file, dependencies, inherits, etc.')
+    parser.add_argument('-j', '--json', help='Dump as the json format', action='store_true')
+    parser.add_argument('recipename', help='Recipe name to inspect')
+    parser.set_defaults(func=inspect, parserecipes=True)

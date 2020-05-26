@@ -6,13 +6,13 @@ import yocto
 from configure import config
 
 
-class Recipetool(unittest.TestCase):
+class Inspect(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["bare"])
 
-    def test_info_default_format(self):
-        o = self.build.shell.execute("recipetool info cpplint")
+    def test_default_format(self):
+        o = self.build.shell.execute("recipetool inspect cpplint")
         assert o["stdout"].containsAll("General Information",
                                        "-------------------",
                                        "Name: cpplint",
@@ -28,8 +28,8 @@ class Recipetool(unittest.TestCase):
                                        "Layer: meta-shift",
                                        "Testable: False")
 
-    def test_info_json_format(self):
-        o = self.build.shell.execute("recipetool info cpplint --json")
+    def test_json_format(self):
+        o = self.build.shell.execute("recipetool inspect cpplint --json")
         assert o["stdout"].containsAll('"General Information": {',
                                        '"Author": "Google Inc."',
                                        '"Homepage": "https://github.com/cpplint/cpplint"',
@@ -45,25 +45,25 @@ class Recipetool(unittest.TestCase):
                                        '"Description": "A Static code analyzer for C/C++ written in python"')
 
 
-class RecipetoolWithRelease(unittest.TestCase):
+class InspectWithRelease(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["release"])
 
-    def test_info_cpp_project(self):
-        o = self.build.shell.execute("recipetool info cpp-project")
+    def test_cpp_project(self):
+        o = self.build.shell.execute("recipetool inspect cpp-project")
         assert o["stdout"].containsAll("Name: cpp-project",
                                        "Layer: meta-sample",
                                        "Testable: False")
 
 
-class RecipetoolWithTest(unittest.TestCase):
+class InspectWithTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
 
-    def test_info_cpp_project(self):
-        o = self.build.shell.execute("recipetool info cpp-project")
+    def test_cpp_project(self):
+        o = self.build.shell.execute("recipetool inspect cpp-project")
         assert o["stdout"].containsAll("Name: cpp-project",
                                        "Layer: meta-sample",
                                        "Testable: True")

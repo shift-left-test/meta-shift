@@ -56,7 +56,7 @@ def downloadRepos(repodir, branch):
     for name, repo in repos.items():
         path = os.path.join(repodir, repo["location"])
         logger.info("REPO: {}".format(path))
-        execute("git clone --depth 1 {} -b {} {}".format(repo["url"], branch, path))
+        execute("git clone {} --depth 1 -b {} {}".format(repo["url"], branch, path))
 
 def initBuildEnv(repodir, directory):
     path = os.path.join(repodir, repos["poky"]["location"])
@@ -82,7 +82,7 @@ def configure(repodir, directory, filename):
             f.write('{} = "{}"\n'.format(key, value.replace("${HOME}", os.path.expanduser("~"))))
 
 
-def printBashUsage(repodir, directory):
+def printUsage(repodir, directory):
     print("""\n\n\n### Shell environment set up command ###
 
     source {0}/poky/oe-init-build-env {1}
@@ -109,4 +109,4 @@ if __name__ == "__main__":
     configure(options.repodir, options.directory, options.filename)
     logger.info("Done.")
 
-    printBashUsage(options.repodir, options.directory)
+    printUsage(options.repodir, options.directory)

@@ -1,4 +1,4 @@
-SRC_URI_append_class-native = " git://mod.lge.com/hub/yocto/CMakeUtils.git;protocol=http;tag=1.0.0;nobranch=1;destsuffix=cmakeutils"
+SRC_URI_append_class-native = " git://mod.lge.com/hub/yocto/addons/CMakeUtils.git;protocol=http;tag=1.0.0;nobranch=1;destsuffix=cmakeutils"
 
 do_install_append() {
     install -d ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules
