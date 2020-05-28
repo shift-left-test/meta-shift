@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
+import constants
 import pytest
 import unittest
 import yocto
-from configure import config
 
 
 class TestLayersWithRelease(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["release"])
+        cls.build = yocto.BuildEnvironment(branch=constants.BRANCH, conf=constants.RELEASE)
 
     def test_mutually_exclusive_options(self):
         assert not self.build.shell.execute("bitbake-layers test-layers --show --add").stderr.empty()

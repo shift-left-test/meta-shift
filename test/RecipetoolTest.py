@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
+import constants
 import pytest
 import unittest
 import yocto
-from configure import config
 
 
 class Inspect(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["bare"])
+        cls.build = yocto.BuildEnvironment(branch=constants.BRANCH, conf=constants.BARE)
 
     def test_default_format(self):
         o = self.build.shell.execute("recipetool inspect cpplint")
@@ -48,7 +48,7 @@ class Inspect(unittest.TestCase):
 class InspectWithRelease(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["release"])
+        cls.build = yocto.BuildEnvironment(branch=constants.BRANCH, conf=constants.RELEASE)
 
     def test_cpp_project(self):
         o = self.build.shell.execute("recipetool inspect cpp-project")
@@ -60,7 +60,7 @@ class InspectWithRelease(unittest.TestCase):
 class InspectWithTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.build = yocto.BuildEnvironment(branch=config["branch"], conf=config["test"])
+        cls.build = yocto.BuildEnvironment(branch=constants.BRANCH, conf=constants.TEST)
 
     def test_cpp_project(self):
         o = self.build.shell.execute("recipetool inspect cpp-project")
