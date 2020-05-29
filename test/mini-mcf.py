@@ -4,7 +4,6 @@ import argparse
 import errno
 import getpass
 import os
-import shutil
 import subprocess
 import tempfile
 import json
@@ -28,6 +27,7 @@ repos = {
     "meta-sample-test": { "url": "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test" },
 }
 
+
 def getopts():
     def exist_file(path):
         if not os.path.exists(path):
@@ -43,24 +43,29 @@ def getopts():
     parser.add_argument("-r", dest="repodir", default=REPO_BASE_DIR, help="Path to download the git repositories (default: %s)" % REPO_BASE_DIR)
     return parser.parse_args()
 
-def execute(cmd):
-    return subprocess.call(cmd, shell=True)
 
-def cleanup(repodir, directory):
-    for d in [repodir, directory]:
-        if os.path.exists(d):
-            logger.info("Remove the previously populated directory: {}".format(d))
-            shutil.rmtree(d)
+def execute(cmd):
+    return subprocess.check_call(cmd, shell=True)
+
+
+def downloadRepo(url, branch, path):
+    if not os.path.exists(path):
+        execute("git clone {} -b {} {}".format(url, branch, path))
+    else:
+        execute("git --git-dir={0}/.git --work-tree={0} checkout {1}".format(path, branch))
+        execute("git --git-dir={0}/.git --work-tree={0} pull".format(path))
+
 
 def downloadRepos(repodir, branch):
     for name, repo in repos.items():
         path = os.path.join(repodir, repo["location"])
         logger.info("REPO: {}".format(path))
-        execute("git clone {} --depth 1 -b {} {}".format(repo["url"], branch, path))
+        downloadRepo(repo["url"], branch, path)
 
 def initBuildEnv(repodir, directory):
     path = os.path.join(repodir, repos["poky"]["location"])
     execute('bash -c "source {}/oe-init-build-env {}"'.format(path, directory))
+
 
 def configure(repodir, directory, filename):
     with open(filename, "r") as f:
@@ -92,10 +97,6 @@ def printUsage(repodir, directory):
 
 if __name__ == "__main__":
     options = getopts()
-
-    logger.info("Clean up previous directories...")
-    cleanup(options.repodir, options.directory)
-    logger.info("Done.")
 
     logger.info("Downloading repos at {0}...".format(options.repodir))
     downloadRepos(options.repodir, options.branch)
