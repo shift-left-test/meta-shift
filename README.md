@@ -29,6 +29,26 @@ Supported tools
 * CMakeUtils
 
 
+Features
+--------
+
+List of the tasks supported
+
+* do_test
+* do_testall
+* do_coverage
+* do_coverageall
+* do_checkcode
+* do_checkcodeall
+* do_purgeall
+
+List of bitbake tools supported
+
+* bitbake-layers test-layers
+* recipetool check
+* recipetool inspect
+
+
 Requirements
 ------------
 

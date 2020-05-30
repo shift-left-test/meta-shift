@@ -1,10 +1,13 @@
 # Summary
-*Summarize information of feature*<br><br>
-  
-  
-# (Optional)TO DO List
- * [ ] 
-<br><br>
-  
-  
+<!--- Summarize information of the feature request -->
+
+
+# Tasks
+<!--- Tasks to accomplish the feature -->
+
+ * [ ]
+ * [ ]
+
+
+
 /label ~enhancement

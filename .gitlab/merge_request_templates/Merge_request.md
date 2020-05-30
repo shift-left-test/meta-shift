@@ -1,8 +1,13 @@
 # Summary
+<!--- Summarize the information of the merge request -->
 
 
-<br><br>
- 
-# (Optional)Included Feature List
- * 
+# Features
+<!--- List of features and bugfixes implemented -->
+
  *
+ *
+ *
+
+
+/assign @sunggon82.kim
