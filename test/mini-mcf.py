@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 import json
 import logging
+import constants
 
 
 logging.basicConfig(level=logging.INFO, format="[ %(levelname)s ] %(message)s")
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 PWD = os.path.dirname(os.path.abspath(__file__))
 REPO_BASE_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
-DEFAULT_BRANCH = "morty"
+DEFAULT_BRANCH = constants.BRANCH
 DEFAULT_DIR = "build"
 
 repos = {

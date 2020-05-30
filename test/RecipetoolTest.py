@@ -52,9 +52,9 @@ class InspectWithRelease(unittest.TestCase):
     def setUpClass(cls):
         cls.build = yocto.BuildEnvironment(branch=constants.BRANCH, conf=constants.RELEASE)
 
-    def test_cpp_project(self):
-        o = self.build.shell.execute("recipetool inspect cpp-project")
-        assert o.stdout.containsAll("Name: cpp-project",
+    def test_cmake_project(self):
+        o = self.build.shell.execute("recipetool inspect cmake-project")
+        assert o.stdout.containsAll("Name: cmake-project",
                                     "Layer: meta-sample",
                                     "Testable: False")
 
@@ -64,9 +64,9 @@ class InspectWithTest(unittest.TestCase):
     def setUpClass(cls):
         cls.build = yocto.BuildEnvironment(branch=constants.BRANCH, conf=constants.TEST)
 
-    def test_cpp_project(self):
-        o = self.build.shell.execute("recipetool inspect cpp-project")
-        assert o.stdout.containsAll("Name: cpp-project",
+    def test_cmake_project(self):
+        o = self.build.shell.execute("recipetool inspect cmake-project")
+        assert o.stdout.containsAll("Name: cmake-project",
                                     "Layer: meta-sample",
                                     "Testable: True")
 
