@@ -167,10 +167,10 @@ class Shell(object):
     def run(self, command):
         subprocess.call(self.cmd(command), shell=True)
 
-    def execute(self, command):
-        proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    def execute(self, command, env=None):
+        proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
         streams = proc.communicate()
-        return Outputs({ "stdout": Output(streams[0]), "stderr": Output(streams[1]) })
+        return Outputs({ "stdout": Output(streams[0]), "stderr": Output(streams[1]), "returncode": proc.returncode })
 
 
 class BuildInfo(object):

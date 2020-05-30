@@ -17,6 +17,7 @@ Supported tools
 
 * cppcheck (2.0)
 * cpplint (1.4.5)
+* fff (1.0)
 * gtest (via meta-oe)
 * gmock (via meta-oe)
 * qemu-native (via meta)
@@ -50,7 +51,7 @@ How to run tests
 
 The following command runs all tests
 
-    $ py.test test/
+    $ py.test
 
 You may also run an individual test suite by executing the python test script directly
 

@@ -1,0 +1,38 @@
+#!/bin/sh
+TMP="$(dirname $(mktemp -u))/"
+TOOL="recipetool check"
+TESTFILE="${TMP}oelint_adv_test.bb"
+trap "rm -f ${TESTFILE}" EXIT
+TESTID="oelint.task.order.*"
+TESTOCC="7"
+cat > ${TESTFILE} << EOF
+do_package() {
+    :
+}
+do_populate_sysroot() {
+    :
+}
+do_install() {
+    :
+}
+do_compile() {
+    :
+}
+do_configure() {
+    :
+}
+do_patch() {
+    :
+}
+do_unpack() {
+    :
+}
+do_fetch() {
+    :
+}
+EOF
+[ $(${TOOL} ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
+${TOOL} ${TESTFILE} 2>&1
+_got=$(${TOOL} ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
+echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
+exit 1

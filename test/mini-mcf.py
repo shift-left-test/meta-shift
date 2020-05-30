@@ -68,13 +68,13 @@ def initBuildEnv(repodir, directory):
 
 
 def configure(repodir, directory, filename):
-    with open(filename, "r") as f:
-        conf = json.load(f)
-
     bblayers_conf = os.path.join(directory, "conf/bblayers.conf")
 
     with open(bblayers_conf, "a") as f:
         f.write('BBLAYERS_append = " {}"\n'.format(os.path.abspath(os.path.dirname(PWD))))
+
+    with open(filename, "r") as f:
+        conf = json.load(f)
 
     for include in conf["includes"]:
         path = os.path.abspath(os.path.join(repodir, repos[include]["layer"]))

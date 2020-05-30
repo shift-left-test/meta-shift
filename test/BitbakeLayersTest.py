@@ -18,15 +18,15 @@ class TestLayersWithRelease(unittest.TestCase):
 
     def test_default_action(self):
         o = self.build.shell.execute("bitbake-layers test-layers")
-        assert o["stdout"].contains("meta-sample-test")
+        assert o.stdout.contains("meta-sample-test")
 
     def test_show(self):
         o = self.build.shell.execute("bitbake-layers test-layers --show")
-        assert o["stdout"].contains("meta-sample-test")
+        assert o.stdout.contains("meta-sample-test")
 
     def test_show_with_basepath(self):
         o = self.build.shell.execute("bitbake-layers test-layers --show --basepath /dev/null")
-        assert not o["stdout"].contains("meta-sample-test")
+        assert not o.stdout.contains("meta-sample-test")
 
 
 if __name__ == "__main__":

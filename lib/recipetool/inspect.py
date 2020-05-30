@@ -100,7 +100,7 @@ def inspect(args):
     recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, pn)
 
     if recipefile is None:
-        print("Fail to find recipefile for '{}'".format(pn))
+        print("Failed to find the recipe file for '{}'".format(pn), file=sys.stderr)
         return
 
     appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)
@@ -156,9 +156,9 @@ def inspect(args):
 
 
 def register_commands(subparsers):
-    parser = subparsers.add_parser('inspect',
-                                   help='Inspect recipe information',
-                                   description='Inspect recipe file-path, version, meta-layer, append-file, dependencies, inherits, etc.')
-    parser.add_argument('-j', '--json', help='Dump as the json format', action='store_true')
-    parser.add_argument('recipename', help='Recipe name to inspect')
+    parser = subparsers.add_parser("inspect",
+                                   help="Inspect the specified recipe information",
+                                   description="Inspect the specified recipe's detailed information, including file-path, version, meta-layer, append-file, dependencies, inherits, etc.")
+    parser.add_argument("-j", "--json", help="Prints JSON formatted information", action="store_true")
+    parser.add_argument("recipename", help="Recipe name to inspect")
     parser.set_defaults(func=inspect, parserecipes=True)
