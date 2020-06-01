@@ -19,13 +19,13 @@ DEFAULT_BRANCH = constants.BRANCH
 DEFAULT_DIR = "build"
 
 REPOS = {
-    "poky": { "url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta" },
-    "meta-oe": { "url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-oe" },
-    "meta-python": { "url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-python" },
-    "meta-qt5": { "url": "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "location": "meta-qt5", "layer": "meta-qt5" },
-    "meta-shift": { "url": os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "location": "meta-shift", "layer": "meta-shift" },
-    "meta-sample": { "url": "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "location": "meta-sample", "layer": "meta-sample" },
-    "meta-sample-test": { "url": "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test" },
+    "poky": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta"},
+    "meta-oe": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-oe"},
+    "meta-python": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-python"},
+    "meta-qt5": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "location": "meta-qt5", "layer": "meta-qt5"},
+    "meta-shift": {"url": os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "location": "meta-shift", "layer": "meta-shift"},
+    "meta-sample": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "location": "meta-sample", "layer": "meta-sample"},
+    "meta-sample-test": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test"},
 }
 
 
@@ -102,7 +102,7 @@ def configure_local(args):
     conf = read_json(args.filename)
     for key, value in conf["local.conf"].items():
         with open(local_conf, "a") as f:
-            f.write('{} = "{}"\n'.format(key, value))
+            f.write('{} ?= "{}"\n'.format(key, value.replace("${HOME}", os.path.expanduser("~"))))
     logger.info("Done")
 
 

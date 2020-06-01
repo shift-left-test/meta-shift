@@ -78,7 +78,8 @@ class Check(unittest.TestCase):
 
     def check_return(self, filename):
         BASE_DIR = os.path.join(os.path.dirname(__file__), "recipetool_check_tests")
-        o = self.build.shell.execute("source {}".format(os.path.join(BASE_DIR, filename)))
+        o = self.build.shell.execute("source {} {}".format(os.path.join(BASE_DIR, filename),
+                                                           self.build.builddir))
         assert o.returncode == 0, "{}:{}".format(filename, o.stdout)
 
     def test_rule_vars_bbclassextends_bad(self):

@@ -120,7 +120,6 @@ class cmake_project(unittest.TestCase):
         assert o.stdout.containsAll("cmake-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
                                     "cmake-project-1.0.0-r0 do_checkcode: * cpplint is running...")
 
-
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake cmake-project -c checkcodeall")
         assert o.stdout.containsAll("cmake-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
@@ -229,7 +228,6 @@ class qmake5_project5(unittest.TestCase):
         assert o.stdout.containsAll("qmake5-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
                                     "qmake5-project-1.0.0-r0 do_checkcode: * cpplint is running...")
 
-
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake qmake5-project -c checkcodeall")
         assert o.stdout.containsAll("qmake5-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
@@ -276,7 +274,6 @@ class autotools_project(unittest.TestCase):
         o = self.build.shell.execute("bitbake autotools-project -c checkcode")
         assert o.stdout.containsAll("autotools-project-1.0.0-r0 do_checkcode: * cppcheck is running...",
                                     "autotools-project-1.0.0-r0 do_checkcode: * cpplint is running...")
-
 
     def test_do_checkcodeall(self):
         o = self.build.shell.execute("bitbake autotools-project -c checkcodeall")

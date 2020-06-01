@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 TempDirectories = []
 
+
 @atexit.register
 def removeTempDirectories():
     for tempdir in TempDirectories:
@@ -125,8 +126,9 @@ class Files(object):
         if os.path.exists(f):
             shutil.rmtree(f)
 
+
 class Outputs(object):
-    def __init__(self, kwargs = {}):
+    def __init__(self, kwargs={}):
         self.outputs = {}
         for key, value in kwargs.items():
             self.__setitem__(key, value)
@@ -167,10 +169,10 @@ class Shell(object):
     def run(self, command):
         subprocess.call(self.cmd(command), shell=True)
 
-    def execute(self, command, env=None):
-        proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+    def execute(self, command):
+        proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         streams = proc.communicate()
-        return Outputs({ "stdout": Output(streams[0]), "stderr": Output(streams[1]), "returncode": proc.returncode })
+        return Outputs({"stdout": Output(streams[0]), "stderr": Output(streams[1]), "returncode": proc.returncode})
 
 
 class BuildInfo(object):

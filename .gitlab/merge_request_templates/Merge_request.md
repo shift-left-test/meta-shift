@@ -4,10 +4,9 @@
 
 # Features
 <!--- List of features and bugfixes implemented -->
-
- *
- *
- *
+* [ ]  
+* [ ]  
+* [ ]  
 
 
 /assign @sunggon82.kim

@@ -158,6 +158,7 @@ class qmake5_project5(unittest.TestCase):
         o = self.build.shell.execute("bitbake qmake5-project -c checkcodeall")
         assert o.stdout.contains("WARNING: qmake5-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
+
 class autotools_project(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

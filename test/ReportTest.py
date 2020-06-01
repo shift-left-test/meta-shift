@@ -29,7 +29,7 @@ class core_image_minimal(unittest.TestCase):
         assert self.build.files.read("report/test_check/sqlite3wrapper-0.1.0-r0/cppcheck_report.xml").contains('cppcheck version=')
         assert self.build.files.read("report/test_check/stringutils-0.0.1-r0/cppcheck_report.xml").contains('cppcheck version="')
 
-        #check cpplint report
+        # check cpplint report
         assert self.build.files.read("report/test_check/cmake-project-1.0.0-r0/cpplint_report.txt")
         assert self.build.files.read("report/test_check/sqlite3wrapper-0.1.0-r0/cpplint_report.txt")
         assert self.build.files.read("report/test_check/stringutils-0.0.1-r0/cpplint_report.txt")

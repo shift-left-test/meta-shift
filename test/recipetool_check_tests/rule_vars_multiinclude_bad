@@ -1,5 +1,5 @@
 #!/bin/sh
-TMP="$(dirname $(mktemp -u))/"
+TMP="$1/"
 TOOL="recipetool check"
 TESTFILE="${TMP}oelint_adv_test.bb"
 TESTPATCHFOLDER="/tmp"

@@ -79,6 +79,7 @@ def check(args, files):
 
 
 def checkrecipes(args):
+    logger.info("Checking the specified recipes or files for the styling issues...")
     files = []
     for recipe in args.recipes:
         if os.path.isfile(recipe):
@@ -94,6 +95,7 @@ def checkrecipes(args):
             else:
                 print("Failed to find the recipe file for '{}'".format(recipe), file=sys.stderr)
     check(args, files)
+    logger.info("Done.")
 
 
 def register_commands(subparsers):
