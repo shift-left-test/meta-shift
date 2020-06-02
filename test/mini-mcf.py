@@ -23,6 +23,7 @@ REPOS = {
     "meta-oe": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-oe"},
     "meta-python": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-python"},
     "meta-qt5": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "location": "meta-qt5", "layer": "meta-qt5"},
+    "meta-clang": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "location": "meta-clang", "layer": "meta-clang"},
     "meta-shift": {"url": os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "location": "meta-shift", "layer": "meta-shift"},
     "meta-sample": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "location": "meta-sample", "layer": "meta-sample"},
     "meta-sample-test": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test"},
