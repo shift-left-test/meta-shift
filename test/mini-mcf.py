@@ -102,7 +102,7 @@ def configure_local(args):
     conf = read_json(args.filename)
     for key, value in conf["local.conf"].items():
         with open(local_conf, "a") as f:
-            f.write('{} ?= "{}"\n'.format(key, value))
+            f.write('{} ?= "{}"\n'.format(key, value.replace("${HOME}", os.path.expanduser("~"))))
     logger.info("Done")
 
 
