@@ -3,10 +3,10 @@
 
 
 # Features
-<!--- List of features and bugfixes implemented -->
-* [ ]  
-* [ ]  
-* [ ]  
+<!--- List of features and bugfixes included -->
+*  
+*  
+*  
 
 
 /assign @sunggon82.kim

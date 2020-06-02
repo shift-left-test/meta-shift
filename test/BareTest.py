@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import constants
+import os
 import pytest
 import unittest
 import yocto
@@ -32,6 +33,23 @@ class core_image_minimal(unittest.TestCase):
         assert pkgs.contains("./opt/poky/2.2.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.6/Modules/CMakeUtils.cmake")
         assert pkgs.contains("./opt/poky/2.2.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.6/Modules/FindGMock.cmake")
         assert pkgs.contains("./opt/poky/2.2.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+
+    def test_cmake_project_build_on_sdk(self):
+        assert self.build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
+        installer = os.path.join(self.build.builddir, "tmp", "deploy", "sdk", "poky-glibc-x86_64-core-image-minimal-aarch64-toolchain-2.2.4.sh")
+        assert os.path.exists(installer)
+
+        project_dir = os.path.join(self.build.builddir, "project")
+        self.build.shell.execute("git clone http://mod.lge.com/hub/yocto/sample/cmake-project.git {}".format(project_dir))
+
+        sdk_dir = os.path.join(self.build.builddir, "sdk")
+        command = "; ".join(["{0} -d {1} -y",
+                             "source {1}/environment-setup-aarch64-poky-linux",
+                             "cd {2}",
+                             "cmake . -DENABLE_TEST=ON",
+                             "make all test"])
+        o = self.build.shell.execute(command.format(installer, sdk_dir, project_dir))
+        assert o.returncode == 2, o.stderr  # Expect 2, since two tests fails
 
     def test_cmakeutils_native(self):
         assert self.build.shell.execute("bitbake cmake-native").stderr.empty()
