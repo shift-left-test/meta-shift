@@ -13,11 +13,13 @@ SRCREV = "995f26b93955601e9a0570faf8f171316edfe055"
 
 S = "${WORKDIR}/git"
 
-SECTION_${PN}-dev = "devel"
-FILES_${PN}-dev = "${includedir}"
-ALLOW_EMPTY_${PN}-dev = "1"
+ALLOW_EMPTY_${PN} = "1"
+
+FILES_${PN} = "${includedir}"
 
 do_install() {
     install -d ${D}/${includedir}/fff
     install -m 644 ${S}/fff.h ${D}/${includedir}/fff/fff.h
 }
+
+BBCLASSEXTEND = "native nativesdk"
