@@ -122,7 +122,7 @@ def inspect(args):
     reporter.add_value("Testable", is_testable(recipefile))
 
     reporter.section("Additional Information")
-    reporter.add_value("BBFile", recipefile)
+    reporter.add_value("BBFile", recipefile.split(":")[-1])  # To remove extra prefixes (e.g. virtual, nativesdk)
     reporter.add_value("Appends", appendfiles)
     reporter.add_value("SRC_URI", recipedata.getVar("SRC_URI", True).split())
     reporter.add_value("Work", recipedata.getVar("WORKDIR", True))
