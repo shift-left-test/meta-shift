@@ -28,7 +28,6 @@ import fnmatch
 import re
 import logging
 import scriptutils
-import oe.recipeutils
 import bb
 import json
 import subprocess
@@ -88,7 +87,7 @@ def checkrecipes(args):
             else:
                 print("Not a BitBake file: '{}'".format(recipe), file=sys.stderr)
         else:
-            recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, recipe)
+            recipefile = tinfoil.cooker.findBestProvider(recipe)[3]
             if recipefile:
                 files.append(recipefile)
                 files.extend(tinfoil.cooker.collection.get_file_appends(recipefile))

@@ -18,7 +18,9 @@ RDEPENDS_${PN}_class-nativesdk = "\
     nativesdk-perl-module-filehandle \
     nativesdk-perl-module-file-spec-functions \
     nativesdk-perl-module-file-temp \
+    nativesdk-perl-module-file-find \
     nativesdk-perl-module-getopt-std \
+    nativesdk-perl-module-getopt-long \
 "
 
 BBCLASSEXTEND = "native nativesdk"

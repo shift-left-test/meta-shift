@@ -30,11 +30,6 @@ RDEPENDS_${PN} += "\
 "
 
 do_install_append_class-nativesdk() {
-    # To fix the nativesdk recipe shebang path bug of distutils for Yocto morty
-    for i in ${D}${bindir}/* ; do
-        sed -i -e s:${bindir}/env:${USRBINPATH}/env:g $i
-    done
-
     echo "export GCOV=""$""{TARGET_PREFIX}gcov" > ${WORKDIR}/gcovr.sh
     install -d ${D}${SDKPATHNATIVE}/environment-setup.d
     install -m 644 ${WORKDIR}/gcovr.sh ${D}${SDKPATHNATIVE}/environment-setup.d/gcovr.sh

@@ -1,4 +1,4 @@
-BRANCH = "morty"
+BRANCH = "pyro"
 BARE = "conf/bare.conf"
 RELEASE = "conf/release.conf"
 TEST = "conf/test.conf"

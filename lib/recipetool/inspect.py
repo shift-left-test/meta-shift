@@ -28,7 +28,6 @@ import fnmatch
 import re
 import logging
 import scriptutils
-import oe.recipeutils
 import bb
 import json
 
@@ -97,14 +96,14 @@ def inspect(args):
         reporter = Reporter()
 
     pn = args.recipename
-    recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, pn)
-
+    recipefile = tinfoil.cooker.findBestProvider(pn)[3]
+    
     if recipefile is None:
         print("Failed to find the recipe file for '{}'".format(pn), file=sys.stderr)
         return
 
     appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)
-    recipedata = oe.recipeutils.parse_recipe(tinfoil.cooker, recipefile, appendfiles)
+    recipedata = tinfoil.parse_recipe_file(recipefile)
     recipename = tinfoil.cooker_data.pkg_fn[recipefile]
 
     reporter.section("General Information")
@@ -135,7 +134,7 @@ def inspect(args):
     for inherit_class in recipe_inherits:
         classname = os.path.splitext(os.path.basename(inherit_class))[0]
         inherits[classname] = inherit_class
-    provides = tinfoil.cooker_data.fn_provides[recipefile]
+    provides = recipedata.getVar("PROVIDES", True).split()
     dependedby = []
 
     for fn, pn in tinfoil.cooker_data.pkg_fn.items():
