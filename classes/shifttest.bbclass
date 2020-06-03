@@ -107,6 +107,8 @@ shifttest_do_coverage() {
     rm -rf ${OUTPUT_DIR}
 
     genhtml ${LCOV_DATAFILE} \
+        --demangle-tool ${TARGET_PREFIX}c++filt \
+        --demangle-cpp \
         --output-directory ${OUTPUT_DIR} \
         --ignore-errors source \
         --rc genhtml_branch_coverage=1
@@ -114,6 +116,7 @@ shifttest_do_coverage() {
     cd ${S}
 
     nativepython -m lcov_cobertura ${LCOV_DATAFILE} \
+        --demangle-tool=${TARGET_PREFIX}c++filt \
         --demangle \
         --output ${COBERTURA_FILE}
 

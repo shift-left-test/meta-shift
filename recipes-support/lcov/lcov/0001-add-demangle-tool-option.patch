@@ -1,0 +1,46 @@
+diff --git a/bin/genhtml b/bin/genhtml
+index 03ca57e..43770b2 100755
+--- a/bin/genhtml
++++ b/bin/genhtml
+@@ -289,6 +289,7 @@ our $html_epilog;	# Actual HTML epilog
+ our $html_ext = "html";	# Extension for generated HTML files
+ our $html_gzip = 0;	# Compress with gzip
+ our $demangle_cpp = 0;	# Demangle C++ function names
++our $cppfilt = "c++filt"; # Demangling executable name
+ our @opt_ignore_errors;	# Ignore certain error classes during processing
+ our @ignore;
+ our $opt_config_file;	# User-specified configuration file location
+@@ -415,6 +416,7 @@ if (!GetOptions("output-directory|o=s"	=> \$output_directory,
+ 		"sort"			=> \$sort,
+ 		"no-sort"		=> \$no_sort,
+ 		"demangle-cpp"		=> \$demangle_cpp,
++		"demangle-tool=s"		=> \$cppfilt,
+ 		"ignore-errors=s"	=> \@opt_ignore_errors,
+ 		"config-file=s"		=> \$opt_config_file,
+ 		"rc=s%"			=> \%opt_rc,
+@@ -535,7 +537,7 @@ if ($frames)
+ # Ensure that the c++filt tool is available when using --demangle-cpp
+ if ($demangle_cpp)
+ {
+-	if (system_no_output(3, "c++filt", "--version")) {
++	if (system_no_output(3, $cppfilt, "--version")) {
+ 		die("ERROR: could not find c++filt tool needed for ".
+ 		    "--demangle-cpp\n");
+ 	}
+@@ -608,6 +610,7 @@ HTML output:
+       --html-gzip                   Use gzip to compress HTML
+       --(no-)sort                   Enable (disable) sorted coverage views
+       --demangle-cpp                Demangle C++ function names
++	  --demangle-tool				Demangling executable name
+ 
+ For more information see: $lcov_url
+ END_OF_USAGE
+@@ -814,7 +817,7 @@ sub demangle_cpp($)
+ 	close($handle);
+ 
+ 	# Run c++ filt on tempfile file and parse output, creating a hash
+-	open($handle, "-|", "c++filt < $tmpfile") or
++	open($handle, "-|", "$cppfilt < $tmpfile") or
+ 		die("ERROR: could not run c++filt: $!\n");
+ 	@fn_list_demangled = <$handle>;
+ 	close($handle);
