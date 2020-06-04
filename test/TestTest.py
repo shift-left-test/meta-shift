@@ -21,8 +21,6 @@ class core_image_minimal(unittest.TestCase):
                                  "sqlite3logger-1.0.0-r0.aarch64.rpm",
                                  "libsqlite3wrapper0-0.1.0-r0.aarch64.rpm")
 
-        assert self.build.files.exists("buildhistory/packages/aarch64-poky-linux/gtest/latest")
-
     def test_do_test(self):
         o = self.build.shell.execute("bitbake core-image-minimal -c test")
         assert o.stderr.contains("ERROR: Task do_test does not exist for target core-image-minimal")
