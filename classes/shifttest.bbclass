@@ -29,6 +29,9 @@ shifttest_do_checkcode() {
     sage --source ${S} --build ${B} ${OUTPUT_PATH_OPTION} ${CHECK_CODE_TOOLS} | shifttest_print_lines
 }
 
+# In order to overwrite the sstate cache libraries
+do_install[nostamp] = "1"
+
 addtask test after do_compile do_populate_sysroot
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
