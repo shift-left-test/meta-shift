@@ -102,8 +102,9 @@ def configure_local(args):
     local_conf = os.path.join(args.directory, "conf", "local.conf")
     conf = read_json(args.filename)
     for key, value in conf["local.conf"].items():
+        value = os.environ.get(key, value)
         with open(local_conf, "a") as f:
-            f.write('{} ?= "{}"\n'.format(key, value.replace("${HOME}", os.path.expanduser("~"))))
+            f.write('{} = "{}"\n'.format(key, value))
     logger.info("Done")
 
 
