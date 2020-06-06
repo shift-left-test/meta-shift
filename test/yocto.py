@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 
-logging.basicConfig(level=logging.INFO, format="'%(asctime)s - %(message)s'")
+logging.basicConfig(level=logging.DEBUG, format="\n[ %(levelname)s ] %(message)s")
 logger = logging.getLogger(__name__)
 
 TempDirectories = []
@@ -121,11 +121,6 @@ class Files(object):
         assert os.path.exists(f)
         return FileOutput(f)
 
-    def rmdir(self, path):
-        f = os.path.join(self.builddir, path)
-        if os.path.exists(f):
-            shutil.rmtree(f)
-
 
 class Outputs(object):
     def __init__(self, kwargs={}):
@@ -164,7 +159,9 @@ class Shell(object):
         return "Shell: ['script': {0}, 'builddir': {1}]".format(self.script, self.builddir)
 
     def cmd(self, command):
-        return 'bash -c "source {0} {1} && {2}"'.format(self.script, self.builddir, command)
+        c = 'bash -c "source {0} {1} && {2}"'.format(self.script, self.builddir, command)
+        logger.debug("CMD: '{}'".format(c))
+        return c
 
     def run(self, command):
         subprocess.call(self.cmd(command), shell=True)
@@ -204,6 +201,7 @@ class BuildEnvironment(object):
 
         mini_mcf = os.path.join(os.path.dirname(__file__), "mini-mcf.py")
         cmd = "{} -r {} -b {} -c {} -d {}".format(mini_mcf, self.repodir, self.branch, self.conf, self.builddir)
+        logger.debug("CMD: '{}'".format(cmd))
         subprocess.call(cmd, shell=True)
 
     def __repr__(self):
