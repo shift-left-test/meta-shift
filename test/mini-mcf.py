@@ -55,7 +55,7 @@ def download_repo(url, branch, path):
         execute("git clone {} -b {} {}".format(url, branch, path))
     else:
         execute("git --git-dir={0}/.git --work-tree={0} checkout {1}".format(path, branch))
-        execute("git --git-dir={0}/.git --work-tree={0} pull".format(path))
+        execute("git --git-dir={0}/.git --work-tree={0} pull --ff-only".format(path))
 
 
 def download_repos(args):
