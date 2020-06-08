@@ -19,26 +19,26 @@ class core_image_minimal(unittest.TestCase):
         assert self.build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
         pkgs = self.build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/host/installed-packages.txt")
-        assert pkgs.contains("nativesdk-cmake-3.7.2-r0.x86_64_nativesdk.rpm")
+        assert pkgs.contains("nativesdk-cmake-3.8.2-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-cppcheck-2.0-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-cpplint-1.4.5-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-gcovr-4.2-r0.x86_64_nativesdk.rpm")
         assert pkgs.contains("nativesdk-lcov-1.11-r0.x86_64_nativesdk.rpm")
-        assert pkgs.contains("nativesdk-qemu-2.8.0-r0.x86_64_nativesdk.rpm")
+        assert pkgs.contains("nativesdk-qemu-2.10.0-r0.x86_64_nativesdk.rpm")
 
         pkgs = self.build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/target/installed-packages.txt")
         assert pkgs.contains("fff-1.0-r0.aarch64.rpm")
         assert pkgs.contains("gtest-1.8.0-r0.aarch64.rpm")
 
         pkgs = self.build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/files-in-sdk.txt")
-        assert pkgs.contains("./opt/poky/2.3.4/sysroots/aarch64-poky-linux/usr/include/fff/fff.h")
-        assert pkgs.contains("./opt/poky/2.3.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.7/Modules/CMakeUtils.cmake")
-        assert pkgs.contains("./opt/poky/2.3.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.7/Modules/FindGMock.cmake")
-        assert pkgs.contains("./opt/poky/2.3.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+        assert pkgs.contains("./opt/poky/2.4.4/sysroots/aarch64-poky-linux/usr/include/fff/fff.h")
+        assert pkgs.contains("./opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.8/Modules/CMakeUtils.cmake")
+        assert pkgs.contains("./opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.8/Modules/FindGMock.cmake")
+        assert pkgs.contains("./opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
     def test_cmake_project_build_on_sdk(self):
         assert self.build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
-        installer = os.path.join(self.build.builddir, "tmp", "deploy", "sdk", "poky-glibc-x86_64-core-image-minimal-aarch64-toolchain-2.3.4.sh")
+        installer = os.path.join(self.build.builddir, "tmp", "deploy", "sdk", "poky-glibc-x86_64-core-image-minimal-aarch64-toolchain-2.4.4.sh")
         assert os.path.exists(installer)
 
         project_dir = os.path.join(self.build.builddir, "project")
@@ -64,8 +64,8 @@ class core_image_minimal(unittest.TestCase):
 
     def test_cmakeutils_nativesdk(self):
         assert self.build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
-        f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.7.2-r0/" \
-            "sysroot-destdir/opt/poky/2.3.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
+        f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.8.2-r0/" \
+            "package/opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
         assert self.build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT}")')
 
     def test_compiledb(self):
