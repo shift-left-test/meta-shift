@@ -17,6 +17,14 @@ ALLOW_EMPTY_${PN} = "1"
 
 FILES_${PN} = "${includedir}"
 
+do_configure() {
+    :
+}
+
+do_compile() {
+    :
+}
+
 do_install() {
     install -d ${D}/${includedir}/fff
     install -m 644 ${S}/fff.h ${D}/${includedir}/fff/fff.h
