@@ -1,19 +1,20 @@
 def show_affected_recipes(task, d):
+    pf = d.getVar("PF", True)
     taskdepdata = d.getVar("BB_TASKDEPDATA", False)
     recipes = [taskdepdata[dep] for dep in taskdepdata if taskdepdata[dep][1] == task]
     affected = len(recipes)
     if affected > 0:
         recipes.sort(key=lambda recipe: recipe[0])
-        bb.plain("--------------------------------------------------")
-        bb.plain("Attempted '{}' task of {} recipes.".format(task, affected))
-        bb.plain("--------------------------------------------------")
+        bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
+        bb.plain("{0} {1}all: Attempted '{1}' task of {2} recipes.".format(pf, task, affected))
+        bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
         for recipe in recipes:
-            bb.plain("    {}".format(recipe[0]))
-        bb.plain("--------------------------------------------------")
+            bb.plain("{0} {1}all:     {2}".format(pf, task, recipe[0]))
+        bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
     else:
-        bb.plain("--------------------------------------------------")
-        bb.warn("No recipes found to run '{}' task.".format(task))
-        bb.plain("--------------------------------------------------")
+        bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
+        bb.warn("{0} {1}all: No recipes found to run '{1}' task.".format(pf, task))
+        bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
 
 
 python show_recipes_with_do_checkcode() {
