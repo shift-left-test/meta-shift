@@ -13,7 +13,7 @@ def show_affected_recipes(task, d):
         bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
     else:
         bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
-        bb.warn("{0} {1}all: No recipes found to run '{1}' task.".format(pf, task))
+        bb.warn("No recipes found to run '{}' task.".format(task))
         bb.plain("{0} {1}all: --------------------------------------------------".format(pf, task))
 
 
