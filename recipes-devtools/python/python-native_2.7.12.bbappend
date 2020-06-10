@@ -8,4 +8,6 @@ RPROVIDES_${PN} += "\
     python-pprint-native \
     python-re-native \
     python-shell-native \
+    python-threading-native \
+    python-contextlib-native \
 "
