@@ -23,9 +23,9 @@ qmake5test_do_test() {
 
     shifttest_prepare_env
 
-    export QT_PLUGIN_PATH=${STAGING_DIR_TARGET}${libdir}/plugins
-    export QML_IMPORT_PATH=${STAGING_DIR_TARGET}${libdir}/qml
-    export QML2_IMPORT_PATH=$QML2_IMPORT_PATH:${STAGING_DIR_TARGET}${libdir}/qml
+    export QT_PLUGIN_PATH=${STAGING_DIR_TARGET}${OE_QMAKE_PATH_PLUGINS}
+    export QML_IMPORT_PATH=${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}
+    export QML2_IMPORT_PATH=$QML2_IMPORT_PATH:${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}
 
     export TESTRUNNER="qemu-${TUNE_ARCH} -L '${STAGING_DIR_TARGET}'"
     export TESTARGS="-platform offscreen"
