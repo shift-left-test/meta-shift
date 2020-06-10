@@ -14,7 +14,9 @@ cmaketest_do_checkcode() {
 cmaketest_do_test() {
     shifttest_prepare_output_dir
     shifttest_prepare_env
-    cmake --build ${B} --target test -- ARGS="--output-on-failure" | shifttest_print_lines
+    echo "Running tests..." | shifttest_print_lines
+    cd ${B}
+    ctest --output-on-failure | shifttest_print_lines
     shifttest_gtest_update_xmls
     shifttest_check_output_dir
 }
