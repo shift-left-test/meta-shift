@@ -20,11 +20,13 @@ DEFAULT_DIR = "build"
 
 REPOS = {
     "poky": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta"},
+    "meta-poky": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta-poky"},
+    "meta-yocto-bsp": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta-yocto-bsp"},
     "meta-oe": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-oe"},
     "meta-python": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-python"},
     "meta-qt5": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "location": "meta-qt5", "layer": "meta-qt5"},
     "meta-clang": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "location": "meta-clang", "layer": "meta-clang"},
-    "meta-shift": {"url": os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "location": "meta-shift", "layer": "meta-shift"},
+    "meta-shift": {"url": "", "location": "meta-shift", "layer": "meta-shift"},
     "meta-sample": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "location": "meta-sample", "layer": "meta-sample"},
     "meta-sample-test": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test"},
 }
@@ -85,20 +87,50 @@ def cleanup_build_conf(args):
             os.remove(configure)
 
 
+def init_build_env(args):
+    logger.info("Initializing build environment...")
+    init_script = os.path.join(args.repodir, REPOS["poky"]["location"], "oe-init-build-env")
+    if not os.path.exists(init_script):
+        raise IOError("Unable to locate '{}'".format(init_script))
+    execute("source {} {}".format(init_script, args.directory))
+    logger.info("Done")
+
+
 def configure_bblayers(args):
-    logger.info("Initializing bblayers.conf...")
-    commands = []
-    commands.append("source {}/{}/oe-init-build-env {}".format(args.repodir, REPOS["poky"]["location"], args.directory))
+    BBLAYERS_CONF = '''# POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
+# changes incompatibly
+POKY_BBLAYERS_CONF_VERSION = "2"
+
+BBPATH = "${{TOPDIR}}"
+BBFILES ?= ""
+
+BBLAYERS ?= " \\
+  {metalayers} \\
+  "
+'''
+
+    logger.info("Configuring bblayers.conf...")
+    bblayers_conf = os.path.join(args.directory, "conf", "bblayers.conf")
+    if not os.path.exists(bblayers_conf):
+        raise IOError("Unable to locate '{}'".format(bblayers_conf))
+
+    metalayers = []
     conf = read_json(args.filename)
     for include in conf["includes"]:
-        path = os.path.join(args.repodir, REPOS[include]["layer"]) if include != "meta-shift" else REPOS[include]["url"]
-        commands.append("bitbake-layers add-layer {}".format(path))
-    execute('bash -c "{}"'.format("; ".join(commands)))
+        if include == "meta-shift":
+            metalayers.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        else:
+            metalayers.append(os.path.join(args.repodir, REPOS[include]["layer"]))
+
+    with open(bblayers_conf, "w") as f:
+        logger.info("Rewriting the bblayers.conf")
+        f.write(BBLAYERS_CONF.format(metalayers=" \\ \n  ".join(metalayers)))
+
     logger.info("Done")
 
 
 def configure_local(args):
-    logger.info("Initializing local.conf...")
+    logger.info("Configuring local.conf...")
     local_conf = os.path.join(args.directory, "conf", "local.conf")
     conf = read_json(args.filename)
     for key, value in conf["local.conf"].items():
@@ -120,6 +152,7 @@ if __name__ == "__main__":
     args = parse_args()
     download_repos(args)
     cleanup_build_conf(args)
+    init_build_env(args)
     configure_bblayers(args)
     configure_local(args)
     print_usage(args)
