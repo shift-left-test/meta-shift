@@ -1,35 +1,40 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import argparse
-import errno
+import collections
 import getpass
+import json
+import logging
 import os
 import subprocess
 import tempfile
-import json
-import logging
-import constants
 
 
-logging.basicConfig(level=logging.INFO, format="[ %(levelname)s ] %(message)s")
+BRANCH = "pyro"
+REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
+BUILD_DIR = "build"
+META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
-REPO_BASE_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
-DEFAULT_BRANCH = constants.BRANCH
-DEFAULT_DIR = "build"
 
-REPOS = {
-    "poky": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta"},
-    "meta-poky": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta-poky"},
-    "meta-yocto-bsp": {"url": "http://mod.lge.com/hub/yocto/mirror/poky.git", "location": "poky", "layer": "poky/meta-yocto-bsp"},
-    "meta-oe": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-oe"},
-    "meta-python": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "location": "meta-openembedded", "layer": "meta-openembedded/meta-python"},
-    "meta-qt5": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "location": "meta-qt5", "layer": "meta-qt5"},
-    "meta-clang": {"url": "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "location": "meta-clang", "layer": "meta-clang"},
-    "meta-shift": {"url": "", "location": "meta-shift", "layer": "meta-shift"},
-    "meta-sample": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "location": "meta-sample", "layer": "meta-sample"},
-    "meta-sample-test": {"url": "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "location": "meta-sample-test", "layer": "meta-sample-test"},
-}
+Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer"])
+
+REPOS = [
+    Repo("poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta"),
+    Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-poky"),
+    Repo("meta-yocto-bsp", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto-bsp"),
+    Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe"),
+    Repo("meta-python", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-python"),
+    Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", ""),
+    Repo("meta-clang", "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "meta-clang", ""),
+    Repo("meta-shift", None, "meta-shift", ""),
+    Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", ""),
+    Repo("meta-sample-test", "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "meta-sample-test", ""),
+]
 
 
 def parse_args():
@@ -41,10 +46,10 @@ def parse_args():
         return path
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-b", dest="branch", default=DEFAULT_BRANCH, help="Name of the branch to checkout for the git repositories (default: %s)" % DEFAULT_BRANCH)
-    parser.add_argument("-c", type=exist_file, dest="filename", required=True, help="Configuration file path")
-    parser.add_argument("-d", type=str, dest="directory", default=DEFAULT_DIR, help="Path to populate the build directory (default: %s)" % DEFAULT_DIR)
-    parser.add_argument("-r", dest="repodir", default=REPO_BASE_DIR, help="Path to download the git repositories (default: %s)" % REPO_BASE_DIR)
+    parser.add_argument("-b", "--branch", default=BRANCH, help="Name of the branch to checkout for the repositories (default: %(default)s)")
+    parser.add_argument("-c", "--conf_file", type=exist_file, required=True, help="Configuration file path")
+    parser.add_argument("-d", "--build_dir", type=str, default=BUILD_DIR, help="Path to populate the build directory (default: %(default)s)")
+    parser.add_argument("-r", "--repo_dir", default=REPO_DIR, help="Path to download the repositories (default: %(default)s)")
     return parser.parse_args()
 
 
@@ -53,50 +58,31 @@ def execute(cmd):
 
 
 def download_repo(url, branch, path):
+    logger.info(url)
     if not os.path.exists(path):
-        execute("git clone {} -b {} {}".format(url, branch, path))
+        execute("git clone {0} -b {1} {2}".format(url, branch, path))
     else:
         execute("git --git-dir={0}/.git --work-tree={0} checkout {1}".format(path, branch))
         execute("git --git-dir={0}/.git --work-tree={0} pull --ff-only".format(path))
 
 
 def download_repos(args):
-    logger.info("Downloading repos at {}...".format(args.repodir))
-    for name, repo in REPOS.items():
-        if name == "meta-shift":
+    logger.info("Downloading the repositories to '{0}'...".format(args.repo_dir))
+    for repo in REPOS:
+        if repo.name == "meta-shift":
             continue
-        path = os.path.join(args.repodir, repo["location"])
-        logger.info("REPO: {}".format(path))
-        download_repo(repo["url"], args.branch, path)
-    logger.info("Done")
+        p = os.path.join(args.repo_dir, repo.location)
+        download_repo(repo.url, args.branch, p)
 
 
-def read_json(filename):
-    with open(filename, "r") as f:
-        return json.load(f)
+def configure_template(conf_dir):
+    logger.info("Creating 'templateconf.cfg'...")
+    with open(os.path.join(conf_dir, "templateconf.cfg"), "w") as f:
+        f.write("meta-poky/conf")
 
 
-def cleanup_build_conf(args):
-    configures = [
-        os.path.join(args.directory, "conf", "bblayers.conf"),
-        os.path.join(args.directory, "conf", "local.conf")
-    ]
-    for configure in configures:
-        if os.path.exists(configure):
-            logger.warn("Removing the existing configuration file: {}".format(configure))
-            os.remove(configure)
-
-
-def init_build_env(args):
-    logger.info("Initializing build environment...")
-    init_script = os.path.join(args.repodir, REPOS["poky"]["location"], "oe-init-build-env")
-    if not os.path.exists(init_script):
-        raise IOError("Unable to locate '{}'".format(init_script))
-    execute("source {} {}".format(init_script, args.directory))
-    logger.info("Done")
-
-
-def configure_bblayers(args):
+def configure_bblayers(conf_dir, conf_data, repo_dir):
+    logger.info("Creating 'bblayers.conf'...")
     BBLAYERS_CONF = '''# POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
 POKY_BBLAYERS_CONF_VERSION = "2"
@@ -108,36 +94,69 @@ BBLAYERS ?= " \\
   {metalayers} \\
   "
 '''
-
-    logger.info("Configuring bblayers.conf...")
-    bblayers_conf = os.path.join(args.directory, "conf", "bblayers.conf")
-    if not os.path.exists(bblayers_conf):
-        raise IOError("Unable to locate '{}'".format(bblayers_conf))
-
+    bblayers_conf = os.path.join(conf_dir, "bblayers.conf")
     metalayers = []
-    conf = read_json(args.filename)
-    for include in conf["includes"]:
-        if include == "meta-shift":
-            metalayers.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    for repo in REPOS:
+        if repo.name not in conf_data["includes"]:
+            continue
+        if repo.name == "meta-shift":
+            layerdir = META_SHIFT_DIR
         else:
-            metalayers.append(os.path.join(args.repodir, REPOS[include]["layer"]))
+            layerdir = os.path.join(repo_dir, repo.location, repo.layer)
+        metalayers.append(os.path.abspath(layerdir))
 
     with open(bblayers_conf, "w") as f:
-        logger.info("Rewriting the bblayers.conf")
-        f.write(BBLAYERS_CONF.format(metalayers=" \\ \n  ".join(metalayers)))
-
-    logger.info("Done")
+        f.write(BBLAYERS_CONF.format(metalayers="  \\ \n  ".join(metalayers)))
 
 
-def configure_local(args):
-    logger.info("Configuring local.conf...")
-    local_conf = os.path.join(args.directory, "conf", "local.conf")
-    conf = read_json(args.filename)
-    for key, value in conf["local.conf"].items():
+def configure_local(conf_dir, conf_data):
+    logger.info("Creating 'local.conf'...")
+    LOCAL_CONF = '''
+MACHINE ?= "qemuarm64"
+DISTRO ?= "poky"
+PACKAGE_CLASSES ?= "package_ipk"
+EXTRA_IMAGE_FEATURES ?= ""
+USER_CLASSES ?= ""
+PATCHRESOLVE = "noop"
+BB_DISKMON_DIRS ??= "\\
+    STOPTASKS,${TMPDIR},1G,100K \\
+    STOPTASKS,${DL_DIR},1G,100K \\
+    STOPTASKS,${SSTATE_DIR},1G,100K \\
+    STOPTASKS,/tmp,100M,100K \\
+    ABORT,${TMPDIR},100M,1K \\
+    ABORT,${DL_DIR},100M,1K \\
+    ABORT,${SSTATE_DIR},100M,1K \\
+    ABORT,/tmp,10M,1K"
+PACKAGECONFIG_append_pn-qemu-native = " sdl"
+PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
+CONF_VERSION = "1"
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+'''
+    local_conf = os.path.join(conf_dir, "local.conf")
+    with open(local_conf, "w") as f:
+        f.write(LOCAL_CONF)
+
+    for key, value in conf_data["local.conf"].items():
         value = os.environ.get(key, value)
         with open(local_conf, "a") as f:
             f.write('{} = "{}"\n'.format(key, value))
-    logger.info("Done")
+
+
+def configure(args):
+    def read_json(filename):
+        with open(filename, "r") as f:
+            return json.load(f)
+
+    conf_dir = os.path.join(args.build_dir, "conf")
+    if not os.path.exists(conf_dir):
+        logger.info("Creating '{}'...".format(conf_dir))
+        os.makedirs(conf_dir)
+
+    conf_data = read_json(args.conf_file)
+
+    configure_template(conf_dir)
+    configure_bblayers(conf_dir, conf_data, args.repo_dir)
+    configure_local(conf_dir, conf_data)
 
 
 def print_usage(args):
@@ -145,14 +164,11 @@ def print_usage(args):
 
     source {0}/poky/oe-init-build-env {1}
 
-    """.format(args.repodir, args.directory))
+    """.format(args.repo_dir, args.build_dir))
 
 
 if __name__ == "__main__":
     args = parse_args()
     download_repos(args)
-    cleanup_build_conf(args)
-    init_build_env(args)
-    configure_bblayers(args)
-    configure_local(args)
+    configure(args)
     print_usage(args)
