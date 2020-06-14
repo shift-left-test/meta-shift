@@ -1,27 +1,10 @@
 #!/usr/bin/python
 
-import atexit
-import os
 import getpass
-import logging
+import os
+import pytest
 import subprocess
 import shutil
-import tempfile
-import unittest
-
-
-logging.basicConfig(level=logging.DEBUG, format="\n[ %(levelname)s ] %(message)s")
-logger = logging.getLogger(__name__)
-
-TempDirectories = []
-
-
-@atexit.register
-def removeTempDirectories():
-    for tempdir in TempDirectories:
-        logger.info("Remove the temp build directory: {0}".format(tempdir))
-        if os.path.exists(tempdir):
-            shutil.rmtree(tempdir)
 
 
 class Output(object):
@@ -107,19 +90,26 @@ class FileOutput(Output):
 
 
 class Files(object):
-    def __init__(self, builddir):
-        self.builddir = builddir
+    def __init__(self, build_dir):
+        self.build_dir = build_dir
 
     def __repr__(self):
-        return "Files: ['builddir': {0}]".format(self.builddir)
+        return "Files: ['build_dir': {0}]".format(self.build_dir)
 
     def exists(self, path):
-        return os.path.exists(os.path.join(self.builddir, path))
+        return os.path.exists(os.path.join(self.build_dir, path))
 
     def read(self, path):
-        f = os.path.join(self.builddir, path)
+        f = os.path.join(self.build_dir, path)
         assert os.path.exists(f)
         return FileOutput(f)
+
+    def remove(self, path):
+        f = os.path.join(self.build_dir, path)
+        if os.path.isfile(f):
+            os.remove(f)
+        if os.path.isdir(f):
+            shutil.rmtree(f)
 
 
 class Outputs(object):
@@ -151,16 +141,15 @@ class Outputs(object):
 
 
 class Shell(object):
-    def __init__(self, script, builddir):
+    def __init__(self, script, build_dir):
         self.script = script
-        self.builddir = builddir
+        self.build_dir = build_dir
 
     def __repr__(self):
-        return "Shell: ['script': {0}, 'builddir': {1}]".format(self.script, self.builddir)
+        return "Shell: ['script': {0}, 'build_dir': {1}]".format(self.script, self.build_dir)
 
     def cmd(self, command):
-        c = 'bash -c "source {0} {1} && {2}"'.format(self.script, self.builddir, command)
-        logger.debug("CMD: '{}'".format(c))
+        c = 'bash -c "source {0} {1} && {2}"'.format(self.script, self.build_dir, command)
         return c
 
     def run(self, command):
@@ -173,14 +162,14 @@ class Shell(object):
 
 
 class BuildInfo(object):
-    def __init__(self, builddir):
+    def __init__(self, build_dir):
         def readFile(path):
             with open(path, "r") as f:
                 return f.read()
 
-        self.builddir = builddir
-        self.packages = FileOutput(os.path.join(builddir, "pn-buildlist"))
-        self.tasks = FileOutput(os.path.join(builddir, "task-depends.dot"))
+        self.build_dir = build_dir
+        self.packages = FileOutput(os.path.join(build_dir, "pn-buildlist"))
+        self.tasks = FileOutput(os.path.join(build_dir, "task-depends.dot"))
 
         @property
         def packages(self):
@@ -192,31 +181,78 @@ class BuildInfo(object):
 
 
 class BuildEnvironment(object):
-    def __init__(self, branch, conf):
-        self.repodir = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
+    def __init__(self, branch, conf_file, repo_dir, build_dir):
+        self.repo_dir = repo_dir
         self.branch = branch
-        self.conf = os.path.join(*[os.path.dirname(__file__), conf])
-        self.builddir = tempfile.mkdtemp()
-        TempDirectories.append(self.builddir)
+        self.conf_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), conf_file)
+        self.build_dir = build_dir
 
         mini_mcf = os.path.join(os.path.dirname(__file__), "mini-mcf.py")
-        cmd = "{} -r {} -b {} -c {} -d {}".format(mini_mcf, self.repodir, self.branch, self.conf, self.builddir)
-        logger.debug("CMD: '{}'".format(cmd))
+        cmd = "{} -r {} -b {} -c {} -d {}".format(mini_mcf, self.repo_dir, self.branch, self.conf_file, self.build_dir)
         subprocess.call(cmd, shell=True)
-
-    def __repr__(self):
-        return "BuildEnvironment: ['repodir': {0}, 'branch': {1}, 'conf': {2}, 'builddir': {3}]".format(self.repodir, self.branch, self.conf, self.builddir)
 
     @property
     def shell(self):
-        f = os.path.join(self.repodir, "poky/oe-init-build-env")
+        f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
-        return Shell(f, self.builddir)
+        return Shell(f, self.build_dir)
 
     @property
     def files(self):
-        return Files(self.builddir)
+        return Files(self.build_dir)
 
     def parse(self, recipe):
-        self.shell.run("bitbake {0} -g".format(recipe))
-        return BuildInfo(self.builddir)
+        self.shell.run("bitbake {} -g".format(recipe))
+        return BuildInfo(self.build_dir)
+
+
+@pytest.fixture(scope="session")
+def bare_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="morty", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def release_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="morty", conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def test_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="morty", conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def report_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="morty", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)

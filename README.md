@@ -73,8 +73,6 @@ The following command runs all tests
 
     $ py.test
 
-You may also run an individual test suite by executing the python test script directly
-
 
 Documentation
 -------------
