@@ -42,7 +42,7 @@ if [ -f .libs/""$""1 ]; then
 else
     TARGET=""$""1
 fi
-qemu-${TUNE_ARCH} -L ${STAGING_DIR_TARGET} ""$""TARGET" > ${WORKDIR}/test-runner.sh
+${QEMU_BIN_NAME} -L ${STAGING_DIR_TARGET}  -E LD_LIBRARY_PATH=""$""{LD_LIBRARY_PATH}:${STAGING_DIR_TARGET}/${baselib} ""$""TARGET" > ${WORKDIR}/test-runner.sh
     chmod 755 ${WORKDIR}/test-runner.sh
 }
 
@@ -55,7 +55,6 @@ autotoolstest_do_test() {
 
     shifttest_prepare_env
     export LOG_COMPILER='${WORKDIR}/test-runner.sh'
-
     cd ${B}
 
     # Do not use '-e' option of 'make'.
