@@ -21,12 +21,20 @@ The following commands will set the cache files under your $HOME directory.
     $ export SSTATE_DIR=$HOME/build-res/sstate-cache
 
 
-How to tests
-------------
+How to run tests
+----------------
 
     $ py.test
     $ py.test -s -v
     $ py.test <test filename>
+
+
+How to prepare workspace
+------------------------
+
+You may use the mini-mcf tool with a configuration file to setup the workspace to reproduce any test results.
+
+    $ ./mini-mcf.py -c conf/test.conf
 
 
 pytest
