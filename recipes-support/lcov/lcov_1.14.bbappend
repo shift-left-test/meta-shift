@@ -26,11 +26,11 @@ RDEPENDS_${PN}_class-nativesdk = "\
 BBCLASSEXTEND = "native nativesdk"
 
 do_install_class-native() {
-    oe_runmake install PREFIX=${D}${STAGING_DIR_NATIVE}
+    oe_runmake install PREFIX=${D}${prefix} CFG_DIR=${D}${sysconfdir}
     sed -i -e '1s,#!.*perl -w,#!${USRBINPATH}/env nativeperl,' ${D}${bindir}/*
 }
 
 do_install_class-nativesdk() {
-    oe_runmake install PREFIX=${D}${base_prefix}
+    oe_runmake install PREFIX=${D}${prefix} CFG_DIR=${D}${sysconfdir}
     sed -i -e '1s,#!.*perl -w,#!${USRBINPATH}/env perl,' ${D}${bindir}/*
 }
