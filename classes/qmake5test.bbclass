@@ -27,9 +27,8 @@ qmake5test_do_test() {
     export QML_IMPORT_PATH=${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}
     export QML2_IMPORT_PATH=$QML2_IMPORT_PATH:${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}
 
-    export TESTRUNNER="${QEMU_BIN_NAME} -L '${STAGING_DIR_TARGET}' -E LD_LIBRARY_PATH='${LD_LIBRARY_PATH}:${STAGING_DIR_TARGET}/${baselib}'"
+    export TESTRUNNER="qemu-${TUNE_ARCH} -L '${STAGING_DIR_TARGET}'"
     export TESTARGS="-platform offscreen"
-
 
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
         bbplain "Generating the test result report"
