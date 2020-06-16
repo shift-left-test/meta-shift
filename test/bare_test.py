@@ -61,7 +61,7 @@ def test_cmakeutils_nativesdk(bare_build):
     assert bare_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
     f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.10.3-r0/sysroot-destdir/" \
         "opt/poky/2.5.3/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
-    assert bare_build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT};-E;LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:$ENV{SDKTARGETSYSROOT}/lib")')
+    assert bare_build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT}")')
 
 
 def test_compiledb(bare_build):

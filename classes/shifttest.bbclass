@@ -9,8 +9,6 @@ DEPENDS_prepend = "\
     sage-native \
     "
 
-QEMU_BIN_NAME = "${@d.getVar('QB_SYSTEM_NAME', True).replace('-system', '')}"
-
 shifttest_print_lines() {
     while IFS= read line; do
         bbplain "${PF} do_${BB_CURRENTTASK}: $line"
