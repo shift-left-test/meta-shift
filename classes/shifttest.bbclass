@@ -50,6 +50,7 @@ shifttest_prepare_env() {
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
         export GTEST_OUTPUT="xml:${TEST_RESULT_OUTPUT}/${PF}/"
     fi
+    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
 }
 
 shifttest_gtest_update_xmls() {
