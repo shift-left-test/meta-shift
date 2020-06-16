@@ -20,7 +20,6 @@ qmake5test_qtest_update_xmls() {
 
 qmake5test_do_test() {
     shifttest_prepare_output_dir
-
     shifttest_prepare_env
 
     export QT_PLUGIN_PATH=${STAGING_DIR_TARGET}${OE_QMAKE_PATH_PLUGINS}

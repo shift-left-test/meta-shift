@@ -52,8 +52,8 @@ autotoolstest_do_checkcode() {
 
 autotoolstest_do_test() {
     shifttest_prepare_output_dir
-
     shifttest_prepare_env
+
     export LOG_COMPILER='${WORKDIR}/test-runner.sh'
 
     cd ${B}

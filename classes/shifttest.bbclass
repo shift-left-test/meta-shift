@@ -42,19 +42,14 @@ shifttest_do_test() {
 
 shifttest_prepare_output_dir() {
     [ -z "${TEST_RESULT_OUTPUT}" ] && return
-    rm -rf "${TEST_RESULT_OUTPUT}/${PF}"
     mkdir -p "${TEST_RESULT_OUTPUT}"
+    rm -rf "${TEST_RESULT_OUTPUT}/${PF}"
 }
 
 shifttest_prepare_env() {
-    [ ! -z "${TEST_RESULT_OUTPUT}" ] && export GTEST_OUTPUT="xml:${TEST_RESULT_OUTPUT}/${PF}/"
-    [ ! -z "${GTEST_FILTER}" ] && export GTEST_FILTER="${GTEST_FILTER}"
-    [ ! -z "${GTEST_FAIL_FAST}" ] && export GTEST_FAIL_FAST="${GTEST_FAIL_FAST}"
-    [ ! -z "${GTEST_ALSO_RUN_DISABLED_TESTS}" ] && export GTEST_ALSO_RUN_DISABLED_TESTS="${GTEST_ALSO_RUN_DISABLED_TESTS}"
-    [ ! -z "${GTEST_REPEAT}" ] && export GTEST_REPEAT="${GTEST_REPEAT}"
-    [ ! -z "${GTEST_SHUFFLE}" ] && export GTEST_SHUFFLE="${GTEST_SHUFFLE}"
-    [ ! -z "${GTEST_RANDOM_SEED}" ] && export GTEST_RANDOM_SEED="${GTEST_RANDOM_SEED}"
-    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
+    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+        export GTEST_OUTPUT="xml:${TEST_RESULT_OUTPUT}/${PF}/"
+    fi
 }
 
 shifttest_gtest_update_xmls() {
