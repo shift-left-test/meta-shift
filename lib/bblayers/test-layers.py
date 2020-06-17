@@ -109,12 +109,19 @@ def show(layers):
 
 
 def add(layers):
-    for _, layerdir in layers:
+    layernames = []
+    for layername, layerdir in layers:
         """Add a layer to bblayers.conf."""
         print(layerdir)
         if not os.path.exists(layerdir):
             sys.stderr.write("Specified layer directory doesn't exist\n")
             return
+
+        if layername in layernames: 
+            sys.stderr.write("Warning: Layer %s in %s is ignored. Another layer with same name is already in BBLAYERS.\n" % (layername, layerdir))
+            continue
+        else:
+            layernames.append(layername)
 
         layer_conf = os.path.join(layerdir, 'conf', 'layer.conf')
         if not os.path.exists(layer_conf):
