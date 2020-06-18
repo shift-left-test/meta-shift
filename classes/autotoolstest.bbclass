@@ -1,14 +1,15 @@
 inherit autotools
 inherit shifttest
+inherit shiftutils
 
 do_configure_prepend() {
     # add coverage flags to cxxflags & cflags
-    if [[ -v CXXFLAGS ]]; then
+    if [ ! -z ${CXXFLAGS+x} ]; then
         export CXXFLAGS_ORI="$CXXFLAGS"
     fi
     export CXXFLAGS="$CXXFLAGS -O0 -fprofile-arcs -ftest-coverage"
 
-    if [[ -v CFLAGS ]]; then
+    if [ ! -z ${CFLAGS+x} ]; then
         export CFLAGS_ORI="$CFLAGS"
     fi
     export CFLAGS="$CFLAGS -O0 -fprofile-arcs -ftest-coverage"
@@ -16,14 +17,14 @@ do_configure_prepend() {
 
 do_configure_append() {
     # restore environment variables
-    if [[ -v CXXFLAGS_ORI ]]; then
+    if [ ! -z ${CXXFLAGS_ORI+x} ]; then
         export CXXFLAGS="$CXXFLAGS_ORI"
         unset CXXFLAGS_ORI
     else
         unset CXXFLAGS
     fi
 
-    if [[ -v CFLAGS_ORI ]]; then
+    if [ ! -z ${CFLAGS_ORI+x} ]; then
         export CFLAGS="$CFLAGS_ORI"
         unset CFLAGS_ORI
     else
@@ -36,13 +37,15 @@ do_configure_append() {
         -exec sed -r -i 's|(top_builddir)(.*test-driver)|top_srcdir\2|g' {} \;
 
     # create custom log_compiler for qemu usermode return
-    echo "
-if [ -f .libs/""$""1 ]; then
-    TARGET=.libs/""$""1
-else
-    TARGET=""$""1
-fi
-qemu-${TUNE_ARCH} -L ${STAGING_DIR_TARGET} ""$""TARGET" > ${WORKDIR}/test-runner.sh
+    {
+        echo "if [ -f .libs/""$""1 ]; then"
+        echo "    TARGET=.libs/""$""1"
+        echo "else"
+        echo "    TARGET=""$""1"
+        echo "fi"
+        echo "${@shiftutils_qemu_run_cmd(d)} ""$""TARGET"
+    } > ${WORKDIR}/test-runner.sh
+
     chmod 755 ${WORKDIR}/test-runner.sh
 }
 
