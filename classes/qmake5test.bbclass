@@ -1,5 +1,6 @@
 inherit qmake5
 inherit shifttest
+inherit shiftutils
 
 EXTRA_QMAKEVARS_PRE += "CONFIG+=gcov"
 EXTRA_QMAKEVARS_PRE += "CONFIG+=insignificant_test"
@@ -26,7 +27,7 @@ qmake5test_do_test() {
     export QML_IMPORT_PATH=${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}
     export QML2_IMPORT_PATH=$QML2_IMPORT_PATH:${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}
 
-    export TESTRUNNER="qemu-${TUNE_ARCH} -L '${STAGING_DIR_TARGET}'"
+    export TESTRUNNER="${@shiftutils_qemu_run_cmd(d)}"
     export TESTARGS="-platform offscreen"
 
     if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
