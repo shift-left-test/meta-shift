@@ -1,10 +1,11 @@
 inherit cmake
 inherit shifttest
+inherit shiftutils
 
 OECMAKE_C_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
 OECMAKE_CXX_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
 
-EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='qemu-${TUNE_ARCH};-L;${STAGING_DIR_TARGET}'"
+EXTRA_OECMAKE += "-DCMAKE_CROSSCOMPILING_EMULATOR='${@shiftutils_qemu_cmake_emulator(d)}'"
 EXTRA_OECMAKE += "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
 cmaketest_do_checkcode() {
