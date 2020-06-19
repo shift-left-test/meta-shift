@@ -16,7 +16,7 @@ def test_core_image_minimal_populate_sdk(bare_build):
     assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-gcovr_4.2-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-lcov_1.11-r0_x86_64-nativesdk.ipk")
+    assert pkgs.contains("nativesdk-lcov_1.14-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-qemu_3.0.0-r0_x86_64-nativesdk.ipk")
 
     pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/target/installed-packages.txt")
