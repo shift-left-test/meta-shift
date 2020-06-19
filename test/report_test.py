@@ -16,7 +16,7 @@ def test_core_image_minimal_do_coverageall(report_build):
     assert report_build.files.read("report/test_coverage/cmake-project-1.0.0-r0/coverage.xml").containsAll(
         '<method branch-rate="1.0" line-rate="1.0" name="arithmetic::plus(int, int)" signature="">',
         '<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
-    assert report_build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.include.SQLite3Wrapper"')
+    assert report_build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.src"')
     assert report_build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").containsAll(
         '<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Column::getName() const" signature="">',
         '<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Statement::check(int)" signature="">',
@@ -110,7 +110,7 @@ def test_sqlite3logger_do_coverageall(report_build):
     assert report_build.shell.execute("bitbake sqlite3logger -c coverageall").stderr.empty()
     assert report_build.files.read("report/test_result/sqlite3wrapper-0.1.0-r0/SQLite3WrapperTest.exe.xml").contains('classname="sqlite3wrapper.DatabaseTest"')
     assert report_build.files.read("report/test_result/stringutils-0.0.1-r0/unittest.bin.xml").contains('classname="stringutils.StringTest"')
-    assert report_build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.include.SQLite3Wrapper"')
+    assert report_build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").contains('name="sqlite3wrapper.src"')
     assert report_build.files.read("report/test_coverage/sqlite3wrapper-0.1.0-r0/coverage.xml").containsAll(
         '<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Column::getName() const" signature="">',
         '<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Statement::check(int)" signature="">',
