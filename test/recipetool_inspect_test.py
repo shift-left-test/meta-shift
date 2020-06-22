@@ -23,7 +23,7 @@ def test_default_format(bare_build):
 
 def test_json_format(bare_build):
     o = bare_build.shell.execute("recipetool inspect cpplint --json")
-    assert o.stdout.containsAll('"General Information": {',
+    assert o.stdout.containsAll('"General Information": {{',
                                 '"Author": "Google Inc."',
                                 '"Homepage": "https://github.com/cpplint/cpplint"',
                                 '"Layer": "meta-shift"',

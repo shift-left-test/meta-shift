@@ -30,7 +30,6 @@ REPOS = [
     Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe"),
     Repo("meta-python", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-python"),
     Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", ""),
-    Repo("meta-clang", "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "meta-clang", ""),
     Repo("meta-shift", None, "meta-shift", ""),
     Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", ""),
     Repo("meta-sample-test", "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "meta-sample-test", ""),
