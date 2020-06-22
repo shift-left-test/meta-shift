@@ -206,8 +206,8 @@ class BuildEnvironment(object):
         self.kwargs = {}
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
-        source = subprocess.check_output('bash -c "source {0} {1} && bitbake -e"'.format(f, self.build_dir), shell=True)
-        for key in ("BUILD_ARCH", "TUNE_ARCH", "SDK_VERSION"):
+        source = subprocess.check_output('bash -c "source {0} {1} && bitbake core-image-minimal -c populate_sdk -e"'.format(f, self.build_dir), shell=True)
+        for key in ("BUILD_ARCH", "TUNE_ARCH", "TUNE_PKGARCH", "SDK_VERSION", "REAL_MULTIMACH_TARGET_SYS", "SDKTARGETSYSROOT", "SDKPATHNATIVE", "TOOLCHAIN_OUTPUTNAME"):
             regexp = "^(?:{key}=)(?:\")(.*)(?:\")$".format(key=key)
             matcher = re.compile(regexp, re.MULTILINE)
             self.kwargs[key] = matcher.search(source).groups()[0]
