@@ -11,7 +11,7 @@ def test_core_image_minimal(bare_build):
 def test_core_image_minimal_populate_sdk(bare_build):
     assert bare_build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}/core-image-minimal/host/installed-packages.txt")
+    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_PKGARCH}/core-image-minimal/host/installed-packages.txt")
     assert pkgs.contains("nativesdk-cmake_3.7.2-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
@@ -19,18 +19,18 @@ def test_core_image_minimal_populate_sdk(bare_build):
     assert pkgs.contains("nativesdk-lcov_1.11-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-qemu_2.8.0-r0_x86_64-nativesdk.ipk")
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}/core-image-minimal/target/installed-packages.txt")
-    assert pkgs.contains("fff_1.0-r0_{TUNE_ARCH}.ipk")
-    assert pkgs.contains("gtest_1.8.0-r0_{TUNE_ARCH}.ipk")
+    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_PKGARCH}/core-image-minimal/target/installed-packages.txt")
+    assert pkgs.contains("fff_1.0-r0_{TUNE_PKGARCH}.ipk")
+    assert pkgs.contains("gtest_1.8.0-r0_{TUNE_PKGARCH}.ipk")
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}/core-image-minimal/files-in-sdk.txt")
-    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/{TUNE_ARCH}-poky-linux/usr/include/fff/fff.h")
-    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.7/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.7/Modules/FindGMock.cmake")
-    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_PKGARCH}/core-image-minimal/files-in-sdk.txt")
+    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.7/Modules/CMakeUtils.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.7/Modules/FindGMock.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
     # Check that the SDK can build a specified module.
-    path = "tmp/deploy/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}-toolchain-{SDK_VERSION}.sh".format(**bare_build.kwargs)
+    path = "tmp/deploy/sdk/{TOOLCHAIN_OUTPUTNAME}.sh".format(**bare_build.kwargs)
     installer = os.path.join(bare_build.build_dir, path)
     assert os.path.exists(installer)
 
@@ -39,7 +39,7 @@ def test_core_image_minimal_populate_sdk(bare_build):
 
     sdk_dir = os.path.join(bare_build.build_dir, "sdk")
     command = "; ".join(["{0} -d {1} -y",
-                         "source {1}/environment-setup-" + bare_build.kwargs["TUNE_ARCH"] + "-poky-linux",
+                         "source {1}/environment-setup-" + bare_build.kwargs["REAL_MULTIMACH_TARGET_SYS"],
                          "cd {2}",
                          "cmake . -DENABLE_TEST=ON",
                          "make all test"])
