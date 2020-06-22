@@ -11,7 +11,7 @@ def test_core_image_minimal(bare_build):
 def test_core_image_minimal_populate_sdk(bare_build):
     assert bare_build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/host/installed-packages.txt")
+    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}/core-image-minimal/host/installed-packages.txt")
     assert pkgs.contains("nativesdk-cmake_3.8.2-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
@@ -19,18 +19,19 @@ def test_core_image_minimal_populate_sdk(bare_build):
     assert pkgs.contains("nativesdk-lcov_1.11-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-qemu_2.10.0-r0_x86_64-nativesdk.ipk")
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/target/installed-packages.txt")
-    assert pkgs.contains("fff_1.0-r0_aarch64.ipk")
-    assert pkgs.contains("gtest_1.8.0-r0_aarch64.ipk")
+    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}/core-image-minimal/target/installed-packages.txt")
+    assert pkgs.contains("fff_1.0-r0_{TUNE_ARCH}.ipk")
+    assert pkgs.contains("gtest_1.8.0-r0_{TUNE_ARCH}.ipk")
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-aarch64/core-image-minimal/files-in-sdk.txt")
-    assert pkgs.contains("./opt/poky/2.4.4/sysroots/aarch64-poky-linux/usr/include/fff/fff.h")
-    assert pkgs.contains("./opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.8/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("./opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.8/Modules/FindGMock.cmake")
-    assert pkgs.contains("./opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}/core-image-minimal/files-in-sdk.txt")
+    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/{TUNE_ARCH}-poky-linux/usr/include/fff/fff.h")
+    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.8/Modules/CMakeUtils.cmake")
+    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake-3.8/Modules/FindGMock.cmake")
+    assert pkgs.contains("./opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
     # Check that the SDK can build a specified module.
-    installer = os.path.join(bare_build.build_dir, "tmp", "deploy", "sdk", "poky-glibc-x86_64-core-image-minimal-aarch64-toolchain-2.4.4.sh")
+    path = "tmp/deploy/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_ARCH}-toolchain-{SDK_VERSION}.sh".format(**bare_build.kwargs)
+    installer = os.path.join(bare_build.build_dir, path)
     assert os.path.exists(installer)
 
     project_dir = os.path.join(bare_build.build_dir, "project")
@@ -38,7 +39,7 @@ def test_core_image_minimal_populate_sdk(bare_build):
 
     sdk_dir = os.path.join(bare_build.build_dir, "sdk")
     command = "; ".join(["{0} -d {1} -y",
-                         "source {1}/environment-setup-aarch64-poky-linux",
+                         "source {1}/environment-setup-" + bare_build.kwargs["TUNE_ARCH"] + "-poky-linux",
                          "cd {2}",
                          "cmake . -DENABLE_TEST=ON",
                          "make all test"])
@@ -60,8 +61,8 @@ def test_cmakeutils_native(bare_build):
 def test_cmakeutils_nativesdk(bare_build):
     assert bare_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
     f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.8.2-r0/sysroot-destdir/" \
-        "opt/poky/2.4.4/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
-    assert bare_build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-aarch64;-L;$ENV{SDKTARGETSYSROOT}")')
+        "opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
+    assert bare_build.files.read(f).contains('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-{QEMU_ARCH};-L;$ENV{{SDKTARGETSYSROOT}}")')
 
 
 def test_compiledb(bare_build):

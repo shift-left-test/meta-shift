@@ -3,6 +3,7 @@
 import getpass
 import os
 import pytest
+import re
 import subprocess
 import shutil
 
@@ -13,13 +14,14 @@ class Output(object):
     This class provides variout output comparison helper functions.
     """
 
-    def __init__(self, output):
+    def __init__(self, output, kwargs={}):
         """ Default constructor
 
         Args:
           output (str): an output string
         """
         self.output = output.strip()
+        self.kwargs = kwargs
 
     def empty(self):
         """Assert that the output is empty
@@ -38,7 +40,7 @@ class Output(object):
         Returns:
           True if the output contains the keyword, False otherwise
         """
-        return keyword in self.output
+        return keyword.format(**self.kwargs) in self.output
 
     def containsAll(self, *keywords):
         """Assert that the output contains all the given keywords
@@ -80,18 +82,19 @@ class Output(object):
 
 
 class FileOutput(Output):
-    def __init__(self, filename):
+    def __init__(self, filename, kwargs={}):
         self.filename = filename
         with open(os.path.join(filename), "r") as f:
-            super(FileOutput, self).__init__(f.read())
+            super(FileOutput, self).__init__(f.read(), kwargs)
 
     def __repr__(self):
         return "{0}: {1}".format(self.filename, super(FileOutput, self).__repr__())
 
 
 class Files(object):
-    def __init__(self, build_dir):
+    def __init__(self, build_dir, kwargs={}):
         self.build_dir = build_dir
+        self.kwargs = kwargs
 
     def __repr__(self):
         return "Files: ['build_dir': {0}]".format(self.build_dir)
@@ -100,9 +103,10 @@ class Files(object):
         return os.path.exists(os.path.join(self.build_dir, path))
 
     def read(self, path):
+        path = path.format(**self.kwargs)
         f = os.path.join(self.build_dir, path)
         assert os.path.exists(f)
-        return FileOutput(f)
+        return FileOutput(f, self.kwargs)
 
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
@@ -141,9 +145,10 @@ class Outputs(object):
 
 
 class Shell(object):
-    def __init__(self, script, build_dir):
+    def __init__(self, script, build_dir, kwargs={}):
         self.script = script
         self.build_dir = build_dir
+        self.kwargs = kwargs
 
     def __repr__(self):
         return "Shell: ['script': {0}, 'build_dir': {1}]".format(self.script, self.build_dir)
@@ -158,7 +163,10 @@ class Shell(object):
     def execute(self, command):
         proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         streams = proc.communicate()
-        return Outputs({"stdout": Output(streams[0]), "stderr": Output(streams[1]), "returncode": proc.returncode})
+        return Outputs({
+            "stdout": Output(streams[0], self.kwargs),
+            "stderr": Output(streams[1], self.kwargs),
+            "returncode": proc.returncode})
 
 
 class BuildInfo(object):
@@ -186,20 +194,44 @@ class BuildEnvironment(object):
         self.branch = branch
         self.conf_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), conf_file)
         self.build_dir = build_dir
+        self.initWorkspace()
+        self.parseArguments()
 
+    def initWorkspace(self):
         mini_mcf = os.path.join(os.path.dirname(__file__), "mini-mcf.py")
         cmd = "{} -r {} -b {} -c {} -d {}".format(mini_mcf, self.repo_dir, self.branch, self.conf_file, self.build_dir)
         subprocess.call(cmd, shell=True)
+
+    def parseArguments(self):
+        self.kwargs = {}
+        f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
+        assert os.path.exists(f)
+        source = subprocess.check_output('bash -c "source {0} {1} && bitbake -e"'.format(f, self.build_dir), shell=True)
+        for key in ("BUILD_ARCH", "TUNE_ARCH", "SDK_VERSION"):
+            regexp = "^(?:{key}=)(?:\")(.*)(?:\")$".format(key=key)
+            matcher = re.compile(regexp, re.MULTILINE)
+            self.kwargs[key] = matcher.search(source).groups()[0]
+
+        # Need to find the proper qemu executable name using TUNE_ARCH.
+        tune_arch = self.kwargs["TUNE_ARCH"]
+        if tune_arch in ("i486", "i586", "i686"):
+            self.kwargs["QEMU_ARCH"] = "i386"
+        elif tune_arch in ("powerpc"):
+            self.kwargs["QEMU_ARCH"] = "powerpc"
+        elif tune_arch in ("powerpc64"):
+            self.kwargs["QEMU_ARCH"] = "powerpc64"
+        else:
+            self.kwargs["QEMU_ARCH"] = tune_arch
 
     @property
     def shell(self):
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
-        return Shell(f, self.build_dir)
+        return Shell(f, self.build_dir, self.kwargs)
 
     @property
     def files(self):
-        return Files(self.build_dir)
+        return Files(self.build_dir, self.kwargs)
 
     def parse(self, recipe):
         self.shell.run("bitbake {} -g".format(recipe))
