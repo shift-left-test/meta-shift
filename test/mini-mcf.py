@@ -28,7 +28,10 @@ REPOS = [
     Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-poky"),
     Repo("meta-yocto-bsp", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto-bsp"),
     Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe"),
+    Repo("meta-multimedia", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-multimedia"),
     Repo("meta-python", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-python"),
+    Repo("meta-networking", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-networking"),
+    Repo("meta-raspberrypi", "http://mod.lge.com/hub/yocto/mirror/meta-raspberrypi.git", "meta-raspberrypi", ""),
     Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", ""),
     Repo("meta-shift", None, "meta-shift", ""),
     Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", ""),
@@ -137,7 +140,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
     for key, value in conf_data["local.conf"].items():
         value = os.environ.get(key, value)
         with open(local_conf, "a") as f:
-            f.write('{} = "{}"\n'.format(key, value))
+            f.write('{} ?= "{}"\n'.format(key, value))
 
 
 def configure(args):
