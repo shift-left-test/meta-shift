@@ -29,6 +29,14 @@ RDEPENDS_${PN} += "\
     ${PYTHON_PN}-setuptools \
 "
 
+do_install_append_class-native() {
+    if test -e ${D}${bindir} ; then
+        for i in ${D}${bindir}/* ; do \
+            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython:g $i
+        done
+    fi
+}
+
 do_install_append_class-nativesdk() {
     # To fix the nativesdk recipe shebang path bug of distutils for Yocto morty
     for i in ${D}${bindir}/* ; do
