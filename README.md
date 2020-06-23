@@ -1,9 +1,9 @@
 meta-shift
 ==========
 
-[![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-shift)](http://10.177.233.77:8080/job/meta-shift/)
+[![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-shift-with-multi-configurations)](http://10.177.233.77:8080/job/meta-shift-with-multi-configurations/)
 
-> Shift-left testing project for the Yocto project
+> Shift-left testing for the Yocto project
 
 
 About
@@ -27,12 +27,13 @@ Supported tools
 * cmake (via meta)
 * qmake5 (via meta-qt5)
 * CMakeUtils
+* SAGE
 
 
 Features
 --------
 
-List of the tasks supported
+List of tasks supported
 
 * do_test
 * do_testall
@@ -40,11 +41,11 @@ List of the tasks supported
 * do_coverageall
 * do_checkcode
 * do_checkcodeall
-* do_purgeall
 
 List of bitbake tools supported
 
 * bitbake-layers test-layers
+* bitbake-layers test-recipes
 * recipetool check
 * recipetool inspect
 
@@ -74,10 +75,10 @@ The following command runs all tests
     $ py.test
 
 
-Documentation
--------------
+How to use
+----------
 
-Please refer to the [wiki link](http://mod.lge.com/hub/yocto/meta-shift/-/wikis/home) for more useful information.
+Please refer to the [wiki link](http://mod.lge.com/hub/yocto/meta-shift/-/wikis/home) for more information.
 
 
 Licenses
