@@ -27,10 +27,10 @@ BBCLASSEXTEND = "native nativesdk"
 
 do_install_class-native() {
     oe_runmake install PREFIX=${D}${prefix} CFG_DIR=${D}${sysconfdir}
-    sed -i -e '1s,#!.*perl -w,#!${USRBINPATH}/env nativeperl,' ${D}${bindir}/*
+    sed -i -e '1s,#!.*perl,#!${USRBINPATH}/env nativeperl,' ${D}${bindir}/*
 }
 
 do_install_class-nativesdk() {
     oe_runmake install PREFIX=${D}${prefix} CFG_DIR=${D}${sysconfdir}
-    sed -i -e '1s,#!.*perl -w,#!${USRBINPATH}/env perl,' ${D}${bindir}/*
+    sed -i -e '1s,#!.*perl,#!${USRBINPATH}/env perl,' ${D}${bindir}/*
 }
