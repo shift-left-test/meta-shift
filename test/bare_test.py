@@ -11,7 +11,7 @@ def test_core_image_minimal(bare_build):
 def test_core_image_minimal_populate_sdk(bare_build):
     assert bare_build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_PKGARCH}/core-image-minimal/host/installed-packages.txt")
+    pkgs = bare_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/host/installed-packages.txt")
     assert pkgs.contains("nativesdk-cmake_3.14.1-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
@@ -19,11 +19,11 @@ def test_core_image_minimal_populate_sdk(bare_build):
     assert pkgs.contains("nativesdk-lcov_1.14-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-qemu_3.1.1.1-r0_x86_64-nativesdk.ipk")
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_PKGARCH}/core-image-minimal/target/installed-packages.txt")
+    pkgs = bare_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/target/installed-packages.txt")
     assert pkgs.contains("fff_1.0-r0_{TUNE_PKGARCH}.ipk")
     assert pkgs.contains("gtest_1.8.1-r0_{TUNE_PKGARCH}.ipk")
 
-    pkgs = bare_build.files.read("buildhistory/sdk/poky-glibc-x86_64-core-image-minimal-{TUNE_PKGARCH}/core-image-minimal/files-in-sdk.txt")
+    pkgs = bare_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
     assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.14/Modules/CMakeUtils.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.14/Modules/FindGMock.cmake")
