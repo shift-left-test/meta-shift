@@ -1,5 +1,13 @@
 inherit qemu
 
+def _get_qemu_options(data, arch):
+    options = data.getVar("QEMU_EXTRAOPTIONS_%s" % arch, True)
+
+    if not options:
+        options = " -cpu core2duo" if arch == "core2-64" else ""
+
+    return options
+
 def shiftutils_qemu_run_cmd(data):
     sysroot_dir = data.getVar('STAGING_DIR_TARGET', False)
     if sysroot_dir:
@@ -16,7 +24,15 @@ def shiftutils_qemu_run_cmd(data):
             library_paths.append(sysroot_destdir + base_libdir)
         library_paths.append('\$LD_LIBRARY_PATH')
 
-        return qemu_wrapper_cmdline(data, sysroot_dir, library_paths).replace('PSEUDO_UNLOAD=1 ', '')
+        import string
+        qemu_binary = qemu_target_binary(data)
+        if qemu_binary == "qemu-allarch":
+            qemu_binary = "qemuwrapper"
+
+        qemu_options = _get_qemu_options(data, data.getVar('PACKAGE_ARCH', True))
+
+        return qemu_binary + " " + qemu_options + " -L " + sysroot_dir \
+            + " -E LD_LIBRARY_PATH=" + ":".join(library_paths) + " "
     else:
         return ""
 
@@ -44,8 +60,8 @@ def shiftutils_qemu_cmake_emulator_sdktarget(data):
         '\$LD_LIBRARY_PATH'
     ]
     
-    qemu_options = (data.getVar("QEMU_EXTRAOPTIONS_%s" % data.getVar('TUNE_PKGARCH', True), True) or "").replace(' ', ';')
+    qemu_options = _get_qemu_options(data, data.getVar('TUNE_PKGARCH', True))
 
-    return qemu_binary + ";" + qemu_options + ";-L;\$ENV{SDKTARGETSYSROOT}" \
+    return qemu_binary + ";" + qemu_options.replace(' ', ';') + ";-L;\$ENV{SDKTARGETSYSROOT}" \
         + ";-E;LD_LIBRARY_PATH=" + ":".join(library_paths)
 
