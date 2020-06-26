@@ -26,7 +26,7 @@ shifttest_do_checkcode() {
         local OUTPUT_PATH_OPTION="--output-path=${CHECK_CODE_OUTPUT}/${PF}"
     fi
 
-    sage --source ${S} --build ${B} ${OUTPUT_PATH_OPTION} ${CHECK_CODE_TOOLS} | shifttest_print_lines
+    sage --source ${S} --build ${B} ${OUTPUT_PATH_OPTION} ${CHECK_CODE_TOOLS} 2>&1 | shifttest_print_lines
 }
 
 # In order to overwrite the sstate cache libraries
