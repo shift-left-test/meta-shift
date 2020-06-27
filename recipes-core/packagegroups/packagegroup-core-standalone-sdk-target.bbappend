@@ -1,4 +1,4 @@
 RDEPENDS_${PN} += "\
     fff \
-    gtest \
+    googletest \
 "
