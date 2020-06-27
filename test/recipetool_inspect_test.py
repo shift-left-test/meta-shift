@@ -38,6 +38,10 @@ def test_json_format(bare_build):
                                 '"Description": "A Static code analyzer for C/C++ written in python"')
 
 
+def test_inspect_unknown_recipe(bare_build):
+    assert bare_build.shell.execute("recipetool inspect unknown-recipe").stderr.contains("Failed to find the recipe file for 'unknown-recipe'")
+
+
 def test_cmake_project_without_test_enabled(release_build):
     o = release_build.shell.execute("recipetool inspect cmake-project")
     assert o.stdout.containsAll("Name: cmake-project",
