@@ -147,6 +147,40 @@ def test_autotools_project_do_checkcodeall(release_build):
     assert o.stdout.contains("WARNING: autotools-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 
+def test_humidifier_project_do_build(release_build):
+    assert release_build.shell.execute("bitbake humidifier-project").stderr.empty()
+
+
+def test_humidifier_project_do_test(release_build):
+    o = release_build.shell.execute("bitbake humidifier-project -c test")
+    assert o.stderr.contains("ERROR: Task do_test does not exist for target humidifier-project")
+
+
+def test_humidifier_project_do_testall(release_build):
+    o = release_build.shell.execute("bitbake humidifier-project -c testall")
+    assert o.stdout.contains("WARNING: humidifier-project-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
+
+
+def test_humidifier_project_do_coverage(release_build):
+    o = release_build.shell.execute("bitbake humidifier-project -c coverage")
+    assert o.stderr.contains("ERROR: Task do_coverage does not exist for target humidifier-project")
+
+
+def test_humidifier_project_do_coverageall(release_build):
+    o = release_build.shell.execute("bitbake humidifier-project -c coverageall")
+    assert o.stdout.contains("WARNING: humidifier-project-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
+
+
+def test_humidifier_project_do_checkcode(release_build):
+    o = release_build.shell.execute("bitbake humidifier-project -c checkcode")
+    assert o.stderr.contains("ERROR: Task do_checkcode does not exist for target humidifier-project")
+
+
+def test_humidifier_project_do_checkcodeall(release_build):
+    o = release_build.shell.execute("bitbake humidifier-project -c checkcodeall")
+    assert o.stdout.contains("WARNING: humidifier-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
+
+
 def test_sqlite3logger_do_build(release_build):
     assert release_build.shell.execute("bitbake sqlite3logger").stderr.empty()
 

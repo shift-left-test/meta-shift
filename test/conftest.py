@@ -80,6 +80,12 @@ class Output(object):
         """
         return self.__repr__()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        pass
+
 
 class FileOutput(Output):
     def __init__(self, filename, kwargs={}):
