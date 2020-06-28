@@ -1,9 +1,9 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
-    file://0000-add-demangle-tool-option.patch \
     file://0001-geninfo-Add-intermediate-text-format-support.patch \
     file://0002-geninfo-Add-intermediate-JSON-format-support.patch \
+    file://0001-add-demangle-tool-option.patch \
 "
 
 DEPENDS += "\
