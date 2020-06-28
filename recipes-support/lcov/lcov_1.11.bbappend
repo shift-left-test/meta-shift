@@ -4,21 +4,15 @@ SRC_URI += "file://0001-add-demangle-tool-option.patch"
 
 DEPENDS += "perl"
 
-RDEPENDS_${PN}_class-native = "\
-    perl-module-digest-sha-native \
-    perl-module-filehandle-native \
-    perl-module-getopt-std-native \
-    perl-native \
+RDEPENDS_${PN} += "\
+    perl-module-digest-md5 \
+    perl-module-file-spec-functions \
+    perl-module-file-temp \
+    perl-module-file-find \
+    perl-module-getopt-long \
 "
 
-RDEPENDS_${PN}_class-nativesdk = "\
-    nativesdk-perl \
-    nativesdk-perl-module-digest-md5 \
-    nativesdk-perl-module-digest-sha \
-    nativesdk-perl-module-filehandle \
-    nativesdk-perl-module-file-spec-functions \
-    nativesdk-perl-module-file-temp \
-    nativesdk-perl-module-getopt-std \
+RDEPENDS_${PN}_class-native = "\
 "
 
 BBCLASSEXTEND = "native nativesdk"
