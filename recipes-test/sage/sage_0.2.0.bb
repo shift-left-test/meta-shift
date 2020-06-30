@@ -15,7 +15,7 @@ DEPENDS_prepend = "\
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sage.git;protocol=http;nobranch=1"
 
-SRCREV = "e6fd38fe858439013a6dcf6bfb4a038f4069a2e7"
+SRCREV = "75b4aac6d60d1f4e400d5902af4449550d5cacf7"
 
 S = "${WORKDIR}/git"
 
