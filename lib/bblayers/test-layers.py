@@ -112,21 +112,11 @@ def add(layers):
     layernames = []
     for layername, layerdir in layers:
         """Add a layer to bblayers.conf."""
-        print(layerdir)
-        if not os.path.exists(layerdir):
-            sys.stderr.write("Specified layer directory doesn't exist\n")
-            return
-
         if layername in layernames: 
             sys.stderr.write("Warning: Layer %s in %s is ignored. Another layer with same name is already in BBLAYERS.\n" % (layername, layerdir))
             continue
         else:
             layernames.append(layername)
-
-        layer_conf = os.path.join(layerdir, 'conf', 'layer.conf')
-        if not os.path.exists(layer_conf):
-            sys.stderr.write("Specified layer directory doesn't contain a conf/layer.conf file\n")
-            return
 
         bblayers_conf = os.path.join('conf', 'bblayers.conf')
         if not os.path.exists(bblayers_conf):
@@ -135,8 +125,10 @@ def add(layers):
 
         notadded, _ = bb.utils.edit_bblayers_conf(bblayers_conf, layerdir, None)
         if notadded:
-            for item in notadded:
-                sys.stderr.write("Specified layer %s is already in BBLAYERS\n" % item)
+            sys.stderr.write("Specified layer %s is already in BBLAYERS\n" % layerdir)
+            continue
+
+        sys.stdout.write("Added: %s\n" % layerdir)
 
 
 def remove(layers):
@@ -149,9 +141,10 @@ def remove(layers):
 
         (_, notremoved) = bb.utils.edit_bblayers_conf(bblayers_conf, None, layerdir)
         if notremoved:
-            for item in notremoved:
-                sys.stderr.write("No layers matching %s found in BBLAYERS\n" % item)
-            return
+            sys.stderr.write("No layers matching %s found in BBLAYERS\n" % layerdir)
+            continue
+
+        sys.stdout.write("Removed: %s\n" % layerdir)
 
 
 def process(args):
