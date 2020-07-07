@@ -2,7 +2,7 @@ DEPENDS_prepend = "\
     gtest \
     gmock \
     lcov-native \
-    python-lcov-cobertura-native \
+    python3-lcov-cobertura-native \
     qemu-native \
     cppcheck-native \
     cpplint-native \
@@ -114,7 +114,7 @@ shifttest_do_coverage() {
 
     cd ${S}
 
-    nativepython -m lcov_cobertura ${LCOV_DATAFILE} \
+    nativepython3 -m lcov_cobertura ${LCOV_DATAFILE} \
         --demangle-tool=${TARGET_PREFIX}c++filt \
         --demangle \
         --output ${COBERTURA_FILE}

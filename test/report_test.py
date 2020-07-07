@@ -116,9 +116,9 @@ def test_cmake_project_do_coverageall(report_build):
 
     with READ(TEST.COVERAGE("cmake-project", "coverage.xml")) as f:
         assert f.contains('name="cmake-project.plus.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::plus(int, int)" signature="">')
+        assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('name="cmake-project.minus.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
+        assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
 
 def test_cmake_project_do_checkcodeall(report_build):
@@ -154,9 +154,9 @@ def test_qmake5_project_do_coverageall(report_build):
 
     with READ(TEST.COVERAGE("qmake5-project", "coverage.xml")) as f:
         assert f.contains('name="qmake5-project.plus.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::plus(int, int)" signature="">')
+        assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('name="qmake5-project.minus.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
+        assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
 
 def test_qmake5_project_do_checkcodeall(report_build):
@@ -185,9 +185,9 @@ def test_autotools_project_do_coverageall(report_build):
 
     with READ(TEST.COVERAGE("autotools-project", "coverage.xml")) as f:
         assert f.contains('name="autotools-project.plus.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::plus(int, int)" signature="">')
+        assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('name="autotools-project.minus.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
+        assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
 
 def test_autotools_project_do_checkcodeall(report_build):
@@ -211,10 +211,10 @@ def test_humidifier_project_do_coverageall(report_build):
 
     with READ(TEST.COVERAGE("humidifier-project", "coverage.xml")) as f:
         assert f.contains('name="humidifier-project.humidifier.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="Humidifier::setPreferredHumidity(int)" signature="">')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="Atomizer_Set(int)" signature="">')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="FakeHumiditySensor::getHumidityLevel() const" signature="">')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="FakeHumiditySensor::gmock_getHumidityLevel() const" signature="">')
+        assert f.contains('<method name="Humidifier::setPreferredHumidity(int)" signature="" line-rate="1.0" branch-rate="1.0">')
+        assert f.contains('<method name="Atomizer_Set(int)" signature="" line-rate="1.0" branch-rate="1.0">')
+        assert f.contains('<method name="FakeHumiditySensor::getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
+        assert f.contains('<method name="FakeHumiditySensor::gmock_getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
 
 
 def test_humidifier_project_do_checkcodeall(report_build):
@@ -236,15 +236,15 @@ def test_sqlite3logger_do_coverageall(report_build):
     assert READ(TEST.COVERAGE("sqlite3wrapper", "index.html")).contains(LCOV_HTML_TITLE)
     with READ(TEST.COVERAGE("sqlite3wrapper", "coverage.xml")) as f:
         assert f.contains('name="sqlite3wrapper.src"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Column::getName() const" signature="">')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Statement::check(int)" signature="">')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="SQLite3Wrapper::Database::check(int)" signature="">')
+        assert f.contains('<method name="SQLite3Wrapper::Column::getName() const" signature="" line-rate="1.0" branch-rate="1.0">')
+        assert f.contains('<method name="SQLite3Wrapper::Statement::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
+        assert f.contains('<method name="SQLite3Wrapper::Database::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
     assert READ(TEST.RESULT("stringutils", "unittest.bin.xml")).contains('classname="stringutils.StringTest"')
     assert READ(TEST.COVERAGE("stringutils", "index.html")).contains(LCOV_HTML_TITLE)
     with READ(TEST.COVERAGE("stringutils", "coverage.xml")) as f:
         assert f.contains('name="stringutils.include.util"')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="bool util::string::contains&lt;char&gt;(char const*, char const*)" signature="">')
+        assert f.contains('<method name="bool util::string::contains&lt;char&gt;(char const*, char const*)" signature="" line-rate="1.0" branch-rate="1.0">')
 
 
 def test_sqlite3logger_do_checkcodeall(report_build):

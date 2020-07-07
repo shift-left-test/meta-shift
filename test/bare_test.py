@@ -12,21 +12,21 @@ def test_core_image_minimal_populate_sdk(bare_build):
     assert bare_build.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
     pkgs = bare_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/host/installed-packages.txt")
-    assert pkgs.contains("nativesdk-cmake_3.15.3-r0_x86_64-nativesdk.ipk")
+    assert pkgs.contains("nativesdk-cmake_3.16.5-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-gcovr_4.2-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-lcov_1.14-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-qemu_4.1.0-r0_x86_64-nativesdk.ipk")
+    assert pkgs.contains("nativesdk-qemu_4.2.0-r0_x86_64-nativesdk.ipk")
 
     pkgs = bare_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/target/installed-packages.txt")
     assert pkgs.contains("fff_1.0-r0_{TUNE_PKGARCH}.ipk")
-    assert pkgs.contains("googletest_1.8.1-r0_{TUNE_PKGARCH}.ipk")
+    assert pkgs.contains("googletest_1.10.0-r0_{TUNE_PKGARCH}.ipk")
 
     pkgs = bare_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
     assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.15/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.15/Modules/FindGMock.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.16/Modules/CMakeUtils.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.16/Modules/FindGMock.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
     # Check that the SDK can build a specified module.
@@ -60,7 +60,7 @@ def test_cmakeutils_native(bare_build):
 
 def test_cmakeutils_nativesdk(bare_build):
     assert bare_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
-    f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.15.3-r0/sysroot-destdir/" \
+    f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.16.5-r0/sysroot-destdir/" \
         "opt/poky/{SDK_VERSION}/sysroots/x86_64-pokysdk-linux/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
     assert bare_build.files.read(f).containsAll('SET(CMAKE_CROSSCOMPILING_EMULATOR "qemu-{QEMU_ARCH};',
                                                 ';-L;$ENV{{SDKTARGETSYSROOT}};-E;LD_LIBRARY_PATH=$ENV{{SDKTARGETSYSROOT}}/usr/lib:$ENV{{SDKTARGETSYSROOT}}/lib:$LD_LIBRARY_PATH")')
@@ -154,63 +154,51 @@ def test_lcov_nativesdk(bare_build):
 
 
 def test_python_bashlex(bare_build):
-    assert bare_build.shell.execute("bitbake python-bashlex").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-bashlex").stderr.empty()
 
 
 def test_python_bashlex_native(bare_build):
-    assert bare_build.shell.execute("bitbake python-bashlex-native").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-bashlex-native").stderr.empty()
 
 
 def test_python_bashlex_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python-bashlex").stderr.empty()
+    assert bare_build.shell.execute("bitbake nativesdk-python3-bashlex").stderr.empty()
 
 
 def test_python_click(bare_build):
-    assert bare_build.shell.execute("bitbake python-click").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-click").stderr.empty()
 
 
 def test_python_click_native(bare_build):
-    assert bare_build.shell.execute("bitbake python-click-native").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-click-native").stderr.empty()
 
 
 def test_python_click_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python-click").stderr.empty()
-
-
-def test_python_enum34(bare_build):
-    assert bare_build.shell.execute("bitbake python-enum34").stderr.empty()
-
-
-def test_python_enum34_native(bare_build):
-    assert bare_build.shell.execute("bitbake python-enum34-native").stderr.empty()
-
-
-def test_python_enum34_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python-enum34").stderr.empty()
+    assert bare_build.shell.execute("bitbake nativesdk-python3-click").stderr.empty()
 
 
 def test_python_lcov_cobertura(bare_build):
-    assert bare_build.shell.execute("bitbake python-lcov-cobertura").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-lcov-cobertura").stderr.empty()
 
 
 def test_python_lcov_cobertura_native(bare_build):
-    assert bare_build.shell.execute("bitbake python-lcov-cobertura-native").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-lcov-cobertura-native").stderr.empty()
 
 
 def test_python_lcov_cobertura_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python-lcov-cobertura").stderr.empty()
+    assert bare_build.shell.execute("bitbake nativesdk-python3-lcov-cobertura").stderr.empty()
 
 
 def test_python_shutilwhich(bare_build):
-    assert bare_build.shell.execute("bitbake python-shutilwhich").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-shutilwhich").stderr.empty()
 
 
 def test_python_shutilwhich_native(bare_build):
-    assert bare_build.shell.execute("bitbake python-shutilwhich-native").stderr.empty()
+    assert bare_build.shell.execute("bitbake python3-shutilwhich-native").stderr.empty()
 
 
 def test_python_shutilwhich_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python-shutilwhich").stderr.empty()
+    assert bare_build.shell.execute("bitbake nativesdk-python3-shutilwhich").stderr.empty()
 
 
 def test_qemu(bare_build):

@@ -12,28 +12,18 @@ PYPI_PACKAGE = "compiledb"
 DEPENDS += "\
     ${PYTHON_PN}-bashlex \
     ${PYTHON_PN}-click \
-    ${PYTHON_PN}-enum34 \
     ${PYTHON_PN}-shutilwhich \
 "
 
 SRC_URI[md5sum] = "957ea6c6b66017f7ecefe9edf8ee7a80"
 SRC_URI[sha256sum] = "06bb47dd1fa04de3a12720379ff382d40441074476db7c16a27e2ad79b7e966e"
 
-inherit pypi setuptools
+inherit pypi setuptools3
 
 RDEPENDS_${PN} += "\
     ${PYTHON_PN}-bashlex \
     ${PYTHON_PN}-click \
-    ${PYTHON_PN}-enum34 \
     ${PYTHON_PN}-shutilwhich \
 "
-
-do_install_append_class-native() {
-    if test -e ${D}${bindir} ; then
-        for i in ${D}${bindir}/* ; do \
-            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython:g $i
-        done
-    fi
-}
 
 BBCLASSEXTEND = "native nativesdk"

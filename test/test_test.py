@@ -75,7 +75,7 @@ def test_cmake_project_do_build(test_build):
     assert project.packages.contains("cppcheck-native")
     assert project.packages.contains("cpplint-native")
     assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
+    assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
 
@@ -127,7 +127,7 @@ def test_qmake5_project_do_build(test_build):
     assert project.packages.contains("cppcheck-native")
     assert project.packages.contains("cpplint-native")
     assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
+    assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
 
@@ -182,7 +182,7 @@ def test_autotools_project_do_build(test_build):
     assert project.packages.contains("cppcheck-native")
     assert project.packages.contains("cpplint-native")
     assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
+    assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
 
@@ -234,7 +234,7 @@ def test_humidifier_project_do_build(test_build):
     assert project.packages.contains("cppcheck-native")
     assert project.packages.contains("cpplint-native")
     assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
+    assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
 
@@ -290,7 +290,7 @@ def test_sqlite3logger_do_build(test_build):
     assert project.packages.contains("cppcheck-native")
     assert project.packages.contains("cpplint-native")
     assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
+    assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
 
 

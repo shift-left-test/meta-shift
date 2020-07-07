@@ -1,8 +1,8 @@
 diff --git a/lcov_cobertura/lcov_cobertura.py b/lcov_cobertura/lcov_cobertura.py
-index 9748778..040508d 100755
+index 9748778..5b89d76 100755
 --- a/lcov_cobertura/lcov_cobertura.py
 +++ b/lcov_cobertura/lcov_cobertura.py
-@@ -20,17 +20,13 @@ from optparse import OptionParser
+@@ -20,19 +20,15 @@ from optparse import OptionParser
  from distutils.spawn import find_executable
  
  CPPFILT = "c++filt"
@@ -20,8 +20,11 @@ index 9748778..040508d 100755
 +def demangle(name, cppfilt):
 +    pipe = subprocess.Popen([cppfilt, name], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
      stdout, _ = pipe.communicate()
-     return stdout.split("\n")[0]
+-    return stdout.split("\n")[0]
++    return stdout.decode().split("\n")[0]
  
+ 
+ class LcovCobertura(object):
 @@ -48,7 +44,7 @@ class LcovCobertura(object):
      >>> print(cobertura_xml)
      """

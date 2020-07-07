@@ -14,16 +14,8 @@ SRC_URI += "file://0001-remove-pytest-runner-dependency.patch"
 SRC_URI[md5sum] = "1762216775e1666bbba3e5a3a92e82f9"
 SRC_URI[sha256sum] = "08b384606136146ac1d32a2ffb60623a5dc1b20434588eaa0fa12a6e24eb3bf5"
 
-inherit pypi setuptools
+inherit pypi setuptools3
 
 RDEPENDS_${PN} += "${PYTHON_PN}-setuptools"
-
-do_install_append_class-native() {
-    if test -e ${D}${bindir} ; then
-        for i in ${D}${bindir}/* ; do \
-            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython:g $i
-        done
-    fi
-}
 
 BBCLASSEXTEND = "native nativesdk"

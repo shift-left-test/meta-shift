@@ -18,7 +18,7 @@ DEPENDS += "\
 SRC_URI[md5sum] = "83f75d78d59cbd8a34275a372a47f557"
 SRC_URI[sha256sum] = "5aae34dc81e51600cfecbbbce3c3a80ce3f7548bc0aa1faa4b74ecd18f6fca3f"
 
-inherit pypi setuptools
+inherit pypi setuptools3
 
 FILES_${PN}_append_class-nativesdk = " ${SDKPATHNATIVE}"
 
@@ -28,14 +28,6 @@ RDEPENDS_${PN} += "\
     ${PYTHON_PN}-markupsafe \
     ${PYTHON_PN}-setuptools \
 "
-
-do_install_append_class-native() {
-    if test -e ${D}${bindir} ; then
-        for i in ${D}${bindir}/* ; do \
-            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython:g $i
-        done
-    fi
-}
 
 do_install_append_class-nativesdk() {
     echo "export GCOV=""$""{TARGET_PREFIX}gcov" > ${WORKDIR}/gcovr.sh

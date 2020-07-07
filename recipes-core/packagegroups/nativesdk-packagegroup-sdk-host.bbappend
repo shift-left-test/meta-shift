@@ -4,6 +4,6 @@ RDEPENDS_${PN}_append = " \
     nativesdk-cpplint \
     nativesdk-gcovr \
     nativesdk-lcov \
-    nativesdk-python-lcov-cobertura \
+    nativesdk-python3-lcov-cobertura \
     nativesdk-qemu \
 "

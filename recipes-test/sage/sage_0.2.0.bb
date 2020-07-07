@@ -19,7 +19,7 @@ SRCREV = "75b4aac6d60d1f4e400d5902af4449550d5cacf7"
 
 S = "${WORKDIR}/git"
 
-inherit setuptools
+inherit setuptools3
 
 RDEPENDS_${PN} = "\
     compiledb \
@@ -30,7 +30,7 @@ RDEPENDS_${PN} = "\
 do_install_append_class-native() {
     if test -e ${D}${bindir} ; then
         for i in ${D}${bindir}/* ; do \
-            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython:g $i
+            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython3:g $i
         done
     fi
 }
