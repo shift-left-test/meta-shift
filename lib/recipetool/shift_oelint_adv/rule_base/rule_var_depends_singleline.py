@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarDependsSingleLine(Rule):
     def __init__(self):
-        super().__init__(id="oelint.jetm.vars.dependssingleline",
-                         severity="warning",
-                         message="Each [R]DEPENDS entry should be put into a single line")
+        super(VarDependsSingleLine, self).__init__(id="oelint.jetm.vars.dependssingleline",
+                                                   severity="warning",
+                                                   message="Each [R]DEPENDS entry should be put into a single line")
 
     def check(self, _file, stash):
         res = []

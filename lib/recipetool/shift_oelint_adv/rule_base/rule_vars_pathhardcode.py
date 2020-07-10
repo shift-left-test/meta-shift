@@ -25,15 +25,15 @@ class VarsPathHardcode(Rule):
             "/com": "${sharedstatedir}",
             "/etc": "${sysconfdir}",
         })
-        super().__init__(id="oelint.vars.pathhardcode",
-                         severity="warning",
-                         message="<FOO>",
-                         appendix=[v.strip("$").strip("{").strip("}") for v in self._map.values()])
+        super(VarsPathHardcode, self).__init__(id="oelint.vars.pathhardcode",
+                                               severity="warning",
+                                               message="<FOO>",
+                                               appendix=[v.strip("$").strip("{").strip("}") for v in self._map.values()])
 
     def check(self, _file, stash):
         res = []
         items = stash.GetItemsFor(filename=_file)
-        
+
         for i in items:
             if isinstance(i, Variable) and \
                i.VarName in ["SUMMARY", "DESCRIPTION", "HOMEPAGE", "AUTHOR", "BUGTRACKER", "FILES", "FILES_${PN}"]:

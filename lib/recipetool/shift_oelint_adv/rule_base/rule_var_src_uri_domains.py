@@ -6,9 +6,9 @@ from shift_oelint_adv.parser import INLINE_BLOCK
 
 class VarSRCUriOptions(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.srcuridomains",
-                         severity="warning",
-                         message="Recipe is pulling from different domains, this will likely cause issues")
+        super(VarSRCUriOptions, self).__init__(id="oelint.vars.srcuridomains",
+                                               severity="warning",
+                                               message="Recipe is pulling from different domains, this will likely cause issues")
 
     def check(self, _file, stash):
         res = []

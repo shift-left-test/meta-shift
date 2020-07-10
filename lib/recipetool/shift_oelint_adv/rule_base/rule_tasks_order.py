@@ -5,10 +5,10 @@ from shift_oelint_adv.const_func import FUNC_ORDER
 
 class TaskOrder(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.order",
-                         severity="warning",
-                         message="<FOO>",
-                         appendix=FUNC_ORDER)
+        super(TaskOrder, self).__init__(id="oelint.task.order",
+                                        severity="warning",
+                                        message="<FOO>",
+                                        appendix=FUNC_ORDER)
 
     def check(self, _file, stash):
         res = []

@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class TaskNoPythonPrefix(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.nopythonprefix",
-                         severity="warning",
-                         message="Tasks containing shell code, should not be prefixed with python in function header")
+        super(TaskNoPythonPrefix, self).__init__(id="oelint.task.nopythonprefix",
+                                                 severity="warning",
+                                                 message="Tasks containing shell code, should not be prefixed with python in function header")
 
     def check(self, _file, stash):
         res = []

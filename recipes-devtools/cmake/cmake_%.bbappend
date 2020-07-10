@@ -1,8 +1,8 @@
 inherit shiftutils
 
-SRC_URI_append_class-nativesdk = " git://mod.lge.com/hub/yocto/addons/CMakeUtils.git;protocol=http;nobranch=1;name=cmakeutils;destsuffix=cmakeutils"
+SRC_URI_append_class-nativesdk = " git://mod.lge.com/hub/yocto/addons/CMakeUtils.git;protocol=http;name=cmakeutils;destsuffix=cmakeutils"
 
-SRCREV_cmakeutils = "12a1d74661e824bf5ff90d3e2839555126de1961"
+SRCREV_cmakeutils = "e191e00fdde28612e0232fafdec29224839b4bfe"
 
 do_install_append_class-nativesdk() {
     install -d ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules
