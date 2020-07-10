@@ -33,18 +33,18 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
     res = []
     raw_line = raw_line or line
     if raw_line.find("\\\n") != -1:
-        _, line = _iter.__next__()
+        _, line = next(_iter)
         while line.find("\\\n") != -1:
             raw_line += line
-            _, line = _iter.__next__()
+            _, line = next(_iter)
         raw_line += line
     elif re.match(__func_start_regexp__, raw_line):
-        _, line = _iter.__next__()
+        _, line = next(_iter)
         stopiter = False
         while line.strip() != "}" and not stopiter:
             raw_line += line
             try:
-                _, line = _iter.__next__()
+                _, line = next(_iter)
             except StopIteration:
                 stopiter = True
         if line.strip() == "}":
@@ -53,7 +53,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
         stopiter = False
         while not stopiter:
             try:
-                _, line = _iter.__next__()
+                _, line = next(_iter)
             except StopIteration:
                 stopiter = True
             if re.match("^[A-Za-z0-9#]+", line) or stopiter:
@@ -85,7 +85,7 @@ def prepare_lines(_file, lineOffset=0):
             for num, line in _iter:
                 prep_lines += prepare_lines_subparser(
                     _iter, lineOffset, num, line)
-    except FileNotFoundError:
+    except (IOError, OSError):
         pass
     return prep_lines
 

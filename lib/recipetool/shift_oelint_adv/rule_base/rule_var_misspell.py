@@ -6,9 +6,9 @@ from difflib import SequenceMatcher
 
 class VarMisspell(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.mispell",
-                         severity="warning",
-                         message="<FOO>")
+        super(VarMisspell, self).__init__(id="oelint.vars.mispell",
+                                          severity="warning",
+                                          message="<FOO>")
 
     def get_best_match(self, item, _list, minconfidence=0.8):
         _dict = sorted([(SequenceMatcher(None, item, k).ratio(), k)

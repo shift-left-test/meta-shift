@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarMultiLineIndent(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.multilineident",
-                         severity="info",
-                         message="On a multiline assignment, line indent is desirable. Current {}/{}")
+        super(VarMultiLineIndent, self).__init__(id="oelint.vars.multilineident",
+                                                 severity="info",
+                                                 message="On a multiline assignment, line indent is desirable. Current {}/{}")
 
     def check(self, _file, stash):
         res = []

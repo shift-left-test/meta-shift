@@ -4,9 +4,9 @@ import re
 
 class NoSpaceRuleCont(Rule):
     def __init__(self):
-        super().__init__(id="oelint.spaces.linecont",
-                         severity="error",
-                         message="No spaces after line continuation")
+        super(NoSpaceRuleCont, self).__init__(id="oelint.spaces.linecont",
+                                              severity="error",
+                                              message="No spaces after line continuation")
 
     def __getMatches(self, _file, stash):
         res = []

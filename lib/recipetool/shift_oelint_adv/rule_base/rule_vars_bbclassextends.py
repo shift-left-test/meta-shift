@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarBbclassextend(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.bbclassextend",
-                         severity="info",
-                         message="BBCLASSEXTEND should be set if possible")
+        super(VarBbclassextend, self).__init__(id="oelint.var.bbclassextend",
+                                               severity="info",
+                                               message="BBCLASSEXTEND should be set if possible")
 
     def check(self, _file, stash):
         res = []

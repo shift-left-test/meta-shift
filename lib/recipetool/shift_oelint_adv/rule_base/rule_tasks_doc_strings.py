@@ -6,9 +6,9 @@ from shift_oelint_adv.const_func import KNOWN_FUNCS
 
 class TaskDocStrings(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.docstrings",
-                         severity="info",
-                         message="Every custom task should have a doc string set by task[doc] = \"\"")
+        super(TaskDocStrings, self).__init__(id="oelint.task.docstrings",
+                                             severity="info",
+                                             message="Every custom task should have a doc string set by task[doc] = \"\"")
 
     def check(self, _file, stash):
         res = []
