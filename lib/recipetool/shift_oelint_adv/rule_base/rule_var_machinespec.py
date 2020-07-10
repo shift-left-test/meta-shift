@@ -7,9 +7,9 @@ from shift_oelint_adv.helper_files import get_valid_package_names, get_valid_nam
 
 class VarPnBpnUsage(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.machinespecific",
-                         severity="error",
-                         message="'{}' is set machine specific ['{}'], but a matching COMPATIBLE_MACHINE entry is missing")
+        super(VarPnBpnUsage, self).__init__(id="oelint.vars.machinespecific",
+                                            severity="error",
+                                            message="'{}' is set machine specific ['{}'], but a matching COMPATIBLE_MACHINE entry is missing")
 
     def check(self, _file, stash):
         res = []

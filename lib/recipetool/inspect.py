@@ -99,7 +99,7 @@ def inspect(args):
     recipefile = tinfoil.cooker.findBestProvider(pn)[3]
     
     if recipefile is None:
-        print("Failed to find the recipe file for '{}'".format(pn), file=sys.stderr)
+        sys.stderr.write("Failed to find the recipe file for '{}'\n".format(pn))
         return
 
     appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)

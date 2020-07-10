@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.fileextrapaths",
-                         severity="warning",
-                         message="'FILESEXTRAPATHS' shouldn't be used in a bb file")
+        super(VarBugtrackerIsUrl, self).__init__(id="oelint.vars.fileextrapaths",
+                                                 severity="warning",
+                                                 message="'FILESEXTRAPATHS' shouldn't be used in a bb file")
 
     def check(self, _file, stash):
         res = []

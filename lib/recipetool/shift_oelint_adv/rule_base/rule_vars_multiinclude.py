@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarMultiInclude(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.multiinclude",
-                         severity="warning",
-                         message="'{INC}' is included multiple times")
+        super(VarMultiInclude, self).__init__(id="oelint.var.multiinclude",
+                                              severity="warning",
+                                              message="'{INC}' is included multiple times")
 
     def check(self, _file, stash):
         res = []

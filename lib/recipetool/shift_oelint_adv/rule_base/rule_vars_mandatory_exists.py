@@ -5,11 +5,11 @@ from shift_oelint_adv.const_vars import get_mandatory_vars
 
 class VarMandatoryExists(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.mandatoryvar",
-                         severity="error",
-                         message="<FOO>",
-                         onappend=False,
-                         appendix=get_mandatory_vars())
+        super(VarMandatoryExists, self).__init__(id="oelint.var.mandatoryvar",
+                                                 severity="error",
+                                                 message="<FOO>",
+                                                 onappend=False,
+                                                 appendix=get_mandatory_vars())
 
     def check(self, _file, stash):
         res = []

@@ -6,9 +6,9 @@ from shift_oelint_adv.parser import INLINE_BLOCK
 
 class VarSRCUriOptions(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.srcurioptions",
-                         severity="warning",
-                         message="<FOO>")
+        super(VarSRCUriOptions, self).__init__(id="oelint.vars.srcurioptions",
+                                               severity="warning",
+                                               message="<FOO>")
         self._general_options = [
             "apply",
             "destsuffix",

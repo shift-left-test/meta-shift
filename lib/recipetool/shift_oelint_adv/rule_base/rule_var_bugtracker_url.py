@@ -5,9 +5,9 @@ from shift_oelint_adv.helper_files import get_scr_components
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.bugtrackerisurl",
-                         severity="warning",
-                         message="'BUGTRACKER' should be an URL")
+        super(VarBugtrackerIsUrl, self).__init__(id="oelint.vars.bugtrackerisurl",
+                                                 severity="warning",
+                                                 message="'BUGTRACKER' should be an URL")
 
     def check(self, _file, stash):
         res = []

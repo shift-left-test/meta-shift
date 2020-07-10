@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarSectionLowercase(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.doublemodify",
-                         severity="error",
-                         message="Multiple modifiers of append/prepend/remove/+= found in one operation")
+        super(VarSectionLowercase, self).__init__(id="oelint.vars.doublemodify",
+                                                  severity="error",
+                                                  message="Multiple modifiers of append/prepend/remove/+= found in one operation")
 
     def check(self, _file, stash):
         res = []

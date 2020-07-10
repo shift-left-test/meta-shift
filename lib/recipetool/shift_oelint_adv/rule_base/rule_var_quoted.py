@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarQuoted(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.valuequoted",
-                         severity="error",
-                         message="Variable value should be quoted")
+        super(VarQuoted, self).__init__(id="oelint.vars.valuequoted",
+                                        severity="error",
+                                        message="Variable value should be quoted")
 
     def check(self, _file, stash):
         res = []

@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarImproperInherit(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.improperinherit",
-                         severity="error",
-                         message="'{INH}' is not a proper bbclass name")
+        super(VarImproperInherit, self).__init__(id="oelint.var.improperinherit",
+                                                 severity="error",
+                                                 message="'{INH}' is not a proper bbclass name")
 
     def check(self, _file, stash):
         res = []
