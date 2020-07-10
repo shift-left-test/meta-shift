@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarMultiInherit(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.multiinherit",
-                         severity="warning",
-                         message="'{INH}' is included multiple times")
+        super(VarMultiInherit, self).__init__(id="oelint.var.multiinherit",
+                                              severity="warning",
+                                              message="'{INH}' is included multiple times")
 
     def check(self, _file, stash):
         res = []

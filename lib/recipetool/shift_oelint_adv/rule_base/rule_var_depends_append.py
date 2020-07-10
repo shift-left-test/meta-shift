@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarDependsAppend(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.dependsappend",
-                         severity="error",
-                         message="DEPENDS should only be appended, not overwritten")
+        super(VarDependsAppend, self).__init__(id="oelint.vars.dependsappend",
+                                               severity="error",
+                                               message="DEPENDS should only be appended, not overwritten")
 
     def check(self, _file, stash):
         res = []

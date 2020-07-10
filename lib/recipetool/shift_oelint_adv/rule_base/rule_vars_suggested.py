@@ -5,11 +5,11 @@ from shift_oelint_adv.const_vars import get_suggested_vars
 
 class VarSuggestedExists(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.suggestedvar",
-                         severity="info",
-                         message="<FOO>",
-                         onappend=False,
-                         appendix=get_suggested_vars())
+        super(VarSuggestedExists, self).__init__(id="oelint.var.suggestedvar",
+                                                 severity="info",
+                                                 message="<FOO>",
+                                                 onappend=False,
+                                                 appendix=get_suggested_vars())
 
     def check(self, _file, stash):
         res = []

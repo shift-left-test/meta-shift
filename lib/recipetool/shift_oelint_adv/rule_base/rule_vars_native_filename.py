@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarNativeFilename(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.nativefilename",
-                         severity="warning",
-                         message="native-recipe-files should include '-native' in file name")
+        super(VarNativeFilename, self).__init__(id="oelint.var.nativefilename",
+                                                severity="warning",
+                                                message="native-recipe-files should include '-native' in file name")
 
     def check(self, _file, stash):
         res = []

@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarHomepagePrefix(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.homepageprefix",
-                         severity="warning",
-                         message="'HOMEPAGE' should start with 'http://' or 'https://'")
+        super(VarHomepagePrefix, self).__init__(id="oelint.vars.homepageprefix",
+                                                severity="warning",
+                                                message="'HOMEPAGE' should start with 'http://' or 'https://'")
 
     def check(self, _file, stash):
         res = []

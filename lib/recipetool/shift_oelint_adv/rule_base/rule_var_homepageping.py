@@ -1,15 +1,19 @@
 from shift_oelint_adv.cls_item import Variable
 from shift_oelint_adv.cls_rule import Rule
 
-from urllib.request import urlopen, Request
-from urllib.error import HTTPError, URLError
+try:
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError, URLError
+except ImportError:
+    from urllib2 import urlopen, Request
+    from urllib2 import HTTPError, URLError
 
 
 class VarHomepagePrefix(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.homepageping",
-                         severity="warning",
-                         message="'HOMEPAGE' isn't reachable")
+        super(VarHomepagePrefix, self).__init__(id="oelint.vars.homepageping",
+                                                severity="warning",
+                                                message="'HOMEPAGE' isn't reachable")
 
     def check(self, _file, stash):
         res = []

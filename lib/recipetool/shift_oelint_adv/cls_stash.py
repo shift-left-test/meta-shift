@@ -4,7 +4,7 @@ import re
 from shift_oelint_adv.parser import get_items
 
 
-class Stash():
+class Stash(object):
 
     def __init__(self, args):
         """constructor

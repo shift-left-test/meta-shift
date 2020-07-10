@@ -1,7 +1,10 @@
 import glob
 import os
 import re
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except:
+    from urlparse import urlparse
 
 from shift_oelint_adv.cls_item import Variable
 from shift_oelint_adv.const_vars import get_known_mirrors
@@ -86,7 +89,7 @@ def get_scr_components(string):
 
 
 def safe_linesplit(string):
-    """Split line in a safe manner 
+    """Split line in a safe manner
 
     Arguments:
         string {str} -- raw input
