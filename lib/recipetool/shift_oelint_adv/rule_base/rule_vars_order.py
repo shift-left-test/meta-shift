@@ -5,10 +5,10 @@ from shift_oelint_adv.const_vars import VAR_ORDER
 
 class VarsOrder(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.order",
-                         severity="warning",
-                         message="<FOO>",
-                         appendix=[self.__cleanname(x) for x in VAR_ORDER])
+        super(VarsOrder, self).__init__(id="oelint.var.order",
+                                        severity="warning",
+                                        message="<FOO>",
+                                        appendix=[self.__cleanname(x) for x in VAR_ORDER])
 
     def __cleanname(self, _input):
         return _input.replace("$", "").replace("{", "").replace("}", "")

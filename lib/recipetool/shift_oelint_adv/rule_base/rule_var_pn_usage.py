@@ -5,9 +5,9 @@ from shift_oelint_adv.helper_files import get_scr_components
 
 class VarPnBpnUsage(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.pnbpnusage",
-                         severity="error",
-                         message="${BPN} should be used instead of ${PN}")
+        super(VarPnBpnUsage, self).__init__(id="oelint.vars.pnbpnusage",
+                                            severity="error",
+                                            message="${BPN} should be used instead of ${PN}")
 
     def check(self, _file, stash):
         res = []

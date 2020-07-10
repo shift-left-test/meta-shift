@@ -6,9 +6,9 @@ from shift_oelint_adv.const_func import FUNC_ORDER
 
 class TaskAddNoTaskBody(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.addnotaskbody",
-                         severity="warning",
-                         message="The added task '{FUNC}' is not existing or has no body")
+        super(TaskAddNoTaskBody, self).__init__(id="oelint.task.addnotaskbody",
+                                                severity="warning",
+                                                message="The added task '{FUNC}' is not existing or has no body")
 
     def check(self, _file, stash):
         res = []

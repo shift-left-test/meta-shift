@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class FileIncludeVsRequire(Rule):
     def __init__(self):
-        super().__init__(id="oelint.file.requireinclude",
-                         severity="warning",
-                         message="Use 'require {FILE}' instead of 'include {FILE}'")
+        super(FileIncludeVsRequire, self).__init__(id="oelint.file.requireinclude",
+                                                   severity="warning",
+                                                   message="Use 'require {FILE}' instead of 'include {FILE}'")
 
     def check(self, _file, stash):
         res = []

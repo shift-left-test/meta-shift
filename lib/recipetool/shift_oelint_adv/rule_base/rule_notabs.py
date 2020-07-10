@@ -4,9 +4,9 @@ import re
 
 class NoTabs(Rule):
     def __init__(self):
-        super().__init__(id="oelint.tabs.notabs",
-                         severity="warning",
-                         message="Don't use tabs use spaces")
+        super(NoTabs, self).__init__(id="oelint.tabs.notabs",
+                                     severity="warning",
+                                     message="Don't use tabs use spaces")
 
     def __getMatches(self, _file, stash):
         res = []

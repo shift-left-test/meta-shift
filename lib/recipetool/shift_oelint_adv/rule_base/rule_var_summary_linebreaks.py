@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarSummaryLinebreaks(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.summarylinebreaks",
-                         severity="warning",
-                         message="'SUMMARY' should not contain line breaks")
+        super(VarSummaryLinebreaks, self).__init__(id="oelint.vars.summarylinebreaks",
+                                                   severity="warning",
+                                                   message="'SUMMARY' should not contain line breaks")
 
     def check(self, _file, stash):
         res = []

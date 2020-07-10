@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_item import PythonBlock, Function
 
 class NoCommentsTrailing(Rule):
     def __init__(self):
-        super().__init__(id="oelint.comments.notrailing",
-                         severity="error",
-                         message="Comments shall be put on seperate lines")
+        super(NoCommentsTrailing, self).__init__(id="oelint.comments.notrailing",
+                                                 severity="error",
+                                                 message="Comments shall be put on seperate lines")
 
     def check(self, _file, stash):
         res = []
