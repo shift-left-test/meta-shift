@@ -7,9 +7,9 @@ import re
 
 class VarSRCURIWildcard(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.srcuriwildcard",
-                         severity="error",
-                         message="'SRC_URI' should not contain any wildcards")
+        super(VarSRCURIWildcard, self).__init__(id="oelint.var.srcuriwildcard",
+                                                severity="error",
+                                                message="'SRC_URI' should not contain any wildcards")
 
     def check(self, _file, stash):
         res = []

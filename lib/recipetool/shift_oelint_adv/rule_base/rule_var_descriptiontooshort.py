@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarDescSameTooBrief(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.descriptiontoobrief",
-                         severity="warning",
-                         message="'DESCRIPTION' is the shorter than 'SUMMARY'")
+        super(VarDescSameTooBrief, self).__init__(id="oelint.vars.descriptiontoobrief",
+                                                  severity="warning",
+                                                  message="'DESCRIPTION' is the shorter than 'SUMMARY'")
 
     def check(self, _file, stash):
         res = []

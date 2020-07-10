@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarPnUsageDiscouraged(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.pnusagediscouraged",
-                         severity="warning",
-                         message="Variable shouldn't contain ${PN} or ${BPN}")
+        super(VarPnUsageDiscouraged, self).__init__(id="oelint.vars.pnusagediscouraged",
+                                                    severity="warning",
+                                                    message="Variable shouldn't contain ${PN} or ${BPN}")
 
     def check(self, _file, stash):
         res = []

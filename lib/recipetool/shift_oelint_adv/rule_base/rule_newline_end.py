@@ -3,9 +3,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class NewLineEOF(Rule):
     def __init__(self):
-        super().__init__(id="oelint.newline.eof",
-                         severity="warning",
-                         message="File shall end on a newline")
+        super(NewLineEOF, self).__init__(id="oelint.newline.eof",
+                                         severity="warning",
+                                         message="File shall end on a newline")
 
     def __getMatches(self, _file, stash):
         res = {}

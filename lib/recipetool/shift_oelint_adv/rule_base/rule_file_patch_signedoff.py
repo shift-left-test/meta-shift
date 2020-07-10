@@ -7,9 +7,9 @@ from shift_oelint_adv.helper_files import get_files
 
 class FilePatchIsSignedOff(Rule):
     def __init__(self):
-        super().__init__(id="oelint.file.patchsignedoff",
-                         severity="warning",
-                         message="Patch '{FILE}' should contain a Signed-Off entry")
+        super(FilePatchIsSignedOff, self).__init__(id="oelint.file.patchsignedoff",
+                                                   severity="warning",
+                                                   message="Patch '{FILE}' should contain a Signed-Off entry")
 
     def check(self, _file, stash):
         res = []

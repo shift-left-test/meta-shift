@@ -3,9 +3,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class NewLineConsecutive(Rule):
     def __init__(self):
-        super().__init__(id="oelint.newline.consecutive",
-                         severity="warning",
-                         message="Consecutive blank lines should be avoided")
+        super(NewLineConsecutive, self).__init__(id="oelint.newline.consecutive",
+                                                 severity="warning",
+                                                 message="Consecutive blank lines should be avoided")
 
     def __getMatches(self, _file, stash):
         res = {}

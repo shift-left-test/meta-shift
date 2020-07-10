@@ -6,9 +6,9 @@ from shift_oelint_adv.helper_files import find_local_or_in_layer, expand_term
 
 class FileIncludeNotFound(Rule):
     def __init__(self):
-        super().__init__(id="oelint.file.includenotfound",
-                         severity="warning",
-                         message="'{FILE}' was not found")
+        super(FileIncludeNotFound, self).__init__(id="oelint.file.includenotfound",
+                                                  severity="warning",
+                                                  message="'{FILE}' was not found")
 
     def check(self, _file, stash):
         res = []

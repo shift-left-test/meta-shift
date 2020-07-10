@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarAppendOperation(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.appendop",
-                         severity="error",
-                         message="Use '_append' instead of ' += '")
+        super(VarAppendOperation, self).__init__(id="oelint.vars.appendop",
+                                                 severity="error",
+                                                 message="Use '_append' instead of ' += '")
 
     def check(self, _file, stash):
         res = []

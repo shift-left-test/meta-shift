@@ -7,14 +7,14 @@ class VarPkgSpecific(Rule):
     def __init__(self):
         self.needles = ['RDEPENDS', 'RRECOMMENDS', 'RSUGGESTS', 'RCONFLICTS', 'RPROVIDES', 'RREPLACES',
                    'FILES', 'pkg_preinst', 'pkg_postinst', 'pkg_prerm', 'pkg_postrm', 'ALLOW_EMPTY']
-        super().__init__(id="oelint.vars.pkgspecific",
-                         severity="error",
-                         message="Variable {VAR} is package-specific and therefore it should be {VAR}_${PN}",
-                         appendix=self.needles)
+        super(VarPkgSpecific, self).__init__(id="oelint.vars.pkgspecific",
+                                             severity="error",
+                                             message="Variable {VAR} is package-specific and therefore it should be {VAR}_${PN}",
+                                             appendix=self.needles)
 
     def check(self, _file, stash):
         res = []
-        
+
         _packages = get_valid_package_names(stash, _file)
         items = stash.GetItemsFor(
             filename=_file, classifier=Variable.CLASSIFIER)

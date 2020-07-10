@@ -5,11 +5,11 @@ from shift_oelint_adv.const_vars import get_protected_append_vars
 
 class VarQuoted(Rule):
     def __init__(self):
-        super().__init__(id="oelint.append.protvars",
-                         severity="error",
-                         message="Variable '{VAR}' shouldn't be set as part of a bbappend",
-                         onlyappend=True,
-                         appendix=get_protected_append_vars())
+        super(VarQuoted, self).__init__(id="oelint.append.protvars",
+                                        severity="error",
+                                        message="Variable '{VAR}' shouldn't be set as part of a bbappend",
+                                        onlyappend=True,
+                                        appendix=get_protected_append_vars())
 
     def check(self, _file, stash):
         res = []

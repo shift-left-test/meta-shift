@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarSpacesOnAssignment(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.spacesassignment",
-                         severity="warning",
-                         message="Suggest spaces around variable assignment. E.g. 'FOO = \"BAR\"'")
+        super(VarSpacesOnAssignment, self).__init__(id="oelint.vars.spacesassignment",
+                                                    severity="warning",
+                                                    message="Suggest spaces around variable assignment. E.g. 'FOO = \"BAR\"'")
 
     def check(self, _file, stash):
         res = []
