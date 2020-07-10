@@ -3,9 +3,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarDescSame(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.descriptionsame",
-                         severity="warning",
-                         message="'DESCRIPTION' is the same a 'SUMMARY' - it can be removed then")
+        super(VarDescSame, self).__init__(id="oelint.vars.descriptionsame",
+                                          severity="warning",
+                                          message="'DESCRIPTION' is the same a 'SUMMARY' - it can be removed then")
 
     def check(self, _file, stash):
         res = []

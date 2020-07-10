@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class TaskPythonPrefix(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.pythonprefix",
-                         severity="warning",
-                         message="Tasks containing python code, should be prefixed with python in function header")
+        super(TaskPythonPrefix, self).__init__(id="oelint.task.pythonprefix",
+                                               severity="warning",
+                                               message="Tasks containing python code, should be prefixed with python in function header")
 
     def check(self, _file, stash):
         res = []

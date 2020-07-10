@@ -5,10 +5,10 @@ from shift_oelint_adv.const_vars import get_protected_vars
 
 class VarQuoted(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.bbvars",
-                         severity="warning",
-                         message="Variable '{VAR}' should be set on a disto/layer or local.conf level, not in a recipe",
-                         appendix=get_protected_vars())
+        super(VarQuoted, self).__init__(id="oelint.vars.bbvars",
+                                        severity="warning",
+                                        message="Variable '{VAR}' should be set on a disto/layer or local.conf level, not in a recipe",
+                                        appendix=get_protected_vars())
 
     def check(self, _file, stash):
         res = []

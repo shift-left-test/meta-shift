@@ -4,7 +4,7 @@ import os
 import pkgutil
 import sys
 
-class Rule():
+class Rule(object):
     def __init__(self, id="", severity="", message="", onappend=True, onlyappend=False, appendix=[]):
         """constructor
 

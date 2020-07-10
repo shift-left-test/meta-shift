@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarDuplicates(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.duplicate",
-                         severity="warning",
-                         message="<FOO>")
+        super(VarDuplicates, self).__init__(id="oelint.vars.duplicate",
+                                            severity="warning",
+                                            message="<FOO>")
 
     def check(self, _file, stash):
         res = []

@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarSummary80Chars(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.summary80chars",
-                         severity="warning",
-                         message="'SUMMARY' should not be longer than 80 characters")
+        super(VarSummary80Chars, self).__init__(id="oelint.vars.summary80chars",
+                                                severity="warning",
+                                                message="'SUMMARY' should not be longer than 80 characters")
 
     def check(self, _file, stash):
         res = []

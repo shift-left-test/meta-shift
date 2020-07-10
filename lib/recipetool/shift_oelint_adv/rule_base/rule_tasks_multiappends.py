@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class TaskMultiAppends(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.multiappends",
-                         severity="error",
-                         message="Multiple appends to the same function in the same file won't work in bitbake")
+        super(TaskMultiAppends, self).__init__(id="oelint.task.multiappends",
+                                               severity="error",
+                                               message="Multiple appends to the same function in the same file won't work in bitbake")
 
     def check(self, _file, stash):
         res = []

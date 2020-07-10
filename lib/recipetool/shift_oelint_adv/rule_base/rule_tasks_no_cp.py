@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class TaskInstallNoCp(Rule):
     def __init__(self):
-        super().__init__(id="oelint.task.nocopy",
-                         severity="error",
-                         message="'cp' shall not be used in do_install. Use 'install'")
+        super(TaskInstallNoCp, self).__init__(id="oelint.task.nocopy",
+                                              severity="error",
+                                              message="'cp' shall not be used in do_install. Use 'install'")
 
     def check(self, _file, stash):
         res = []
