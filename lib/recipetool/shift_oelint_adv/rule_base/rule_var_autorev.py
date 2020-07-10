@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarAutorev(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.autorev",
-                         severity="warning",
-                         message="The usage of 'AUTOREV' for SRCREV leads to not reproducible builds")
+        super(VarAutorev, self).__init__(id="oelint.vars.autorev",
+                                         severity="warning",
+                                         message="The usage of 'AUTOREV' for SRCREV leads to not reproducible builds")
 
     def check(self, _file, stash):
         res = []

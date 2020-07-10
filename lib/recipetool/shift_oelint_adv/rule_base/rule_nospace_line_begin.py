@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_item import PythonBlock, Function
 
 class NoSpaceBeginningRule(Rule):
     def __init__(self):
-        super().__init__(id="oelint.spaces.linebeginning",
-                         severity="warning",
-                         message="Line shall not begin with a space")
+        super(NoSpaceBeginningRule, self).__init__(id="oelint.spaces.linebeginning",
+                                                   severity="warning",
+                                                   message="Line shall not begin with a space")
 
     def __getMatches(self, _file, stash):
         res = []

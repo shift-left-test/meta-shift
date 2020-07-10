@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarOverride(Rule):
     def __init__(self):
-        super().__init__(id="oelint.var.override",
-                         severity="error",
-                         message="<FOO>")
+        super(VarOverride, self).__init__(id="oelint.var.override",
+                                          severity="error",
+                                          message="<FOO>")
 
     def check(self, _file, stash):
         res = []

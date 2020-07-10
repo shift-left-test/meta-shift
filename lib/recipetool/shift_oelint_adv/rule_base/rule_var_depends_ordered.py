@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarDependsOrdered(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.dependsordered",
-                         severity="warning",
-                         message="[R]DEPENDS entries should be ordered alphabetically")
+        super(VarDependsOrdered, self).__init__(id="oelint.vars.dependsordered",
+                                                severity="warning",
+                                                message="[R]DEPENDS entries should be ordered alphabetically")
 
     def __get_tuple_wildcard_index(self, _list, elem):
         for i in range(len(_list)):

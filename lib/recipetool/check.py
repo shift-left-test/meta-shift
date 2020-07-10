@@ -60,7 +60,7 @@ def check(args, files):
     for f in files:
         try:
             stash.AddFile(f)
-        except FileNotFoundError as e:
+        except (IOError, OSError):
             pass
 
     stash.Finalize()
@@ -86,14 +86,14 @@ def checkrecipes(args):
             if recipe.split(".")[-1] in ["bb", "bbappend", "inc"]:
                 files.append(recipe)
             else:
-                print("Not a BitBake file: '{}'".format(recipe), file=sys.stderr)
+                sys.stderr.write("Not a BitBake file: '{}'\n".format(recipe))
         else:
             recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, recipe)
             if recipefile:
                 files.append(recipefile)
                 files.extend(tinfoil.cooker.collection.get_file_appends(recipefile))
             else:
-                print("Failed to find the recipe file for '{}'".format(recipe), file=sys.stderr)
+                sys.stderr.write("Failed to find the recipe file for '{}'\n".format(recipe))
     check(args, files)
     logger.info("Done.")
 

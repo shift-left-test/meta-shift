@@ -100,7 +100,7 @@ def inspect(args):
     recipefile = oe.recipeutils.pn_to_recipe(tinfoil.cooker, pn)
 
     if recipefile is None:
-        print("Failed to find the recipe file for '{}'".format(pn), file=sys.stderr)
+        sys.stderr.write("Failed to find the recipe file for '{}'\n".format(pn))
         return
 
     appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)

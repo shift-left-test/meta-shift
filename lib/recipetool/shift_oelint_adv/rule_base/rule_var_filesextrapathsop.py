@@ -4,9 +4,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.fileextrapathsop",
-                         severity="error",
-                         message="'FILESEXTRAPATHS' should only be used in combination with ' := '")
+        super(VarBugtrackerIsUrl, self).__init__(id="oelint.vars.fileextrapathsop",
+                                                 severity="error",
+                                                 message="'FILESEXTRAPATHS' should only be used in combination with ' := '")
 
     def check(self, _file, stash):
         res = []

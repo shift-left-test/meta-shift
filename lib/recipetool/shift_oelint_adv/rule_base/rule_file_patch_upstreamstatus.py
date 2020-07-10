@@ -7,9 +7,9 @@ from shift_oelint_adv.helper_files import get_files
 
 class FilePatchIsUpstreamStatus(Rule):
     def __init__(self):
-        super().__init__(id="oelint.file.upstreamstatus",
-                         severity="info",
-                         message="Patch '{FILE}' should contain an Upstream-Status entry")
+        super(FilePatchIsUpstreamStatus, self).__init__(id="oelint.file.upstreamstatus",
+                                                        severity="info",
+                                                        message="Patch '{FILE}' should contain an Upstream-Status entry")
 
     def check(self, _file, stash):
         res = []

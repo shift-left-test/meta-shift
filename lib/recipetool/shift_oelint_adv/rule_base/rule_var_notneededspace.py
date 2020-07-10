@@ -6,9 +6,9 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarSectionLowercase(Rule):
     def __init__(self):
-        super().__init__(id="oelint.vars.notneededspace",
-                         severity="info",
-                         message="Space at the beginning of the var is not needed")
+        super(VarSectionLowercase, self).__init__(id="oelint.vars.notneededspace",
+                                                  severity="info",
+                                                  message="Space at the beginning of the var is not needed")
 
     def __getMatches(self, _file, stash):
         res = []
