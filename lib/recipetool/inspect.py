@@ -104,7 +104,7 @@ def inspect(args):
         return
 
     appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)
-    recipedata = oe.recipeutils.parse_recipe(tinfoil.cooker, recipefile, appendfiles)
+    recipedata = oe.recipeutils.parse_recipe(recipefile, appendfiles, tinfoil.config_data)
     recipename = tinfoil.cooker_data.pkg_fn[recipefile]
 
     reporter.section("General Information")

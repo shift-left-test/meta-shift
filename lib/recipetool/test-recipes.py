@@ -51,15 +51,15 @@ def do_test_recipes(args):
         logger.error("Unable to locate %s in BBPATH", classfile)
         sys.exit(1)
 
-    pkg_pn = tinfoil.cooker.recipecaches[''].pkg_pn
-    (latest_versions, preferred_versions) = bb.providers.findProviders(tinfoil.config_data, tinfoil.cooker.recipecaches[''], pkg_pn)
+    pkg_pn = tinfoil.cooker.recipecache.pkg_pn
+    (latest_versions, preferred_versions) = bb.providers.findProviders(tinfoil.config_data, tinfoil.cooker.recipecache, pkg_pn)
 
     print("{} {} {}".format("recipe".ljust(30), "version".ljust(20), "layer".ljust(20)))
     print("=" * 74)
 
     for p in sorted(pkg_pn):
         pref = preferred_versions[p]
-        realfn = bb.cache.virtualfn2realfn(pref[1])
+        realfn = bb.cache.Cache.virtualfn2realfn(pref[1])
         preffile = realfn[0]
         layerdir = bb.utils.get_file_layer(preffile, tinfoil.config_data)
 
