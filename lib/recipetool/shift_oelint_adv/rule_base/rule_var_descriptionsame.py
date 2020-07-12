@@ -1,6 +1,7 @@
 from shift_oelint_adv.cls_item import Variable
 from shift_oelint_adv.cls_rule import Rule
 
+
 class VarDescSame(Rule):
     def __init__(self):
         super(VarDescSame, self).__init__(id="oelint.vars.descriptionsame",
