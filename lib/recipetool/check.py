@@ -35,8 +35,8 @@ from collections import OrderedDict
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-from shift_oelint_adv.cls_rule import load_rules
-from shift_oelint_adv.cls_stash import Stash
+from shift_oelint_adv.cls_rule import load_rules  # nopep8
+from shift_oelint_adv.cls_stash import Stash  # nopep8
 
 
 logger = logging.getLogger('recipetool')

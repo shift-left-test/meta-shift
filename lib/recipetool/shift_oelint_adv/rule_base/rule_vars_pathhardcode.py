@@ -4,6 +4,7 @@ from shift_oelint_adv.cls_item import Variable, Comment
 from collections import OrderedDict
 import re
 
+
 class VarsPathHardcode(Rule):
     def __init__(self):
         self._map = OrderedDict({
