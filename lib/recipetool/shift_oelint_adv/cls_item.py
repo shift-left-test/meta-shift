@@ -234,6 +234,7 @@ class Comment(Item):
         """
         return self.Raw.split("\n")
 
+
 class Include(Item):
     CLASSIFIER = "Include"
     ATTR_INCNAME = "IncName"
@@ -413,6 +414,7 @@ class TaskAdd(Item):
             list -- function name, all before statements, all after statements
         """
         return [self.FuncName] + self.Before + self.After
+
 
 class MissingFile(Item):
     ATTR_FILENAME = "Filename"
