@@ -4,6 +4,7 @@ from shift_oelint_adv.cls_item import Include
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_adv.helper_files import find_local_or_in_layer, expand_term
 
+
 class FileIncludeNotFound(Rule):
     def __init__(self):
         super(FileIncludeNotFound, self).__init__(id="oelint.file.includenotfound",

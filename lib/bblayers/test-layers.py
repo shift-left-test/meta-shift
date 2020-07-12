@@ -112,7 +112,7 @@ def add(layers):
     layernames = []
     for layername, layerdir in layers:
         """Add a layer to bblayers.conf."""
-        if layername in layernames: 
+        if layername in layernames:
             sys.stderr.write("Warning: Layer %s in %s is ignored. Another layer with same name is already in BBLAYERS.\n" % (layername, layerdir))
             continue
         else:

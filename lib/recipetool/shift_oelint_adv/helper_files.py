@@ -3,7 +3,7 @@ import os
 import re
 try:
     from urllib.parse import urlparse
-except:
+except ImportError:
     from urlparse import urlparse
 
 from shift_oelint_adv.cls_item import Variable
@@ -99,6 +99,7 @@ def safe_linesplit(string):
     """
     return re.split(r"\s|\t|\x1b", string)
 
+
 def guess_recipe_name(_file):
     """Get the recipe name from filename
 
@@ -111,6 +112,7 @@ def guess_recipe_name(_file):
     _name, _ = os.path.splitext(os.path.basename(_file))
     return _name.split("_")[0]
 
+
 def guess_recipe_version(_file):
     """Get recipe version from filename
 
@@ -122,6 +124,7 @@ def guess_recipe_version(_file):
     """
     _name, _ = os.path.splitext(os.path.basename(_file))
     return _name.split("_")[-1]
+
 
 def expand_term(stash, _file, value):
     """Expand a variable (replacing all variables by known content)
@@ -147,6 +150,7 @@ def expand_term(stash, _file, value):
             res = res.replace(m.group(0), guess_recipe_version(_file))
     return res
 
+
 def get_valid_package_names(stash, _file):
     """Get known valid names for packages
 
@@ -167,6 +171,7 @@ def get_valid_package_names(stash, _file):
             _pkg = pkg.replace("${PN}", _recipe_name)
             res.add(_pkg)
     return res
+
 
 def get_valid_named_resources(stash, _file):
     """Get list of valid SRCREV resource names

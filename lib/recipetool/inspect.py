@@ -97,7 +97,7 @@ def inspect(args):
 
     pn = args.recipename
     recipefile = tinfoil.cooker.findBestProvider(pn)[3]
-    
+
     if recipefile is None:
         sys.stderr.write("Failed to find the recipe file for '{}'\n".format(pn))
         return
