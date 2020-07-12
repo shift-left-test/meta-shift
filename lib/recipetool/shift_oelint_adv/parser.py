@@ -14,6 +14,7 @@ from shift_oelint_adv.helper_files import find_local_or_in_layer, expand_term
 
 INLINE_BLOCK = "!!!inlineblock!!!"
 
+
 def get_full_scope(_string, offset, _sstart, _send):
     scopelevel = 0
     pos = 0
@@ -59,7 +60,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
             if re.match("^[A-Za-z0-9#]+", line) or stopiter:
                 if not stopiter:
                     res += prepare_lines_subparser(_iter,
-                                                lineOffset, num, line)
+                                                   lineOffset, num, line)
                 break
             if line.startswith("def "):
                 raw_line = line
