@@ -2,10 +2,10 @@ inherit qmake5
 inherit shifttest
 inherit shiftutils
 
-EXTRA_QMAKEVARS_PRE += "CONFIG+=gcov"
-EXTRA_QMAKEVARS_PRE += "CONFIG+=insignificant_test"
+EXTRA_QMAKEVARS_PRE_append = " CONFIG+=gcov"
+EXTRA_QMAKEVARS_PRE_append = " CONFIG+=insignificant_test"
 
-FILES_${PN} += "${OE_QMAKE_PATH_TESTS}"
+FILES_${PN}_append = " ${OE_QMAKE_PATH_TESTS}"
 
 qmake5test_do_checkcode() {
     shifttest_do_checkcode
