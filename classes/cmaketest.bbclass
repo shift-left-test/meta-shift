@@ -8,6 +8,10 @@ OECMAKE_CXX_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
 EXTRA_OECMAKE_append = " -DCMAKE_CROSSCOMPILING_EMULATOR='${@shiftutils_qemu_cmake_emulator(d)}'"
 EXTRA_OECMAKE_append = " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
+cmake_do_compile_prepend() {
+    export TARGET_SYS="${TARGET_SYS}"
+}
+
 cmaketest_do_checkcode() {
     shifttest_do_checkcode
 }
