@@ -425,6 +425,11 @@ function(register_checker)
     return()
   endif()
 
+  if(DEFINED CMAKE_CXX_${ARGS_NAME})
+    message(STATUS "${MESSAGE}: TRUE")
+    return()
+  endif()
+
   if(NOT ARGS_NAMES)
     message(STATUS "${MESSAGE}: TRUE")
     set(CMAKE_CXX_${ARGS_NAME} ON PARENT_SCOPE)
