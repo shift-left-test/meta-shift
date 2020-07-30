@@ -175,6 +175,22 @@ class Shell(object):
             "returncode": proc.returncode})
 
 
+class SdkShell(Shell):
+    def __init__(self, pre_excute_commands, kwargs={}):
+        self.pre_excute_commands = pre_excute_commands
+        self.kwargs = kwargs
+
+    def __repr__(self):
+        return "SdkShell: {0}".format(self.pre_excute_commands)
+
+    def cmd(self, command):
+        c = 'bash -O expand_aliases -c "'
+        for cur_command in self.pre_excute_commands:
+            c += '{0} \n '.format(cur_command)
+        c += '{0}"'.format(command)
+        return c
+
+
 class BuildInfo(object):
     def __init__(self, build_dir):
         def readFile(path):
@@ -254,6 +270,43 @@ class BuildEnvironment(object):
         return BuildInfo(self.build_dir)
 
 
+class SdkBuildEnvironment(BuildEnvironment):
+    def __init__(self, branch, conf_file, repo_dir, build_dir):
+        super(SdkBuildEnvironment, self).__init__(branch, conf_file, repo_dir, build_dir)
+        self.pre_excute_commands = []
+        self.install_sdk()
+
+    @property
+    def sdk_shell(self):
+        pre_excute_commands = []
+        for cur_pre_excute_command in self.pre_excute_commands:
+            pre_excute_commands.append(cur_pre_excute_command)
+        return SdkShell(pre_excute_commands, self.kwargs)
+
+    def install_sdk(self):
+        assert self.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
+
+        # Check that the SDK can build a specified module.
+        path = "tmp/deploy/sdk/{TOOLCHAIN_OUTPUTNAME}.sh".format(**self.kwargs)
+        installer = os.path.join(self.build_dir, path)
+        assert os.path.exists(installer)
+
+        self.sdk_dir = os.path.join(self.build_dir, "sdk")
+        self.shell.execute("{0} -d {1} -y".format(installer, self.sdk_dir))
+
+        sdk_env_setup_path = '{0}/environment-setup-{1}'.format(self.sdk_dir, self.kwargs["REAL_MULTIMACH_TARGET_SYS"])
+        assert os.path.exists(sdk_env_setup_path)
+
+        self.pre_excute_commands.append('cd {0}'.format(self.build_dir))
+        self.pre_excute_commands.append('source {0}'.format(sdk_env_setup_path))
+
+        with open(sdk_env_setup_path, "r") as f:
+            regexp = "(export {key}=)(?:\")(.*)(?:\")$".format(key='OECORE_NATIVE_SYSROOT')
+            matcher = re.compile(regexp, re.MULTILINE)
+            source = f.read()
+            self.oecore_native_sysroot = matcher.search(source).groups()[1]
+
+
 @pytest.fixture(scope="session")
 def bare_build(request, tmpdir_factory):
     repo_dir = str(tmpdir_factory.mktemp("repo"))
@@ -304,3 +357,16 @@ def report_build(request, tmpdir_factory):
 
     request.addfinalizer(cleanup)
     return BuildEnvironment(branch="sumo", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def sdk_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return SdkBuildEnvironment(branch="sumo", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
