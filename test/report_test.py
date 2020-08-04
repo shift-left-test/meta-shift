@@ -26,15 +26,15 @@ class TEST:
 
     @classmethod
     def RESULT(cls, recipe, path):
-        return os.path.join("report", "test_result", cls.PF[recipe], path)
+        return os.path.join("report", cls.PF[recipe], "test", path)
 
     @classmethod
     def COVERAGE(cls, recipe, path):
-        return os.path.join("report", "test_coverage", cls.PF[recipe], path)
+        return os.path.join("report", cls.PF[recipe], "coverage", path)
 
     @classmethod
     def CHECK(cls, recipe, path):
-        return os.path.join("report", "test_check", cls.PF[recipe], path)
+        return os.path.join("report", cls.PF[recipe], "checkcode", path)
 
 
 def test_core_image_minimal_do_coverageall(report_build):
