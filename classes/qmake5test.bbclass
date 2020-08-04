@@ -12,11 +12,10 @@ qmake5test_do_checkcode() {
 }
 
 qmake5test_qtest_update_xmls() {
-    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
-        find * -name "test_result.xml" \
-            -exec sed -r -i 's|(<testsuite.*name=")(.*")|\1${PN}\.\2|g' {} \; \
-            -exec install -m 644 -D "{}" "${TEST_RESULT_OUTPUT}/${PF}/{}" \;
-    fi
+    [ -z "${TEST_REPORT_OUTPUT}" ] && return
+    find * -name "test_result.xml" \
+      -exec sed -r -i 's|(<testsuite.*name=")(.*")|\1${PN}\.\2|g' {} \; \
+      -exec install -m 644 -D "{}" "${TEST_REPORT_OUTPUT}/${PF}/test/{}" \;
 }
 
 qmake5test_do_test() {
@@ -30,7 +29,7 @@ qmake5test_do_test() {
     export TESTRUNNER="${@shiftutils_qemu_run_cmd(d)}"
     export TESTARGS="-platform offscreen"
 
-    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
         bbplain "${PF} do_${BB_CURRENTTASK}: Generating the test result report"
         export TESTARGS="${TESTARGS} -platform offscreen -xunitxml -o test_result.xml"
     fi

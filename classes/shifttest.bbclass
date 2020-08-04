@@ -20,10 +20,10 @@ do_checkcode[nostamp] = "1"
 do_checkcode[doc] = "Runs static analysis for the target"
 
 shifttest_do_checkcode() {
-    if [ ! -z "${CHECK_CODE_OUTPUT}" ]; then
-        rm -rf "${CHECK_CODE_OUTPUT}/${PF}"
-        mkdir -p "${CHECK_CODE_OUTPUT}/${PF}"
-        local OUTPUT_PATH_OPTION="--output-path=${CHECK_CODE_OUTPUT}/${PF}"
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
+        mkdir -p "${TEST_REPORT_OUTPUT}/${PF}/checkcode"
+        rm -rf "${TEST_REPORT_OUTPUT}/${PF}/checkcode/*"
+        local OUTPUT_PATH_OPTION="--output-path=${TEST_REPORT_OUTPUT}/${PF}/checkcode"
     fi
 
     sage --source ${S} --build ${B} ${OUTPUT_PATH_OPTION} ${CHECK_CODE_TOOLS} 2>&1 | shifttest_print_lines
@@ -41,29 +41,30 @@ shifttest_do_test() {
 }
 
 shifttest_prepare_output_dir() {
-    [ -z "${TEST_RESULT_OUTPUT}" ] && return
-    mkdir -p "${TEST_RESULT_OUTPUT}"
-    rm -rf "${TEST_RESULT_OUTPUT}/${PF}"
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
+        mkdir -p "${TEST_REPORT_OUTPUT}/${PF}/test"
+        rm -rf "${TEST_REPORT_OUTPUT}/${PF}/test/*"
+    fi
 }
 
 shifttest_prepare_env() {
-    if [ ! -z "${TEST_RESULT_OUTPUT}" ]; then
-        export GTEST_OUTPUT="xml:${TEST_RESULT_OUTPUT}/${PF}/"
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
+        export GTEST_OUTPUT="xml:${TEST_REPORT_OUTPUT}/${PF}/test/"
     fi
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
 }
 
 shifttest_gtest_update_xmls() {
-    [ -z "${TEST_RESULT_OUTPUT}" ] && return
-    [ ! -d "${TEST_RESULT_OUTPUT}/${PF}" ] && return
-    find "${TEST_RESULT_OUTPUT}/${PF}" -name "*.xml" \
+    [ -z "${TEST_REPORT_OUTPUT}" ] && return
+    [ ! -d "${TEST_REPORT_OUTPUT}/${PF}/test" ] && return
+    find "${TEST_REPORT_OUTPUT}/${PF}/test" -name "*.xml" \
         -exec sed -i "s|classname=\"|classname=\"${PN}.|g" {} \;
 }
 
 shifttest_check_output_dir() {
-    [ -z "${TEST_RESULT_OUTPUT}" ] && return
-    [ -d "${TEST_RESULT_OUTPUT}/${PF}" ] && return
-    bbwarn "No test report files found at ${TEST_RESULT_OUTPUT}/${PF}"
+    [ -z "${TEST_REPORT_OUTPUT}" ] && return
+    [ -d "${TEST_REPORT_OUTPUT}/${PF}/test" ] && return
+    bbwarn "No test report files found at ${TEST_REPORT_OUTPUT}/${PF}/test"
 }
 
 
@@ -96,11 +97,11 @@ shifttest_do_coverage() {
 
     lcov --list ${LCOV_DATAFILE} --rc lcov_branch_coverage=1 | shifttest_print_lines
 
-    if [ -z "${TEST_COVERAGE_OUTPUT}" ]; then
+    if [ -z "${TEST_REPORT_OUTPUT}" ]; then
         return
     fi
 
-    local OUTPUT_DIR="${TEST_COVERAGE_OUTPUT}/${PF}"
+    local OUTPUT_DIR="${TEST_REPORT_OUTPUT}/${PF}/coverage"
     local COBERTURA_FILE="${OUTPUT_DIR}/coverage.xml"
 
     rm -rf ${OUTPUT_DIR}
