@@ -1,6 +1,6 @@
 # CMakeUtils
 # SRC_URI: http://mod.lge.com/hub/yocto/addons/CMakeUtils
-# SRCREV: 64d4bdfc87b4c94ea0c9a494cfb1bb4fd45abdd9
+# SRCREV: 412b8559d829b984836bcd803df052efa065d4b5
 
 inherit shiftutils
 
