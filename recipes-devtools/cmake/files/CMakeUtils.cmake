@@ -81,6 +81,7 @@ endmacro()
 
 # An helper function to build libraries
 function(build_library)
+  set(options EXTERNAL)
   set(oneValueArgs TYPE NAME PREFIX SUFFIX VERSION ALIAS)
   set(multiValueArgs SRCS LIBS PUBLIC_HEADERS PRIVATE_HEADERS INSTALL_HEADERS CFLAGS CPPFLAGS CXXFLAGS COMPILE_OPTIONS LINK_OPTIONS)
   cmake_parse_arguments(BUILD
@@ -92,8 +93,13 @@ function(build_library)
   string(TOUPPER "${BUILD_TYPE}" BUILD_TYPE)
   add_library(${BUILD_NAME} ${BUILD_TYPE} ${BUILD_SRCS})
 
+  if(BUILD_EXTERNAL)
+    set(SYSTEM_HEADER_FLAG "SYSTEM")
+  endif()
+
   if(BUILD_PUBLIC_HEADERS OR BUILD_PRIVATE_HEADERS)
     target_include_directories(${BUILD_NAME}
+      ${SYSTEM_HEADER_FLAG}
       PUBLIC ${BUILD_PUBLIC_HEADERS}
       PRIVATE ${BUILD_PRIVATE_HEADERS})
   endif()
@@ -114,6 +120,17 @@ function(build_library)
     add_library(${BUILD_ALIAS}::lib ALIAS ${BUILD_NAME})
   else()
     add_library(${BUILD_NAME}::lib ALIAS ${BUILD_NAME})
+  endif()
+
+  if(BUILD_EXTERNAL)
+    set_target_properties(
+      ${BUILD_NAME} PROPERTIES
+      CXX_CLANG_TIDY ""
+      CXX_CPPCHECK ""
+      CXX_CPPLINT ""
+      CXX_INCLUDE_WHAT_YOU_USE ""
+      CXX_LINK_WHAT_YOU_USE OFF
+    )
   endif()
 
   if(BUILD_PREFIX)
@@ -161,9 +178,17 @@ macro(build_shared_library)
   build_library(TYPE shared ${ARGN})
 endmacro()
 
+macro(build_external_shared_library)
+  build_library(TYPE shared EXTERNAL ${ARGN})
+endmacro()
+
 macro(build_static_library)
   build_library(TYPE static ${ARGN})
 endmacro(build_static_library)
+
+macro(build_external_static_library)
+  build_library(TYPE static EXTERNAL ${ARGN})
+endmacro()
 
 
 # An helper function to build executables
@@ -186,13 +211,19 @@ function(build_executable)
       PRIVATE ${BUILD_PRIVATE_HEADERS})
   endif()
 
+  if(DEFINED CMAKE_CXX_STANDARD)
+    set(CXX_STANDARD_VALUE ${CMAKE_CXX_STANDARD})
+  else()
+    set(CXX_STANDARD_VALUE 14)
+  endif()
+
   if(BUILD_TYPE STREQUAL "TEST")
     find_package(Threads REQUIRED)
     find_package(GTest REQUIRED)
     find_package(GMock REQUIRED)
 
     set_target_properties(${BUILD_NAME} PROPERTIES
-      CXX_STANDARD 14
+      CXX_STANDARD ${CXX_STANDARD_VALUE}
       CXX_STANDARD_REQUIRED ON
       CXX_EXTENSIONS OFF
     )
@@ -260,6 +291,7 @@ endmacro()
 
 # An helper function to manage header-only interfaces
 function(build_interface)
+  set(options EXTERNAL)
   set(oneValueArgs NAME ALIAS)
   set(multiValueArgs SRCS LIBS PUBLIC_HEADERS PRIVATE_HEADERS INSTALL_HEADERS CFLAGS CPPFLAGS CXXFLAGS COMPILE_OPTIONS LINK_OPTIONS)
   cmake_parse_arguments(BUILD
@@ -270,8 +302,13 @@ function(build_interface)
 
   add_library(${BUILD_NAME} INTERFACE)
 
+  if(BUILD_EXTERNAL)
+    set(SYSTEM_HEADER_FLAG "SYSTEM")
+  endif()
+
   if(BUILD_PUBLIC_HEADERS OR BUILD_PRIVATE_HEADERS)
     target_include_directories(${BUILD_NAME}
+      ${SYSTEM_HEADER_FLAG}
       INTERFACE ${BUILD_PUBLIC_HEADERS} ${BUILD_PRIVATE_HEADERS})
   endif()
 
@@ -318,6 +355,13 @@ function(build_interface)
   endif()
 endfunction()
 
+macro(build_interface_library)
+  build_interface(${ARGN})
+endmacro()
+
+macro(build_external_interface_library)
+  build_interface(EXTERNAL ${ARGN})
+endmacro()
 
 function(build_debian_package)
   set(oneValueArgs MAINTAINER CONTACT HOMEPAGE VENDOR DESCRIPTION)
@@ -470,7 +514,7 @@ macro(enable_static_analysis)
       NAME CPPCHECK
       NAMES cppcheck
       VERSION 3.10.0
-      OPTIONS --enable=warning,style,performance,portability
+      OPTIONS --enable=warning,style,performance,portability --library=googletest
       )
   endif()
 
