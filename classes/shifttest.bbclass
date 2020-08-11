@@ -61,7 +61,9 @@ shifttest_do_checkcode() {
     sage --source-path ${S} --build-path ${B} --tool-path ${STAGING_DIR_NATIVE}${bindir} \
         --target-triple ${TARGET_SYS} \
         --verbose \
-        ${OUTPUT_PATH_OPTION} ${CHECK_CODE_TOOLS} 2>&1 | shifttest_print_lines
+        ${OUTPUT_PATH_OPTION} \
+        ${@" ".join([tool + ":" + d.getVarFlag("CHECKCODE_TOOLS_OPTION", tool, True).replace(' ', '\ ') if d.getVarFlag("CHECKCODE_TOOLS_OPTION", tool, True) else tool for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split()])} \
+        2>&1 | shifttest_print_lines
 }
 
 # In order to overwrite the sstate cache libraries
