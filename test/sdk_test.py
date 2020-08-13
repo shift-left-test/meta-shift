@@ -5,7 +5,7 @@ import os
 
 
 def test_populate_sdk_pkgs_check(sdk_build):
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/host/installed-packages.txt")
+    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}/{IMAGE_BASENAME}/host/installed-packages.txt")
     assert pkgs.contains("nativesdk-cmake_3.3.1-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
@@ -13,11 +13,11 @@ def test_populate_sdk_pkgs_check(sdk_build):
     assert pkgs.contains("nativesdk-lcov_1.11-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-qemu_2.4.0-r1_x86_64-nativesdk.ipk")
 
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/target/installed-packages.txt")
+    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}/{IMAGE_BASENAME}/target/installed-packages.txt")
     assert pkgs.contains("fff_1.0-r0_{TUNE_PKGARCH}.ipk")
     assert pkgs.contains("gtest_1.7.0-r0_{TUNE_PKGARCH}.ipk")
 
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
+    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}/{IMAGE_BASENAME}/files-in-sdk.txt")
     assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.3/Modules/CMakeUtils.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.3/Modules/FindGMock.cmake")

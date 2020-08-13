@@ -233,7 +233,6 @@ class BuildEnvironment(object):
                     "TUNE_ARCH",
                     "TUNE_PKGARCH",
                     "SDK_NAME",
-                    "SDK_EXT",
                     "SDK_VERSION",
                     "IMAGE_BASENAME",
                     "REAL_MULTIMACH_TARGET_SYS",
