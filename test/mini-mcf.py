@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "krogoth"
+BRANCH = "jethro"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +25,7 @@ Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer"])
 
 REPOS = [
     Repo("poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta"),
-    Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-poky"),
+    Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto"),
     Repo("meta-yocto-bsp", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto-bsp"),
     Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe"),
     Repo("meta-multimedia", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-multimedia"),
@@ -80,14 +80,14 @@ def download_repos(args):
 def configure_template(conf_dir):
     logger.info("Creating 'templateconf.cfg'...")
     with open(os.path.join(conf_dir, "templateconf.cfg"), "w") as f:
-        f.write("meta-poky/conf")
+        f.write("meta-yocto/conf")
 
 
 def configure_bblayers(conf_dir, conf_data, repo_dir):
     logger.info("Creating 'bblayers.conf'...")
     BBLAYERS_CONF = '''# POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
-POKY_BBLAYERS_CONF_VERSION = "2"
+LCONF_VERSION = "6"
 
 BBPATH = "${{TOPDIR}}"
 BBFILES ?= ""

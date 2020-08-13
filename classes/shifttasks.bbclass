@@ -7,16 +7,16 @@ python show_affected_recipes() {
     affected = len(recipes)
     if affected > 0:
         recipes.sort(key=lambda recipe: recipe[0])
-        bb.plain("--------------------------------------------------")
-        bb.plain("Attempted '{subtask}' task of {affected} recipes.".format(subtask=subtask, affected=affected))
-        bb.plain("--------------------------------------------------")
+        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
+        bb.plain("{pf} {task}: Attempted '{subtask}' task of {affected} recipes.".format(pf=pf, task=task, subtask=subtask, affected=affected))
+        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
         for recipe in recipes:
-            bb.plain("     {recipe}".format(recipe=recipe[0]))
-        bb.plain("--------------------------------------------------")
+            bb.plain("{pf} {task}:     {recipe}".format(pf=pf, task=task, recipe=recipe[0]))
+        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
     else:
-        bb.plain("--------------------------------------------------")
+        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
         bb.warn("No recipes found to run '{subtask}' task.".format(subtask=subtask))
-        bb.plain("--------------------------------------------------")
+        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
 }
 
 addtask checkcodeall

@@ -317,7 +317,7 @@ def bare_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="krogoth", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="jethro", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -330,7 +330,7 @@ def release_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="krogoth", conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="jethro", conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -343,7 +343,7 @@ def test_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="krogoth", conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="jethro", conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -356,7 +356,7 @@ def report_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="krogoth", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="jethro", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -369,4 +369,4 @@ def sdk_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return SdkBuildEnvironment(branch="krogoth", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return SdkBuildEnvironment(branch="jethro", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)

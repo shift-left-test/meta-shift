@@ -12,7 +12,7 @@ DEPENDS_prepend = "\
 
 shifttest_print_lines() {
     while IFS= read line; do
-        bbplain "$line"
+        bbplain "${PF} do_${BB_CURRENTTASK}: $line"
     done
 }
 
@@ -130,7 +130,7 @@ shifttest_do_coverage() {
         --rc lcov_branch_coverage=1 \
         "${S}/*" -o ${LCOV_DATAFILE}
 
-    bbplain "GCC Code Coverage Report"
+    bbplain "${PF} do_${BB_CURRENTTASK}: GCC Code Coverage Report"
 
     lcov --list ${LCOV_DATAFILE} --rc lcov_branch_coverage=1 | shifttest_print_lines
 

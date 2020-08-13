@@ -30,7 +30,7 @@ qmake5test_do_test() {
     export TESTARGS="-platform offscreen"
 
     if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
-        bbplain "Generating the test result report"
+        bbplain "${PF} do_${BB_CURRENTTASK}: Generating the test result report"
         export TESTARGS="${TESTARGS} -platform offscreen -xunitxml -o test_result.xml"
     fi
 
