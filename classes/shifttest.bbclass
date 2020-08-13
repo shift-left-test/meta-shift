@@ -62,7 +62,7 @@ shifttest_do_checkcode() {
         --target-triple ${TARGET_SYS} \
         --verbose \
         ${OUTPUT_PATH_OPTION} \
-        ${@" ".join([tool + ":" + d.getVarFlag("CHECKCODE_TOOLS_OPTIONS", tool, True).replace(' ', '\ ') if d.getVarFlag("CHECKCODE_TOOLS_OPTIONS", tool, True) else tool for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split()])} \
+        ${@" ".join([tool + ":" + d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True).replace(' ', '\ ') if d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True) else tool for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split()])} \
         2>&1 | shifttest_print_lines
 }
 
