@@ -155,7 +155,7 @@ def inspect(args):
     reporter.dump()
 
 
-def register_commands(subparsers):
+def register_command(subparsers):
     parser = subparsers.add_parser("inspect",
                                    help="Inspect the specified recipe information",
                                    description="Inspect the specified recipe's detailed information, including file-path, version, meta-layer, append-file, dependencies, inherits, etc.")

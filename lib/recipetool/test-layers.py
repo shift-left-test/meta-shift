@@ -164,7 +164,7 @@ def process(args):
         show(layers)
 
 
-def register_commands(subparsers):
+def register_command(subparsers):
     parser = subparsers.add_parser("test-layers",
                                    help="Show, add or remove test-configured layers.",
                                    description="Show, add or remove test-configured layers.")

@@ -98,7 +98,7 @@ def checkrecipes(args):
     logger.info("Done.")
 
 
-def register_commands(subparsers):
+def register_command(subparsers):
     check_parser = subparsers.add_parser('check',
                                          help="Check specified recipes or files for the OpenEmbedded Style Guide issues.",
                                          description="Check specified recipes or files for the OpenEmbedded Style Guide issues.")

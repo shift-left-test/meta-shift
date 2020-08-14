@@ -73,7 +73,7 @@ def do_test_recipes(args):
         print("{} {} {}".format(p.ljust(30), pref[0][1].ljust(20), layerdir.ljust(20)))
 
 
-def register_commands(subparsers):
+def register_command(subparsers):
     parser = subparsers.add_parser("test-recipes",
                                    help="List testable recipes, showing the layer they are provided by",
                                    description="Lists the name and version of recipes in each layer. "

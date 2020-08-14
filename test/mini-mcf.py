@@ -130,6 +130,7 @@ BB_DISKMON_DIRS ??= "\\
     ABORT,/tmp,10M,1K"
 PACKAGECONFIG_append_pn-qemu-native = " sdl"
 PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
+PACKAGECONFIG_append_pn-qtbase = " accessibility"
 CONF_VERSION = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 '''
