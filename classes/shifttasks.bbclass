@@ -15,7 +15,7 @@ python show_affected_recipes() {
         bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
     else:
         bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
-        bb.warn("No recipes found to run '{subtask}' task.".format(subtask=subtask))
+        bb.warn("{pf} {task}: No recipes found to run '{subtask}' task.".format(pf=pf, task=task, subtask=subtask))
         bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
 }
 
