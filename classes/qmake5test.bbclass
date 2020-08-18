@@ -47,3 +47,7 @@ qmake5test_do_coverage() {
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage
+
+# Skip the RPATH sanity check since the QT 5.5 uses an absolute path for RPATH, which is
+# prohibited by the yocto QA sanity checker. (This issue is fixed in QT 5.6)
+INSANE_SKIP_${PN} += "rpaths"

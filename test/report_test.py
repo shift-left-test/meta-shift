@@ -214,7 +214,6 @@ def test_humidifier_project_do_coverageall(report_build):
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="Humidifier::setPreferredHumidity(int)" signature="">')
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="Atomizer_Set(int)" signature="">')
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="FakeHumiditySensor::getHumidityLevel() const" signature="">')
-        assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="FakeHumiditySensor::gmock_getHumidityLevel() const" signature="">')
 
 
 def test_humidifier_project_do_checkcodeall(report_build):
