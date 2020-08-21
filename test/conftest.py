@@ -6,6 +6,7 @@ import pytest
 import re
 import subprocess
 import shutil
+import time
 
 
 class Output(object):
@@ -257,8 +258,17 @@ class BuildEnvironment(object):
 
     @property
     def shell(self):
+        def wait_until(condition, timeout, period=1):
+            until = time.time() + timeout
+            while time.time() < until:
+                if condition:
+                    return True
+                time.sleep(period)
+            return False
+
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
+        wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserv.lock")), 10)
         return Shell(f, self.build_dir, self.kwargs)
 
     @property
