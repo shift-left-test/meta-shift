@@ -267,7 +267,7 @@ class BuildEnvironment(object):
 
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
-        wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserv.lock")), 10)
+        wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
         return Shell(f, self.build_dir, self.kwargs)
 
     @property
