@@ -1,11 +1,13 @@
 inherit qemu
 
 def _get_qemu_options(data, arch):
+    bb.debug(1, "TUNE_CCARGS: " + data.getVar("TUNE_CCARGS", True))
     options = data.getVar("QEMU_EXTRAOPTIONS_%s" % arch, True)
 
     if not options:
-        options = " -cpu core2duo" if arch == "core2-64" else ""
+        options = bb.utils.contains("TUNE_CCARGS", "-march=core2", " -cpu core2duo", "", data)
 
+    bb.debug(1, "QEMU EXTRA OPTIONS: " + options)
     return options
 
 def shiftutils_qemu_run_cmd(data):
