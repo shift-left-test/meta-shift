@@ -39,7 +39,8 @@ def test_json_format(bare_build):
 
 
 def test_inspect_unknown_recipe(bare_build):
-    assert bare_build.shell.execute("recipetool inspect unknown-recipe").stderr.contains("Failed to find the recipe file for 'unknown-recipe'")
+    o = bare_build.shell.execute("recipetool inspect unknown-recipe")
+    assert o.stderr.contains("Failed to find the recipe file for 'unknown-recipe'")
 
 
 def test_cmake_project_without_test_enabled(release_build):
