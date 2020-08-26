@@ -113,11 +113,11 @@ BBLAYERS ?= " \\
 
 def configure_local(conf_dir, conf_data):
     logger.info("Creating 'local.conf'...")
-    LOCAL_CONF = '''MACHINE ?= "qemuarm64"
-DISTRO ?= "poky"
-PACKAGE_CLASSES ?= "package_ipk"
-EXTRA_IMAGE_FEATURES ?= ""
-USER_CLASSES ?= ""
+    LOCAL_CONF = '''MACHINE ??= "qemuarm64"
+DISTRO = "poky"
+PACKAGE_CLASSES = "package_ipk"
+EXTRA_IMAGE_FEATURES = ""
+USER_CLASSES = ""
 PATCHRESOLVE = "noop"
 BB_DISKMON_DIRS ??= "\\
     STOPTASKS,${TMPDIR},1G,100K \\
