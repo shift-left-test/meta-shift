@@ -243,7 +243,11 @@ class BuildEnvironment(object):
                     "TOOLCHAIN_OUTPUTNAME"):
             regexp = "^(?:{key}=)(?:\")(.*)(?:\")$".format(key=key)
             matcher = re.compile(regexp, re.MULTILINE)
-            self.kwargs[key] = matcher.search(source).groups()[0]
+            found = matcher.search(source)
+            if not found:
+                self.kwargs[key] = ""
+            else:
+                self.kwargs[key] = matcher.search(source).groups()[0]
 
         # Need to find the proper qemu executable name using TUNE_ARCH.
         tune_arch = self.kwargs["TUNE_ARCH"]
@@ -268,7 +272,7 @@ class BuildEnvironment(object):
 
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
-        wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
+        assert wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
         return Shell(f, self.build_dir, self.kwargs)
 
     @property
