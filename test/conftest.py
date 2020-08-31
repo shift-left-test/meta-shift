@@ -268,10 +268,7 @@ class BuildEnvironment(object):
             regexp = "^(?:{key}=)(?:\")(.*)(?:\")$".format(key=key)
             matcher = re.compile(regexp, re.MULTILINE)
             found = matcher.search(source)
-            if not found:
-                self.kwargs[key] = ""
-            else:
-                self.kwargs[key] = matcher.search(source).groups()[0]
+            self.kwargs[key] = matcher.search(source).groups()[0] if found else ""
 
         # Need to find the proper qemu executable name using TUNE_ARCH.
         tune_arch = self.kwargs["TUNE_ARCH"]
