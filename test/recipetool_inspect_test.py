@@ -24,7 +24,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import os
 import pytest
+import shutil
+import tempfile
 
 
 def test_default_format(bare_build):
@@ -45,6 +48,18 @@ def test_default_format(bare_build):
                                 "Testable: False")
 
 
+def test_default_format_save_as_file(bare_build):
+    d = tempfile.mkdtemp()
+    try:
+        temp = os.path.join(d, "output.plain")
+        o = bare_build.shell.execute("recipetool inspect cpplint --output {}".format(temp))
+        assert not o.stdout.contains("Name: cpplint")
+        with open(temp, "r") as f:
+            assert "Name: cpplint" in f.read()
+    finally:
+        shutil.rmtree(d)
+
+
 def test_json_format(bare_build):
     o = bare_build.shell.execute("recipetool inspect cpplint --json")
     assert o.stdout.containsAll('"General Information": {{',
@@ -62,9 +77,31 @@ def test_json_format(bare_build):
                                 '"Description": "A Static code analyzer for C/C++ written in python"')
 
 
+def test_json_format_save_as_file(bare_build):
+    d = tempfile.mkdtemp()
+    try:
+        temp = os.path.join(d, "output.json")
+        o = bare_build.shell.execute("recipetool inspect cpplint --json --output {}".format(temp))
+        assert not o.stdout.contains('"Name": "cpplint"')
+        with open(temp, "r") as f:
+            assert '"Name": "cpplint"' in f.read()
+    finally:
+        shutil.rmtree(d)
+
+
 def test_inspect_unknown_recipe(bare_build):
     o = bare_build.shell.execute("recipetool inspect unknown-recipe")
     assert o.stderr.contains("Failed to find the recipe file for 'unknown-recipe'")
+
+
+def test_inspect_unknown_recipe_save_as_file(bare_build):
+    d = tempfile.mkdtemp()
+    try:
+        temp = os.path.join(d, "output.plain")
+        o = bare_build.shell.execute("recipetool inspect unknown-recipe --output {}".format(temp))
+        assert not os.path.exists(temp)
+    finally:
+        shutil.rmtree(d)
 
 
 def test_cmake_project_without_test_enabled(release_build):
