@@ -47,7 +47,7 @@ class Reporter:
         self.result = []
 
     def section(self, section_name):
-        self.result.append("\n%s\n%s\n" % (section_name, ('-' * len(section_name))))
+        self.result.append("%s\n%s\n" % (section_name, ('-' * len(section_name))))
 
     def add_value(self, key, value):
         if isinstance(value, dict):
@@ -63,9 +63,9 @@ class Reporter:
             self.result.append("%s: " % key)
             self.result.append("%s\n" % value)
 
-    def dump(self):
+    def dump(self, output=sys.stdout):
         for line in self.result:
-            sys.stdout.write(line)
+            output.write(line)
 
 
 class ReporterJson(Reporter):
@@ -81,9 +81,9 @@ class ReporterJson(Reporter):
         self.current_section[key] = value
         pass
 
-    def dump(self):
-        sys.stdout.write(json.dumps(self.result, indent=2))
-        sys.stdout.write("\n")
+    def dump(self, output=sys.stdout):
+        output.write(json.dumps(self.result, indent=2))
+        output.write("\n")
 
 
 def inspect(args):
@@ -152,13 +152,15 @@ def inspect(args):
     reporter.add_value("Provides", provides)
     reporter.add_value("Packages", recipedata.getVar("PACKAGES", True).split())
 
-    reporter.dump()
+    output = open(args.output, "w") if args.output else sys.stdout
+    reporter.dump(output)
 
 
 def register_commands(subparsers):
     parser = subparsers.add_parser("inspect",
                                    help="Inspect the specified recipe information",
                                    description="Inspect the specified recipe's detailed information, including file-path, version, meta-layer, append-file, dependencies, inherits, etc.")
-    parser.add_argument("-j", "--json", help="Prints JSON formatted information", action="store_true")
+    parser.add_argument("-j", "--json", help="prints JSON formatted information", action="store_true")
+    parser.add_argument("-o", "--output", help="save the output to a file")
     parser.add_argument("recipename", help="Recipe name to inspect")
     parser.set_defaults(func=inspect, parserecipes=True)
