@@ -25,6 +25,7 @@ THE SOFTWARE.
 """
 
 import os
+import json
 import pytest
 import shutil
 import tempfile
@@ -84,7 +85,8 @@ def test_json_format_save_as_file(bare_build):
         o = bare_build.shell.execute("recipetool inspect cpplint --json --output {}".format(temp))
         assert not o.stdout.contains('"Name": "cpplint"')
         with open(temp, "r") as f:
-            assert '"Name": "cpplint"' in f.read()
+            data = json.load(f)
+            assert data["General Information"]["Name"] == "cpplint"
     finally:
         shutil.rmtree(d)
 
