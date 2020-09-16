@@ -47,7 +47,7 @@ class Reporter:
         self.result = []
 
     def section(self, section_name):
-        self.result.append("%s\n%s\n" % (section_name, ('-' * len(section_name))))
+        self.result.append("\n%s\n%s\n" % (section_name, ('-' * len(section_name))))
 
     def add_value(self, key, value):
         if isinstance(value, dict):
@@ -122,12 +122,13 @@ def inspect(args):
     reporter.add_value("Testable", is_testable(recipefile))
 
     reporter.section("Additional Information")
-    reporter.add_value("BBFile", recipefile.split(":")[-1])  # To remove extra prefixes (e.g. virtual, nativesdk)
+    reporter.add_value("Recipe", recipefile.split(":")[-1])  # To remove extra prefixes (e.g. virtual, nativesdk)
     reporter.add_value("Appends", appendfiles)
     reporter.add_value("SRC_URI", recipedata.getVar("SRC_URI", True).split())
     reporter.add_value("Work", recipedata.getVar("WORKDIR", True))
     reporter.add_value("Source", recipedata.getVar("S", True))
     reporter.add_value("Build", recipedata.getVar("B", True))
+    reporter.add_value("Temp", recipedata.getVar("T", True))
 
     reporter.section("Dependencies")
     inherits = {}
