@@ -395,6 +395,32 @@ def report_build(request, tmpdir_factory):
 
 
 @pytest.fixture(scope="session")
+def test_clang_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="dunfell", conf_file="conf/test_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def report_clang_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="dunfell", conf_file="conf/report_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
 def sdk_build(request, tmpdir_factory):
     repo_dir = str(tmpdir_factory.mktemp("repo"))
     build_dir = str(tmpdir_factory.mktemp("build"))
