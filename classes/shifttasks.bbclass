@@ -51,14 +51,3 @@ do_coverageall[vardepsexclude] = "show_affected_recipes"
 do_coverageall() {
     :
 }
-
-addtask checktestall
-do_checktestall[recrdeptask] = "do_checktestall do_checktest"
-do_checktestall[recideptask] = "do_${BB_DEFAULT_TASK}"
-do_checktestall[nostamp] = "1"
-do_checktestall[doc] = "Mutation test for all recipes required to build the target"
-do_checktestall[postfuncs] = "show_affected_recipes"
-do_checktestall[vardepsexclude] = "show_affected_recipes"
-do_checktestall() {
-    :
-}
