@@ -8,9 +8,9 @@ DEPENDS_prepend = "\
     cpplint-native \
     compiledb-native \
     sage-native \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'clang-cross-' + d.getVar('TUNE_ARCH', True) + ' ', '', d)} \
     "
+
+DEPENDS_prepend = "${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'clang-cross-' + d.getVar('TUNE_ARCH', True) + ' ', '', d)}"
 
 shifttest_print_lines() {
     while IFS= read line; do
@@ -79,15 +79,17 @@ shifttest_do_test() {
     bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
 }
 
-# $1 : report save path
 shifttest_prepare_output_dir() {
-    OUTPUT_PATH=$1
-    mkdir -p "${OUTPUT_PATH}"
-    rm -rf "${OUTPUT_PATH}/*"
-    export GTEST_OUTPUT="xml:${OUTPUT_PATH}/"
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
+        mkdir -p "${TEST_REPORT_OUTPUT}/${PF}/test"
+        rm -rf "${TEST_REPORT_OUTPUT}/${PF}/test/*"
+    fi
 }
 
 shifttest_prepare_env() {
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
+        export GTEST_OUTPUT="xml:${TEST_REPORT_OUTPUT}/${PF}/test/"
+    fi
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
 }
 
@@ -163,125 +165,4 @@ shifttest_do_coverage() {
     fi
 
     sed -r -i 's|(<package.*name=\")(.*")|\1${PN}\.\2|g' "${OUTPUT_DIR}/coverage.xml"
-}
-
-addtask checktest after do_compile do_populate_sysroot
-do_checktest[nostamp] = "1"
-do_checktest[doc] = "Run mutation test for the target tests"
-
-CHECKTEST_DISABLED="${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', '', 'has no clang layer', d)}"
-CHECKTEST_WORKDIR="${WORKDIR}/mutation_test_tmp"
-CHECKTEST_WORKDIR_ORIGINAL="${CHECKTEST_WORKDIR}/original"
-CHECKTEST_WORKDIR_ACTUAL="${CHECKTEST_WORKDIR}/actual"
-CHECKTEST_WORKDIR_BACKUP="${CHECKTEST_WORKDIR}/backup"
-CHECKTEST_WORKDIR_EVAL="${CHECKTEST_WORKDIR}/eval"
-CHECKTEST_MUTATION_MAXCOUNT ?= "10"
-CHECKTEST_SCOPE ?= "commit"
-CHECKTEST_EXTENSIONS ?= ""
-CHECKTEST_EXCLUDES ?= ""
-
-shifttest_checktest_compile_db_patch() {
-    sed -r -e 's|("command": ".*)(")|\1 --target=${TARGET_SYS}\2|g' \
-        ${B}/compile_commands.json > ${CHECKTEST_WORKDIR}/compile_commands.json
-}
-
-shifttest_checktest_prepare() {
-    if [ -d ${CHECKTEST_WORKDIR} ]; then
-        # restore & build
-        shifttest_checktest_restore_from_backup
-        shifttest_checktest_build
-
-        rm -rf ${CHECKTEST_WORKDIR}
-    fi
-    
-    mkdir ${CHECKTEST_WORKDIR}
-
-    # create compile_commands.json if not exists
-    if [ ! -f "${B}/compile_commands.json" ]; then
-        cd ${B}
-        compiledb --command-style make
-        shifttest_checktest_compile_db_patch
-        rm ${B}/compile_commands.json
-    else
-        shifttest_checktest_compile_db_patch
-    fi
-}
-
-shifttest_checktest_restore_from_backup() {
-    BACKUP_PATH=${CHECKTEST_WORKDIR_BACKUP}
-    SOURCE_PATH=${S}
-
-    if [ -d ${BACKUP_PATH} ]; then
-        bbdebug 1 "start retore: ${BACKUP_PATH}"
-        pushd ${BACKUP_PATH}
-        find * -type f \
-            -exec cp --parents "{}" "${SOURCE_PATH}" \; || true
-        popd
-    fi
-
-    rm -rf ${BACKUP_PATH}
-}
-
-shifttest_checktest_populate() {
-    bbdebug 1 "start populate"
-    sentinel populate \
-        --build ${CHECKTEST_WORKDIR} \
-        --scope ${CHECKTEST_SCOPE} \
-        --output ${CHECKTEST_WORKDIR}/mutables.db \
-        --limit ${CHECKTEST_MUTATION_MAXCOUNT} \
-        ${@' '.join([ '--extensions=' + ext + ' ' for ext in d.getVar('CHECKTEST_EXTENSIONS', True).split()])} \
-        ${@' '.join([ '--exclude=' + ext + ' ' for ext in d.getVar('CHECKTEST_EXCLUDES', True).split()])} \
-        ${S} | shifttest_print_lines
-    bbdebug 1 "end populate"
-}
-
-shifttest_checktest_mutate() {
-    MUTABLE=$1
-
-    sentinel mutate \
-        --input ${MUTABLE} \
-        --backup ${CHECKTEST_WORKDIR_BACKUP} \
-        ${S} | shifttest_print_lines
-}
-
-shifttest_checktest_build() {
-    cd ${B}
-    bbdebug 1 "compile"
-    do_compile
-    bbdebug 1 "install"
-    do_install
-}
-
-shifttest_checktest_evaluate() {
-    MUTABLE=$1
-
-    sentinel evaluate \
-        --input ${MUTABLE} \
-        --expected ${CHECKTEST_WORKDIR_ORIGINAL} \
-        --actual ${CHECKTEST_WORKDIR_ACTUAL} \
-        --output ${CHECKTEST_WORKDIR_EVAL} \
-        | shifttest_print_lines
-}
-
-shifttest_checktest_report() {
-    bbdebug 1 "checktest report"
-
-    if [ -z "${TEST_REPORT_OUTPUT}" ]; then
-        sentinel report \
-            --input ${CHECKTEST_WORKDIR_EVAL} \
-            ${S} | shifttest_print_lines
-    else
-        OUTPUT_PATH="${TEST_REPORT_OUTPUT}/${PF}/checktest"
-        mkdir -p "${OUTPUT_PATH}"
-        rm -rf "${OUTPUT_PATH}/*"
-        sentinel report \
-            --input ${CHECKTEST_WORKDIR_EVAL} \
-            --output ${OUTPUT_PATH} \
-            ${S} | shifttest_print_lines
-    fi
-    bbdebug 1 "checktest report end"
-}
-
-shifttest_do_checktest() {
-    bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
 }
