@@ -1,6 +1,6 @@
 # meta-shift
 
-[![Build Status](http://10.177.233.77:8080/buildStatus/icon?job=meta-shift-with-multi-configurations)](http://10.177.233.77:8080/job/meta-shift-with-multi-configurations/)
+[![Build Status](http://10.178.85.91:8080/buildStatus/icon?job=meta-shift)](http://10.178.85.91:8080/job/meta-shift/)
 
 > Shift-left testing for the Yocto project
 
