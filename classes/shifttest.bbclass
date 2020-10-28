@@ -167,7 +167,7 @@ shifttest_do_coverage() {
 
 addtask checktest after do_compile do_populate_sysroot
 do_checktest[nostamp] = "1"
-do_checktest[doc] = "Run mutation test for the target tests"
+do_checktest[doc] = "Runs mutation tests for the target"
 
 CHECKTEST_DISABLED="${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', '', 'has no clang layer', d)}"
 CHECKTEST_WORKDIR="${WORKDIR}/mutation_test_tmp"
@@ -193,7 +193,7 @@ shifttest_checktest_prepare() {
 
         rm -rf ${CHECKTEST_WORKDIR}
     fi
-    
+
     mkdir ${CHECKTEST_WORKDIR}
 
     # create compile_commands.json if not exists
