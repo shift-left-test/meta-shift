@@ -40,6 +40,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 
 ### List of bitbake tools
 
+* bitbake-layers inspect
 * bitbake-layers test-layers
 * bitbake-layers test-recipes
 * recipetool check
