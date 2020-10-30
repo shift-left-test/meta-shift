@@ -83,7 +83,7 @@ class ReporterJson(Reporter):
 
 def inspect(args):
     def findByName(layername):
-        layerconfs = tinfoil.config_data.varhistory.get_variable_items_files("BBFILE_COLLECTIONS")
+        layerconfs = tinfoil.config_data.varhistory.get_variable_items_files("BBFILE_COLLECTIONS", tinfoil.config_data)
         for name, path in layerconfs.items():
             layerdir = os.path.dirname(os.path.dirname(path))
             if layername == os.path.basename(layerdir):
