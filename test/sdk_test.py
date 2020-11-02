@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#-*- coding: utf-8 -*-
+#!/usr/bin/python3
 
 """
 MIT License
@@ -88,20 +89,22 @@ def test_cppcheck(sdk_build):
     cppcheck_path = "{0}/usr/bin/cppcheck".format(sdk_build.oecore_native_sysroot)
     assert os.path.exists(cppcheck_path), "{0} not found: {1}".format("cppcheck", cppcheck_path)
 
-    f = tempfile.NamedTemporaryFile(suffix=".cpp", bufsize=0)
+    f =  tempfile.NamedTemporaryFile(mode="w", suffix=".cpp")
     f.write("int main(){int a[10]; a[10] = 0;}")
+    f.flush()
 
     o = sdk_build.sdk_shell.execute("{} --enable=all {}".format(cppcheck_path, f.name))
-    assert o.stderr.contains("{}:1:24: error: Array 'a[10]' accessed at index 10, which is out of bounds.".format(f.name))
-    assert o.stderr.contains("{}:1:29: style: Variable 'a[10]' is assigned a value that is never used.".format(f.name))
+    assert o.stderr.contains("{}:1:24: error: Array 'a[10]' accessed at index 10, which is out of bounds.".format(f.name)), o.stderr
+    assert o.stderr.contains("{}:1:29: style: Variable 'a[10]' is assigned a value that is never used.".format(f.name)), o.stderr
 
 
 def test_cpplint(sdk_build):
     cpplint_path = "{0}/usr/bin/cpplint".format(sdk_build.oecore_native_sysroot)
     assert os.path.exists(cpplint_path), "{0} not found: {1}".format("cpplint", cpplint_path)
 
-    f = tempfile.NamedTemporaryFile(suffix=".cpp", bufsize=0)
+    f = tempfile.NamedTemporaryFile(mode="w", suffix=".cpp")
     f.write("int main(){int a[10]; a[10] = 0;}")
+    f.flush()
 
     o = sdk_build.sdk_shell.execute("{} {}".format(cpplint_path, f.name))
     assert o.stderr.contains("{}:0:  No copyright message found.  You should have a line: \"Copyright [year] <Copyright Owner>\"  [legal/copyright] [5]".format(f.name))
