@@ -33,18 +33,18 @@ import tempfile
 
 
 def test_default_format(bare_build):
-    o = bare_build.shell.execute("bitbake-layers inspect meta-shift")
+    o = bare_build.shell.execute("bitbake-layers inspect meta-poky")
     assert o.stdout.containsAll("General Information",
                                 "-------------------",
-                                "Layer: meta-shift",
-                                "Name: meta-shift",
+                                "Layer: meta-poky",
+                                "Name: yocto",
                                 "Path:",
                                 "Conf:",
-                                "Priority: 17",
-                                "Version:",
+                                "Priority: 5",
+                                "Version: 3",
                                 "Codename:",
                                 "Compatibilities:",
-                                "Dependencies: core meta-python openembedded-layer",
+                                "Dependencies: core",
                                 "Additional Information",
                                 "----------------------",
                                 "Images:",
@@ -57,30 +57,30 @@ def test_default_format_save_as_file(bare_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.plain")
-        o = bare_build.shell.execute("bitbake-layers inspect meta-shift --output {}".format(temp))
-        assert not o.stdout.contains("Name: meta-shift")
+        o = bare_build.shell.execute("bitbake-layers inspect meta-poky --output {}".format(temp))
+        assert not o.stdout.contains("Name: yocto")
         with open(temp, "r") as f:
-            assert "Name: meta-shift" in f.read()
+            assert "Name: yocto" in f.read()
     finally:
         shutil.rmtree(d)
 
 
 def test_json_format(bare_build):
-    o = bare_build.shell.execute("bitbake-layers inspect meta-shift --json")
+    o = bare_build.shell.execute("bitbake-layers inspect meta-poky --json")
     assert o.stdout.containsAll('"General Information": {{',
-                                '"Layer": "meta-shift"',
-                                '"Name": "meta-shift"',
+                                '"Layer": "meta-poky"',
+                                '"Name": "yocto"',
                                 '"Path":',
                                 '"Conf":',
-                                '"Priority": "17"',
-                                '"Version": ""',
+                                '"Priority": "5"',
+                                '"Version": "3"',
                                 '"Codename":',
                                 '"Compatibilities":',
-                                '"Dependencies": "core meta-python openembedded-layer"',
+                                '"Dependencies": "core"',
                                 '"Additional Information": {{',
                                 '"Images": []',
                                 '"Machines": []',
-                                '"Distros": []',
+                                '"Distros": [',
                                 '"Classes": [')
 
 
@@ -88,11 +88,11 @@ def test_json_format_save_as_file(bare_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.json")
-        o = bare_build.shell.execute("bitbake-layers inspect meta-shift --json --output {}".format(temp))
-        assert not o.stdout.contains('"Name": "meta-shift"')
+        o = bare_build.shell.execute("bitbake-layers inspect meta-poky --json --output {}".format(temp))
+        assert not o.stdout.contains('"Name": "yocto"')
         with open(temp, "r") as f:
             data = json.load(f)
-            assert data["General Information"]["Name"] == "meta-shift"
+            assert data["General Information"]["Name"] == "yocto"
     finally:
         shutil.rmtree(d)
 
