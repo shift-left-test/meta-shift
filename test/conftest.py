@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#-*- coding: utf-8 -*-
+#!/usr/bin/python3
 
 """
 MIT License
@@ -195,8 +196,8 @@ class Shell(object):
         proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         streams = proc.communicate()
         return Outputs({
-            "stdout": Output(streams[0], self.kwargs),
-            "stderr": Output(streams[1], self.kwargs),
+            "stdout": Output(streams[0].decode("utf-8"), self.kwargs),
+            "stderr": Output(streams[1].decode("utf-8"), self.kwargs),
             "returncode": proc.returncode})
 
 
@@ -253,7 +254,7 @@ class BuildEnvironment(object):
         self.kwargs = {}
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
-        source = subprocess.check_output('bash -c "source {0} {1} && bitbake core-image-minimal -c populate_sdk -e"'.format(f, self.build_dir), shell=True)
+        source = subprocess.check_output('bash -c "source {0} {1} && bitbake core-image-minimal -c populate_sdk -e"'.format(f, self.build_dir), shell=True).decode("utf-8")
         for key in ("BUILD_ARCH",
                     "TUNE_ARCH",
                     "TUNE_PKGARCH",
