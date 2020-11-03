@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import bb.providers
 import bb.utils
 import collections
 import json
@@ -91,7 +92,7 @@ def inspect(args):
         return None, None, None, None
 
     def getVar(key, default=""):
-        return tinfoil.config_data.getVar(key) or default
+        return tinfoil.config_data.getVar(key, True) or default
 
     def findFiles(path, suffix=".conf"):
         if not os.path.exists(path):
@@ -101,7 +102,7 @@ def inspect(args):
     def findImages(layername):
         images = []
         pkg_pn = tinfoil.cooker.recipecaches[''].pkg_pn
-        (latest_versions, preferred_versions) = tinfoil.find_providers()
+        (latest_versions, preferred_versions) = bb.providers.findProviders(tinfoil.config_data, tinfoil.cooker.recipecaches[''], pkg_pn)
         for p in sorted(pkg_pn):
             pref = preferred_versions[p]
             realfn = bb.cache.virtualfn2realfn(pref[1])
