@@ -91,7 +91,7 @@ def inspect(args):
         return None, None, None, None
 
     def getVar(key, default=""):
-        return tinfoil.config_data.getVar(key) or default
+        return tinfoil.config_data.getVar(key, True) or default
 
     def findFiles(path, suffix=".conf"):
         if not os.path.exists(path):
