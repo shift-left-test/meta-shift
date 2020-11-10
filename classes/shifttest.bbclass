@@ -12,6 +12,8 @@ DEPENDS_prepend = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'clang-cross-' + d.getVar('TUNE_ARCH', True) + ' ', '', d)} \
     "
 
+DEBUG_BUILD = "1"
+
 shifttest_print_lines() {
     while IFS= read line; do
         bbplain "${PF} do_${BB_CURRENTTASK}: $line"
