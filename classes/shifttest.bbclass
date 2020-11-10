@@ -10,6 +10,8 @@ DEPENDS_prepend = "\
     sage-native \
     "
 
+DEBUG_BUILD = "1"
+
 shifttest_print_lines() {
     while IFS= read line; do
         bbplain "$line"
