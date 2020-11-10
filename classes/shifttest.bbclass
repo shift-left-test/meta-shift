@@ -89,6 +89,13 @@ shifttest_prepare_output_dir() {
 
 shifttest_prepare_env() {
     export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
+
+    local LCOV_DATAFILE_BASE="${B}/coverage_base.info"
+
+    lcov -c -i -d ${B} -o ${LCOV_DATAFILE_BASE} \
+    --ignore-errors gcov \
+    --gcov-tool ${TARGET_PREFIX}gcov \
+    --rc lcov_branch_coverage=1
 }
 
 shifttest_gtest_update_xmls() {
@@ -110,6 +117,8 @@ do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage metrics for the target"
 
 shifttest_do_coverage() {
+    local LCOV_DATAFILE_BASE="${B}/coverage_base.info"
+    local LCOV_DATAFILE_TEST="${B}/coverage_test.info"
     local LCOV_DATAFILE_TOTAL="${B}/coverage_total.info"
     local LCOV_DATAFILE="${B}/coverage.info"
 
@@ -121,10 +130,14 @@ shifttest_do_coverage() {
         return
     fi
 
-    lcov -c -i -d ${B} -o ${LCOV_DATAFILE_TOTAL} \
+    lcov -c -d ${B} -o ${LCOV_DATAFILE_TEST} \
         --ignore-errors gcov \
         --gcov-tool ${TARGET_PREFIX}gcov \
         --rc lcov_branch_coverage=1
+
+    lcov -a ${LCOV_DATAFILE_BASE} \
+         -a ${LCOV_DATAFILE_TEST} \
+         -o ${LCOV_DATAFILE_TOTAL}
 
     lcov --extract ${LCOV_DATAFILE_TOTAL} \
         --rc lcov_branch_coverage=1 \
