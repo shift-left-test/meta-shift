@@ -121,7 +121,7 @@ shifttest_do_coverage() {
         return
     fi
 
-    lcov -c -d ${B} -o ${LCOV_DATAFILE_TOTAL} \
+    lcov -c -i -d ${B} -o ${LCOV_DATAFILE_TOTAL} \
         --ignore-errors gcov \
         --gcov-tool ${TARGET_PREFIX}gcov \
         --rc lcov_branch_coverage=1
