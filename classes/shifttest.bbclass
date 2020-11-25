@@ -194,6 +194,7 @@ CHECKTEST_MUTATION_MAXCOUNT ?= "10"
 CHECKTEST_SCOPE ?= "commit"
 CHECKTEST_EXTENSIONS ?= ""
 CHECKTEST_EXCLUDES ?= ""
+CHECKTEST_WEAK_MUTATION ?= ""
 
 shifttest_checktest_compile_db_patch() {
     sed -r -e 's|("command": ".*)(")|\1 --target=${TARGET_SYS}\2|g' \
@@ -240,10 +241,12 @@ shifttest_checktest_restore_from_backup() {
 shifttest_checktest_populate() {
     bbdebug 1 "start populate"
     sentinel populate \
-        --build ${CHECKTEST_WORKDIR} \
+        --work-dir ${CHECKTEST_WORKDIR} \
+        --build-dir ${CHECKTEST_WORKDIR} \
+        --output-dir ${CHECKTEST_WORKDIR} \
         --scope ${CHECKTEST_SCOPE} \
-        --output ${CHECKTEST_WORKDIR}/mutables.db \
         --limit ${CHECKTEST_MUTATION_MAXCOUNT} \
+        --mutants-file-name "mutables.db" \
         ${@' '.join([ '--extensions=' + ext + ' ' for ext in d.getVar('CHECKTEST_EXTENSIONS', True).split()])} \
         ${@' '.join([ '--exclude=' + ext + ' ' for ext in d.getVar('CHECKTEST_EXCLUDES', True).split()])} \
         ${S} | shifttest_print_lines
@@ -251,11 +254,13 @@ shifttest_checktest_populate() {
 }
 
 shifttest_checktest_mutate() {
-    MUTABLE=$1
+    MUTANT=$1
+
+    bbdebug 1 "MUTANT: ${MUTANT}"
 
     sentinel mutate \
-        --input ${MUTABLE} \
-        --backup ${CHECKTEST_WORKDIR_BACKUP} \
+        --mutant "${MUTANT}" \
+        --work-dir ${CHECKTEST_WORKDIR_BACKUP} \
         ${S} | shifttest_print_lines
 }
 
@@ -268,32 +273,33 @@ shifttest_checktest_build() {
 }
 
 shifttest_checktest_evaluate() {
-    MUTABLE=$1
+    MUTANT=$1
 
     sentinel evaluate \
-        --input ${MUTABLE} \
+        --mutant "${MUTANT}" \
         --expected ${CHECKTEST_WORKDIR_ORIGINAL} \
         --actual ${CHECKTEST_WORKDIR_ACTUAL} \
-        --output ${CHECKTEST_WORKDIR_EVAL} \
-        | shifttest_print_lines
+        --output-dir ${CHECKTEST_WORKDIR_EVAL} \
+        ${2:+"--build-failure"} \
+        ${S} | shifttest_print_lines
 }
 
 shifttest_checktest_report() {
     bbdebug 1 "checktest report"
 
-    if [ -z "${TEST_REPORT_OUTPUT}" ]; then
-        sentinel report \
-            --input ${CHECKTEST_WORKDIR_EVAL} \
-            ${S} | shifttest_print_lines
-    else
+    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
         OUTPUT_PATH="${TEST_REPORT_OUTPUT}/${PF}/checktest"
         mkdir -p "${OUTPUT_PATH}"
         rm -rf "${OUTPUT_PATH}/*"
-        sentinel report \
-            --input ${CHECKTEST_WORKDIR_EVAL} \
-            --output ${OUTPUT_PATH} \
-            ${S} | shifttest_print_lines
     fi
+
+    sentinel report \
+        --evaluation-file ${CHECKTEST_WORKDIR_EVAL}/EvaluationResults \
+        ${@oe.utils.conditional("CHECKTEST_WEAK_MUTATION", "1", "--weak-mutation", "", d)} \
+        ${OUTPUT_PATH:+"--output-dir"} ${OUTPUT_PATH} \
+        ${S} | shifttest_print_lines
+
+    unset OUTPUT_PATH
     bbdebug 1 "checktest report end"
 }
 
