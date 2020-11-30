@@ -194,7 +194,6 @@ CHECKTEST_MUTATION_MAXCOUNT ?= "10"
 CHECKTEST_SCOPE ?= "commit"
 CHECKTEST_EXTENSIONS ?= ""
 CHECKTEST_EXCLUDES ?= ""
-CHECKTEST_WEAK_MUTATION ?= ""
 
 shifttest_checktest_compile_db_patch() {
     sed -r -e 's|("command": ".*)(")|\1 --target=${TARGET_SYS}\2|g' \
@@ -295,7 +294,6 @@ shifttest_checktest_report() {
 
     sentinel report \
         --evaluation-file ${CHECKTEST_WORKDIR_EVAL}/EvaluationResults \
-        ${@oe.utils.conditional("CHECKTEST_WEAK_MUTATION", "1", "--weak-mutation", "", d)} \
         ${OUTPUT_PATH:+"--output-dir"} ${OUTPUT_PATH} \
         ${S} | shifttest_print_lines
 
