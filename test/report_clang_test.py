@@ -141,31 +141,27 @@ def test_core_image_minimal_do_checktestall(report_clang_build):
     EXISTS = report_clang_build.files.exists
 
     assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "index.xml"))
+    assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
     assert EXISTS(TEST.CHECKTEST("cmake-project", "style.css"))
 
     assert EXISTS(TEST.CHECKTEST("qmake5-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "index.xml"))
+    assert EXISTS(TEST.CHECKTEST("qmake5-project", "index.html"))
     assert EXISTS(TEST.CHECKTEST("qmake5-project", "style.css"))
 
     assert EXISTS(TEST.CHECKTEST("autotools-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "index.xml"))
+    assert EXISTS(TEST.CHECKTEST("autotools-project", "index.html"))
     assert EXISTS(TEST.CHECKTEST("autotools-project", "style.css"))
 
     assert EXISTS(TEST.CHECKTEST("humidifier-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("humidifier-project", "index.xml"))
+    assert EXISTS(TEST.CHECKTEST("humidifier-project", "index.html"))
     assert EXISTS(TEST.CHECKTEST("humidifier-project", "style.css"))
 
     assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "index.xml"))
-    assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "style.css"))
-
-    assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "index.xml"))
+    assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "index.html"))
     assert EXISTS(TEST.CHECKTEST("sqlite3wrapper", "style.css"))
 
     assert EXISTS(TEST.CHECKTEST("stringutils", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("stringutils", "index.xml"))
+    assert EXISTS(TEST.CHECKTEST("stringutils", "index.html"))
     assert EXISTS(TEST.CHECKTEST("stringutils", "style.css"))
 
 
