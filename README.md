@@ -25,6 +25,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 * qemu-native (via meta)
 * qmake5 (via meta-qt5)
 * SAGE (0.2.0)
+* sentinel (0.1.0)
 
 
 ## Features
@@ -33,6 +34,8 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 
 * do_checkcode
 * do_checkcodeall
+* do_checktest
+* do_checktestall
 * do_coverage
 * do_coverageall
 * do_test
@@ -40,7 +43,9 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 
 ### List of bitbake tools
 
+* devtool show
 * bitbake-layers inspect
+* bitbake-layers status
 * bitbake-layers test-layers
 * bitbake-layers test-recipes
 * recipetool check
@@ -54,6 +59,7 @@ The following meta-layers are necessary in order to install the tools provided b
 * meta-oe (meta-openembedded)
 * meta-python (meta-openembedded)
 * meta-qt5 (meta-qt5) [Optional]
+* meta-clang (meta-clang) [Optional]
 
 
 ## How to add the layer to your build
