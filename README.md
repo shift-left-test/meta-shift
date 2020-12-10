@@ -40,7 +40,9 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 
 ### List of bitbake tools
 
+* devtool show
 * bitbake-layers inspect
+* bitbake-layers status
 * bitbake-layers test-layers
 * bitbake-layers test-recipes
 * recipetool check
@@ -77,3 +79,4 @@ Please refer to the [wiki link](http://mod.lge.com/hub/yocto/meta-shift/-/wikis/
 ## Licenses
 
 This project source code is available under MIT license. See [LICENSE](LICENSE).
+
