@@ -194,6 +194,7 @@ CHECKTEST_MUTATION_MAXCOUNT ?= "10"
 CHECKTEST_SCOPE ?= "commit"
 CHECKTEST_EXTENSIONS ?= ""
 CHECKTEST_EXCLUDES ?= ""
+CHECKTEST_MUTANT_GENERATOR ?= "uniform"
 
 shifttest_checktest_compile_db_patch() {
     sed -r -e 's|("command": ".*)(")|\1 --target=${TARGET_SYS}\2|g' \
@@ -243,6 +244,7 @@ shifttest_checktest_populate() {
         --work-dir ${CHECKTEST_WORKDIR} \
         --build-dir ${CHECKTEST_WORKDIR} \
         --output-dir ${CHECKTEST_WORKDIR} \
+        --generator ${CHECKTEST_MUTANT_GENERATOR} \
         --scope ${CHECKTEST_SCOPE} \
         --limit ${CHECKTEST_MUTATION_MAXCOUNT} \
         --mutants-file-name "mutables.db" \
