@@ -43,6 +43,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 
 ### List of bitbake tools
 
+* devtool cache
 * devtool show
 * bitbake-layers inspect
 * bitbake-layers status
