@@ -170,8 +170,7 @@ def parse_metadata(tinfoil, recipe):
         recipefile = tinfoil.cooker.findBestProvider(recipe)[3]
         if not recipefile:
             raise bb.BBHandledException("Failed to find the recipe file for '{}'\n".format(recipe))
-        appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)
-        return tinfoil.parse_recipe_file(recipefile, True, appendfiles, tinfoil.config_data)
+        return tinfoil.parse_recipe_file(recipefile)
     else:
         return tinfoil.config_data
 
@@ -211,3 +210,4 @@ def register_commands(subparsers, context):
     parser.add_argument("-r", "--recipe", help="Show variables of the recipe")
     parser.add_argument("variables", nargs="*", help="variables to show (default: all variables)")
     parser.set_defaults(func=show, no_workspace=True)
+
