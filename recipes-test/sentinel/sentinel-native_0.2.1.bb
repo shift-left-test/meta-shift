@@ -4,7 +4,7 @@ AUTHOR = "Sung Gon Kim"
 HOMEPAGE = "http://mod.lge.com/hub/yocto/addons/sentinel"
 BUGTRACKER = "http://mod.lge.com/hub/yocto/addons/sentinel/issues"
 SECTION = "devel"
-LICENSE = "MIT & Unknown"
+LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=68afeac0415f7ffea472ec34ec9d20c7 \
                     file://external/args-6.2.3/LICENSE;md5=b5d002ff26328bc38158aff274711f1d \
                     file://external/tinyxml2/LICENSE.txt;md5=135624eef03e1f1101b9ba9ac9b5fffd \
@@ -16,7 +16,7 @@ DEPENDS_class-native += "\
 "
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sentinel.git;protocol=http;nobranch=1"
-SRCREV = "4c80822f412568632e487161b6a2346c7d3d95e4"
+SRCREV = "41242c5181698d5288a784ac5494351f22ade646"
 
 S = "${WORKDIR}/git"
 
