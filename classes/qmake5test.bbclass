@@ -76,16 +76,17 @@ qmake5test_do_checktest() {
     cat ${CHECKTEST_WORKDIR}/mutables.db | while read line
     do
         shifttest_checktest_mutate "${line}"
-        cd ${B} && do_compile && do_install || BUILD_FAILED="1"
-        if [ -z ${BUILD_FAILED} ]; then
+        TEST_STATE="success"
+        cd ${B} && do_compile && do_install || TEST_STATE="build_failure"
+        if [ "${TEST_STATE}" = "success" ]; then
             rm -rf ${CHECKTEST_WORKDIR_ACTUAL}/*
             qmake5test_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ACTUAL}
         else
             bbdebug 1 "build failed"
         fi
-        shifttest_checktest_evaluate "${line}" ${BUILD_FAILED}
+        shifttest_checktest_evaluate "${line}" "${TEST_STATE}"
         shifttest_checktest_restore_from_backup
-        unset BUILD_FAILED
+        unset TEST_STATE
     done
 
     shifttest_checktest_report

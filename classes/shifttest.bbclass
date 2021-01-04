@@ -281,7 +281,7 @@ shifttest_checktest_evaluate() {
         --expected ${CHECKTEST_WORKDIR_ORIGINAL} \
         --actual ${CHECKTEST_WORKDIR_ACTUAL} \
         --output-dir ${CHECKTEST_WORKDIR_EVAL} \
-        ${2:+"--build-failure"} \
+        --test-state $2 \
         ${S} | shifttest_print_lines
 }
 
