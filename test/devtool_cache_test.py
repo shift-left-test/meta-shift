@@ -33,14 +33,16 @@ def test_unknown_recipe(bare_build):
     assert o.stderr.contains("ERROR: Nothing PROVIDES 'unknown-recipe'")
 
 
-def test_local_stats(bare_build):
+def test_cache(bare_build):
     o = bare_build.shell.execute("devtool cache cmake-native")
     assert re.search("Wanted : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
     assert re.search("Found  : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
     assert re.search("Missed : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
 
 
-def test_local_stats_with_tasks(bare_build):
+def test_cache_with_details(bare_build):
     o = bare_build.shell.execute("devtool cache cmake-native --found --missed")
     assert o.stdout.containsAll("cmake-native:do_populate_lic",
-                                "cmake-native:do_populate_sysroot")
+                                "cmake-native:do_populate_sysroot",
+                                "cmake-native")
+
