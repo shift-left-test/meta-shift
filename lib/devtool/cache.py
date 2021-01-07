@@ -35,6 +35,35 @@ logger = logging.getLogger("devtool")
 logger.setLevel(logging.WARNING)
 
 
+class Fetch2(bb.fetch2.Fetch):
+    def __init__(self, d):
+        self.src_uri = (d.getVar("SRC_URI", True) or "").split()
+        super(Fetch2, self).__init__(self.src_uri, d)
+
+    def size(self):
+        return len(self.src_uri)
+
+    def check_premirrors(self):
+        def mirror_from_string(s):
+            mirrors = bb.fetch2.mirror_from_string(s)
+            return [x for x in mirrors if not "downloads.yoctoproject.org" in x[1]]
+
+        for u in self.urls:
+            # Ignores local URLs
+            if u.startswith("file://"):
+                continue
+            ud = self.ud[u]
+            ud.setup_localpath(self.d)
+            # Check if the source tarball and the stamp exist
+            if os.path.exists(ud.localpath) and os.path.exists(ud.donestamp):
+                continue
+            mirrors = mirror_from_string(self.d.getVar("PREMIRRORS", True))
+            ret = bb.fetch2.try_mirrors(self, self.d, ud, mirrors, True)
+            if not ret:
+                return False
+        return True
+
+
 class Task(object):
     """Task representation class
     """
@@ -53,8 +82,31 @@ class Task(object):
         return self.__str__()
 
 
-def get_tasks(args, basepath):
-    """Return the relevant taks of the given recipe
+class Recipe(object):
+    """Recipe representation class
+    """
+    def __init__(self, pn, available):
+        self.pn = pn
+        self.available = available
+
+    def isAvailable(self):
+        return self.available
+
+    def __eq__(self, other):
+        if type(other) == str:
+            return self.pn == other
+        if other.__class__ == self.__class__:
+            return self.pn == other.pn
+
+    def __str__(self):
+        return "%s" % self.pn
+
+    def __repr__(self):
+        return self.__str__()
+
+
+def parse(args, basepath):
+    """Return the relevant information of the recipe
     """
     def execute(cmd, env=None):
         try:
@@ -88,12 +140,22 @@ def get_tasks(args, basepath):
     try:
         tinfoil = setup_tinfoil(config_only=False, basepath=basepath)
         tasks = []
+        recipes = []
         for tid in tids:
             (mc, fn, taskname) = bb.runqueue.split_tid(tid)
-            tasks.append(Task(tid, tinfoil.cooker.recipecaches[mc].pkg_fn[fn], taskname))
+            pn = tinfoil.cooker.recipecaches[mc].pkg_fn[fn]
+            tasks.append(Task(tid, pn, taskname))
+
+            if not pn in recipes:
+                data = tinfoil.parse_recipe_file(fn)
+                fetcher = Fetch2(data)
+                if fetcher.size() > 0:
+                    recipes.append(Recipe(pn, fetcher.check_premirrors()))
 
         tasks.sort(key=lambda x: (x.pn, x.task))
-        return tasks
+        recipes.sort(key=lambda x: x.pn)
+
+        return tasks, recipes
 
     finally:
         tinfoil.shutdown()
@@ -117,14 +179,17 @@ def print_variables(args, title, found, missed):
 
 
 def cache(args, config, basepath, workspace):
-    """Show the shared state cache status of the recipe
+    """Show the shared state cache and source availability of the recipe
     """
-    print("INFO: This might take a few minutes to complete...")
+    print("INFO: Parsing in progress... This may take a few minutes to complete.")
     try:
-        tasks = get_tasks(args, basepath)
-        print_variables(args, "Local Cache Statistics",
+        tasks, recipes = parse(args, basepath)
+        print_variables(args, "Shared State Availability",
                         [x for x in tasks if x.isSetsceneTask()],
                         [x for x in tasks if not x.isSetsceneTask()])
+        print_variables(args, "Source Availability",
+                        [x for x in recipes if x.isAvailable()],
+                        [x for x in recipes if not x.isAvailable()])
         return 0
     except Exception as e:
         logger.error(str(e))
@@ -133,10 +198,11 @@ def cache(args, config, basepath, workspace):
 
 def register_commands(subparsers, context):
     parser = subparsers.add_parser("cache",
-                                   help="Show the shared state cache status of the recipe",
-                                   description="Show the shared state cache status of the recipe",
+                                   help="Show the shared state cache and source availability of the recipe",
+                                   description="Show the shared state cache and source availability of the recipe",
                                    group="info")
     parser.add_argument("recipe", help="recipe to examine")
-    parser.add_argument("-f", "--found", action="store_true", help="Show the list of cached tasks")
-    parser.add_argument("-m", "--missed", action="store_true", help="Show the list of missed tasks")
+    parser.add_argument("-f", "--found", action="store_true", help="Show the list of cached items")
+    parser.add_argument("-m", "--missed", action="store_true", help="Show the list of missed items")
     parser.set_defaults(func=cache, no_workspace=True)
+
