@@ -23,6 +23,7 @@ qmake5test_qtest_update_xmls() {
 qmake5test_run_test() {
     PRINT_LINES=$1
     OUTPUT_DIR=$2
+    TIMEOUT_STATUS=0
 
     if [ ! -z "${OUTPUT_DIR}" ]; then
         shifttest_prepare_output_dir ${OUTPUT_DIR}
@@ -42,10 +43,19 @@ qmake5test_run_test() {
     fi
 
     cd ${B}
+    local TEST_EXIT_CODE=0
     if [ "${PRINT_LINES}" = "PRINT" ]; then
-        make --quiet check | shifttest_print_lines
+        timeout ${TEST_TIMEOUT} make --quiet check | shifttest_print_lines
+        TEST_EXIT_CODE=${PIPESTATUS[0]}
     else
-        make --quiet check
+        timeout ${TEST_TIMEOUT} make --quiet check || TEST_EXIT_CODE=$?
+    fi
+
+    if [ "$TEST_EXIT_CODE" = "124" ]; then
+        TIMEOUT_STATUS=1
+        if [ "${PRINT_LINES}" = "PRINT" ]; then
+            echo "Test timeout after ${TEST_TIMEOUT} ..." | shifttest_print_lines
+        fi
     fi
 }
 
@@ -81,6 +91,9 @@ qmake5test_do_checktest() {
         if [ "${TEST_STATE}" = "success" ]; then
             rm -rf ${CHECKTEST_WORKDIR_ACTUAL}/*
             qmake5test_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ACTUAL}
+            if [ "$TIMEOUT_STATUS" = "1" ]; then
+              TEST_STATE="timeout"
+            fi
         else
             bbdebug 1 "build failed"
         fi
