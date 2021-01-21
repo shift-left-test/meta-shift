@@ -12,8 +12,8 @@ cmake_do_compile_prepend() {
     export TARGET_SYS="${TARGET_SYS}"
 }
 
-cmaketest_do_checkcode() {
-    shifttest_do_checkcode
+python cmaketest_do_checkcode() {
+    bb.build.exec_func("shifttest_do_checkcode", d)
 }
 
 # $1 : print stdout if "PRINT"

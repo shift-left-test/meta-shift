@@ -49,8 +49,8 @@ do_configure_append() {
     chmod 755 ${WORKDIR}/test-runner.sh
 }
 
-autotoolstest_do_checkcode() {
-    shifttest_do_checkcode
+python autotoolstest_do_checkcode() {
+    bb.build.exec_func("shifttest_do_checkcode", d)
 }
 
 # $1 : print stdout if "PRINT"
