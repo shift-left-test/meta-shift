@@ -94,8 +94,8 @@ autotoolstest_do_test() {
     fi
 }
 
-autotoolstest_do_coverage() {
-    shifttest_do_coverage
+python autotoolstest_do_coverage() {
+    bb.build.exec_func("shifttest_do_coverage", d)
 }
 
 autotoolstest_do_checktest() {

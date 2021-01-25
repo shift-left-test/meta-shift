@@ -70,8 +70,8 @@ qmake5test_do_test() {
     fi
 }
 
-qmake5test_do_coverage() {
-    shifttest_do_coverage
+python qmake5test_do_coverage() {
+    bb.build.exec_func("shifttest_do_coverage", d)
 }
 
 qmake5test_do_checktest() {
