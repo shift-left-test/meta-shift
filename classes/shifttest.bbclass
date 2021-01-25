@@ -25,6 +25,43 @@ def plain(s, d):
     bb.plain(s)
 
 
+def warn(s, d):
+    if d.getVar("SHIFTTEST_QUIET", True):
+        return
+    bb.warn(s)
+
+
+def error(s, d):
+    if d.getVar("SHIFTTEST_QUIET", True):
+        return
+    bb.error(s)
+
+
+def fatal(s, d):
+    if d.getVar("SHIFTTEST_QUIET", True):
+        return
+    bb.fatal(s)
+
+
+def find_files(directory, pattern):
+    import fnmatch
+    found = []
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if fnmatch.fnmatch(filename, pattern):
+                found.append(os.path.join(root, filename))
+    return found
+
+
+def replace_files(files, pattern, repl):
+    import fileinput
+    import re
+    for filename in files:
+        bb.debug(1, "Replacing contents: %s" % filename)
+        for line in fileinput.input(filename, inplace=True):
+            print(re.sub(pattern, repl, line).rstrip())
+
+
 def exec_func(func, d):
     bb.debug(2, "Executing the function: %s" % func)
     try:
@@ -58,11 +95,20 @@ def exec_funcs(func, d, prefuncs=True, postfuncs=True):
     runTask(func)
 
 
+def check_call(cmd, d, **options):
+    if not "shell" in options:
+        options["shell"] = True
+
+    bb.debug(2, 'Executing: "%s"' % cmd)
+    import subprocess
+    subprocess.check_call(cmd, **options)
+
+
 def exec_proc(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
 
-    bb.debug(2, 'Executing the command: "%s"' % cmd)
+    bb.debug(2, 'Executing: "%s"' % cmd)
     proc = bb.process.Popen(cmd, **options)
 
     for line in proc.stdout:
@@ -173,64 +219,72 @@ addtask coverage after do_test
 do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage metrics for the target"
 
-shifttest_do_coverage() {
-    local LCOV_DATAFILE_BASE="${B}/coverage_base.info"
-    local LCOV_DATAFILE_TEST="${B}/coverage_test.info"
-    local LCOV_DATAFILE_TOTAL="${B}/coverage_total.info"
-    local LCOV_DATAFILE="${B}/coverage.info"
+python shifttest_do_coverage() {
+    LCOV_DATAFILE_BASE = d.expand("${B}/coverage_base.info")
+    LCOV_DATAFILE_TEST = d.expand("${B}/coverage_test.info")
+    LCOV_DATAFILE_TOTAL = d.expand("${B}/coverage_total.info")
+    LCOV_DATAFILE = d.expand("${B}/coverage.info")
 
-    rm -f ${LCOV_DATAFILE_TOTAL}
-    rm -f ${LCOV_DATAFILE}
+    # Remove files if exist
+    bb.utils.remove(LCOV_DATAFILE_TOTAL)
+    bb.utils.remove(LCOV_DATAFILE)
 
-    if [ -z "$(find ${B} -name *.gcda -type f)" ]; then
-        bbwarn "No .gcda files found at ${B}"
+    if not find_files(d.getVar("B", True), "*.gcda"):
+        warn(d.expand("No .gcda files found at ${B}"), d)
         return
-    fi
 
-    lcov -c -d ${B} -o ${LCOV_DATAFILE_TEST} \
-        --ignore-errors gcov \
-        --gcov-tool ${TARGET_PREFIX}gcov \
-        --rc lcov_branch_coverage=1
+    # Prepare for the coverage reports
+    check_call("lcov -c -d %s -o %s --gcov-tool %s --rc %s" % (
+        d.getVar("B", True),
+        LCOV_DATAFILE_TEST,
+        d.expand("${TARGET_PREFIX}gcov"),
+        "lcov_branch_coverage=1"), d)
 
-    lcov -a ${LCOV_DATAFILE_BASE} \
-         -a ${LCOV_DATAFILE_TEST} \
-         -o ${LCOV_DATAFILE_TOTAL}
+    check_call("lcov -a %s -a %s -o %s" % (
+        LCOV_DATAFILE_BASE,
+        LCOV_DATAFILE_TEST,
+        LCOV_DATAFILE_TOTAL), d)
 
-    lcov --extract ${LCOV_DATAFILE_TOTAL} \
-        --rc lcov_branch_coverage=1 \
-        "${S}/*" -o ${LCOV_DATAFILE}
+    check_call('lcov --extract %s --rc %s "%s" -o %s' % (
+        LCOV_DATAFILE_TOTAL,
+        "lcov_branch_coverage=1",
+        d.expand("${S}/*"),
+        LCOV_DATAFILE), d)
 
-    bbplain "GCC Code Coverage Report"
+    plain("GCC Code Coverage Report", d)
+    exec_proc("lcov --list %s --rc %s" % (
+        LCOV_DATAFILE,
+        "lcov_branch_coverage=1"), d)
 
-    lcov --list ${LCOV_DATAFILE} --rc lcov_branch_coverage=1 | shifttest_print_lines
+    if d.getVar("TEST_REPORT_OUTPUT", True):
+        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/coverage")
+        xml_file = os.path.join(report_dir, "coverage.xml")
 
-    if [ -z "${TEST_REPORT_OUTPUT}" ]; then
-        return
-    fi
+        if os.path.exists(report_dir):
+            bb.debug(2, "Removing the existing coverage directory: %s" % report_dir)
+            bb.utils.remove(report_dir, True)
 
-    local OUTPUT_DIR="${TEST_REPORT_OUTPUT}/${PF}/coverage"
-    local COBERTURA_FILE="${OUTPUT_DIR}/coverage.xml"
+        check_call("genhtml %s " \
+                   "--demangle-tool %s " \
+                   "--demangle-cpp " \
+                   "--output-directory %s " \
+                   "--ignore-errors %s " \
+                   "--rc %s" % (LCOV_DATAFILE,
+                                d.expand("${TARGET_PREFIX}c++filt"),
+                                report_dir,
+                                "source",
+                                "genhtml_branch_coverage=1"), d)
 
-    rm -rf ${OUTPUT_DIR}
+        check_call("nativepython -m lcov_cobertura %s " \
+                   "--demangle-tool=%s " \
+                   "--demangle " \
+                   "--output %s" % (LCOV_DATAFILE,
+                                    d.expand("${TARGET_PREFIX}c++filt"),
+                                    xml_file), d, cwd=d.getVar("S", True))
 
-    genhtml ${LCOV_DATAFILE} \
-        --demangle-tool ${TARGET_PREFIX}c++filt \
-        --demangle-cpp \
-        --output-directory ${OUTPUT_DIR} \
-        --ignore-errors source \
-        --rc genhtml_branch_coverage=1
-
-    cd ${S}
-
-    nativepython -m lcov_cobertura ${LCOV_DATAFILE} \
-        --demangle-tool=${TARGET_PREFIX}c++filt \
-        --demangle \
-        --output ${COBERTURA_FILE}
-
-    if [ ! -f "${COBERTURA_FILE}" ]; then
-        bbwarn "No coverage report files generated at ${OUTPUT_DIR}"
-        return
-    fi
-
-    sed -r -i 's|(<package.*name=\")(.*")|\1${PN}\.\2|g' "${OUTPUT_DIR}/coverage.xml"
+        if os.path.exists(xml_file):
+            # Prepend the package name to each of the package tags
+            replace_files([xml_file], '(<package.*name=")', d.expand('\g<1>${PN}.'))
+        else:
+            warn("No coverage report files generated at %s" % report_dir)
 }
