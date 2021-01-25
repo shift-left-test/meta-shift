@@ -42,8 +42,8 @@ qmake5test_do_test() {
     shifttest_check_output_dir
 }
 
-qmake5test_do_coverage() {
-    shifttest_do_coverage
+python qmake5test_do_coverage() {
+    bb.build.exec_func("shifttest_do_coverage", d)
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage
