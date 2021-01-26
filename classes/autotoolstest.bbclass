@@ -53,20 +53,52 @@ python autotoolstest_do_checkcode() {
     bb.build.exec_func("shifttest_do_checkcode", d)
 }
 
-autotoolstest_do_test() {
-    shifttest_prepare_output_dir
-    shifttest_prepare_env
+python autotoolstest_do_test() {
+    dd = d.createCopy()
+    env = os.environ.copy()
 
-    export LOG_COMPILER='${WORKDIR}/test-runner.sh'
+    # Set up the test runner
+    env["LOG_COMPILER"] = dd.expand("${WORKDIR}/test-runner.sh")
 
-    cd ${B}
+    configured = dd.getVar("TEST_REPORT_OUTPUT", True)
 
-    # Do not use '-e' option of 'make'.
-    make check || true
-    find . -name "test-suite.log" -exec cat {} \; | shifttest_print_lines
+    if configured:
+        report_dir = dd.expand("${TEST_REPORT_OUTPUT}/${PF}/test")
+        if os.path.exists(report_dir):
+            bb.debug(2, "Removing the existing test report directory: %s" % report_dir)
+            bb.utils.remove(report_dir, True)
+        bb.utils.mkdirhier(report_dir)
 
-    shifttest_gtest_update_xmls
-    shifttest_check_output_dir
+        # Create Google test report files
+        env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
+
+    # Prepare for the coverage reports
+    check_call("lcov -c -i " \
+               "-d %s " \
+               "-o %s " \
+               "--ignore-errors %s " \
+               "--gcov-tool %s " \
+               "--rc %s" % (
+                   dd.getVar("B", True),
+                   dd.expand("${B}/coverage_base.info"),
+                   "gcov",
+                   dd.expand("${TARGET_PREFIX}gcov"),
+                   "lcov_branch_coverage=1"), dd)
+
+    check_call("make check", dd, ignore_errors=True, env=env, cwd=dd.getVar("B", True))
+
+    # Print test logs
+    for f in find_files(dd.getVar("B", True), "test-suite.log"):
+        for line in readlines(f):
+            plain(line, dd)
+
+    if configured:
+        if os.path.exists(report_dir):
+            # Prepend the package name to each of the classname tags for GTest reports
+            xml_files = find_files(report_dir, "*.xml")
+            replace_files(xml_files, 'classname="', dd.expand('classname="${PN}.'))
+        else:
+            warn("No test report files found at %s" % report_dir, dd)
 }
 
 python autotoolstest_do_coverage() {
