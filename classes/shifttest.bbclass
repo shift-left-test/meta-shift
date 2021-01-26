@@ -62,6 +62,13 @@ def replace_files(files, pattern, repl):
             print(re.sub(pattern, repl, line).rstrip())
 
 
+def readlines(path):
+    import io
+    with io.open(path, "r", encoding="utf-8") as f:
+        for line in f.read().splitlines():
+            yield line
+
+
 def exec_func(func, d):
     bb.debug(2, "Executing the function: %s" % func)
     try:
@@ -95,13 +102,17 @@ def exec_funcs(func, d, prefuncs=True, postfuncs=True):
     runTask(func)
 
 
-def check_call(cmd, d, **options):
+def check_call(cmd, d, ignore_errors=False, **options):
     if not "shell" in options:
         options["shell"] = True
 
     bb.debug(2, 'Executing: "%s"' % cmd)
     import subprocess
-    subprocess.check_call(cmd, **options)
+    try:
+        subprocess.check_call(cmd, **options)
+    except subprocess.CalledProcessError:
+        if not ignore_errors:
+            raise
 
 
 def exec_proc(cmd, d, **options):
