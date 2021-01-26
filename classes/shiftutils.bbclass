@@ -11,16 +11,16 @@ def _get_qemu_options(data, arch):
     return options
 
 def shiftutils_qemu_run_cmd(data):
-    sysroot_dir = data.getVar('STAGING_DIR_TARGET', False)
+    sysroot_dir = data.getVar('STAGING_DIR_TARGET', True)
     if sysroot_dir:
-        libdir = data.getVar('libdir', False)
-        base_libdir = data.getVar('base_libdir', False)
+        libdir = data.getVar('libdir', True)
+        base_libdir = data.getVar('base_libdir', True)
         library_paths = [
             sysroot_dir + libdir,
             sysroot_dir + base_libdir
         ]
-        sysroot_destdir = data.getVar('SYSROOT_DESTDIR', False)
-        
+        sysroot_destdir = data.getVar('SYSROOT_DESTDIR', True)
+
         if sysroot_destdir:
             library_paths.append(sysroot_destdir + libdir)
             library_paths.append(sysroot_destdir + base_libdir)
@@ -57,13 +57,12 @@ def shiftutils_qemu_cmake_emulator_sdktarget(data):
         qemu_binary = "qemuwrapper"
 
     library_paths = [
-        '\$ENV{SDKTARGETSYSROOT}' + data.getVar('libdir_nativesdk', False),
-        '\$ENV{SDKTARGETSYSROOT}' + data.getVar('base_libdir_nativesdk', False), 
+        '\$ENV{SDKTARGETSYSROOT}' + data.getVar('libdir_nativesdk', True),
+        '\$ENV{SDKTARGETSYSROOT}' + data.getVar('base_libdir_nativesdk', True),
         '\$LD_LIBRARY_PATH'
     ]
-    
+
     qemu_options = _get_qemu_options(data, data.getVar('TUNE_PKGARCH', True))
 
     return qemu_binary + ";" + qemu_options.replace(' ', ';') + ";-L;\$ENV{SDKTARGETSYSROOT}" \
         + ";-E;LD_LIBRARY_PATH=" + ":".join(library_paths)
-
