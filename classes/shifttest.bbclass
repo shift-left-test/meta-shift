@@ -240,10 +240,11 @@ python shifttest_do_coverage() {
         d.expand("${TARGET_PREFIX}gcov"),
         "lcov_branch_coverage=1"), d)
 
-    check_call("lcov -a %s -a %s -o %s" % (
+    check_call("lcov -a %s -a %s -o %s --rc %s" % (
         LCOV_DATAFILE_BASE,
         LCOV_DATAFILE_TEST,
-        LCOV_DATAFILE_TOTAL), d)
+        LCOV_DATAFILE_TOTAL,
+        "lcov_branch_coverage=1"), d)
 
     check_call('lcov --extract %s --rc %s "%s" -o %s' % (
         LCOV_DATAFILE_TOTAL,
