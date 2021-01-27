@@ -116,7 +116,10 @@ python autotoolstest_do_test() {
                    dd.expand("${TARGET_PREFIX}gcov"),
                    "lcov_branch_coverage=1"), dd)
 
-    check_call("make check", dd, ignore_errors=True, env=env, cwd=dd.getVar("B", True))
+    try:
+        check_call("make check", dd, env=env, cwd=dd.getVar("B", True))
+    except bb.process.ExecutionError:
+        pass
 
     # Print test logs
     for f in find_files(dd.getVar("B", True), "test-suite.log"):

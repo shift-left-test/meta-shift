@@ -93,7 +93,10 @@ python qmake5test_do_test() {
                    dd.expand("${TARGET_PREFIX}gcov"),
                    "lcov_branch_coverage=1"), dd)
 
-    exec_proc("make --quiet check", dd, env=env, cwd=dd.getVar("B", True))
+    try:
+        exec_proc("make --quiet check", dd, env=env, cwd=dd.getVar("B", True))
+    except bb.process.ExecutionError:
+        pass
 
     if configured:
         if os.path.exists(report_dir):
