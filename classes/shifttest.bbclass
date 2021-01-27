@@ -22,7 +22,7 @@ shifttest_print_lines() {
 
 
 def plain(s, d):
-    if bb.utils.to_boolean(d.getVar("SHIFTTEST_QUIET", True)):
+    if d.getVar("SHIFTTEST_QUIET", True):
         return
     bb.plain(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
@@ -104,7 +104,7 @@ def exec_funcs(func, d, prefuncs=True, postfuncs=True):
     runTask(func)
 
 
-def check_call(cmd, d, ignore_errors=False, **options):
+def check_call(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
 
@@ -112,9 +112,8 @@ def check_call(cmd, d, ignore_errors=False, **options):
     import subprocess
     try:
         subprocess.check_call(cmd, **options)
-    except subprocess.CalledProcessError:
-        if not ignore_errors:
-            raise
+    except subprocess.CalledProcessError as e:
+        raise bb.process.ExecutionError(cmd, e.returncode, None, None)
 
 
 def exec_proc(cmd, d, **options):
@@ -126,6 +125,10 @@ def exec_proc(cmd, d, **options):
 
     for line in proc.stdout:
         plain(line.decode("utf-8").rstrip(), d)
+
+    proc.wait()
+    if proc.returncode != 0:
+        raise bb.process.ExecutionError(cmd, proc.returncode, None, None)
 
 
 addtask checkcode after do_compile
