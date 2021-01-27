@@ -45,13 +45,16 @@ python cmaketest_do_test() {
                    "lcov_branch_coverage=1"), dd)
 
     plain("Running tests...", dd)
-    exec_proc("ctest --output-on-failure", dd, env=env, cwd=d.getVar("B", True))
+    try:
+        exec_proc("ctest --output-on-failure", dd, env=env, cwd=dd.getVar("B", True))
+    except bb.process.ExecutionError:
+        pass
 
     if configured:
         if os.path.exists(report_dir):
             # Prepend the package name to each of the classname tags for GTest reports
             xml_files = find_files(report_dir, "*.xml")
-            replace_files(xml_files, 'classname="', d.expand('classname="${PN}.'))
+            replace_files(xml_files, 'classname="', dd.expand('classname="${PN}.'))
         else:
             warn("No test report files found at %s" % report_dir, dd)
 }
