@@ -301,7 +301,7 @@ python shifttest_do_coverage() {
             # Prepend the package name to each of the package tags
             replace_files([xml_file], '(<package.*name=")', d.expand('\g<1>${PN}.'))
         else:
-            warn("No coverage report files generated at %s" % report_dir)
+            warn("No coverage report files generated at %s" % report_dir, dd)
 }
 
 
