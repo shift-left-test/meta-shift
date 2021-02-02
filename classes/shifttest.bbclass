@@ -72,7 +72,6 @@ def readlines(path):
 
 
 def exec_func(func, d):
-    bb.debug(2, "Executing the function: %s" % func)
     try:
         cwd = os.getcwd()
         bb.build.exec_func(func, d)
@@ -428,6 +427,130 @@ shifttest_checktest_report() {
     bbdebug 1 "checktest report end"
 }
 
-shifttest_do_checktest() {
-    bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
+python shifttest_do_checktest() {
+    dd = d.createCopy()
+
+    if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
+        bb.fatal("the task requires meta-clang to be present")
+
+    if dd.getVar("EXTERNALSRC", True):
+        bb.fatal("the task does not support the external source tree")
+
+    work_dir = dd.expand("${WORKDIR}/mutation_test_tmp")
+    expected_dir = os.path.join(work_dir, "original")
+    actual_dir = os.path.join(work_dir, "actual")
+    backup_dir = os.path.join(work_dir, "backup")
+    eval_dir = os.path.join(work_dir, "eval")
+
+    # Prepare the work directory
+    if os.path.exists(work_dir):
+        bb.debug(2, "Removing the existing work directory: %s" % work_dir)
+        bb.utils.remove(work_dir, True)
+    bb.utils.mkdirhier(work_dir)
+
+    json_file = dd.expand("${B}/compile_commands.json")
+    new_file = os.path.join(work_dir, "compile_commands.json")
+
+    # Make sure that compile_commands.json is available
+    if os.path.exists(json_file):
+        bb.utils.copyfile(json_file, new_file)
+    else:
+        bb.debug(2, "Creating compile_commands.json using compiledb")
+        check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
+        bb.utils.movefile(json_file, new_file)
+
+    # Insert the target option to the file
+    replace_files([new_file],
+                  '("command": ".*)(")',
+                  dd.expand('\g<1> --target=${TARGET_SYS}\g<2>'))
+
+    # Create test reports
+    dd.setVar("TEST_REPORT_OUTPUT", expected_dir)
+    exec_funcs("do_test", dd)
+
+    bb.debug(2, "Creating the mutation database")
+    mutant_file = os.path.join(work_dir, "mutables.db")
+    extensions = " ".join(["--extensions=" + ext for ext in dd.getVar("CHECKTEST_EXTENSIONS", True).split()])
+    excludes = " ".join(["--exclude=" + ext for ext in dd.getVar("CHECKTEST_EXCLUDES", True).split()])
+    exec_proc("sentinel populate " \
+              "--work-dir {work_dir} " \
+              "--build-dir {work_dir} " \
+              "--output-dir {work_dir} " \
+              "--generator {generator} " \
+              "--scope {scope} " \
+              "--limit {limit} " \
+              "--mutants-file-name {filename} " \
+              "{extensions} " \
+              "{excludes} " \
+              "{source_dir} ".format(work_dir=work_dir,
+                                     generator=dd.getVar("CHECKTEST_MUTANT_GENERATOR", True),
+                                     scope=dd.getVar("CHECKTEST_SCOPE", True),
+                                     limit=dd.getVar("CHECKTEST_MUTATION_MAXCOUNT", True),
+                                     filename=os.path.basename(mutant_file),
+                                     extensions=extensions,
+                                     excludes=excludes,
+                                     source_dir=dd.getVar("S", True)), dd)
+
+    for line in readlines(mutant_file):
+        try:
+            bb.debug(2, "Mutating the source")
+            exec_proc('sentinel mutate ' \
+                      '--mutant "{mutant}" ' \
+                      '--work-dir {work_dir} ' \
+                      '{source_dir} '.format(mutant=line,
+                                             work_dir=backup_dir,
+                                             source_dir=dd.getVar("S", True)), dd)
+            try:
+                test_state = "success"
+                exec_func("do_configure", dd)
+                exec_func("do_compile", dd)
+                exec_func("do_install", dd)
+                exec_func("do_populate_sysroot", dd)
+
+                dd.setVar("TEST_REPORT_OUTPUT", actual_dir)
+                bb.utils.remove(actual_dir, True)
+                bb.utils.mkdirhier(actual_dir)
+                try:
+                    dd.setVar("SHIFTTEST_QUIET", True)
+                    exec_func("do_test", dd)
+                finally:
+                    dd.delVar("SHIFTTEST_QUIET")
+            except:
+                test_status = "build_failure"
+
+            bb.debug(2, "Evaluating the test result")
+            exec_proc('sentinel evaluate ' \
+                      '--mutant "{mutant}" ' \
+                      '--expected {expected_dir} ' \
+                      '--actual {actual_dir} ' \
+                      '--output-dir {eval_dir} ' \
+                      '--test-state {test_state} ' \
+                      '{source_dir} '.format(mutant=line,
+                                             expected_dir=expected_dir,
+                                             actual_dir=actual_dir,
+                                             eval_dir=eval_dir,
+                                             test_state=test_state,
+                                             source_dir=dd.getVar("S", True)), dd)
+        finally:
+            bb.debug(2, "Restoring the mutated source")
+            oe.path.copytree(backup_dir, dd.getVar("S", True))
+
+    # Create the mutation test report if necessary
+    output_option = ""
+    if d.getVar("TEST_REPORT_OUTPUT", True):  # Use original datastore
+        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/checktest")
+        bb.utils.remove(report_dir, True)
+        bb.utils.mkdirhier(report_dir)
+        output_option = "--output-dir %s" % report_dir
+
+    exec_proc("sentinel report " \
+              "--evaluation-file {eval_file} " \
+              "{output_option} " \
+              "{source_dir} ".format(eval_file=os.path.join(eval_dir, "EvaluationResults"),
+                                     output_option=output_option,
+                                     source_dir=d.getVar("S", True)), d)
+
+    exec_func("do_configure", dd)
+    exec_func("do_compile", dd)
+    exec_func("do_install", dd)
 }

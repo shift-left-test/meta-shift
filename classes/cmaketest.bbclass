@@ -99,38 +99,42 @@ python cmaketest_do_coverage() {
     bb.build.exec_func("shifttest_do_coverage", d)
 }
 
-cmaketest_do_checktest() {
-    if [ ! -z "${CHECKTEST_DISABLED}" ]; then
-        bbfatal ${CHECKTEST_DISABLED}
-    fi
+# cmaketest_do_checktest() {
+#     if [ ! -z "${CHECKTEST_DISABLED}" ]; then
+#         bbfatal ${CHECKTEST_DISABLED}
+#     fi
+#
+#     shifttest_checktest_prepare
+#     cmaketest_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ORIGINAL}
+#
+#     shifttest_checktest_populate
+#     cat ${CHECKTEST_WORKDIR}/mutables.db | while read line
+#     do
+#         shifttest_checktest_mutate "${line}"
+#         TEST_STATE="success"
+#         cd ${B} && do_compile && do_install || TEST_STATE="build_failure"
+#         if [ "${TEST_STATE}" = "success" ]; then
+#             rm -rf ${CHECKTEST_WORKDIR_ACTUAL}/*
+#             cmaketest_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ACTUAL}
+#             if [ "$TIMEOUT_STATUS" = "1" ]; then
+#                 TEST_STATE="timeout"
+#             fi
+#         else
+#             bbdebug 1 "build failed"
+#         fi
+#         shifttest_checktest_evaluate "${line}" "${TEST_STATE}"
+#         shifttest_checktest_restore_from_backup
+#         unset TEST_STATE
+#     done
+#
+#     shifttest_checktest_report
+#
+#     # restore original build
+#     shifttest_checktest_build
+# }
 
-    shifttest_checktest_prepare
-    cmaketest_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ORIGINAL}
-
-    shifttest_checktest_populate
-    cat ${CHECKTEST_WORKDIR}/mutables.db | while read line
-    do
-        shifttest_checktest_mutate "${line}"
-        TEST_STATE="success"
-        cd ${B} && do_compile && do_install || TEST_STATE="build_failure"
-        if [ "${TEST_STATE}" = "success" ]; then
-            rm -rf ${CHECKTEST_WORKDIR_ACTUAL}/*
-            cmaketest_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ACTUAL}
-            if [ "$TIMEOUT_STATUS" = "1" ]; then
-                TEST_STATE="timeout"
-            fi
-        else
-            bbdebug 1 "build failed"
-        fi
-        shifttest_checktest_evaluate "${line}" "${TEST_STATE}"
-        shifttest_checktest_restore_from_backup
-        unset TEST_STATE
-    done
-
-    shifttest_checktest_report
-
-    # restore original build
-    shifttest_checktest_build
+python cmaketest_do_checktest() {
+    bb.build.exec_func("shifttest_do_checktest", d)
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest
