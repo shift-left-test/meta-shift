@@ -14,12 +14,6 @@ DEPENDS_prepend = "\
 
 DEBUG_BUILD = "1"
 
-shifttest_print_lines() {
-    while IFS= read line; do
-        bbplain "${PF} do_${BB_CURRENTTASK}: $line"
-    done
-}
-
 
 def plain(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
@@ -30,19 +24,19 @@ def plain(s, d):
 def warn(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
         return
-    bb.warn(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
+    bb.warn(s)
 
 
 def error(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
         return
-    bb.error(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
+    bb.error(s)
 
 
 def fatal(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
         return
-    bb.fatal(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
+    bb.fatal(s)
 
 
 def find_files(directory, pattern):
@@ -184,8 +178,10 @@ python shifttest_do_checkcode() {
             bb.utils.remove(json_file)
 }
 
+
 # In order to overwrite the sstate cache libraries
 do_install[nostamp] = "1"
+
 
 addtask test after do_compile do_populate_sysroot
 do_test[nostamp] = "1"
@@ -193,38 +189,6 @@ do_test[doc] = "Runs tests for the target"
 
 shifttest_do_test() {
     bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
-}
-
-# $1 : report save path
-shifttest_prepare_output_dir() {
-    OUTPUT_PATH=$1
-    mkdir -p "${OUTPUT_PATH}"
-    rm -rf "${OUTPUT_PATH}/*"
-    export GTEST_OUTPUT="xml:${OUTPUT_PATH}/"
-}
-
-shifttest_prepare_env() {
-    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
-
-    local LCOV_DATAFILE_BASE="${B}/coverage_base.info"
-
-    lcov -c -i -d ${B} -o ${LCOV_DATAFILE_BASE} \
-    --ignore-errors gcov \
-    --gcov-tool ${TARGET_PREFIX}gcov \
-    --rc lcov_branch_coverage=1
-}
-
-shifttest_gtest_update_xmls() {
-    [ -z "${TEST_REPORT_OUTPUT}" ] && return
-    [ ! -d "${TEST_REPORT_OUTPUT}/${PF}/test" ] && return
-    find "${TEST_REPORT_OUTPUT}/${PF}/test" -name "*.xml" \
-        -exec sed -i "s|classname=\"|classname=\"${PN}.|g" {} \;
-}
-
-shifttest_check_output_dir() {
-    [ -z "${TEST_REPORT_OUTPUT}" ] && return
-    [ -d "${TEST_REPORT_OUTPUT}/${PF}/test" ] && return
-    bbwarn "No test report files found at ${TEST_REPORT_OUTPUT}/${PF}/test"
 }
 
 
@@ -307,125 +271,6 @@ python shifttest_do_coverage() {
 addtask checktest after do_compile do_populate_sysroot
 do_checktest[nostamp] = "1"
 do_checktest[doc] = "Runs mutation tests for the target"
-
-CHECKTEST_DISABLED="${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', '', 'has no clang layer', d)}"
-CHECKTEST_WORKDIR="${WORKDIR}/mutation_test_tmp"
-CHECKTEST_WORKDIR_ORIGINAL="${CHECKTEST_WORKDIR}/original"
-CHECKTEST_WORKDIR_ACTUAL="${CHECKTEST_WORKDIR}/actual"
-CHECKTEST_WORKDIR_BACKUP="${CHECKTEST_WORKDIR}/backup"
-CHECKTEST_WORKDIR_EVAL="${CHECKTEST_WORKDIR}/eval"
-CHECKTEST_MUTATION_MAXCOUNT ?= "10"
-CHECKTEST_SCOPE ?= "commit"
-CHECKTEST_EXTENSIONS ?= ""
-CHECKTEST_EXCLUDES ?= ""
-CHECKTEST_MUTANT_GENERATOR ?= "uniform"
-
-shifttest_checktest_compile_db_patch() {
-    sed -r -e 's|("command": ".*)(")|\1 --target=${TARGET_SYS}\2|g' \
-        ${B}/compile_commands.json > ${CHECKTEST_WORKDIR}/compile_commands.json
-}
-
-shifttest_checktest_prepare() {
-    if [ -d ${CHECKTEST_WORKDIR} ]; then
-        # restore & build
-        shifttest_checktest_restore_from_backup
-        shifttest_checktest_build
-
-        rm -rf ${CHECKTEST_WORKDIR}
-    fi
-
-    mkdir ${CHECKTEST_WORKDIR}
-
-    # create compile_commands.json if not exists
-    if [ ! -f "${B}/compile_commands.json" ]; then
-        cd ${B}
-        compiledb --command-style make
-        shifttest_checktest_compile_db_patch
-        rm ${B}/compile_commands.json
-    else
-        shifttest_checktest_compile_db_patch
-    fi
-}
-
-shifttest_checktest_restore_from_backup() {
-    BACKUP_PATH=${CHECKTEST_WORKDIR_BACKUP}
-    SOURCE_PATH=${S}
-
-    if [ -d ${BACKUP_PATH} ]; then
-        bbdebug 1 "start retore: ${BACKUP_PATH}"
-        pushd ${BACKUP_PATH}
-        find * -type f \
-            -exec cp --parents "{}" "${SOURCE_PATH}" \; || true
-        popd
-    fi
-
-    rm -rf ${BACKUP_PATH}
-}
-
-shifttest_checktest_populate() {
-    bbdebug 1 "start populate"
-    sentinel populate \
-        --work-dir ${CHECKTEST_WORKDIR} \
-        --build-dir ${CHECKTEST_WORKDIR} \
-        --output-dir ${CHECKTEST_WORKDIR} \
-        --generator ${CHECKTEST_MUTANT_GENERATOR} \
-        --scope ${CHECKTEST_SCOPE} \
-        --limit ${CHECKTEST_MUTATION_MAXCOUNT} \
-        --mutants-file-name "mutables.db" \
-        ${@' '.join([ '--extensions=' + ext + ' ' for ext in d.getVar('CHECKTEST_EXTENSIONS', True).split()])} \
-        ${@' '.join([ '--exclude=' + ext + ' ' for ext in d.getVar('CHECKTEST_EXCLUDES', True).split()])} \
-        ${S} | shifttest_print_lines
-    bbdebug 1 "end populate"
-}
-
-shifttest_checktest_mutate() {
-    MUTANT=$1
-
-    bbdebug 1 "MUTANT: ${MUTANT}"
-
-    sentinel mutate \
-        --mutant "${MUTANT}" \
-        --work-dir ${CHECKTEST_WORKDIR_BACKUP} \
-        ${S} | shifttest_print_lines
-}
-
-shifttest_checktest_build() {
-    cd ${B}
-    bbdebug 1 "compile"
-    do_compile
-    bbdebug 1 "install"
-    do_install
-}
-
-shifttest_checktest_evaluate() {
-    MUTANT=$1
-
-    sentinel evaluate \
-        --mutant "${MUTANT}" \
-        --expected ${CHECKTEST_WORKDIR_ORIGINAL} \
-        --actual ${CHECKTEST_WORKDIR_ACTUAL} \
-        --output-dir ${CHECKTEST_WORKDIR_EVAL} \
-        --test-state $2 \
-        ${S} | shifttest_print_lines
-}
-
-shifttest_checktest_report() {
-    bbdebug 1 "checktest report"
-
-    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
-        OUTPUT_PATH="${TEST_REPORT_OUTPUT}/${PF}/checktest"
-        mkdir -p "${OUTPUT_PATH}"
-        rm -rf "${OUTPUT_PATH}/*"
-    fi
-
-    sentinel report \
-        --evaluation-file ${CHECKTEST_WORKDIR_EVAL}/EvaluationResults \
-        ${OUTPUT_PATH:+"--output-dir"} ${OUTPUT_PATH} \
-        ${S} | shifttest_print_lines
-
-    unset OUTPUT_PATH
-    bbdebug 1 "checktest report end"
-}
 
 python shifttest_do_checktest() {
     dd = d.createCopy()

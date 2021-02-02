@@ -53,37 +53,6 @@ python autotoolstest_do_checkcode() {
     bb.build.exec_func("shifttest_do_checkcode", d)
 }
 
-# $1 : print stdout if "PRINT"
-# $2 : report save path
-autotoolstest_run_test() {
-    PRINT_LINES=$1
-    OUTPUT_DIR=$2
-    TIMEOUT_STATUS=0
-
-    if [ ! -z "${OUTPUT_DIR}" ]; then
-        shifttest_prepare_output_dir ${OUTPUT_DIR}
-    fi
-    shifttest_prepare_env
-
-    export LOG_COMPILER='${WORKDIR}/test-runner.sh'
-
-    cd ${B}
-
-    # Do not use '-e' option of 'make'.
-    local TEST_EXIT_CODE=0
-    timeout ${TEST_TIMEOUT} make check || TEST_EXIT_CODE=$?
-    if [ "${PRINT_LINES}" = "PRINT" ]; then
-        find . -name "test-suite.log" -exec cat {} \; | shifttest_print_lines
-    fi
-
-    if [ "$TEST_EXIT_CODE" = "124" ]; then
-        TIMEOUT_STATUS=1
-        if [ "${PRINT_LINES}" = "PRINT" ]; then
-            echo "Test timeout after ${TEST_TIMEOUT} ..." | shifttest_print_lines
-        fi
-    fi
-}
-
 python autotoolstest_do_test() {
     dd = d.createCopy()
     env = os.environ.copy()
@@ -138,40 +107,6 @@ python autotoolstest_do_test() {
 python autotoolstest_do_coverage() {
     bb.build.exec_func("shifttest_do_coverage", d)
 }
-
-# autotoolstest_do_checktest() {
-#     if [ ! -z "${CHECKTEST_DISABLED}" ]; then
-#         bbfatal ${CHECKTEST_DISABLED}
-#     fi
-#
-#     shifttest_checktest_prepare
-#     autotoolstest_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ORIGINAL}
-#
-#     shifttest_checktest_populate
-#     cat ${CHECKTEST_WORKDIR}/mutables.db | while read line
-#     do
-#         shifttest_checktest_mutate "${line}"
-#         TEST_STATE="success"
-#         cd ${B} && do_compile && do_install || TEST_STATE="build_failure"
-#         if [ "${TEST_STATE}" = "success" ]; then
-#             rm -rf ${CHECKTEST_WORKDIR_ACTUAL}/*
-#             autotoolstest_run_test "NOPRINT" ${CHECKTEST_WORKDIR_ACTUAL}
-#             if [ "$TIMEOUT_STATUS" = "1" ]; then
-#                 TEST_STATE="timeout"
-#             fi
-#         else
-#             bbdebug 1 "build failed"
-#         fi
-#         shifttest_checktest_evaluate "${line}" "${TEST_STATE}"
-#         shifttest_checktest_restore_from_backup
-#         unset TEST_STATE
-#     done
-#
-#     shifttest_checktest_report
-#
-#     # restore original build
-#     shifttest_checktest_build
-# }
 
 python autotoolstest_do_checktest() {
     bb.build.exec_func("shifttest_do_checktest", d)
