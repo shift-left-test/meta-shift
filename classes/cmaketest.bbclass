@@ -24,7 +24,7 @@ python cmaketest_do_test() {
     if configured:
         report_dir = dd.expand("${TEST_REPORT_OUTPUT}/${PF}/test")
         if os.path.exists(report_dir):
-            bb.debug(2, "Removing the existing test report directory: %s" % report_dir)
+            bb.debug(1, "Removing the existing test report directory: %s" % report_dir)
             bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)
 
