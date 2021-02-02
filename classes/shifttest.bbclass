@@ -12,12 +12,6 @@ DEPENDS_prepend = "\
 
 DEBUG_BUILD = "1"
 
-shifttest_print_lines() {
-    while IFS= read line; do
-        bbplain "${PF} do_${BB_CURRENTTASK}: $line"
-    done
-}
-
 
 def plain(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
@@ -28,19 +22,19 @@ def plain(s, d):
 def warn(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
         return
-    bb.warn(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
+    bb.warn(s)
 
 
 def error(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
         return
-    bb.error(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
+    bb.error(s)
 
 
 def fatal(s, d):
     if d.getVar("SHIFTTEST_QUIET", True):
         return
-    bb.fatal(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
+    bb.fatal(s)
 
 
 def find_files(directory, pattern):
@@ -70,7 +64,7 @@ def readlines(path):
 
 
 def exec_func(func, d):
-    bb.debug(2, "Executing the function: %s" % func)
+    bb.debug(1, "Executing the function: %s" % func)
     try:
         cwd = os.getcwd()
         bb.build.exec_func(func, d)
@@ -79,7 +73,7 @@ def exec_func(func, d):
 
 
 def exec_funcs(func, d, prefuncs=True, postfuncs=True):
-    bb.debug(2, "Executing the function and its preceeding ones: %s" % func)
+    bb.debug(1, "Executing the function and its preceeding ones: %s" % func)
     def preceedtasks(task):
         preceed = set()
         tasks = d.getVar("__BBTASKS", False)
@@ -106,7 +100,7 @@ def check_call(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
 
-    bb.debug(2, 'Executing: "%s"' % cmd)
+    bb.debug(1, 'Executing: "%s"' % cmd)
     import subprocess
     try:
         subprocess.check_call(cmd, **options)
@@ -118,7 +112,7 @@ def exec_proc(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
 
-    bb.debug(2, 'Executing: "%s"' % cmd)
+    bb.debug(1, 'Executing: "%s"' % cmd)
     proc = bb.process.Popen(cmd, **options)
 
     for line in proc.stdout:
@@ -147,13 +141,13 @@ python shifttest_do_checkcode() {
     # Configure the output path argument
     if d.getVar("TEST_REPORT_OUTPUT", True):
         report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/checkcode")
-        bb.debug(2, "Configuring the checkcode output path: %s" % report_dir)
+        bb.debug(1, "Configuring the checkcode output path: %s" % report_dir)
         bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)
         kwargs["output-path"] = "--output-path=%s" % report_dir
 
     # Configure tool options
-    bb.debug(2, "Configuring the checkcode tool options")
+    bb.debug(1, "Configuring the checkcode tool options")
     for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split():
         kwargs["tool-options"] += " " + tool
         options = d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True)
@@ -183,8 +177,10 @@ python shifttest_do_checkcode() {
             bb.utils.remove(json_file)
 }
 
+
 # In order to overwrite the sstate cache libraries
 do_install[nostamp] = "1"
+
 
 addtask test after do_compile do_populate_sysroot
 do_test[nostamp] = "1"
@@ -192,40 +188,6 @@ do_test[doc] = "Runs tests for the target"
 
 shifttest_do_test() {
     bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
-}
-
-shifttest_prepare_output_dir() {
-    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
-        mkdir -p "${TEST_REPORT_OUTPUT}/${PF}/test"
-        rm -rf "${TEST_REPORT_OUTPUT}/${PF}/test/*"
-    fi
-}
-
-shifttest_prepare_env() {
-    if [ ! -z "${TEST_REPORT_OUTPUT}" ]; then
-        export GTEST_OUTPUT="xml:${TEST_REPORT_OUTPUT}/${PF}/test/"
-    fi
-    export LD_LIBRARY_PATH="${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}"
-
-    local LCOV_DATAFILE_BASE="${B}/coverage_base.info"
-
-    lcov -c -i -d ${B} -o ${LCOV_DATAFILE_BASE} \
-    --ignore-errors gcov \
-    --gcov-tool ${TARGET_PREFIX}gcov \
-    --rc lcov_branch_coverage=1
-}
-
-shifttest_gtest_update_xmls() {
-    [ -z "${TEST_REPORT_OUTPUT}" ] && return
-    [ ! -d "${TEST_REPORT_OUTPUT}/${PF}/test" ] && return
-    find "${TEST_REPORT_OUTPUT}/${PF}/test" -name "*.xml" \
-        -exec sed -i "s|classname=\"|classname=\"${PN}.|g" {} \;
-}
-
-shifttest_check_output_dir() {
-    [ -z "${TEST_REPORT_OUTPUT}" ] && return
-    [ -d "${TEST_REPORT_OUTPUT}/${PF}/test" ] && return
-    bbwarn "No test report files found at ${TEST_REPORT_OUTPUT}/${PF}/test"
 }
 
 
@@ -276,7 +238,7 @@ python shifttest_do_coverage() {
         xml_file = os.path.join(report_dir, "coverage.xml")
 
         if os.path.exists(report_dir):
-            bb.debug(2, "Removing the existing coverage directory: %s" % report_dir)
+            bb.debug(1, "Removing the existing coverage directory: %s" % report_dir)
             bb.utils.remove(report_dir, True)
 
         check_call("genhtml %s " \
@@ -303,4 +265,3 @@ python shifttest_do_coverage() {
         else:
             warn("No coverage report files generated at %s" % report_dir, dd)
 }
-
