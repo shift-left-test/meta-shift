@@ -384,7 +384,7 @@ python shifttest_do_checktest() {
                         dd.delVar("SHIFTTEST_QUIET")
             except bb.process.ExecutionError as e:
                 bb.debug(1, "do_checktest failed: %s" % e)
-                test_status = "build_failure"
+                test_state = "build_failure"
 
             bb.debug(1, "Evaluating the test result")
             exec_proc('sentinel evaluate ' \
