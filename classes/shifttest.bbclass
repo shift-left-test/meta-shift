@@ -110,18 +110,38 @@ def check_call(cmd, d, **options):
 
 
 def exec_proc(cmd, d, **options):
-    if not "shell" in options:
-        options["shell"] = True
+    import subprocess
+
+    class Popen(bb.process.Popen):
+        defaults = {
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.PIPE,
+            "stdin": None,
+            "shell": True,
+        }
+
+        def __init__(self, *args, **kwargs):
+            options = dict(self.defaults)
+            options.update(kwargs)
+            bb.process.Popen.__init__(self, *args, **options)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, value, traceback):
+            if self.stdout:
+                self.stdout.close()
+            if self.stderr:
+                self.stderr.close()
 
     bb.debug(1, 'Executing: "%s"' % cmd)
-    proc = bb.process.Popen(cmd, **options)
+    with Popen(cmd, **options) as proc:
+        for line in proc.stdout:
+            plain(line.decode("utf-8").rstrip(), d)
 
-    for line in proc.stdout:
-        plain(line.decode("utf-8").rstrip(), d)
-
-    proc.wait()
-    if proc.returncode != 0:
-        raise bb.process.ExecutionError(cmd, proc.returncode, None, None)
+        proc.wait()
+        if proc.returncode != 0:
+            raise bb.process.ExecutionError(cmd, proc.returncode, None, None)
 
 
 addtask checkcode after do_compile
