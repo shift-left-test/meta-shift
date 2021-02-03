@@ -74,7 +74,7 @@ def exec_func(func, d):
 
 
 def exec_funcs(func, d, prefuncs=True, postfuncs=True):
-    bb.debug(2, "Executing the function and its preceeding ones: %s" % func)
+    bb.debug(1, "Executing the function and its preceeding ones: %s" % func)
     def preceedtasks(task):
         preceed = set()
         tasks = d.getVar("__BBTASKS", False)
@@ -101,7 +101,7 @@ def check_call(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
 
-    bb.debug(2, 'Executing: "%s"' % cmd)
+    bb.debug(1, 'Executing: "%s"' % cmd)
     import subprocess
     try:
         subprocess.check_call(cmd, **options)
@@ -113,7 +113,7 @@ def exec_proc(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
 
-    bb.debug(2, 'Executing: "%s"' % cmd)
+    bb.debug(1, 'Executing: "%s"' % cmd)
     proc = bb.process.Popen(cmd, **options)
 
     for line in proc.stdout:
@@ -142,13 +142,13 @@ python shifttest_do_checkcode() {
     # Configure the output path argument
     if d.getVar("TEST_REPORT_OUTPUT", True):
         report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/checkcode")
-        bb.debug(2, "Configuring the checkcode output path: %s" % report_dir)
+        bb.debug(1, "Configuring the checkcode output path: %s" % report_dir)
         bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)
         kwargs["output-path"] = "--output-path=%s" % report_dir
 
     # Configure tool options
-    bb.debug(2, "Configuring the checkcode tool options")
+    bb.debug(1, "Configuring the checkcode tool options")
     for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split():
         kwargs["tool-options"] += " " + tool
         options = d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True)
@@ -239,7 +239,7 @@ python shifttest_do_coverage() {
         xml_file = os.path.join(report_dir, "coverage.xml")
 
         if os.path.exists(report_dir):
-            bb.debug(2, "Removing the existing coverage directory: %s" % report_dir)
+            bb.debug(1, "Removing the existing coverage directory: %s" % report_dir)
             bb.utils.remove(report_dir, True)
 
         check_call("genhtml %s " \
@@ -289,7 +289,7 @@ python shifttest_do_checktest() {
 
     # Prepare the work directory
     if os.path.exists(work_dir):
-        bb.debug(2, "Removing the existing work directory: %s" % work_dir)
+        bb.debug(1, "Removing the existing work directory: %s" % work_dir)
         bb.utils.remove(work_dir, True)
     bb.utils.mkdirhier(work_dir)
 
@@ -300,7 +300,7 @@ python shifttest_do_checktest() {
     if os.path.exists(json_file):
         bb.utils.copyfile(json_file, new_file)
     else:
-        bb.debug(2, "Creating compile_commands.json using compiledb")
+        bb.debug(1, "Creating compile_commands.json using compiledb")
         check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
         bb.utils.movefile(json_file, new_file)
 
@@ -313,7 +313,7 @@ python shifttest_do_checktest() {
     dd.setVar("TEST_REPORT_OUTPUT", expected_dir)
     exec_funcs("do_test", dd)
 
-    bb.debug(2, "Creating the mutation database")
+    bb.debug(1, "Creating the mutation database")
     mutant_file = os.path.join(work_dir, "mutables.db")
     extensions = " ".join(["--extensions=" + ext for ext in dd.getVar("CHECKTEST_EXTENSIONS", True).split()])
     excludes = " ".join(["--exclude=" + ext for ext in dd.getVar("CHECKTEST_EXCLUDES", True).split()])
@@ -338,7 +338,7 @@ python shifttest_do_checktest() {
 
     for line in readlines(mutant_file):
         try:
-            bb.debug(2, "Mutating the source")
+            bb.debug(1, "Mutating the source")
             exec_proc('sentinel mutate ' \
                       '--mutant "{mutant}" ' \
                       '--work-dir {work_dir} ' \
@@ -363,7 +363,7 @@ python shifttest_do_checktest() {
             except:
                 test_status = "build_failure"
 
-            bb.debug(2, "Evaluating the test result")
+            bb.debug(1, "Evaluating the test result")
             exec_proc('sentinel evaluate ' \
                       '--mutant "{mutant}" ' \
                       '--expected {expected_dir} ' \
@@ -377,7 +377,7 @@ python shifttest_do_checktest() {
                                              test_state=test_state,
                                              source_dir=dd.getVar("S", True)), dd)
         finally:
-            bb.debug(2, "Restoring the mutated source")
+            bb.debug(1, "Restoring the mutated source")
             oe.path.copytree(backup_dir, dd.getVar("S", True))
 
     # Create the mutation test report if necessary
