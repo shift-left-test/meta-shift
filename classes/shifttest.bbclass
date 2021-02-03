@@ -376,11 +376,14 @@ python shifttest_do_checktest() {
                 bb.utils.remove(actual_dir, True)
                 bb.utils.mkdirhier(actual_dir)
                 try:
-                    dd.setVar("SHIFTTEST_QUIET", True)
+                    if not bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)):
+                        dd.setVar("SHIFTTEST_QUIET", True)
                     exec_func("do_test", dd)
                 finally:
-                    dd.delVar("SHIFTTEST_QUIET")
-            except:
+                    if not bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)):
+                        dd.delVar("SHIFTTEST_QUIET")
+            except bb.process.ExecutionError as e:
+                bb.debug(1, "do_checktest failed: %s" % e)
                 test_status = "build_failure"
 
             bb.debug(1, "Evaluating the test result")
