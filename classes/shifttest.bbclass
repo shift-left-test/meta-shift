@@ -14,25 +14,25 @@ DEBUG_BUILD = "1"
 
 
 def plain(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.plain(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def warn(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.warn(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def error(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.error(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def fatal(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.fatal(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
@@ -159,8 +159,8 @@ python shifttest_do_checkcode() {
     }
 
     # Configure the output path argument
-    if d.getVar("TEST_REPORT_OUTPUT", True):
-        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/checkcode")
+    if d.getVar("SHIFT_REPORT_DIR", True):
+        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
         bb.debug(1, "Configuring the checkcode output path: %s" % report_dir)
         bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)
@@ -253,8 +253,8 @@ python shifttest_do_coverage() {
         LCOV_DATAFILE,
         "lcov_branch_coverage=1"), d)
 
-    if d.getVar("TEST_REPORT_OUTPUT", True):
-        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/coverage")
+    if d.getVar("SHIFT_REPORT_DIR", True):
+        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
         xml_file = os.path.join(report_dir, "coverage.xml")
 
         if os.path.exists(report_dir):
