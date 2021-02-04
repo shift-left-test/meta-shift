@@ -35,9 +35,9 @@ def test_unknown_recipe(bare_build):
 
 def test_cache(bare_build):
     o = bare_build.shell.execute("devtool cache cmake-native")
-    assert re.search("Wanted : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
-    assert re.search("Found  : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
-    assert re.search("Missed : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert re.search(r"Wanted : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert re.search(r"Found  : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert re.search(r"Missed : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
 
 
 def test_cache_with_details(bare_build):
@@ -46,3 +46,14 @@ def test_cache_with_details(bare_build):
                                 "cmake-native:do_populate_sysroot",
                                 "cmake-native")
 
+
+def test_cache_with_unknown_cmd_option(bare_build):
+    o = bare_build.shell.execute("devtool cache cmake-native -c unknown_task")
+    assert o.stderr.contains("ERROR: Task do_unknown_task does not exist")
+
+
+def test_cache_with_known_cmd_option(bare_build):
+    o = bare_build.shell.execute("devtool cache cmake-native -c configure")
+    assert re.search(r"Wanted : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert re.search(r"Found  : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert re.search(r"Missed : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
