@@ -401,7 +401,10 @@ python shifttest_do_checktest() {
                                              source_dir=dd.getVar("S", True)), dd)
         finally:
             bb.debug(1, "Restoring the mutated source")
+            for filename in oe.path.find(backup_dir):
+                os.utime(filename, None)
             oe.path.copytree(backup_dir, dd.getVar("S", True))
+            bb.utils.remove(backup_dir, True)
 
     # Create the mutation test report if necessary
     output_option = ""
