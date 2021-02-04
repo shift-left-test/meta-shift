@@ -126,7 +126,8 @@ def parse(args, basepath):
         env["BB_ENV_EXTRAWHITE"] = env.get("BB_ENV_EXTRAWHITE", "") + " TMPDIR_forcevariable"
         env["TMPDIR_forcevariable"] = tmpdir
 
-        output = execute("bitbake %s -n" % args.recipe, env=env)
+        cmd = "-c %s" % args.cmd if args.cmd else ""
+        output = execute("bitbake %s -n %s" % (args.recipe, cmd), env=env)
 
         tids = []
         matcher = re.compile("NOTE: Running(?: setscene)? task [0-9]+ of [0-9]+ \(([^)]+)\)")
@@ -202,6 +203,7 @@ def register_commands(subparsers, context):
                                    description="Show the shared state cache and source availability of the recipe",
                                    group="info")
     parser.add_argument("recipe", help="recipe to examine")
+    parser.add_argument("-c", "--cmd", help="Specify the task to execute")
     parser.add_argument("-f", "--found", action="store_true", help="Show the list of cached items")
     parser.add_argument("-m", "--missed", action="store_true", help="Show the list of missed items")
     parser.set_defaults(func=cache, no_workspace=True)
