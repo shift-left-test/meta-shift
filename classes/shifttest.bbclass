@@ -331,7 +331,7 @@ python shifttest_do_checktest() {
 
     # Create test reports
     dd.setVar("SHIFT_REPORT_DIR", expected_dir)
-    exec_funcs("do_test", dd)
+    exec_func("do_test", dd)
 
     bb.debug(1, "Creating the mutation database")
     mutant_file = os.path.join(work_dir, "mutables.db")
