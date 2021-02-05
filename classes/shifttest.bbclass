@@ -337,6 +337,10 @@ python shifttest_do_checktest() {
     mutant_file = os.path.join(work_dir, "mutables.db")
     extensions = " ".join(["--extensions=" + ext for ext in dd.getVar("CHECKTEST_EXTENSIONS", True).split()])
     excludes = " ".join(["--exclude=" + ext for ext in dd.getVar("CHECKTEST_EXCLUDES", True).split()])
+    verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)) else ""
+    seed = ""
+    if dd.getVar("CHECKTEST_SEED", True):
+        seed = "--seed {}".format(dd.getVar("CHECKTEST_SEED", True))
     exec_proc("sentinel populate " \
               "--work-dir {work_dir} " \
               "--build-dir {work_dir} " \
@@ -347,6 +351,8 @@ python shifttest_do_checktest() {
               "--mutants-file-name {filename} " \
               "{extensions} " \
               "{excludes} " \
+              "{verbose} " \
+              "{seed} " \
               "{source_dir} ".format(work_dir=work_dir,
                                      generator=dd.getVar("CHECKTEST_GENERATOR", True),
                                      scope=dd.getVar("CHECKTEST_SCOPE", True),
@@ -354,6 +360,8 @@ python shifttest_do_checktest() {
                                      filename=os.path.basename(mutant_file),
                                      extensions=extensions,
                                      excludes=excludes,
+                                     verbose=verbose,
+                                     seed=seed,
                                      source_dir=dd.getVar("S", True)), dd)
 
     # Invalidate the stamp to make the build state safe
@@ -365,8 +373,10 @@ python shifttest_do_checktest() {
             exec_proc('sentinel mutate ' \
                       '--mutant "{mutant}" ' \
                       '--work-dir {work_dir} ' \
+                      '{verbose} ' \
                       '{source_dir} '.format(mutant=line,
                                              work_dir=backup_dir,
+                                             verbose=verbose,
                                              source_dir=dd.getVar("S", True)), dd)
             try:
                 test_state = "success"
@@ -396,11 +406,13 @@ python shifttest_do_checktest() {
                       '--actual {actual_dir} ' \
                       '--output-dir {eval_dir} ' \
                       '--test-state {test_state} ' \
+                      '{verbose} ' \
                       '{source_dir} '.format(mutant=line,
                                              expected_dir=expected_dir,
                                              actual_dir=actual_dir,
                                              eval_dir=eval_dir,
                                              test_state=test_state,
+                                             verbose=verbose,
                                              source_dir=dd.getVar("S", True)), dd)
         finally:
             bb.debug(1, "Restoring the mutated source")
@@ -420,7 +432,9 @@ python shifttest_do_checktest() {
     exec_proc("sentinel report " \
               "--evaluation-file {eval_file} " \
               "{output_option} " \
+              "{verbose} " \
               "{source_dir} ".format(eval_file=os.path.join(eval_dir, "EvaluationResults"),
                                      output_option=output_option,
+                                     verbose=verbose,
                                      source_dir=d.getVar("S", True)), d)
 }
