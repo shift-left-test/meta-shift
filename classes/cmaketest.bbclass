@@ -23,10 +23,10 @@ python cmaketest_do_test() {
     # To access the shared libraries of other packages
     env["LD_LIBRARY_PATH"] = dd.expand("${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}")
 
-    configured = dd.getVar("TEST_REPORT_OUTPUT", True)
+    configured = dd.getVar("SHIFT_REPORT_DIR", True)
 
     if configured:
-        report_dir = dd.expand("${TEST_REPORT_OUTPUT}/${PF}/test")
+        report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
         if os.path.exists(report_dir):
             bb.debug(1, "Removing the existing test report directory: %s" % report_dir)
             bb.utils.remove(report_dir, True)

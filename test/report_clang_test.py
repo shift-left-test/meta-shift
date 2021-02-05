@@ -203,7 +203,7 @@ def test_cmake_project_do_checktestall(report_clang_build):
     assert report_clang_build.shell.execute("bitbake cmake-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("cmake-project", "mutations.xml")) as f:
-        assert f.contains('<mutations/>')
+        assert f.contains('</mutations>')
     with READ(TEST.CHECKTEST("cmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -253,7 +253,7 @@ def test_qmake5_project_do_checktestall(report_clang_build):
     assert report_clang_build.shell.execute("bitbake qmake5-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("qmake5-project", "mutations.xml")) as f:
-        assert f.contains('<mutations/>')
+        assert f.contains('</mutations>')
     with READ(TEST.CHECKTEST("qmake5-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -294,7 +294,7 @@ def test_autotools_project_do_checktestall(report_clang_build):
     assert report_clang_build.shell.execute("bitbake autotools-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("autotools-project", "mutations.xml")) as f:
-        assert f.contains('<mutations/>')
+        assert f.contains('</mutations>')
     with READ(TEST.CHECKTEST("autotools-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -332,7 +332,7 @@ def test_humidifier_project_do_checktestall(report_clang_build):
     assert report_clang_build.shell.execute("bitbake humidifier-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("humidifier-project", "mutations.xml")) as f:
-        assert f.contains('<mutations/>')
+        assert f.contains('</mutations>')
     with READ(TEST.CHECKTEST("humidifier-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -380,10 +380,10 @@ def test_sqlite3logger_project_do_checktestall(report_clang_build):
     assert report_clang_build.shell.execute("bitbake sqlite3logger -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("sqlite3wrapper", "mutations.xml")) as f:
-        assert f.contains('<mutations/>')
+        assert f.contains('</mutations>')
     with READ(TEST.CHECKTEST("sqlite3wrapper", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
     with READ(TEST.CHECKTEST("stringutils", "mutations.xml")) as f:
-        assert f.contains('<mutations/>')
+        assert f.contains('</mutations>')
     with READ(TEST.CHECKTEST("stringutils", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
