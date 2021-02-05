@@ -25,10 +25,10 @@ python qmake5test_do_test() {
     env["TESTRUNNER"] = shiftutils_qemu_run_cmd(dd)
     env["TESTARGS"] = "-platform offscreen"
 
-    configured = dd.getVar("TEST_REPORT_OUTPUT", True)
+    configured = dd.getVar("SHIFT_REPORT_DIR", True)
 
     if configured:
-        report_dir = dd.expand("${TEST_REPORT_OUTPUT}/${PF}/test")
+        report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
         bb.debug(1, "Flushing the test report directory: %s" % report_dir)
         bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)

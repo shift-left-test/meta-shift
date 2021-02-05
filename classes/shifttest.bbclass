@@ -16,25 +16,25 @@ DEBUG_BUILD = "1"
 
 
 def plain(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.plain(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def warn(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.warn(s)
 
 
 def error(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.error(s)
 
 
 def fatal(s, d):
-    if d.getVar("SHIFTTEST_QUIET", True):
+    if d.getVar("SHIFT_QUIET", True):
         return
     bb.fatal(s)
 
@@ -160,8 +160,8 @@ python shifttest_do_checkcode() {
     }
 
     # Configure the output path argument
-    if d.getVar("TEST_REPORT_OUTPUT", True):
-        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/checkcode")
+    if d.getVar("SHIFT_REPORT_DIR", True):
+        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
         bb.debug(1, "Configuring the checkcode output path: %s" % report_dir)
         bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)
@@ -254,8 +254,8 @@ python shifttest_do_coverage() {
         LCOV_DATAFILE,
         "lcov_branch_coverage=1"), d)
 
-    if d.getVar("TEST_REPORT_OUTPUT", True):
-        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/coverage")
+    if d.getVar("SHIFT_REPORT_DIR", True):
+        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
         xml_file = os.path.join(report_dir, "coverage.xml")
 
         if os.path.exists(report_dir):
@@ -330,7 +330,7 @@ python shifttest_do_checktest() {
                   dd.expand('\g<1> --target=${TARGET_SYS}\g<2>'))
 
     # Create test reports
-    dd.setVar("TEST_REPORT_OUTPUT", expected_dir)
+    dd.setVar("SHIFT_REPORT_DIR", expected_dir)
     exec_funcs("do_test", dd)
 
     bb.debug(1, "Creating the mutation database")
@@ -348,9 +348,9 @@ python shifttest_do_checktest() {
               "{extensions} " \
               "{excludes} " \
               "{source_dir} ".format(work_dir=work_dir,
-                                     generator=dd.getVar("CHECKTEST_MUTANT_GENERATOR", True),
+                                     generator=dd.getVar("CHECKTEST_GENERATOR", True),
                                      scope=dd.getVar("CHECKTEST_SCOPE", True),
-                                     limit=dd.getVar("CHECKTEST_MUTATION_MAXCOUNT", True),
+                                     limit=dd.getVar("CHECKTEST_LIMIT", True),
                                      filename=os.path.basename(mutant_file),
                                      extensions=extensions,
                                      excludes=excludes,
@@ -372,16 +372,16 @@ python shifttest_do_checktest() {
                 exec_func("do_install", dd)
                 exec_func("do_populate_sysroot", dd)
 
-                dd.setVar("TEST_REPORT_OUTPUT", actual_dir)
+                dd.setVar("SHIFT_REPORT_DIR", actual_dir)
                 bb.utils.remove(actual_dir, True)
                 bb.utils.mkdirhier(actual_dir)
                 try:
                     if not bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)):
-                        dd.setVar("SHIFTTEST_QUIET", True)
+                        dd.setVar("SHIFT_QUIET", True)
                     exec_func("do_test", dd)
                 finally:
                     if not bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)):
-                        dd.delVar("SHIFTTEST_QUIET")
+                        dd.delVar("SHIFT_QUIET")
             except bb.process.ExecutionError as e:
                 bb.debug(1, "do_checktest failed: %s" % e)
                 test_state = "build_failure"
@@ -408,8 +408,8 @@ python shifttest_do_checktest() {
 
     # Create the mutation test report if necessary
     output_option = ""
-    if d.getVar("TEST_REPORT_OUTPUT", True):  # Use original datastore
-        report_dir = d.expand("${TEST_REPORT_OUTPUT}/${PF}/checktest")
+    if d.getVar("SHIFT_REPORT_DIR", True):  # Use original datastore
+        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checktest")
         bb.utils.remove(report_dir, True)
         bb.utils.mkdirhier(report_dir)
         output_option = "--output-dir %s" % report_dir
