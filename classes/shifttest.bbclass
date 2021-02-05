@@ -285,3 +285,13 @@ python shifttest_do_coverage() {
         else:
             warn("No coverage report files generated at %s" % report_dir, dd)
 }
+
+
+python() {
+    if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
+        # Synchronize the tasks
+        d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
+        d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
+        d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
+        d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
+}
