@@ -72,30 +72,6 @@ def exec_func(func, d):
         os.chdir(cwd)
 
 
-def exec_funcs(func, d, prefuncs=True, postfuncs=True):
-    bb.debug(1, "Executing the function and its preceeding ones: %s" % func)
-    def preceedtasks(task):
-        preceed = set()
-        tasks = d.getVar("__BBTASKS", False)
-        if task not in tasks:
-            return preceed
-        preceed.update(d.getVarFlag(task, "deps", True) or [])
-        return preceed
-
-    def runTask(task):
-        if prefuncs:
-            for func in (d.getVarFlag(task, "prefuncs", True) or "").split():
-                exec_func(func, d)
-        exec_func(task, d)
-        if postfuncs:
-            for func in (d.getVarFlag(task, "postfuncs", True) or "").split():
-                exec_func(func, d)
-
-    for task in preceedtasks(func):
-        runTask(task)
-    runTask(func)
-
-
 def check_call(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
