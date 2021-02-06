@@ -438,3 +438,13 @@ python shifttest_do_checktest() {
                                      verbose=verbose,
                                      source_dir=d.getVar("S", True)), d)
 }
+
+
+python() {
+    if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
+        # Synchronize the tasks
+        d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
+        d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
+        d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
+        d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
+}
