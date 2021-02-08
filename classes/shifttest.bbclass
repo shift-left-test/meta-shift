@@ -340,9 +340,6 @@ python shifttest_do_checktest() {
                                      seed=seed,
                                      source_dir=dd.getVar("S", True)), dd)
 
-    # Invalidate the stamp to make the build state safe
-    bb.build.del_stamp("do_configure", dd)
-
     for line in readlines(mutant_file):
         try:
             bb.debug(1, "Mutating the source")
@@ -413,6 +410,10 @@ python shifttest_do_checktest() {
                                      output_option=output_option,
                                      verbose=verbose,
                                      source_dir=d.getVar("S", True)), d)
+
+    exec_func("do_configure", dd)
+    exec_func("do_compile", dd)
+    exec_func("do_install", dd)
 }
 
 
