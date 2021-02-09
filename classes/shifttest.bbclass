@@ -267,6 +267,7 @@ python shifttest_do_coverage() {
 addtask checktest after do_compile do_populate_sysroot
 do_checktest[nostamp] = "1"
 do_checktest[doc] = "Runs mutation tests for the target"
+do_checktest[postfuncs] = "do_clean"
 
 python shifttest_do_checktest() {
     dd = d.createCopy()
@@ -410,10 +411,6 @@ python shifttest_do_checktest() {
                                      output_option=output_option,
                                      verbose=verbose,
                                      source_dir=d.getVar("S", True)), d)
-
-    exec_func("do_configure", dd)
-    exec_func("do_compile", dd)
-    exec_func("do_install", dd)
 }
 
 
