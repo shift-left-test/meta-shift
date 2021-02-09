@@ -267,6 +267,7 @@ python shifttest_do_coverage() {
 addtask checktest after do_compile do_populate_sysroot
 do_checktest[nostamp] = "1"
 do_checktest[doc] = "Runs mutation tests for the target"
+do_checktest[postfuncs] = "do_clean"
 
 python shifttest_do_checktest() {
     dd = d.createCopy()
@@ -339,9 +340,6 @@ python shifttest_do_checktest() {
                                      verbose=verbose,
                                      seed=seed,
                                      source_dir=dd.getVar("S", True)), dd)
-
-    # Invalidate the stamp to make the build state safe
-    bb.build.del_stamp("do_configure", dd)
 
     for line in readlines(mutant_file):
         try:
