@@ -63,11 +63,15 @@ def readlines(path):
             yield line
 
 
-def exec_func(func, d):
-    bb.debug(1, "Executing the function: %s" % func)
+def exec_func(func, d, verbose=True):
     try:
+        if verbose:
+            dd = d
+        else:
+            dd = d.createCopy()
+            dd.setVar("SHIFT_QUIET", True)
         cwd = os.getcwd()
-        bb.build.exec_func(func, d)
+        bb.build.exec_func(func, dd)
     finally:
         os.chdir(cwd)
 
