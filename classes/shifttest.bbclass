@@ -65,10 +65,15 @@ def readlines(path):
             yield line
 
 
-def exec_func(func, d):
+def exec_func(func, d, verbose=True):
     try:
+        if verbose:
+            dd = d
+        else:
+            dd = d.createCopy()
+            dd.setVar("SHIFT_QUIET", True)
         cwd = os.getcwd()
-        bb.build.exec_func(func, d)
+        bb.build.exec_func(func, dd)
     finally:
         os.chdir(cwd)
 
@@ -358,13 +363,8 @@ python shifttest_do_checktest() {
                 dd.setVar("SHIFT_REPORT_DIR", actual_dir)
                 bb.utils.remove(actual_dir, True)
                 bb.utils.mkdirhier(actual_dir)
-                try:
-                    if not bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)):
-                        dd.setVar("SHIFT_QUIET", True)
-                    exec_func("do_test", dd)
-                finally:
-                    if not bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)):
-                        dd.delVar("SHIFT_QUIET")
+                exec_func("do_test", dd,
+                          bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)))
             except bb.process.ExecutionError as e:
                 bb.debug(1, "do_checktest failed: %s" % e)
                 test_state = "build_failure"
