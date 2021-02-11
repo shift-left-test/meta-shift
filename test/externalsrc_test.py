@@ -33,7 +33,8 @@ from contextlib import contextmanager
 @contextmanager
 def externalsrc_execute(build, recipe, task):
     try:
-        build.shell.run("devtool modify %s" % recipe)
+        build.shell.run("devtool create-workspace")
+        build.shell.run("devtool modify {recipe} workspace/sources/{recipe} -x".format(recipe=recipe))
         assert build.files.exists(os.path.join("workspace", "sources", recipe))
         yield build.shell.execute("bitbake %s -c %s" % (recipe, task))
     finally:
