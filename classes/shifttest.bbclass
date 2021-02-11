@@ -37,6 +37,13 @@ def fatal(s, d):
     bb.fatal(s)
 
 
+def mkdirhier(path, clean=False):
+    if clean and os.path.exists(path):
+        bb.debug(1, "Removing the existing directory: %s" % path)
+        bb.utils.remove(path, True)
+    bb.utils.mkdirhier(path)
+
+
 def find_files(directory, pattern):
     import fnmatch
     found = []
@@ -141,9 +148,7 @@ python shifttest_do_checkcode() {
     # Configure the output path argument
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
-        bb.debug(1, "Configuring the checkcode output path: %s" % report_dir)
-        bb.utils.remove(report_dir, True)
-        bb.utils.mkdirhier(report_dir)
+        mkdirhier(report_dir, True)
         kwargs["output-path"] = "--output-path=%s" % report_dir
 
     # Configure tool options
@@ -233,9 +238,7 @@ python shifttest_do_coverage() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
         xml_file = os.path.join(report_dir, "coverage.xml")
 
-        if os.path.exists(report_dir):
-            bb.debug(1, "Removing the existing coverage directory: %s" % report_dir)
-            bb.utils.remove(report_dir, True)
+        mkdirhier(report_dir, True)
 
         check_call("genhtml %s " \
                    "--demangle-tool %s " \
