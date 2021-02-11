@@ -29,9 +29,7 @@ python qmake5test_do_test() {
 
     if configured:
         report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-        bb.debug(1, "Flushing the test report directory: %s" % report_dir)
-        bb.utils.remove(report_dir, True)
-        bb.utils.mkdirhier(report_dir)
+        mkdirhier(report_dir, True)
 
         plain("Generating the test result report", dd)
         # Create Google test report files
