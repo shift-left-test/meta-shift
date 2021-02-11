@@ -174,11 +174,7 @@ python shifttest_do_checkcode() {
 }
 
 
-# In order to overwrite the sstate cache libraries
-do_install[nostamp] = "1"
-
-
-addtask test after do_compile do_populate_sysroot
+addtask test after do_compile do_install do_populate_sysroot
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
 
