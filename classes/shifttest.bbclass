@@ -175,11 +175,7 @@ python shifttest_do_checkcode() {
 }
 
 
-# In order to overwrite the sstate cache libraries
-do_install[nostamp] = "1"
-
-
-addtask test after do_compile do_populate_sysroot
+addtask test after do_compile do_install do_populate_sysroot
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
 
@@ -264,7 +260,7 @@ python shifttest_do_coverage() {
 }
 
 
-addtask checktest after do_compile do_populate_sysroot
+addtask checktest after do_compile do_install do_populate_sysroot
 do_checktest[nostamp] = "1"
 do_checktest[doc] = "Runs mutation tests for the target"
 do_checktest[postfuncs] = "do_clean"
