@@ -14,25 +14,25 @@ DEBUG_BUILD = "1"
 
 
 def plain(s, d):
-    if d.getVar("SHIFT_QUIET", True):
+    if d.getVar("SHIFT_SUPPRESS_OUTPUT", True):
         return
     bb.plain(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def warn(s, d):
-    if d.getVar("SHIFT_QUIET", True):
+    if d.getVar("SHIFT_SUPPRESS_OUTPUT", True):
         return
     bb.warn(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def error(s, d):
-    if d.getVar("SHIFT_QUIET", True):
+    if d.getVar("SHIFT_SUPPRESS_OUTPUT", True):
         return
     bb.error(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
 
 def fatal(s, d):
-    if d.getVar("SHIFT_QUIET", True):
+    if d.getVar("SHIFT_SUPPRESS_OUTPUT", True):
         return
     bb.fatal(d.expand("${PF} do_${BB_CURRENTTASK}: ") + s)
 
@@ -76,7 +76,7 @@ def exec_func(func, d, verbose=True):
             dd = d
         else:
             dd = d.createCopy()
-            dd.setVar("SHIFT_QUIET", True)
+            dd.setVar("SHIFT_SUPPRESS_OUTPUT", True)
         cwd = os.getcwd()
         bb.build.exec_func(func, dd)
     finally:
@@ -86,6 +86,9 @@ def exec_func(func, d, verbose=True):
 def check_call(cmd, d, **options):
     if not "shell" in options:
         options["shell"] = True
+
+    if not isinstance(cmd, str):
+        cmd = " ".join(map(str, cmd))
 
     bb.debug(1, 'Executing: "%s"' % cmd)
     import subprocess
@@ -120,6 +123,9 @@ def exec_proc(cmd, d, **options):
             if self.stderr:
                 self.stderr.close()
 
+    if not isinstance(cmd, str):
+        cmd = " ".join(map(str, cmd))
+
     bb.debug(1, 'Executing: "%s"' % cmd)
     with Popen(cmd, **options) as proc:
         for line in proc.stdout:
@@ -135,29 +141,28 @@ do_checkcode[nostamp] = "1"
 do_checkcode[doc] = "Runs static analysis for the target"
 
 python shifttest_do_checkcode() {
+
     # Configure default arguments
-    kwargs = {
-        "source-path": d.getVar("S", True),
-        "build-path": d.getVar("B", True),
-        "tool-path": d.expand("${STAGING_DIR_NATIVE}${bindir}"),
-        "target-triple": d.getVar("TARGET_SYS", True),
-        "output-path": "",
-        "tool-options": "",
-    }
+    cmdline = ["sage", "--verbose",
+               "--source-path", d.getVar("S", True),
+               "--build-path", d.getVar("B", True),
+               "--tool-path", d.expand("${STAGING_DIR_NATIVE}${bindir}"),
+               "--target-triple", d.getVar("TARGET_SYS", True)]
 
     # Configure the output path argument
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
         mkdirhier(report_dir, True)
-        kwargs["output-path"] = "--output-path=%s" % report_dir
+        cmdline.extend(["--output-path", report_dir])
 
     # Configure tool options
     bb.debug(1, "Configuring the checkcode tool options")
     for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split():
-        kwargs["tool-options"] += " " + tool
         options = d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True)
         if options:
-            kwargs["tool-options"] += ":" + options.replace(" ", "\ ")
+            cmdline.append(tool + ":" + options.replace(" ", "\ "))
+        else:
+            cmdline.append(tool)
 
     try:
         # Make sure that the compile_commands.json file is available
@@ -170,13 +175,8 @@ python shifttest_do_checkcode() {
             temporary = True
 
         # Run sage
-        exec_proc("sage --verbose " \
-                  "--source-path {source-path} " \
-                  "--build-path {build-path} " \
-                  "--tool-path {tool-path} " \
-                  "--target-triple {target-triple} " \
-                  "{output-path} " \
-                  "{tool-options}".format(**kwargs), d, cwd=d.getVar("B", True))
+        exec_proc(cmdline, d, cwd=d.getVar("B", True))
+
     finally:
         if temporary:
             bb.utils.remove(json_file)
@@ -211,28 +211,26 @@ python shifttest_do_coverage() {
         return
 
     # Prepare for the coverage reports
-    check_call("lcov -c -d %s -o %s --gcov-tool %s --rc %s" % (
-        d.getVar("B", True),
-        LCOV_DATAFILE_TEST,
-        d.expand("${TARGET_PREFIX}gcov"),
-        "lcov_branch_coverage=1"), d)
+    check_call(["lcov", "-c",
+                "-d", d.getVar("B", True),
+                "-o", LCOV_DATAFILE_TEST,
+                "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
+                "--rc", "lcov_branch_coverage=1"], d)
 
-    check_call("lcov -a %s -a %s -o %s --rc %s" % (
-        LCOV_DATAFILE_BASE,
-        LCOV_DATAFILE_TEST,
-        LCOV_DATAFILE_TOTAL,
-        "lcov_branch_coverage=1"), d)
+    check_call(["lcov",
+                "-a", LCOV_DATAFILE_BASE,
+                "-a", LCOV_DATAFILE_TEST,
+                "-o", LCOV_DATAFILE_TOTAL,
+                "--rc", "lcov_branch_coverage=1"], d)
 
-    check_call('lcov --extract %s --rc %s "%s" -o %s' % (
-        LCOV_DATAFILE_TOTAL,
-        "lcov_branch_coverage=1",
-        d.expand("${S}/*"),
-        LCOV_DATAFILE), d)
+    check_call(["lcov",
+                "--extract", LCOV_DATAFILE_TOTAL,
+                "--rc", "lcov_branch_coverage=1",
+                d.expand('"${S}/*"'),
+                "-o", LCOV_DATAFILE], d)
 
     plain("GCC Code Coverage Report", d)
-    exec_proc("lcov --list %s --rc %s" % (
-        LCOV_DATAFILE,
-        "lcov_branch_coverage=1"), d)
+    exec_proc(["lcov", "--list", LCOV_DATAFILE, "--rc", "lcov_branch_coverage=1"], d)
 
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
@@ -240,23 +238,17 @@ python shifttest_do_coverage() {
 
         mkdirhier(report_dir, True)
 
-        check_call("genhtml %s " \
-                   "--demangle-tool %s " \
-                   "--demangle-cpp " \
-                   "--output-directory %s " \
-                   "--ignore-errors %s " \
-                   "--rc %s" % (LCOV_DATAFILE,
-                                d.expand("${TARGET_PREFIX}c++filt"),
-                                report_dir,
-                                "source",
-                                "genhtml_branch_coverage=1"), d)
+        check_call(["genhtml", LCOV_DATAFILE,
+                    "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
+                    "--demangle-cpp",
+                    "--output-directory", report_dir,
+                    "--ignore-errors", "source",
+                    "--rc", "genhtml_branch_coverage=1"], d)
 
-        check_call("nativepython -m lcov_cobertura %s " \
-                   "--demangle-tool=%s " \
-                   "--demangle " \
-                   "--output %s" % (LCOV_DATAFILE,
-                                    d.expand("${TARGET_PREFIX}c++filt"),
-                                    xml_file), d, cwd=d.getVar("S", True))
+        check_call(["nativepython", "-m", "lcov_cobertura", LCOV_DATAFILE,
+                    "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
+                    "--demangle",
+                    "--output", xml_file], d, cwd=d.getVar("S", True))
 
         if os.path.exists(xml_file):
             # Prepend the package name to each of the package tags

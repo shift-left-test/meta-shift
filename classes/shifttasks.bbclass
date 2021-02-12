@@ -1,5 +1,5 @@
 python show_affected_recipes() {
-    task = "do_%s" % d.getVar("BB_CURRENTTASK", True)
+    task = d.expand("do_${BB_CURRENTTASK}")
     subtask = task[:-3]
     pf = d.getVar("PF", True)
     taskdepdata = d.getVar("BB_TASKDEPDATA", True)
