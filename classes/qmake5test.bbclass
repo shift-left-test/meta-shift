@@ -38,17 +38,12 @@ python qmake5test_do_test() {
         env["TESTARGS"] += " -xunitxml -o test_result.xml"
 
     # Prepare for the coverage reports
-    check_call("lcov -c -i " \
-               "-d %s " \
-               "-o %s " \
-               "--ignore-errors %s " \
-               "--gcov-tool %s " \
-               "--rc %s" % (
-                   dd.getVar("B", True),
-                   dd.expand("${B}/coverage_base.info"),
-                   "gcov",
-                   dd.expand("${TARGET_PREFIX}gcov"),
-                   "lcov_branch_coverage=1"), dd)
+    check_call(["lcov", "-c", "-i",
+                "-d", dd.getVar("B", True),
+                "-o", dd.expand("${B}/coverage_base.info"),
+                "--ignore-errors", "gcov",
+                "--gcov-tool", dd.expand("${TARGET_PREFIX}gcov"),
+                "--rc", "lcov_branch_coverage=1"], dd)
 
     try:
         exec_proc("make --quiet check", dd, env=env, cwd=dd.getVar("B", True))
