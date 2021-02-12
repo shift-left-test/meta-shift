@@ -70,17 +70,12 @@ python autotoolstest_do_test() {
         env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
 
     # Prepare for the coverage reports
-    check_call("lcov -c -i " \
-               "-d %s " \
-               "-o %s " \
-               "--ignore-errors %s " \
-               "--gcov-tool %s " \
-               "--rc %s" % (
-                   dd.getVar("B", True),
-                   dd.expand("${B}/coverage_base.info"),
-                   "gcov",
-                   dd.expand("${TARGET_PREFIX}gcov"),
-                   "lcov_branch_coverage=1"), dd)
+    check_call(["lcov", "-c", "-i",
+                "-d", dd.getVar("B", True),
+                "-o", dd.expand("${B}/coverage_base.info"),
+                "--ignore-errors", "gcov",
+                "--gcov-tool", dd.expand("${TARGET_PREFIX}gcov"),
+                "--rc", "lcov_branch_coverage=1"], dd)
 
     try:
         check_call("make check", dd, env=env, cwd=dd.getVar("B", True))
@@ -106,4 +101,3 @@ python autotoolstest_do_coverage() {
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage
-
