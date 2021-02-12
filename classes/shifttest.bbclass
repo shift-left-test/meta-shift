@@ -280,7 +280,8 @@ python shifttest_do_checktest() {
         bb.fatal("the task requires meta-clang to be present")
 
     if dd.getVar("EXTERNALSRC", True):
-        bb.fatal("the task does not support the external source tree")
+        bb.error("the task does not support the external source tree")
+        return
 
     work_dir = dd.expand("${WORKDIR}/mutation_test_tmp")
     expected_dir = os.path.join(work_dir, "original")
