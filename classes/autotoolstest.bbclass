@@ -78,8 +78,10 @@ python autotoolstest_do_test() {
                 "--rc", "lcov_branch_coverage=1"], dd)
 
     try:
-        check_call("make check", dd, env=env, cwd=dd.getVar("B", True))
-    except bb.process.ExecutionError:
+        timeout(check_call ,"make check", dd, env=env, cwd=dd.getVar("B", True))
+    except bb.process.ExecutionError as e:
+        if e.exitcode == 124:
+            raise e
         pass
 
     # Print test logs
