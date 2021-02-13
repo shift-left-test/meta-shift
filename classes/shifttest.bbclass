@@ -72,17 +72,32 @@ def readlines(path):
             yield line
 
 
-def exec_func(func, d, verbose=True):
+def exec_func(func, d, verbose=True, timeout=0):
     try:
-        if verbose:
-            dd = d
-        else:
-            dd = d.createCopy()
-            dd.setVar("SHIFT_SUPPRESS_OUTPUT", True)
         cwd = os.getcwd()
+        dd = d.createCopy()
+        if not verbose:
+            dd.setVar("SHIFT_SUPPRESS_OUTPUT", True)
+        if timeout > 0:
+            dd.setVar("SHIFT_TIMEOUT", timeout)
         bb.build.exec_func(func, dd)
     finally:
         os.chdir(cwd)
+
+
+def clamp(value, smallest, largest):
+    return sorted((value, smallest, largest))[1]
+
+
+def timeout(func, cmd, d, **options):
+    if not isinstance(cmd, str):
+        cmd = " ".join(map(str, cmd))
+
+    period = d.getVar("SHIFT_TIMEOUT", True)
+    if period and not cmd.startswith("timeout"):
+        cmd = "timeout %d %s" % (int(round(period)), cmd)
+
+    return func(cmd, d, **options)
 
 
 def check_call(cmd, d, **options):
