@@ -38,8 +38,10 @@ python cmaketest_do_test() {
 
     plain("Running tests...", dd)
     try:
-        exec_proc("ctest --output-on-failure", dd, env=env, cwd=dd.getVar("B", True))
-    except bb.process.ExecutionError:
+        timeout(exec_proc, "ctest --output-on-failure", dd, env=env, cwd=dd.getVar("B", True))
+    except bb.process.ExecutionError as e:
+        if e.exitcode == 124:
+            raise e
         pass
 
     if configured:
