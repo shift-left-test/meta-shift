@@ -80,6 +80,10 @@ def exec_func(func, d, verbose=True, timeout=0):
             dd.setVar("SHIFT_SUPPRESS_OUTPUT", True)
         if timeout > 0:
             dd.setVar("SHIFT_TIMEOUT", timeout)
+        lockfiles = dd.getVarFlag(func, "lockfiles", True)
+        if lockfiles and "singletask.lock" in lockfiles:
+            lockfiles = lockfiles.replace("singletask.lock", func + "_singletask.lock")
+            dd.setVarFlag(func, "lockfiles", lockfiles)
         bb.build.exec_func(func, dd)
     finally:
         os.chdir(cwd)
@@ -289,10 +293,6 @@ python shifttest_do_checktest() {
 
     if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
         bb.fatal("the task requires meta-clang to be present")
-
-    if dd.getVar("EXTERNALSRC", True):
-        bb.error("the task does not support the external source tree")
-        return
 
     work_dir = dd.expand("${WORKDIR}/mutation_test_tmp")
     expected_dir = os.path.join(work_dir, "original")
