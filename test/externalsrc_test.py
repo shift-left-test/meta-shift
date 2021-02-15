@@ -61,4 +61,5 @@ def test_cmake_project_do_checkcode(test_clang_build):
 
 def test_cmake_project_do_checktest(test_clang_build):
     with externalsrc_execute(test_clang_build, "cmake-project", "checktest") as o:
-        assert o.stderr.contains("ERROR: cmake-project-1.0.0-r0 do_checktest: the task does not support the external source tree")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
