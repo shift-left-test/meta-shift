@@ -321,7 +321,13 @@ python shifttest_do_checktest() {
 
     # Create test reports
     dd.setVar("SHIFT_REPORT_DIR", expected_dir)
+
+    import time
+    started = time.time()
     exec_func("do_test", dd)
+    elapsed = round(time.time() - started)
+    # Extra amount of time within a range of 5 seconds to 2 minutes
+    elapsed = elapsed + clamp(round(elapsed * 0.2), 5, 120)
 
     bb.debug(1, "Creating the mutation database")
     mutant_file = os.path.join(work_dir, "mutables.db")
@@ -358,10 +364,15 @@ python shifttest_do_checktest() {
                 dd.setVar("SHIFT_REPORT_DIR", actual_dir)
                 bb.utils.remove(actual_dir, True)
                 bb.utils.mkdirhier(actual_dir)
-                exec_func("do_test", dd, bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)))
+                exec_func("do_test", dd,
+                          bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)),
+                          timeout=elapsed)
             except bb.process.ExecutionError as e:
                 bb.debug(1, "do_checktest failed: %s" % e)
-                test_state = "build_failure"
+                if e.exitcode == 124:
+                    test_state = "timeout"
+                else:
+                    test_state = "build_failure"
 
             bb.debug(1, "Evaluating the test result")
             exec_proc(["sentinel", "evaluate",
