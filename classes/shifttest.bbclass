@@ -287,7 +287,6 @@ python shifttest_do_coverage() {
 addtask checktest after do_compile do_install do_populate_sysroot
 do_checktest[nostamp] = "1"
 do_checktest[doc] = "Runs mutation tests for the target"
-do_checktest[postfuncs] = "do_clean"
 
 python shifttest_do_checktest() {
     dd = d.createCopy()
@@ -300,6 +299,11 @@ python shifttest_do_checktest() {
     actual_dir = os.path.join(work_dir, "actual")
     backup_dir = os.path.join(work_dir, "backup")
     eval_dir = os.path.join(work_dir, "eval")
+
+    # Invalidate the pseudo database and the stamp to keep the build state safe
+    if dd.getVar("PSEUDO_LOCALSTATEDIR", True):
+        bb.utils.remove(dd.getVar("PSEUDO_LOCALSTATEDIR", True), True)
+    bb.build.del_stamp("do_configure", dd)
 
     # Prepare the work directory
     mkdirhier(work_dir, True)
