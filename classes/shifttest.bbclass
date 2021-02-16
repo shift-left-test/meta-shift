@@ -80,9 +80,10 @@ def exec_func(func, d, verbose=True, timeout=0):
             dd.setVar("SHIFT_SUPPRESS_OUTPUT", True)
         if timeout > 0:
             dd.setVar("SHIFT_TIMEOUT", timeout)
-        lockfiles = dd.getVarFlag(func, "lockfiles", True)
-        if lockfiles and "singletask.lock" in lockfiles:
-            lockfiles = lockfiles.replace("singletask.lock", func + "_singletask.lock")
+        lockfiles = dd.getVarFlag(func, "lockfiles", True) or ""
+        lockfile = dd.expand("${S}/singletask.lock")
+        if lockfile in lockfiles:
+            lockfiles = lockfiles.replace(lockfile, dd.expand("${S}/%s_singletask.lock" % func))
             dd.setVarFlag(func, "lockfiles", lockfiles)
         bb.build.exec_func(func, dd)
     finally:
