@@ -1,0 +1,56 @@
+diff --git a/bin/geninfo b/bin/geninfo
+index 1f02963..2b6d346 100755
+--- a/bin/geninfo
++++ b/bin/geninfo
+@@ -281,14 +281,17 @@ GetOptions("config-file=s" => \$opt_config_file,
+ 	   "rc=s%" => \%opt_rc);
+ Getopt::Long::Configure("default");
+ 
+-# Remove spaces around rc options
+-while (my ($key, $value) = each(%opt_rc)) {
+-	delete($opt_rc{$key});
++{
++	# Remove spaces around rc options
++	my %new_opt_rc;
+ 
+-	$key =~ s/^\s+|\s+$//g;
+-	$value =~ s/^\s+|\s+$//g;
++	while (my ($key, $value) = each(%opt_rc)) {
++		$key =~ s/^\s+|\s+$//g;
++		$value =~ s/^\s+|\s+$//g;
+ 
+-	$opt_rc{$key} = $value;
++		$new_opt_rc{$key} = $value;
++	}
++	%opt_rc = %new_opt_rc;
+ }
+ 
+ # Read configuration file if available
+diff --git a/bin/lcov b/bin/lcov
+index f400532..2cffc22 100755
+--- a/bin/lcov
++++ b/bin/lcov
+@@ -229,14 +229,17 @@ GetOptions("config-file=s" => \$opt_config_file,
+ 	   "rc=s%" => \%opt_rc);
+ Getopt::Long::Configure("default");
+ 
+-# Remove spaces around rc options
+-while (my ($key, $value) = each(%opt_rc)) {
+-	delete($opt_rc{$key});
++{
++	# Remove spaces around rc options
++	my %new_opt_rc;
+ 
+-	$key =~ s/^\s+|\s+$//g;
+-	$value =~ s/^\s+|\s+$//g;
++	while (my ($key, $value) = each(%opt_rc)) {
++		$key =~ s/^\s+|\s+$//g;
++		$value =~ s/^\s+|\s+$//g;
+ 
+-	$opt_rc{$key} = $value;
++		$new_opt_rc{$key} = $value;
++	}
++	%opt_rc = %new_opt_rc;
+ }
+ 
+ # Read configuration file if available
