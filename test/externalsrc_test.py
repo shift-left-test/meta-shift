@@ -63,3 +63,10 @@ def test_cmake_project_do_checktest(test_clang_build):
     with externalsrc_execute(test_clang_build, "cmake-project", "checktest") as o:
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
+
+
+def test_sage_native_project_do_build(test_clang_build):
+    # Test if the setuptools within devtool-modify works properly with the host python
+    with externalsrc_execute(test_clang_build, "sage-native", "build") as o:
+        assert o.stderr.empty()
+        assert o.returncode == 0
