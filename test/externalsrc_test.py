@@ -58,3 +58,10 @@ def test_cmake_project_do_checkcode(test_build):
     with externalsrc_execute(test_build, "cmake-project", "checkcode") as o:
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+
+
+def test_sage_native_project_do_build(test_build):
+    # Test if the setuptools within devtool-modify works properly with the host python
+    with externalsrc_execute(test_build, "sage-native", "build") as o:
+        assert o.stderr.empty()
+        assert o.returncode == 0
