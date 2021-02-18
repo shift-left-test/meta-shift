@@ -37,6 +37,9 @@ python qmake5test_do_test() {
         # Create QT test report files
         env["TESTARGS"] += " -xunitxml -o test_result.xml"
 
+    for gcdaFile in find_files(d.getVar("B", True), "*.gcda"):
+        bb.utils.remove(gcdaFile)
+
     # Prepare for the coverage reports
     check_call(["lcov", "-c", "-i",
                 "-d", dd.getVar("B", True),
