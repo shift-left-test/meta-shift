@@ -32,6 +32,9 @@ python cmaketest_do_test() {
         # Create Google test report files
         env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
 
+    for gcdaFile in find_files(d.getVar("B", True), "*.gcda"):
+        bb.utils.remove(gcdaFile)
+
     # Prepare for the coverage reports
     check_call(["lcov", "-c", "-i",
                 "-d", dd.getVar("B", True),
