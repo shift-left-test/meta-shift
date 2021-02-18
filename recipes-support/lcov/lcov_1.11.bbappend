@@ -1,6 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI += "file://0001-add-demangle-tool-option.patch"
+SRC_URI += "file://0001-add-demangle-tool-option.patch \
+            file://0002-fix-remove-space-loop-warning.patch \
+"
 
 DEPENDS += "perl"
 
