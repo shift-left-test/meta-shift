@@ -12,7 +12,7 @@ pipeline {
         }
         stage("Test") {
             steps {
-                sh "python3 -m pytest -x --junitxml result.xml -vv"
+                sh "python3 -m pytest --basetemp=${env.WORKSPACE}/temp -xvv --junitxml result.xml"
             }
         }
         stage("Report") {
