@@ -8,6 +8,7 @@ pipeline {
         stage("Setup") {
             steps {
                 updateGitlabCommitStatus name: "jenkins", state: "running"
+		sh "git clean -fdx"
             }
         }
         stage("Test") {
