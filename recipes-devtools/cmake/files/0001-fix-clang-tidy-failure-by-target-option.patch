@@ -1,10 +1,19 @@
+From bf5b89c22e646f3a718af8dc00224b00a483b78d Mon Sep 17 00:00:00 2001
+From: Sung Gon Kim <sunggon82.kim@lge.com>
+Date: Sun, 21 Feb 2021 12:15:32 +0000
+Subject: [PATCH] #269 Fixes an issue that clang-tidy causes compilation
+
+---
+ Source/cmcmd.cxx | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
 diff --git a/Source/cmcmd.cxx b/Source/cmcmd.cxx
-index d05e3c8..22f649b 100644
+index de76d73..bc6ac1b 100644
 --- a/Source/cmcmd.cxx
 +++ b/Source/cmcmd.cxx
-@@ -212,6 +212,12 @@ static int HandleTidy(const std::string& runCmd, const std::string& sourceFile,
+@@ -244,6 +244,12 @@ static int HandleTidy(const std::string& runCmd, const std::string& sourceFile,
    tidy_cmd.emplace_back("--");
-   cmAppend(tidy_cmd, orig_cmd);
+   cm::append(tidy_cmd, orig_cmd);
 
 +  std::string target_sys;
 +  if (cmSystemTools::GetEnv("TARGET_SYS", target_sys)) {
@@ -15,3 +24,5 @@ index d05e3c8..22f649b 100644
    // Run the tidy command line.  Capture its stdout and hide its stderr.
    std::string stdOut;
    std::string stdErr;
+--
+2.30.0

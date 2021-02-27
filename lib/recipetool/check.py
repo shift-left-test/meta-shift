@@ -90,7 +90,7 @@ def checkrecipes(args):
             recipefile = tinfoil.cooker.findBestProvider(recipe)[3]
             if recipefile:
                 files.append(recipefile)
-                files.extend(tinfoil.cooker.collection.get_file_appends(recipefile))
+                files.extend(tinfoil.cooker.collections[""].get_file_appends(recipefile))
             else:
                 sys.stderr.write("Failed to find the recipe file for '{}'\n".format(recipe))
     check(args, files)

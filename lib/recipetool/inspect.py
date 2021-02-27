@@ -54,7 +54,7 @@ class Reporter:
             for v_key in sorted(value.keys()):
                 v_value = value[v_key]
                 self.result.append("    %s: %s\n" % (v_key, v_value))
-        elif isinstance(value, list):
+        elif isinstance(value, list) or isinstance(value, tuple):
             self.result.append("%s:\n" % key)
             for v_value in sorted(value):
                 self.result.append("    %s\n" % v_value)
@@ -102,7 +102,7 @@ def inspect(args):
         sys.stderr.write("Failed to find the recipe file for '{}'\n".format(pn))
         return
 
-    appendfiles = tinfoil.cooker.collection.get_file_appends(recipefile)
+    appendfiles = tinfoil.cooker.collections[""].get_file_appends(recipefile)
     recipedata = tinfoil.parse_recipe_file(recipefile)
     recipename = tinfoil.cooker_data.pkg_fn[recipefile]
 

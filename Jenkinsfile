@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image "cart.lge.com/swte/yocto:16.04"
+            image "cart.lge.com/swte/yocto:18.04"
         }
     }
     stages {
@@ -30,4 +30,3 @@ pipeline {
         }
     }
 }
-

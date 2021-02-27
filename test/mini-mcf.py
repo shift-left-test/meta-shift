@@ -35,7 +35,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "dunfell"
+BRANCH = "gatesgarth"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
