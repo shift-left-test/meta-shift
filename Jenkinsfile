@@ -28,6 +28,9 @@ pipeline {
         failure {
             updateGitlabCommitStatus name: "jenkins", state: "failed"
         }
+	aborted {
+	    updateGitlabCommitStatus name: "jenkins", state: "canceled"
+	}
     }
 }
 
