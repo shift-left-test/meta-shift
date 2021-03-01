@@ -40,7 +40,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -91,7 +91,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -142,7 +142,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -193,7 +193,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -244,7 +244,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -295,7 +295,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -346,7 +346,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -397,7 +397,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -448,7 +448,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -499,7 +499,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
@@ -550,7 +550,7 @@ pipeline {
 			steps {
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
 			    sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
-			    sh 'find ${env.WORKSPACE}/build-res/downloads -type -name "*.done" -delete'
+			    sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
 			}
 		    }
                     stage("Upload") {
