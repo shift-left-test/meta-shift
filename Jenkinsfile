@@ -5,12 +5,6 @@ pipeline {
         }
     }
     stages {
-        stage("Setup") {
-            steps {
-                updateGitlabCommitStatus name: "jenkins", state: "running"
-		sh "git clean -fdx"
-            }
-        }
         stage("Test") {
             steps {
                 sh "python3 -m pytest --basetemp=${env.WORKSPACE}/temp -xvv --junitxml result.xml"
@@ -21,16 +15,5 @@ pipeline {
                 junit "result.xml"
             }
         }
-    }
-    post {
-    	 success {
-            updateGitlabCommitStatus name: "jenkins", state: "success"
-        }
-        failure {
-            updateGitlabCommitStatus name: "jenkins", state: "failed"
-        }
-	aborted {
-	    updateGitlabCommitStatus name: "jenkins", state: "canceled"
-	}
     }
 }
