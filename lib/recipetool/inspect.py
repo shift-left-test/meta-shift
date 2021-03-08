@@ -91,7 +91,7 @@ def inspect(args):
         return any("shifttest" == os.path.splitext(os.path.basename(inherit_class))[0] for
                    inherit_class in tinfoil.cooker_data.inherits.get(recipefile, []))
 
-    if args.json:
+    if args.output:
         reporter = ReporterJson()
     else:
         reporter = Reporter()
@@ -161,7 +161,6 @@ def register_command(subparsers):
     parser = subparsers.add_parser("inspect",
                                    help="Inspect the specified recipe information",
                                    description="Inspect the specified recipe's detailed information, including file-path, version, meta-layer, append-file, dependencies, inherits, etc.")
-    parser.add_argument("-j", "--json", help="prints JSON formatted information", action="store_true")
     parser.add_argument("-o", "--output", help="save the output to a file")
     parser.add_argument("recipename", help="Recipe name to inspect")
     parser.set_defaults(func=inspect, parserecipes=True)
