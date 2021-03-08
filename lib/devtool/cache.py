@@ -175,12 +175,12 @@ def make_plain_report(args, found_shared_state, missed_shared_state,
         wanted = len(found) + len(missed)
         ret += newline(title)
         ret += newline("-" * len(title))
-        ret += newline("Wanted : %d (%d%%)" % (wanted, wanted / wanted * 100))
-        ret += newline("Found  : %d (%d%%)" % (len(found), len(found) / wanted * 100))
+        ret += newline("Wanted : %d (%d%%)" % (wanted, 100 * wanted / wanted))
+        ret += newline("Found  : %d (%d%%)" % (len(found), 100 * len(found) / wanted))
         if args.found:
             for task in found:
                 ret += newline("    %s" % task)
-        ret += newline("Missed : %d (%d%%)" % (len(missed), len(missed) / wanted * 100))
+        ret += newline("Missed : %d (%d%%)" % (len(missed), 100 * len(missed) / wanted))
         if args.missed:
             for task in missed:
                 ret += newline("    %s" % task)
@@ -201,10 +201,8 @@ def make_json_report(args, found_shared_state, missed_shared_state,
       json_dict[title]["Summary"]["Wanted"] = len(found) + len(missed)
       json_dict[title]["Summary"]["Found"] = len(found)
       json_dict[title]["Summary"]["Missed"] = len(missed)
-      if args.found:
-          json_dict[title]["Found"] = [str(x) for x in found]
-      if args.missed:
-          json_dict[title]["Missed"] = [str(x) for x in missed]
+      json_dict[title]["Found"] = [str(x) for x in found]
+      json_dict[title]["Missed"] = [str(x) for x in missed]
 
     return json.dumps(json_dict, indent=2) + "\n"
 
@@ -220,7 +218,7 @@ def cache(args, config, basepath, workspace):
         found_source = [x for x in recipes if x.isAvailable()]
         missed_source = [x for x in recipes if not x.isAvailable()]
 
-        if args.json:
+        if args.output:
             make_report = make_json_report
         else:
             make_report = make_plain_report
@@ -246,7 +244,6 @@ def register_commands(subparsers, context):
     parser.add_argument("-c", "--cmd", help="Specify the task to execute")
     parser.add_argument("-f", "--found", action="store_true", help="Show the list of cached items")
     parser.add_argument("-m", "--missed", action="store_true", help="Show the list of missed items")
-    parser.add_argument("-j", "--json", help="prints JSON formatted information", action="store_true")
     parser.add_argument("-o", "--output", help="save the output to a file")
     parser.set_defaults(func=cache, no_workspace=True)
 
