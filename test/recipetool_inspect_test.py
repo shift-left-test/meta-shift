@@ -50,40 +50,11 @@ def test_default_format(bare_build):
                                 "Testable: False")
 
 
-def test_default_format_save_as_file(bare_build):
-    d = tempfile.mkdtemp()
-    try:
-        temp = os.path.join(d, "output.plain")
-        o = bare_build.shell.execute("recipetool inspect cpplint --output {}".format(temp))
-        assert not o.stdout.contains("Name: cpplint")
-        with open(temp, "r") as f:
-            assert "Name: cpplint" in f.read()
-    finally:
-        shutil.rmtree(d)
-
-
-def test_json_format(bare_build):
-    o = bare_build.shell.execute("recipetool inspect cpplint --json")
-    assert o.stdout.containsAll('"General Information": {{',
-                                '"Author": "Google Inc."',
-                                '"Homepage": "https://github.com/cpplint/cpplint"',
-                                '"Layer": "meta-shift"',
-                                '"Bugtracker": "https://github.com/cpplint/cpplint/issues"',
-                                '"Summary": "CPPLint - a static code analyzer for C/C++"',
-                                '"Name": "cpplint"',
-                                '"Version": "1.4.5"',
-                                '"Section": "devel/python"',
-                                '"Revision": "r0"',
-                                '"Testable": false',
-                                '"License": "BSD-3-Clause"',
-                                '"Description": "A Static code analyzer for C/C++ written in python"')
-
-
-def test_json_format_save_as_file(bare_build):
+def test_save_as_file(bare_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.json")
-        o = bare_build.shell.execute("recipetool inspect cpplint --json --output {}".format(temp))
+        o = bare_build.shell.execute("recipetool inspect cpplint --output {}".format(temp))
         assert not o.stdout.contains('"Name": "cpplint"')
         with open(temp, "r") as f:
             data = json.load(f)
@@ -100,7 +71,7 @@ def test_inspect_unknown_recipe(bare_build):
 def test_inspect_unknown_recipe_save_as_file(bare_build):
     d = tempfile.mkdtemp()
     try:
-        temp = os.path.join(d, "output.plain")
+        temp = os.path.join(d, "output.json")
         o = bare_build.shell.execute("recipetool inspect unknown-recipe --output {}".format(temp))
         assert not os.path.exists(temp)
     finally:
