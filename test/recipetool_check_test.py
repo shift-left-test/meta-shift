@@ -26,6 +26,9 @@ THE SOFTWARE.
 """
 
 import os
+import json
+import shutil
+import tempfile
 import pytest
 
 
@@ -179,3 +182,24 @@ def test_rule(bare_build, filename):
     o = bare_build.shell.execute("source {} {}".format(os.path.join(BASE_DIR, filename),
                                                        bare_build.build_dir))
     assert o.returncode == 0, "{}:{}".format(filename, o.stdout)
+
+
+def test_check_save_as_file(bare_build):
+    d = tempfile.mkdtemp()
+    try:
+        temp = os.path.join(d, "output.json")
+        o = bare_build.shell.execute("recipetool check cmake-native --output {}".format(temp))
+        with open(temp, "r") as f:
+            data = json.load(f)
+            assert isinstance(data["issues"], list)
+            assert len(data["issues"]) > 0
+            for issue in data["issues"]:
+                assert isinstance(issue, dict)
+                assert isinstance(issue["file"], str)
+                assert isinstance(issue["line"], int)
+                assert isinstance(issue["severity"], str)
+                assert isinstance(issue["rule"], str)
+                assert isinstance(issue["description"], str)
+    finally:
+        shutil.rmtree(d)
+
