@@ -50,6 +50,27 @@ def tinfoil_init(instance):
     tinfoil = instance
 
 
+def make_plain_report(issues):
+    return "\n".join([x[1] for x in issues]) + "\n"
+
+
+def make_json_report(issues):
+    json_dict = dict()
+    json_dict["issues"] = list()
+    for issue in issues:
+        item = dict()
+        split_data = issue[1].split(":")
+
+        item["file"] = split_data[0]
+        item["line"] = int(split_data[1])
+        item["severity"] = split_data[2]
+        item["rule"] = split_data[3]
+        item["description"] = split_data[4]
+        json_dict["issues"].append(item)
+    
+    return json.dumps(json_dict, indent=2) + "\n"
+
+
 def check(args, files):
     rules = [x for x in load_rules(args)]
     _loadedIDs = []
@@ -75,7 +96,14 @@ def check(args, files):
 
     issues = sorted(set(issues), key=lambda x: x[0])
 
-    sys.stderr.write("\n".join([x[1] for x in issues]) + "\n")
+    if args.output:
+        output = open(args.output, "w")
+        make_report = make_json_report
+    else:
+        output = sys.stderr
+        make_report = make_plain_report
+
+    output.write(make_report(issues))
 
 
 def checkrecipes(args):
@@ -102,5 +130,6 @@ def register_commands(subparsers):
     check_parser = subparsers.add_parser('check',
                                          help="Check specified recipes or files for the OpenEmbedded Style Guide issues.",
                                          description="Check specified recipes or files for the OpenEmbedded Style Guide issues.")
+    check_parser.add_argument("-o", "--output", help="save the output to a file")
     check_parser.add_argument("recipes", metavar="RECIPE", nargs='+', help="recipe or file to parse")
     check_parser.set_defaults(func=checkrecipes, parserecipes=True)
