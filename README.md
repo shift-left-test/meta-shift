@@ -1,6 +1,6 @@
 # meta-shift
 
-[![Build Status](http://10.178.85.91:8080/buildStatus/icon?job=meta-shift)](http://10.178.85.91:8080/job/meta-shift/)
+[![Build Status](http://10.178.85.91:8080/buildStatus/icon?job=meta-shift%2Fmaster)](http://10.178.85.91:8080/job/meta-shift/job/master/)
 
 > Shift-left testing for the Yocto project
 
