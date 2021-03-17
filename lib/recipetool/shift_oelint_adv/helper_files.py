@@ -2,9 +2,9 @@ import glob
 import os
 import re
 try:
-    from urllib.parse import urlparse
+    from urllib.parse import urlsplit
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urlsplit
 
 from shift_oelint_adv.cls_item import Variable
 from shift_oelint_adv.const_vars import get_known_mirrors
@@ -77,7 +77,7 @@ def get_scr_components(string):
     Returns:
         dict -- scheme: protocol used, src: source URI, options: parsed options
     """
-    _url = urlparse(_replace_with_known_mirrors(string))
+    _url = urlsplit(_replace_with_known_mirrors(string))
     _scheme = _url.scheme
     _tmp = _url.netloc
     if _url.path:
@@ -194,3 +194,4 @@ def get_valid_named_resources(stash, _file):
             if "name" in _url["options"]:
                 res.add(_url["options"]["name"].replace("${PN}", _recipe_name))
     return res
+
