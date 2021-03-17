@@ -173,6 +173,20 @@ filenames = [
     "rule_var_appendop_bad",
     "rule_vars_mandatory_exists_bad",
     "rule_nospace_line_empty_good",
+    "rule_var_src_uri_checksum_good1",
+    "rule_var_src_uri_checksum_good2",
+    "rule_var_src_uri_checksum_bad1",
+    "rule_var_src_uri_checksum_bad2",
+    "rule_var_src_uri_checksum_bad3",
+]
+
+
+filenames = [
+    "rule_var_src_uri_checksum_good1",
+    "rule_var_src_uri_checksum_good2",
+    "rule_var_src_uri_checksum_bad1",
+    "rule_var_src_uri_checksum_bad2",
+    "rule_var_src_uri_checksum_bad3",
 ]
 
 
