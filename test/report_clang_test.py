@@ -56,10 +56,10 @@ class TEST:
         return os.path.join("report", cls.PF[recipe], "checktest", path)
 
 
-def test_core_image_minimal_do_checkcodeall(report_clang_build):
+def test_core_image_minimal_do_reportall(report_clang_build):
     report_clang_build.files.remove("report")
 
-    assert report_clang_build.shell.execute("bitbake core-image-minimal -c checkcodeall").stderr.empty()
+    assert report_clang_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
 
     EXISTS = report_clang_build.files.exists
 
@@ -74,14 +74,6 @@ def test_core_image_minimal_do_checkcodeall(report_clang_build):
     assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
     assert EXISTS(TEST.CHECK("autotools-project", "clang-tidy-report.txt"))
-
-
-def test_core_image_minimal_do_checktestall(report_clang_build):
-    report_clang_build.files.remove("report")
-
-    assert report_clang_build.shell.execute("bitbake core-image-minimal -c checktestall").stderr.empty()
-
-    EXISTS = report_clang_build.files.exists
 
     assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
     assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
@@ -115,6 +107,22 @@ def test_cmake_project_do_checktestall(report_clang_build):
         assert f.contains(SENTINEL_HTML_TITLE)
 
 
+def test_cmake_project_do_reportall(report_clang_build):
+    report_clang_build.files.remove("report")
+
+    assert report_clang_build.shell.execute("bitbake cmake-project -c reportall").stderr.empty()
+
+    EXISTS = report_clang_build.files.exists
+
+    assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("cmake-project", "clang-tidy-report.txt"))
+
+    assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
+    assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
+    assert EXISTS(TEST.CHECKTEST("cmake-project", "style.css"))
+
+
 def test_qmake5_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake qmake5-project -c checkcodeall").stderr.empty()
@@ -135,6 +143,22 @@ def test_qmake5_project_do_checktestall(report_clang_build):
         assert f.contains(SENTINEL_HTML_TITLE)
 
 
+def test_qmake5_project_do_reportall(report_clang_build):
+    report_clang_build.files.remove("report")
+
+    assert report_clang_build.shell.execute("bitbake qmake5-project -c reportall").stderr.empty()
+
+    EXISTS = report_clang_build.files.exists
+
+    assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "clang-tidy-report.txt"))
+
+    assert EXISTS(TEST.CHECKTEST("qmake5-project", "mutations.xml"))
+    assert EXISTS(TEST.CHECKTEST("qmake5-project", "index.html"))
+    assert EXISTS(TEST.CHECKTEST("qmake5-project", "style.css"))
+
+
 def test_autotools_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake autotools-project -c checkcodeall").stderr.empty()
@@ -153,3 +177,18 @@ def test_autotools_project_do_checktestall(report_clang_build):
     with READ(TEST.CHECKTEST("autotools-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
+
+def test_autotools_project_do_reportall(report_clang_build):
+    report_clang_build.files.remove("report")
+
+    assert report_clang_build.shell.execute("bitbake autotools-project -c reportall").stderr.empty()
+
+    EXISTS = report_clang_build.files.exists
+
+    assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("autotools-project", "clang-tidy-report.txt"))
+
+    assert EXISTS(TEST.CHECKTEST("autotools-project", "mutations.xml"))
+    assert EXISTS(TEST.CHECKTEST("autotools-project", "index.html"))
+    assert EXISTS(TEST.CHECKTEST("autotools-project", "style.css"))
