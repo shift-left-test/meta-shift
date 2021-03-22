@@ -51,3 +51,14 @@ do_coverageall[vardepsexclude] = "show_affected_recipes"
 do_coverageall() {
     :
 }
+
+addtask reportall
+do_reportall[recrdeptask] = "do_reportall do_report"
+do_reportall[recideptask] = "do_${BB_DEFAULT_TASK}"
+do_reportall[nostamp] = "1"
+do_reportall[doc] = "Makes reports for all recipes required to build the target"
+do_reportall[postfuncs] = "show_affected_recipes"
+do_reportall[vardepsexclude] = "show_affected_recipes"
+do_reportall() {
+    :
+}

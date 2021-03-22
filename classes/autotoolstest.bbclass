@@ -105,5 +105,8 @@ python autotoolstest_do_coverage() {
     bb.build.exec_func("shifttest_do_coverage", d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage
+python autotoolstest_do_report() {
+    bb.build.exec_func("shifttest_do_report", d)
+}
 
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_report
