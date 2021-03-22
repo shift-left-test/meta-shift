@@ -277,6 +277,27 @@ python shifttest_do_coverage() {
 }
 
 
+addtask report after do_compile do_install do_populate_sysroot
+do_report[nostamp] = "1"
+do_report[doc] = "Makes reports for the target"
+
+python shifttest_do_report() {
+    dd = d.createCopy()
+
+    if not dd.getVar("SHIFT_REPORT_DIR", True):
+        bb.fatal("You should set SHIFT_REPORT_DIR for making reports")
+
+    plain("Making report for do_checkcode", dd)
+    exec_func("do_checkcode", dd)
+
+    plain("Making report for do_test", dd)
+    exec_func("do_test", dd)
+
+    plain("Making report for do_coverage", dd)
+    exec_func("do_coverage", dd)
+}
+
+
 python() {
     if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
         # Synchronize the tasks
@@ -284,5 +305,6 @@ python() {
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
         d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
+        d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
 
