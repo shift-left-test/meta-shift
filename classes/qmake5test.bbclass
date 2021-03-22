@@ -79,7 +79,11 @@ python qmake5test_do_coverage() {
     bb.build.exec_func("shifttest_do_coverage", d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage
+python qmake5test_do_report() {
+    bb.build.exec_func("shifttest_do_report", d)
+}
+
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_report
 
 # Skip the RPATH sanity check since the QT 5.5 uses an absolute path for RPATH, which is
 # prohibited by the yocto QA sanity checker. (This issue is fixed in QT 5.6)
