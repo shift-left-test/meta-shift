@@ -62,10 +62,10 @@ class TEST:
         return os.path.join("report", cls.PF[recipe], "checkcode", path)
 
 
-def test_core_image_minimal_do_coverageall(report_build):
+def test_core_image_minimal_do_reportall(report_build):
     report_build.files.remove("report")
 
-    assert report_build.shell.execute("bitbake core-image-minimal -c coverageall").stderr.empty()
+    assert report_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
@@ -94,14 +94,6 @@ def test_core_image_minimal_do_coverageall(report_build):
     assert EXISTS(TEST.RESULT("stringutils", "unittest.bin.xml"))
     assert EXISTS(TEST.COVERAGE("stringutils", "index.html"))
     assert EXISTS(TEST.COVERAGE("stringutils", "coverage.xml"))
-
-
-def test_core_image_minimal_do_checkcodeall(report_build):
-    report_build.files.remove("report")
-
-    assert report_build.shell.execute("bitbake core-image-minimal -c checkcodeall").stderr.empty()
-
-    EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
@@ -154,6 +146,21 @@ def test_cmake_project_do_checkcodeall(report_build):
     assert READ(TEST.CHECK("cmake-project", "cpplint_report.txt")).empty()
 
 
+def test_cmake_project_do_reportall(report_build):
+    report_build.files.remove("report")
+
+    assert report_build.shell.execute("bitbake cmake-project -c reportall").stderr.empty()
+
+    EXISTS = report_build.files.exists
+
+    assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
+
+    assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
+
+
 def test_qmake5_project_do_coverageall(report_build):
     report_build.files.remove("report")
 
@@ -193,6 +200,23 @@ def test_qmake5_project_do_checkcodeall(report_build):
     assert not READ(TEST.CHECK("qmake5-project", "cpplint_report.txt")).empty()
 
 
+def test_qmake5_project_do_reportall(report_build):
+    report_build.files.remove("report")
+
+    assert report_build.shell.execute("bitbake qmake5-project -c reportall").stderr.empty()
+
+    EXISTS = report_build.files.exists
+
+    assert EXISTS(TEST.RESULT("qmake5-project", "test-qt5-gtest.xml"))
+    assert EXISTS(TEST.RESULT("qmake5-project", "tests/plus_test/test_result.xml"))
+    assert EXISTS(TEST.RESULT("qmake5-project", "tests/minus_test/test_result.xml"))
+    assert EXISTS(TEST.COVERAGE("qmake5-project", "index.html"))
+    assert EXISTS(TEST.COVERAGE("qmake5-project", "coverage.xml"))
+
+    assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
+
+
 def test_autotools_project_do_coverageall(report_build):
     report_build.files.remove("report")
 
@@ -223,6 +247,21 @@ def test_autotools_project_do_checkcodeall(report_build):
     assert READ(TEST.CHECK("autotools-project", "cpplint_report.txt")).empty()
 
 
+def test_autotools_project_do_reportall(report_build):
+    report_build.files.remove("report")
+
+    assert report_build.shell.execute("bitbake autotools-project -c reportall").stderr.empty()
+
+    EXISTS = report_build.files.exists
+
+    assert EXISTS(TEST.RESULT("autotools-project", "operatorTest.xml"))
+    assert EXISTS(TEST.COVERAGE("autotools-project", "index.html"))
+    assert EXISTS(TEST.COVERAGE("autotools-project", "coverage.xml"))
+
+    assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
+
+
 def test_humidifier_project_do_coverageall(report_build):
     report_build.files.remove("report")
 
@@ -248,6 +287,21 @@ def test_humidifier_project_do_checkcodeall(report_build):
     READ = report_build.files.read
     # assert READ(TEST.CHECK("humidifier-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
     assert READ(TEST.CHECK("humidifier-project", "cpplint_report.txt")).empty()
+
+
+def test_humidifier_project_do_reportall(report_build):
+    report_build.files.remove("report")
+
+    assert report_build.shell.execute("bitbake humidifier-project -c reportall").stderr.empty()
+
+    EXISTS = report_build.files.exists
+
+    assert EXISTS(TEST.RESULT("humidifier-project", "unittest.xml"))
+    assert EXISTS(TEST.COVERAGE("humidifier-project", "index.html"))
+    assert EXISTS(TEST.COVERAGE("humidifier-project", "coverage.xml"))
+
+    assert EXISTS(TEST.CHECK("humidifier-project", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("humidifier-project", "cpplint_report.txt"))
 
 
 def test_sqlite3logger_do_coverageall(report_build):
@@ -284,3 +338,24 @@ def test_sqlite3logger_do_checkcodeall(report_build):
 
     # assert READ(TEST.CHECK("stringutils", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
     assert READ(TEST.CHECK("stringutils", "cpplint_report.txt")).empty()
+
+def test_sqlite3logger_do_reportall(report_build):
+    report_build.files.remove("report")
+
+    assert report_build.shell.execute("bitbake sqlite3logger -c reportall").stderr.empty()
+
+    EXISTS = report_build.files.exists
+
+    assert EXISTS(TEST.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml"))
+    assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "index.html"))
+    assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "coverage.xml"))
+
+    assert EXISTS(TEST.RESULT("stringutils", "unittest.bin.xml"))
+    assert EXISTS(TEST.COVERAGE("stringutils", "index.html"))
+    assert EXISTS(TEST.COVERAGE("stringutils", "coverage.xml"))
+
+    assert EXISTS(TEST.CHECK("sqlite3wrapper", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("sqlite3wrapper", "cpplint_report.txt"))
+
+    assert EXISTS(TEST.CHECK("stringutils", "cppcheck_report.xml"))
+    assert EXISTS(TEST.CHECK("stringutils", "cpplint_report.txt"))
