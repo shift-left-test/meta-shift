@@ -68,4 +68,8 @@ python cmaketest_do_checktest() {
     bb.build.exec_func("shifttest_do_checktest", d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest
+python cmaketest_do_report() {
+    bb.build.exec_func("shifttest_do_report", d)
+}
+
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_report
