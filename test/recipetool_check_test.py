@@ -181,15 +181,6 @@ filenames = [
 ]
 
 
-filenames = [
-    "rule_var_src_uri_checksum_good1",
-    "rule_var_src_uri_checksum_good2",
-    "rule_var_src_uri_checksum_bad1",
-    "rule_var_src_uri_checksum_bad2",
-    "rule_var_src_uri_checksum_bad3",
-]
-
-
 @pytest.mark.parametrize("filename", filenames)
 def test_rule(bare_build, filename):
     BASE_DIR = os.path.join(os.path.dirname(__file__), "recipetool_check_tests")
@@ -216,3 +207,4 @@ def test_check_save_as_file(bare_build):
                 assert isinstance(issue["description"], str)
     finally:
         shutil.rmtree(d)
+
