@@ -221,3 +221,15 @@ def test_sage_native(bare_build):
 
 def test_sage_nativesdk(bare_build):
     assert bare_build.shell.execute("bitbake nativesdk-sage").stderr.empty()
+
+
+def test_oelint_adv_nativesdk(bare_build):
+    assert bare_build.shell.execute("bitbake nativesdk-oelint-adv").stderr.empty()
+
+
+def test_oelint_adv(bare_build):
+    assert bare_build.shell.execute("bitbake oelint-adv").stderr.empty()
+
+
+def test_oelint_adv_native(bare_build):
+    assert bare_build.shell.execute("bitbake oelint-adv-native").stderr.empty()
