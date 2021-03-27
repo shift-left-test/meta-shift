@@ -61,6 +61,10 @@ class TEST:
     def CHECK(cls, recipe, path):
         return os.path.join("report", cls.PF[recipe], "checkcode", path)
 
+    @classmethod
+    def CHECKRECIPE(cls, recipe, path):
+        return os.path.join("report", cls.PF[recipe], "checkrecipe", path)
+
 
 def test_core_image_minimal_do_reportall(report_build):
     report_build.files.remove("report")
@@ -113,6 +117,18 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(TEST.CHECK("stringutils", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("stringutils", "cpplint_report.txt"))
 
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_check.json"))
+
+    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json"))
+
+    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_check.json"))
+
+    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json"))
+
+    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json"))
+
+    assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_check.json"))
+
 
 def test_cmake_project_do_coverageall(report_build):
     report_build.files.remove("report")
@@ -146,6 +162,16 @@ def test_cmake_project_do_checkcodeall(report_build):
     assert READ(TEST.CHECK("cmake-project", "cpplint_report.txt")).empty()
 
 
+def test_cmake_project_do_checkrecipeall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake cmake-project -c checkrecipeall").stderr.empty()
+    READ = report_build.files.read
+
+    with READ(TEST.CHECKRECIPE("cmake-project", "recipe_check.json")) as f:
+        assert f.contains('cmake-project_1.0.0.bb')
+        assert f.contains('cmake-project_1.0.0.bbappend')
+
+
 def test_cmake_project_do_reportall(report_build):
     report_build.files.remove("report")
 
@@ -159,6 +185,8 @@ def test_cmake_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
+
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_check.json"))
 
 
 def test_qmake5_project_do_coverageall(report_build):
@@ -200,6 +228,15 @@ def test_qmake5_project_do_checkcodeall(report_build):
     assert not READ(TEST.CHECK("qmake5-project", "cpplint_report.txt")).empty()
 
 
+def test_qmake5_project_do_checkrecipeall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake qmake5-project -c checkrecipeall").stderr.empty()
+    READ = report_build.files.read
+
+    with READ(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json")) as f:
+        assert f.contains('qmake5-project_1.0.0.bb')
+        assert f.contains('qmake5-project_1.0.0.bbappend')
+
 def test_qmake5_project_do_reportall(report_build):
     report_build.files.remove("report")
 
@@ -215,6 +252,8 @@ def test_qmake5_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
+
+    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json"))
 
 
 def test_autotools_project_do_coverageall(report_build):
@@ -247,6 +286,16 @@ def test_autotools_project_do_checkcodeall(report_build):
     assert READ(TEST.CHECK("autotools-project", "cpplint_report.txt")).empty()
 
 
+def test_autotools_project_do_checkrecipeall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake autotools-project -c checkrecipeall").stderr.empty()
+    READ = report_build.files.read
+
+    with READ(TEST.CHECKRECIPE("autotools-project", "recipe_check.json")) as f:
+        assert f.contains('autotools-project_1.0.0.bb')
+        assert f.contains('autotools-project_1.0.0.bbappend')
+
+
 def test_autotools_project_do_reportall(report_build):
     report_build.files.remove("report")
 
@@ -260,6 +309,8 @@ def test_autotools_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
+
+    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_check.json"))
 
 
 def test_humidifier_project_do_coverageall(report_build):
@@ -289,6 +340,16 @@ def test_humidifier_project_do_checkcodeall(report_build):
     assert READ(TEST.CHECK("humidifier-project", "cpplint_report.txt")).empty()
 
 
+def test_humidifier_project_do_checkrecipeall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake humidifier-project -c checkrecipeall").stderr.empty()
+    READ = report_build.files.read
+
+    with READ(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json")) as f:
+        assert f.contains('humidifier-project_1.0.0.bb')
+        assert f.contains('humidifier-project_1.0.0.bbappend')
+
+
 def test_humidifier_project_do_reportall(report_build):
     report_build.files.remove("report")
 
@@ -302,6 +363,8 @@ def test_humidifier_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("humidifier-project", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("humidifier-project", "cpplint_report.txt"))
+
+    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json"))
 
 
 def test_sqlite3logger_do_coverageall(report_build):
@@ -339,6 +402,21 @@ def test_sqlite3logger_do_checkcodeall(report_build):
     # assert READ(TEST.CHECK("stringutils", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
     assert READ(TEST.CHECK("stringutils", "cpplint_report.txt")).empty()
 
+    
+def test_sqlite3logger_project_do_checkrecipeall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake sqlite3logger -c checkrecipeall").stderr.empty()
+    READ = report_build.files.read
+
+    with READ(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json")) as f:
+        assert f.contains('sqlite3wrapper_0.1.0.bb')
+        assert f.contains('sqlite3wrapper_0.1.0.bbappend')
+
+    with READ(TEST.CHECKRECIPE("stringutils", "recipe_check.json")) as f:
+        assert f.contains('stringutils_0.0.1.bb')
+        assert f.contains('stringutils_0.0.1.bbappend')
+
+
 def test_sqlite3logger_do_reportall(report_build):
     report_build.files.remove("report")
 
@@ -359,3 +437,7 @@ def test_sqlite3logger_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("stringutils", "cppcheck_report.xml"))
     assert EXISTS(TEST.CHECK("stringutils", "cpplint_report.txt"))
+
+    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json"))
+
+    assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_check.json"))

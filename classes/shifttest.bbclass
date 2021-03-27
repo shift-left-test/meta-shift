@@ -8,6 +8,7 @@ DEPENDS_prepend = "\
     cpplint-native \
     compiledb-native \
     sage-native \
+    oelint-adv-native \
     "
 
 DEBUG_BUILD = "1"
@@ -277,6 +278,34 @@ python shifttest_do_coverage() {
 }
 
 
+addtask checkrecipe
+do_checkrecipe[nostamp] = "1"
+do_checkrecipe[depends] += "oelint-adv-native:do_populate_sysroot"
+do_checkrecipe[doc] = "Check target recipe for the OpenEmbedded Style Guide issues."
+
+python shifttest_do_checkrecipe() {
+    dd = d.createCopy()
+
+    if not dd.getVar("FILE", True):
+        bb.fatal("Fail to find recipe file")
+
+    cmdline = ["oelint_adv", dd.getVar("FILE", True)]
+
+    bbapend = dd.getVar("__BBAPPEND", True)
+    if bbapend:
+        cmdline.append(bbapend)
+
+    if dd.getVar("SHIFT_REPORT_DIR", True):
+        report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
+        mkdirhier(report_dir, True)
+        report_path = os.path.join(report_dir, "recipe_check.json")
+        cmdline.append("-o%s" % (report_path))
+
+    cmdline.append("--verbose")
+    exec_proc(cmdline, dd)
+}
+
+
 addtask report after do_compile do_install do_populate_sysroot
 do_report[nostamp] = "1"
 do_report[doc] = "Makes reports for the target"
@@ -295,6 +324,10 @@ python shifttest_do_report() {
 
     plain("Making report for do_coverage", dd)
     exec_func("do_coverage", dd)
+
+    plain("Making report for do_checkrecipe", dd)
+    exec_func("do_checkrecipe", dd)
+
 }
 
 
@@ -305,6 +338,7 @@ python() {
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
         d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
+        d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
 
