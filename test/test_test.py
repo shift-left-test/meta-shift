@@ -91,6 +91,21 @@ def test_core_image_minimal_do_checkcodeall(test_build):
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
+def test_core_image_minimal_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake core-image-minimal -c checkrecipe")
+    assert o.stderr.contains("ERROR: Task do_checkrecipe does not exist for target core-image-minimal")
+
+
+def test_core_image_minimal_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake core-image-minimal -c checkrecipeall")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
 def test_cmake_project_do_build(test_build):
     assert test_build.shell.execute("bitbake cmake-project").stderr.empty()
 
@@ -103,6 +118,7 @@ def test_cmake_project_do_build(test_build):
     assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
+    assert project.packages.contains("oelint-adv-native")
 
 
 def test_cmake_project_do_test(test_build):
@@ -143,6 +159,20 @@ def test_cmake_project_do_checkcodeall(test_build):
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
+def test_cmake_project_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake cmake-project -c checkrecipe")
+    assert o.stdout.contains("cmake-project_1.0.0.bb")
+    assert o.stdout.contains("cmake-project_1.0.0.bbappend")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
+def test_cmake_project_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake cmake-project -c checkrecipeall")
+    assert o.stdout.contains("cmake-project_1.0.0.bb")
+    assert o.stdout.contains("cmake-project_1.0.0.bbappend")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
 def test_qmake5_project_do_build(test_build):
     assert test_build.shell.execute("bitbake qmake5-project").stderr.empty()
 
@@ -155,6 +185,7 @@ def test_qmake5_project_do_build(test_build):
     assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
+    assert project.packages.contains("oelint-adv-native")
 
 
 def test_qmake5_project_do_test(test_build):
@@ -199,6 +230,20 @@ def test_qmake5_project_do_checkcodeall(test_build):
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
+def test_qmake5_project_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake qmake5-project -c checkrecipe")
+    assert o.stdout.contains("qmake5-project_1.0.0.bb")
+    assert o.stdout.contains("qmake5-project_1.0.0.bbappend")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
+def test_qmake5_project_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake qmake5-project -c checkrecipeall")
+    assert o.stdout.contains("qmake5-project_1.0.0.bb")
+    assert o.stdout.contains("qmake5-project_1.0.0.bbappend")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
 def test_autotools_project_do_build(test_build):
     assert test_build.shell.execute("bitbake autotools-project").stderr.empty()
 
@@ -210,6 +255,7 @@ def test_autotools_project_do_build(test_build):
     assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
+    assert project.packages.contains("oelint-adv-native")
 
 
 def test_autotools_project_do_test(test_build):
@@ -250,6 +296,20 @@ def test_autotools_project_do_checkcodeall(test_build):
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
+def test_autotools_project_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake autotools-project -c checkrecipe")
+    assert o.stdout.contains("autotools-project_1.0.0.bb")
+    assert o.stdout.contains("autotools-project_1.0.0.bbappend")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
+def test_autotools_project_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake autotools-project -c checkrecipeall")
+    assert o.stdout.contains("autotools-project_1.0.0.bb")
+    assert o.stdout.contains("autotools-project_1.0.0.bbappend")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
 def test_humidifier_project_do_build(test_build):
     assert test_build.shell.execute("bitbake humidifier-project").stderr.empty()
 
@@ -262,6 +322,7 @@ def test_humidifier_project_do_build(test_build):
     assert project.packages.contains("python3-lcov-cobertura-native")
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
+    assert project.packages.contains("oelint-adv-native")
 
 
 def test_humidifier_project_do_test(test_build):
@@ -300,6 +361,20 @@ def test_humidifier_project_do_checkcodeall(test_build):
     o = test_build.shell.execute("bitbake humidifier-project -c checkcodeall")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+
+
+def test_humidifier_project_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake humidifier-project -c checkrecipe")
+    assert o.stdout.contains("humidifier-project_1.0.0.bb")
+    assert o.stdout.contains("humidifier-project_1.0.0.bbappend")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
+def test_humidifier_project_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake humidifier-project -c checkrecipeall")
+    assert o.stdout.contains("humidifier-project_1.0.0.bb")
+    assert o.stdout.contains("humidifier-project_1.0.0.bbappend")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
 
 
 def test_sqlite3logger_do_build(test_build):
@@ -358,3 +433,18 @@ def test_sqlite3logger_do_checkcodeall(test_build):
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+
+
+def test_sqlite3logger_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake sqlite3logger -c checkrecipe")
+    assert o.stderr.contains("ERROR: Task do_checkrecipe does not exist for target sqlite3logger")
+
+
+def test_sqlite3logger_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake sqlite3logger -c checkrecipeall")
+    assert o.stdout.contains("stringutils_0.0.1.bb")
+    assert o.stdout.contains("stringutils_0.0.1.bbappend")
+    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+    assert o.stdout.contains("sqlite3wrapper_0.1.0.bb")
+    assert o.stdout.contains("sqlite3wrapper_0.1.0.bbappend")
+    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
