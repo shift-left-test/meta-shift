@@ -59,8 +59,20 @@ def test_cmake_project_do_checkcode(test_build):
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
+def test_cmake_project_do_checkrecipe(test_build):
+    with externalsrc_execute(test_build, "cmake-project", "checkrecipe") as o:
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Checking the specified recipes or files for the styling issues...")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+
+
 def test_sage_native_project_do_build(test_build):
     # Test if the setuptools within devtool-modify works properly with the host python
     with externalsrc_execute(test_build, "sage-native", "build") as o:
+        assert o.stderr.empty()
+        assert o.returncode == 0
+
+
+def test_oelint_adv_native_project_do_build(test_build):
+    with externalsrc_execute(test_build, "oelint-adv-native", "build") as o:
         assert o.stderr.empty()
         assert o.returncode == 0
