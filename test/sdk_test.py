@@ -109,3 +109,4 @@ def test_cpplint(sdk_build):
     o = sdk_build.sdk_shell.execute("{} {}".format(cpplint_path, f.name))
     assert o.stderr.contains("{}:0:  No copyright message found.  You should have a line: \"Copyright [year] <Copyright Owner>\"  [legal/copyright] [5]".format(f.name))
     assert o.stderr.contains("{}:1:  Missing space before {{{{  [whitespace/braces] [5]".format(f.name))
+
