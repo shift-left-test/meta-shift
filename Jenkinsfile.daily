@@ -30,4 +30,9 @@ pipeline {
             }  // matrix
         }  // stage
     }  // stages
+    post {
+        always {
+            cleanWs disableDeferredWipeout: true
+        }
+    }  // post
 }  // pipeline
