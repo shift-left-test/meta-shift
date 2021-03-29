@@ -13,11 +13,13 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=68afeac0415f7ffea472ec34ec9d20c7 \
 DEPENDS_class-native += "\
     clang-cross-${TUNE_ARCH} \
     libgit2-native \
+    ncurses-native \
 "
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sentinel.git;protocol=http;nobranch=1"
-SRCREV = "72acee136d5eeb595fcf72f786ed248e24641bf6"
+SRCREV = "e2c716e139c2b02eba5034ea21c2430297eab1fd"
 
 S = "${WORKDIR}/git"
 
 inherit cmake native
+
