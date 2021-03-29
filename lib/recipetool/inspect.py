@@ -155,6 +155,8 @@ def inspect(args):
 
     output = open(args.output, "w") if args.output else sys.stdout
     reporter.dump(output)
+    if args.output:
+        output.close()
 
 
 def register_commands(subparsers):
