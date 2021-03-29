@@ -228,6 +228,8 @@ def cache(args, config, basepath, workspace):
 
         output = open(args.output, "w") if args.output else sys.stdout
         output.write(report)
+        if args.output:
+            output.close()
 
         return 0
     except Exception as e:
