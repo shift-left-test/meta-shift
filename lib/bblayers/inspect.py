@@ -139,7 +139,10 @@ def inspect(args):
     report.add_value("Distros", findFiles(os.path.join(path, "conf", "distro")))
     report.add_value("Classes", findFiles(os.path.join(path, "classes"), ".bbclass"))
 
-    report.dump(open(args.output, "w") if args.output else sys.stdout)
+    output = open(args.output, "w") if args.output else sys.stdout
+    report.dump(output)
+    if args.output:
+        output.close()
 
 
 def register_commands(subparsers):
