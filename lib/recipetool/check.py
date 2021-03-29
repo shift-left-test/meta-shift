@@ -105,6 +105,9 @@ def check(args, files):
 
     output.write(make_report(issues))
 
+    if args.output:
+        output.close()
+
 
 def checkrecipes(args):
     logger.info("Checking the specified recipes or files for the styling issues...")
