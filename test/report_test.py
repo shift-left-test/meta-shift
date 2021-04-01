@@ -68,7 +68,8 @@ class TEST:
 
 def test_core_image_minimal_do_reportall(report_build):
     report_build.files.remove("report")
-    report_build.shell.execute("bitbake core-image-minimal -c reportall")
+
+    assert report_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
@@ -173,7 +174,8 @@ def test_cmake_project_do_checkrecipeall(report_build):
 
 def test_cmake_project_do_reportall(report_build):
     report_build.files.remove("report")
-    report_build.shell.execute("bitbake cmake-project -c reportall")
+
+    assert report_build.shell.execute("bitbake cmake-project -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
@@ -237,7 +239,8 @@ def test_qmake5_project_do_checkrecipeall(report_build):
 
 def test_qmake5_project_do_reportall(report_build):
     report_build.files.remove("report")
-    report_build.shell.execute("bitbake qmake5-project -c reportall")
+
+    assert report_build.shell.execute("bitbake qmake5-project -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
@@ -295,7 +298,8 @@ def test_autotools_project_do_checkrecipeall(report_build):
 
 def test_autotools_project_do_reportall(report_build):
     report_build.files.remove("report")
-    report_build.shell.execute("bitbake autotools-project -c reportall")
+
+    assert report_build.shell.execute("bitbake autotools-project -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
@@ -348,7 +352,8 @@ def test_humidifier_project_do_checkrecipeall(report_build):
 
 def test_humidifier_project_do_reportall(report_build):
     report_build.files.remove("report")
-    report_build.shell.execute("bitbake humidifier-project -c reportall")
+
+    assert report_build.shell.execute("bitbake humidifier-project -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
@@ -415,7 +420,7 @@ def test_sqlite3logger_project_do_checkrecipeall(report_build):
 def test_sqlite3logger_do_reportall(report_build):
     report_build.files.remove("report")
 
-    report_build.shell.execute("bitbake sqlite3logger -c reportall")
+    assert report_build.shell.execute("bitbake sqlite3logger -c reportall").stderr.empty()
 
     EXISTS = report_build.files.exists
 
