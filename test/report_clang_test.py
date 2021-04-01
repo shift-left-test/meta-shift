@@ -58,7 +58,8 @@ class TEST:
 
 def test_core_image_minimal_do_reportall(report_clang_build):
     report_clang_build.files.remove("report")
-    report_clang_build.shell.execute("bitbake core-image-minimal -c reportall")
+
+    assert report_clang_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
 
     EXISTS = report_clang_build.files.exists
 
@@ -98,7 +99,7 @@ def test_cmake_project_do_checkcodeall(report_clang_build):
 
 def test_cmake_project_do_checktestall(report_clang_build):
     report_clang_build.files.remove("report")
-    report_clang_build.shell.execute("bitbake cmake-project -c checktestall")
+    assert report_clang_build.shell.execute("bitbake cmake-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("cmake-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
@@ -108,7 +109,8 @@ def test_cmake_project_do_checktestall(report_clang_build):
 
 def test_cmake_project_do_reportall(report_clang_build):
     report_clang_build.files.remove("report")
-    report_clang_build.shell.execute("bitbake cmake-project -c reportall")
+
+    assert report_clang_build.shell.execute("bitbake cmake-project -c reportall").stderr.empty()
 
     EXISTS = report_clang_build.files.exists
 
@@ -133,7 +135,7 @@ def test_qmake5_project_do_checkcodeall(report_clang_build):
 
 def test_qmake5_project_do_checktestall(report_clang_build):
     report_clang_build.files.remove("report")
-    report_clang_build.shell.execute("bitbake qmake5-project -c checktestall")
+    assert report_clang_build.shell.execute("bitbake qmake5-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("qmake5-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
@@ -144,7 +146,7 @@ def test_qmake5_project_do_checktestall(report_clang_build):
 def test_qmake5_project_do_reportall(report_clang_build):
     report_clang_build.files.remove("report")
 
-    report_clang_build.shell.execute("bitbake qmake5-project -c reportall")
+    assert report_clang_build.shell.execute("bitbake qmake5-project -c reportall").stderr.empty()
 
     EXISTS = report_clang_build.files.exists
 
@@ -168,7 +170,7 @@ def test_autotools_project_do_checkcodeall(report_clang_build):
 
 def test_autotools_project_do_checktestall(report_clang_build):
     report_clang_build.files.remove("report")
-    report_clang_build.shell.execute("bitbake autotools-project -c checktestall")
+    assert report_clang_build.shell.execute("bitbake autotools-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
     with READ(TEST.CHECKTEST("autotools-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
@@ -178,7 +180,8 @@ def test_autotools_project_do_checktestall(report_clang_build):
 
 def test_autotools_project_do_reportall(report_clang_build):
     report_clang_build.files.remove("report")
-    report_clang_build.shell.execute("bitbake autotools-project -c reportall")
+
+    assert report_clang_build.shell.execute("bitbake autotools-project -c reportall").stderr.empty()
 
     EXISTS = report_clang_build.files.exists
 
