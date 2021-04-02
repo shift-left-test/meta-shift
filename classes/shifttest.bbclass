@@ -7,6 +7,9 @@ DEPENDS_prepend = "\
     cppcheck-native \
     cpplint-native \
     compiledb-native \
+    metrixpp-native \
+    duplo-native \
+    flawfinder-native \
     sage-native \
     oelint-adv-native \
     "
@@ -341,3 +344,4 @@ python() {
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
+
