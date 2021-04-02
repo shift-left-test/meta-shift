@@ -35,7 +35,6 @@ CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1
 CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" errors="0"'
 QT_PLUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake5-project.PlusTest"'
 QT_MINUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake5-project.MinusTest"'
-CPPCHECK_NO_ERRORS_FOUND = '<cppcheck version="2.0"/>\n    <errors>\n    </errors>'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
 
@@ -63,17 +62,11 @@ def test_core_image_minimal_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
-    assert EXISTS(TEST.CHECK("cmake-project", "clang-tidy-report.txt"))
+    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "clang-tidy-report.txt"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
-    assert EXISTS(TEST.CHECK("autotools-project", "clang-tidy-report.txt"))
+    assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
     assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
@@ -92,9 +85,11 @@ def test_cmake_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake cmake-project -c checkcodeall").stderr.empty()
     READ = report_clang_build.files.read
-    # assert READ(TEST.CHECK("cmake-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("cmake-project", "cpplint_report.txt")).empty()
-    assert READ(TEST.CHECK("cmake-project", "clang-tidy-report.txt")).empty()
+    with READ(TEST.CHECK("cmake-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_cmake_project_do_checktestall(report_clang_build):
@@ -114,9 +109,7 @@ def test_cmake_project_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
-    assert EXISTS(TEST.CHECK("cmake-project", "clang-tidy-report.txt"))
+    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
     assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
@@ -126,11 +119,12 @@ def test_cmake_project_do_reportall(report_clang_build):
 def test_qmake5_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake qmake5-project -c checkcodeall").stderr.empty()
-    # NOTE: auto-generated files violate the static analysis rules
     READ = report_clang_build.files.read
-    # assert not READ(TEST.CHECK("qmake5-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert not READ(TEST.CHECK("qmake5-project", "cpplint_report.txt")).empty()
-    # assert not READ(TEST.CHECK("qmake5-project", "clang-tidy-report.txt")).empty()
+    with READ(TEST.CHECK("qmake5-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_qmake5_project_do_checktestall(report_clang_build):
@@ -150,9 +144,7 @@ def test_qmake5_project_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "clang-tidy-report.txt"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKTEST("qmake5-project", "mutations.xml"))
     assert EXISTS(TEST.CHECKTEST("qmake5-project", "index.html"))
@@ -163,9 +155,12 @@ def test_autotools_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake autotools-project -c checkcodeall").stderr.empty()
     READ = report_clang_build.files.read
-    # assert READ(TEST.CHECK("autotools-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("autotools-project", "cpplint_report.txt")).empty()
-    assert READ(TEST.CHECK("autotools-project", "clang-tidy-report.txt")).empty()
+
+    with READ(TEST.CHECK("autotools-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_autotools_project_do_checktestall(report_clang_build):
@@ -185,9 +180,7 @@ def test_autotools_project_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
-    assert EXISTS(TEST.CHECK("autotools-project", "clang-tidy-report.txt"))
+    assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKTEST("autotools-project", "mutations.xml"))
     assert EXISTS(TEST.CHECKTEST("autotools-project", "index.html"))

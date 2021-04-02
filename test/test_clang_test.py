@@ -35,15 +35,26 @@ def test_core_image_minimal_do_checkcode(test_clang_build):
 
 def test_core_image_minimal_do_checkcodeall(test_clang_build):
     o = test_clang_build.shell.execute("bitbake core-image-minimal -c checkcodeall")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
+
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
+
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
 def test_core_image_minimal_do_checktest(test_clang_build):
@@ -63,9 +74,12 @@ def test_core_image_minimal_do_checktestall(test_clang_build):
 
 def test_cmake_project_do_checkcode(test_clang_build):
     o = test_clang_build.shell.execute("bitbake cmake-project -c checkcode")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
 def test_cmake_project_do_checktest(test_clang_build):
@@ -76,9 +90,12 @@ def test_cmake_project_do_checktest(test_clang_build):
 
 def test_qmake5_project_do_checkcode(test_clang_build):
     o = test_clang_build.shell.execute("bitbake qmake5-project -c checkcode")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
 def test_qmake5_project_do_checktest(test_clang_build):
@@ -89,9 +106,12 @@ def test_qmake5_project_do_checktest(test_clang_build):
 
 def test_autotools_project_do_checkcode(test_clang_build):
     o = test_clang_build.shell.execute("bitbake autotools-project -c checkcode")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
 def test_autotools_project_do_checktest(test_clang_build):
