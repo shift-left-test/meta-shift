@@ -7,6 +7,9 @@ DEPENDS_prepend = "\
     cppcheck-native \
     cpplint-native \
     compiledb-native \
+    metrixpp-native \
+    duplo-native \
+    flawfinder-native \
     sage-native \
     oelint-adv-native \
     "
