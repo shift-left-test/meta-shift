@@ -56,8 +56,11 @@ def test_cmake_project_do_coverage(test_build):
 
 def test_cmake_project_do_checkcode(test_build):
     with externalsrc_execute(test_build, "cmake-project", "checkcode") as o:
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
 def test_cmake_project_do_checkrecipe(test_build):
