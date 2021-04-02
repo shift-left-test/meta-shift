@@ -1,0 +1,81 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a44c3c7..71b74be 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.15.5)
++cmake_minimum_required(VERSION 3.3.1)
+ project(duplo)
+ file(GLOB SOURCES src/*.cpp)
+ 
+@@ -7,6 +7,8 @@ SET(DUPLO_VERSION "\"v1.0.0\"" CACHE STRING "Duplo version")
+ if(MSVC)
+ else()
+     add_compile_options(-O3 -Wall -Werror -std=c++17)
+-    add_compile_definitions(DUPLO_VERSION=${DUPLO_VERSION})
++    add_definitions(-DDUPLO_VERSION=${DUPLO_VERSION})
+ endif()
+ add_executable(duplo ${SOURCES})
++
++install(TARGETS duplo DESTINATION bin)
+diff --git a/src/Duplo.cpp b/src/Duplo.cpp
+index 82d2cc7..a3db079 100644
+--- a/src/Duplo.cpp
++++ b/src/Duplo.cpp
+@@ -116,7 +116,9 @@ namespace {
+                     if (longestFiles.size() < 10) {
+                         addSorted(numLines, lines[i]);
+                     } else {
+-                        auto [l, r] = longestFiles.back();
++                        unsigned int l;
++                        std::string r;
++                        std::tie(l,r) = longestFiles.back();
+                         (void)r;
+                         if (l < numLines) {
+                             addSorted(numLines, lines[i]);
+@@ -133,7 +135,10 @@ namespace {
+                 << std::sqrt(matrix.max_size())
+                 << " lines at most." << std::endl
+                 << "Longest files:" << std::endl;
+-            for (auto [l, f] : longestFiles) {
++            for (auto lf : longestFiles) {
++                unsigned int l;
++                std::string f;
++                std::tie(l,f) = lf;
+                 stream << l << ": " << f << std::endl;
+             }
+ 
+@@ -152,14 +157,18 @@ namespace {
+             stream
+                 << ex.what() << std::endl
+                 << "Longest files:" << std::endl;
+-            for (auto [l, f] : longestFiles) {
++            for (auto lf : longestFiles) {
++                unsigned int l;
++                std::string f;
++                std::tie(l,f) = lf;
++
+                 stream << l << ": " << f << std::endl;
+             }
+ 
+             throw std::runtime_error(stream.str().c_str());
+         }
+ 
+-        return std::tuple(std::move(sourceFiles), matrix, files, locsTotal);
++        return std::tuple<std::vector<SourceFile>, std::vector<MatchType>, unsigned, unsigned>(std::move(sourceFiles), matrix, files, locsTotal);
+     }
+ 
+     unsigned ReportSeq(
+@@ -382,7 +391,11 @@ void Duplo::Run(const Options& options) {
+     }
+ 
+     auto lines = LoadFileList(options.GetListFilename());
+-    auto [sourceFiles, matrix, files, locsTotal] =
++    std::vector<SourceFile> sourceFiles;
++    std::vector<MatchType> matrix;
++    unsigned int files;
++    unsigned int locsTotal;
++    std::tie(sourceFiles, matrix, files, locsTotal) = 
+         LoadSourceFiles(lines, options.GetMinChars(), options.GetIgnorePrepStuff());
+ 
+     // hash maps
