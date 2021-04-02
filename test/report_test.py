@@ -35,7 +35,6 @@ CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1
 CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" errors="0"'
 QT_PLUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake5-project.PlusTest"'
 QT_MINUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake5-project.MinusTest"'
-CPPCHECK_NO_ERRORS_FOUND = '<cppcheck version="2.0"/>\n    <errors>\n    </errors>'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 
 
@@ -99,23 +98,17 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(TEST.COVERAGE("stringutils", "index.html"))
     assert EXISTS(TEST.COVERAGE("stringutils", "coverage.xml"))
 
-    assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("humidifier-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("humidifier-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("humidifier-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("sqlite3wrapper", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("sqlite3wrapper", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("sqlite3wrapper", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("stringutils", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("stringutils", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("stringutils", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_check.json"))
 
@@ -158,8 +151,11 @@ def test_cmake_project_do_checkcodeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake cmake-project -c checkcodeall").stderr.empty()
     READ = report_build.files.read
-    # assert READ(TEST.CHECK("cmake-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("cmake-project", "cpplint_report.txt")).empty()
+    with READ(TEST.CHECK("cmake-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_cmake_project_do_checkrecipeall(report_build):
@@ -183,8 +179,7 @@ def test_cmake_project_do_reportall(report_build):
     assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
 
-    assert EXISTS(TEST.CHECK("cmake-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("cmake-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_check.json"))
 
@@ -222,10 +217,12 @@ def test_qmake5_project_do_coverageall(report_build):
 def test_qmake5_project_do_checkcodeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake qmake5-project -c checkcodeall").stderr.empty()
-    # NOTE: auto-generated files violate the static analysis rules
     READ = report_build.files.read
-    # assert not READ(TEST.CHECK("qmake5-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert not READ(TEST.CHECK("qmake5-project", "cpplint_report.txt")).empty()
+    with READ(TEST.CHECK("qmake5-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_qmake5_project_do_checkrecipeall(report_build):
@@ -250,8 +247,7 @@ def test_qmake5_project_do_reportall(report_build):
     assert EXISTS(TEST.COVERAGE("qmake5-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("qmake5-project", "coverage.xml"))
 
-    assert EXISTS(TEST.CHECK("qmake5-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json"))
 
@@ -282,8 +278,11 @@ def test_autotools_project_do_checkcodeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake autotools-project -c checkcodeall").stderr.empty()
     READ = report_build.files.read
-    # assert READ(TEST.CHECK("autotools-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("autotools-project", "cpplint_report.txt")).empty()
+    with READ(TEST.CHECK("autotools-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_autotools_project_do_checkrecipeall(report_build):
@@ -307,8 +306,7 @@ def test_autotools_project_do_reportall(report_build):
     assert EXISTS(TEST.COVERAGE("autotools-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("autotools-project", "coverage.xml"))
 
-    assert EXISTS(TEST.CHECK("autotools-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("autotools-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_check.json"))
 
@@ -336,8 +334,11 @@ def test_humidifier_project_do_checkcodeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake humidifier-project -c checkcodeall").stderr.empty()
     READ = report_build.files.read
-    # assert READ(TEST.CHECK("humidifier-project", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("humidifier-project", "cpplint_report.txt")).empty()
+    with READ(TEST.CHECK("humidifier-project", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
 
 def test_humidifier_project_do_checkrecipeall(report_build):
@@ -361,8 +362,7 @@ def test_humidifier_project_do_reportall(report_build):
     assert EXISTS(TEST.COVERAGE("humidifier-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("humidifier-project", "coverage.xml"))
 
-    assert EXISTS(TEST.CHECK("humidifier-project", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("humidifier-project", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("humidifier-project", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json"))
 
@@ -396,11 +396,17 @@ def test_sqlite3logger_do_checkcodeall(report_build):
 
     READ = report_build.files.read
 
-    # assert READ(TEST.CHECK("sqlite3wrapper", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("sqlite3wrapper", "cpplint_report.txt")).empty()
+    with READ(TEST.CHECK("stringutils", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
-    # assert READ(TEST.CHECK("stringutils", "cppcheck_report.xml")).contains(CPPCHECK_NO_ERRORS_FOUND)
-    assert READ(TEST.CHECK("stringutils", "cpplint_report.txt")).empty()
+    with READ(TEST.CHECK("sqlite3wrapper", "sage_report.json")) as f:
+        assert f.contains('"complexity": [')
+        assert f.contains('"duplications": [')
+        assert f.contains('"size": [')
+        assert f.contains('"violations": [')
 
     
 def test_sqlite3logger_project_do_checkrecipeall(report_build):
@@ -432,11 +438,9 @@ def test_sqlite3logger_do_reportall(report_build):
     assert EXISTS(TEST.COVERAGE("stringutils", "index.html"))
     assert EXISTS(TEST.COVERAGE("stringutils", "coverage.xml"))
 
-    assert EXISTS(TEST.CHECK("sqlite3wrapper", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("sqlite3wrapper", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("sqlite3wrapper", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("stringutils", "cppcheck_report.xml"))
-    assert EXISTS(TEST.CHECK("stringutils", "cpplint_report.txt"))
+    assert EXISTS(TEST.CHECK("stringutils", "sage_report.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json"))
 
