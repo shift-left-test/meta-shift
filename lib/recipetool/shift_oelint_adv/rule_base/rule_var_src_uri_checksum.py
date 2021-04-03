@@ -34,7 +34,7 @@ class VarSRCUriOptions(Rule):
                     if x == INLINE_BLOCK:
                         continue
                     _url = get_scr_components(x)
-                    if _url["scheme"] in ["http", "https", "ftp", "ftps", "sftp", "s3", "git", "repo", "svn"]:
+                    if _url["scheme"] in ["http", "https", "ftp", "ftps", "sftp", "s3"]:
                         name = ""
                         if "name" in _url["options"]:
                             name = _url["options"]["name"]
