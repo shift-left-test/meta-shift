@@ -9,10 +9,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=5445ee55866227a2eaf17ebe47250e09 \
                     file://oelint_adv/LICENSE;md5=e926c89aceef6c1a4247d5df08f94533"
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/oelint-adv.git;protocol=http;nobranch=1"
-SRCREV = "64b7ba1eb0bdd973b8800bfeb0e9b2a0cc8d876a"
+SRCREV = "31dd843dab251333d9278413fd51aaeff65435bb"
 
 S = "${WORKDIR}/git"
 
 inherit setuptools3
 
 BBCLASSEXTEND = "native nativesdk"
+
