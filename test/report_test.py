@@ -110,17 +110,17 @@ def test_core_image_minimal_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("stringutils", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_violations.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_violations.json"))
 
 
 def test_cmake_project_do_coverageall(report_build):
@@ -163,7 +163,7 @@ def test_cmake_project_do_checkrecipeall(report_build):
     assert report_build.shell.execute("bitbake cmake-project -c checkrecipeall").stderr.empty()
     READ = report_build.files.read
 
-    with READ(TEST.CHECKRECIPE("cmake-project", "recipe_check.json")) as f:
+    with READ(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
@@ -181,7 +181,7 @@ def test_cmake_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
 
 
 def test_qmake5_project_do_coverageall(report_build):
@@ -230,7 +230,7 @@ def test_qmake5_project_do_checkrecipeall(report_build):
     assert report_build.shell.execute("bitbake qmake5-project -c checkrecipeall").stderr.empty()
     READ = report_build.files.read
 
-    with READ(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json")) as f:
+    with READ(TEST.CHECKRECIPE("qmake5-project", "recipe_violations.json")) as f:
         assert f.contains('qmake5-project_1.0.0.bb')
         assert f.contains('qmake5-project_1.0.0.bbappend')
 
@@ -249,7 +249,7 @@ def test_qmake5_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
 
 
 def test_autotools_project_do_coverageall(report_build):
@@ -290,7 +290,7 @@ def test_autotools_project_do_checkrecipeall(report_build):
     assert report_build.shell.execute("bitbake autotools-project -c checkrecipeall").stderr.empty()
     READ = report_build.files.read
 
-    with READ(TEST.CHECKRECIPE("autotools-project", "recipe_check.json")) as f:
+    with READ(TEST.CHECKRECIPE("autotools-project", "recipe_violations.json")) as f:
         assert f.contains('autotools-project_1.0.0.bb')
         assert f.contains('autotools-project_1.0.0.bbappend')
 
@@ -308,7 +308,7 @@ def test_autotools_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_violations.json"))
 
 
 def test_humidifier_project_do_coverageall(report_build):
@@ -346,7 +346,7 @@ def test_humidifier_project_do_checkrecipeall(report_build):
     assert report_build.shell.execute("bitbake humidifier-project -c checkrecipeall").stderr.empty()
     READ = report_build.files.read
 
-    with READ(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json")) as f:
+    with READ(TEST.CHECKRECIPE("humidifier-project", "recipe_violations.json")) as f:
         assert f.contains('humidifier-project_1.0.0.bb')
         assert f.contains('humidifier-project_1.0.0.bbappend')
 
@@ -364,7 +364,7 @@ def test_humidifier_project_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("humidifier-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
 
 
 def test_sqlite3logger_do_coverageall(report_build):
@@ -414,11 +414,11 @@ def test_sqlite3logger_project_do_checkrecipeall(report_build):
     assert report_build.shell.execute("bitbake sqlite3logger -c checkrecipeall").stderr.empty()
     READ = report_build.files.read
 
-    with READ(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json")) as f:
+    with READ(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json")) as f:
         assert f.contains('sqlite3wrapper_0.1.0.bb')
         assert f.contains('sqlite3wrapper_0.1.0.bbappend')
 
-    with READ(TEST.CHECKRECIPE("stringutils", "recipe_check.json")) as f:
+    with READ(TEST.CHECKRECIPE("stringutils", "recipe_violations.json")) as f:
         assert f.contains('stringutils_0.0.1.bb')
         assert f.contains('stringutils_0.0.1.bbappend')
 
@@ -442,6 +442,6 @@ def test_sqlite3logger_do_reportall(report_build):
 
     assert EXISTS(TEST.CHECK("stringutils", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
 
-    assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_check.json"))
+    assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_violations.json"))

@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d41d8cd98f00b204e9800998ecf8427e"
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sage.git;protocol=http;nobranch=1"
 
-SRCREV = "b4d36c71b97e72023b003ca08422eb0708eb2554"
+SRCREV = "ab318d5206e762d985a2c485ae174ec620667160"
 
 S = "${WORKDIR}/git"
 
@@ -32,3 +32,4 @@ do_install_append_class-native() {
 }
 
 BBCLASSEXTEND = "native nativesdk"
+
