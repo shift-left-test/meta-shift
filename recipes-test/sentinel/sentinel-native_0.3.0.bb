@@ -17,7 +17,7 @@ DEPENDS_class-native += "\
 "
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sentinel.git;protocol=http;nobranch=1"
-SRCREV = "e2c716e139c2b02eba5034ea21c2430297eab1fd"
+SRCREV = "321bd256ba8e8dd1a4d681f67754cf4d8f9dc840"
 
 S = "${WORKDIR}/git"
 
