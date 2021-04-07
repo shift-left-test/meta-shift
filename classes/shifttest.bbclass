@@ -301,7 +301,7 @@ python shifttest_do_checkrecipe() {
     if dd.getVar("SHIFT_REPORT_DIR", True):
         report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
         mkdirhier(report_dir, True)
-        report_path = os.path.join(report_dir, "recipe_check.json")
+        report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("-o%s" % (report_path))
 
     cmdline.append("--verbose")
