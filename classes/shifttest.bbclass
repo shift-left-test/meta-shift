@@ -292,19 +292,20 @@ python shifttest_do_checkrecipe() {
     if not dd.getVar("FILE", True):
         bb.fatal("Fail to find recipe file")
 
-    cmdline = ["oelint_adv", dd.getVar("FILE", True)]
+    cmdline = ["oelint-adv", dd.getVar("FILE", True)]
 
     bbapend = dd.getVar("__BBAPPEND", True)
     if bbapend:
         cmdline.append(bbapend)
 
+
     if dd.getVar("SHIFT_REPORT_DIR", True):
         report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
         mkdirhier(report_dir, True)
         report_path = os.path.join(report_dir, "recipe_violations.json")
-        cmdline.append("-o%s" % (report_path))
+        cmdline.append("--output %s" % (report_path))
 
-    cmdline.append("--verbose")
+    cmdline.append("--quiet --addrules jetm")
     exec_proc(cmdline, dd)
 }
 
