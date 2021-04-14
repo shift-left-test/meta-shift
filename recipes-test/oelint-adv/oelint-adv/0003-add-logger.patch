@@ -1,0 +1,39 @@
+diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
+index 4ab567b..26d83da 100644
+--- a/oelint_adv/__main__.py
++++ b/oelint_adv/__main__.py
+@@ -2,6 +2,7 @@ import argparse
+ import os
+ import sys
+ import json
++import logging
+ 
+ from oelint_adv.cls_rule import load_rules
+ from oelint_adv.cls_stash import Stash
+@@ -10,6 +11,7 @@ from oelint_adv.rule_file import set_rulefile, set_constantfile
+ 
+ sys.path.append(os.path.abspath(os.path.join(__file__, "..")))
+ 
++logger = logging.getLogger('oelint-adv')
+ 
+ def create_argparser():
+     parser = argparse.ArgumentParser(
+@@ -75,6 +77,9 @@ def make_json_report(issues):
+ 
+ 
+ def main():
++    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
++    logger.info("Checking the specified recipes or files for the styling issues...")
++
+     args = create_argparser()
+     rules = [x for x in load_rules(args,
+         add_rules=args.addrules, add_dirs=args.customrules)]
+@@ -128,6 +133,8 @@ def main():
+     else:
+         args.output.write("\n".join([x[1] for x in issues]) + "\n")
+ 
++    logger.info("Done.")
++
+ 
+ if __name__ == '__main__':
+     main()
