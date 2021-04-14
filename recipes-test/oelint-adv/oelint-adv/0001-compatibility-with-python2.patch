@@ -1,0 +1,1850 @@
+diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
+index 7c5a11a..62c6f18 100644
+--- a/oelint_adv/__main__.py
++++ b/oelint_adv/__main__.py
+@@ -41,14 +41,14 @@ def create_argparser():
+         try:
+             with open(args.rulefile) as i:
+                 set_rulefile(json.load(i))
+-        except (FileNotFoundError, json.JSONDecodeError):
++        except (IOError, OSError, json.JSONDecodeError):
+             raise argparse.ArgumentTypeError("'rulefile' is not a valid file")
+ 
+     if args.constantfile:
+         try:
+             with open(args.constantfile) as i:
+                 set_constantfile(json.load(i))
+-        except (FileNotFoundError, json.JSONDecodeError):
++        except (IOError, OSError, json.JSONDecodeError):
+             raise argparse.ArgumentTypeError(
+                 "'constantfile' is not a valid file")
+ 
+@@ -74,7 +74,7 @@ def main():
+     for f in args.files:
+         try:
+             stash.AddFile(f)
+-        except FileNotFoundError as e:
++        except (IOError, OSError) as e:
+             if not args.quiet:
+                 print("Can't open/read: {}".format(e))
+ 
+diff --git a/oelint_adv/cls_item.py b/oelint_adv/cls_item.py
+index 66eeef6..a9c3510 100644
+--- a/oelint_adv/cls_item.py
++++ b/oelint_adv/cls_item.py
+@@ -4,7 +4,7 @@ import re
+ from oelint_adv.const_func import KNOWN_FUNCS
+ 
+ 
+-class Item():
++class Item(object):
+     ATTR_LINE = "Line"
+     ATTR_RAW = "Raw"
+     ATTR_ORIGIN = "Origin"
+@@ -143,7 +143,7 @@ class Variable(Item):
+             operator {str} -- Operation performed to the variable
+             flag {str} -- Optional variable flag
+         """
+-        super().__init__(origin, line, infileline, rawtext)
++        super(Variable, self).__init__(origin, line, infileline, rawtext)
+         if "inherit" != name:
+             self.VarName, self.SubItem, self.PkgSpec = self.extract_sub(name)
+             self.SubItem += " ".join(self.PkgSpec)
+@@ -224,8 +224,8 @@ class Comment(Item):
+             infileline {int} -- Line counter in the particular file
+             rawtext {str} -- Raw string
+         """
+-        super().__init__(origin, line, infileline, rawtext)
+-    
++        super(Comment, self).__init__(origin, line, infileline, rawtext)
++
+     def get_items(self):
+         """Get single lines of block
+ 
+@@ -250,7 +250,7 @@ class Include(Item):
+             incname {str} -- raw name of the include file
+             statement {str} -- either include or require
+         """
+-        super().__init__(origin, line, infileline, rawtext)
++        super(Include, self).__init__(origin, line, infileline, rawtext)
+         self.IncName = incname
+         self.Statement = statement
+     
+@@ -283,7 +283,7 @@ class Function(Item):
+             python {bool} -- python function according to parser (default: {False})
+             fakeroot {bool} -- uses fakeroot (default: {False})
+         """
+-        super().__init__(origin, line, infileline, rawtext)
++        super(Function, self).__init__(origin, line, infileline, rawtext)
+         self.IsPython = python is not None
+         self.IsFakeroot = fakeroot is not None
+         name = name or ""
+@@ -337,7 +337,7 @@ class PythonBlock(Item):
+             rawtext {str} -- Raw string
+             name {str} -- Function name
+         """
+-        super().__init__(origin, line, infileline, rawtext)
++        super(PythonBlock, self).__init__(origin, line, infileline, rawtext)
+         self.FuncName = name
+     
+     def get_items(self):
+@@ -367,7 +367,7 @@ class TaskAssignment(Item):
+             ident {str} -- task flag
+             value {str} -- value of modification
+         """
+-        super().__init__(origin, line, infileline, rawtext)
++        super(TaskAssignment, self).__init__(origin, line, infileline, rawtext)
+         self.FuncName = name
+         self.VarName = ident
+         self.VarValue = value
+@@ -401,7 +401,7 @@ class TaskAdd(Item):
+             before {str} -- before statement (default: {""})
+             after {str} -- after statement (default: {""})
+         """
+-        super().__init__(origin, line, infileline, rawtext)
++        super(TaskAdd, self).__init__(origin, line, infileline, rawtext)
+         self.FuncName = name
+         self.Before = [x for x in (before or "").split(" ") if x]
+         self.After = [x for x in (after or "").split(" ") if x]
+@@ -429,7 +429,7 @@ class MissingFile(Item):
+             filename {str} -- filename of the file that can't be found
+             statement {str} -- either include or require
+         """
+-        super().__init__(origin, line, infileline, "")
++        super(MissingFile, self).__init__(origin, line, infileline, "")
+         self.Filename = filename
+         self.Statement = statement
+ 
+diff --git a/oelint_adv/cls_rule.py b/oelint_adv/cls_rule.py
+index 8e647fa..1f525a4 100644
+--- a/oelint_adv/cls_rule.py
++++ b/oelint_adv/cls_rule.py
+@@ -10,7 +10,7 @@ from oelint_adv.color import get_color
+ from oelint_adv.rule_file import get_rulefile
+ 
+ 
+-class Rule():
++class Rule(object):
+     def __init__(self, id="", severity="", message="", onappend=True, onlyappend=False, appendix=[]):
+         """constructor
+ 
+diff --git a/oelint_adv/cls_stash.py b/oelint_adv/cls_stash.py
+index c62383f..d2720a2 100644
+--- a/oelint_adv/cls_stash.py
++++ b/oelint_adv/cls_stash.py
+@@ -4,7 +4,7 @@ import re
+ from oelint_adv.parser import get_items
+ 
+ 
+-class Stash():
++class Stash(object):
+ 
+     def __init__(self, args):
+         """constructor
+diff --git a/oelint_adv/const_vars.py b/oelint_adv/const_vars.py
+index 19fafa6..b208217 100644
+--- a/oelint_adv/const_vars.py
++++ b/oelint_adv/const_vars.py
+@@ -3,7 +3,7 @@ from oelint_adv.rule_file import get_rulefile, get_constantfile
+ 
+ def __get_const_and_rulefile(l, key):
+     res = l
+-    _rulefile = {**get_rulefile(), **get_constantfile()}
++    _rulefile = dict(list(get_rulefile().items()) + list(get_constantfile().items()))
+     if key in _rulefile.keys() and isinstance(_rulefile[key], list):
+         res += _rulefile[key]
+     return res
+@@ -11,9 +11,9 @@ def __get_const_and_rulefile(l, key):
+ 
+ def __get_const_and_rulefile_dict(l, key):
+     res = l
+-    _rulefile = {**get_rulefile(), **get_constantfile()}
++    _rulefile = dict(list(get_rulefile().items()) + list(get_constantfile().items()))
+     if key in _rulefile.keys() and isinstance(_rulefile[key], dict):
+-        res = {**res, **_rulefile[key]}
++        res = dict(list(res.items()) + list(_rulefile[key].items()))
+     return res
+ 
+ 
+@@ -33,9 +33,7 @@ def get_mandatory_vars():
+ 
+ SUGGESTED_VARS = [
+     "AUTHOR",
+-    "BUGTRACKER",
+-    "BBCLASSEXTEND",
+-    "CVE_PRODUCT"
++    "BUGTRACKER"
+ ]
+ 
+ 
+diff --git a/oelint_adv/helper_files.py b/oelint_adv/helper_files.py
+index 49850f9..86fab29 100644
+--- a/oelint_adv/helper_files.py
++++ b/oelint_adv/helper_files.py
+@@ -1,7 +1,10 @@
+ import glob
+ import os
+ import re
+-from urllib.parse import urlparse
++try:
++    from urllib.parse import urlsplit
++except ImportError:
++    from urlparse import urlsplit
+ 
+ from oelint_adv.cls_item import Variable
+ from oelint_adv.const_vars import get_known_mirrors
+@@ -74,7 +77,7 @@ def get_scr_components(string):
+     Returns:
+         dict -- scheme: protocol used, src: source URI, options: parsed options
+     """
+-    _url = urlparse(_replace_with_known_mirrors(string))
++    _url = urlsplit(_replace_with_known_mirrors(string))
+     _scheme = _url.scheme
+     _tmp = _url.netloc
+     if _url.path:
+diff --git a/oelint_adv/parser.py b/oelint_adv/parser.py
+index 48bda1b..fa917a9 100644
+--- a/oelint_adv/parser.py
++++ b/oelint_adv/parser.py
+@@ -33,18 +33,18 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
+     res = []
+     raw_line = raw_line or line
+     if raw_line.find("\\\n") != -1:
+-        _, line = _iter.__next__()
++        _, line = next(_iter)
+         while line.find("\\\n") != -1:
+             raw_line += line
+-            _, line = _iter.__next__()
++            _, line = next(_iter)
+         raw_line += line
+     elif re.match(__func_start_regexp__, raw_line):
+-        _, line = _iter.__next__()
++        _, line = next(_iter)
+         stopiter = False
+         while line.strip() != "}" and not stopiter:
+             raw_line += line
+             try:
+-                _, line = _iter.__next__()
++                _, line = next(_iter)
+             except StopIteration:
+                 stopiter = True
+         if line.strip() == "}":
+@@ -53,13 +53,13 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
+         stopiter = False
+         while not stopiter:
+             try:
+-                _, line = _iter.__next__()
++                _, line = next(_iter)
+             except StopIteration:
+                 stopiter = True
+             if re.match("^[A-Za-z0-9#]+", line) or stopiter:
+                 if not stopiter:
+                     res += prepare_lines_subparser(_iter,
+-                                                lineOffset, num, line)
++                                                   lineOffset, num, line)
+                 break
+             if line.startswith("def "):
+                 raw_line = line
+@@ -85,14 +85,14 @@ def prepare_lines(_file, lineOffset=0):
+             for num, line in _iter:
+                 prep_lines += prepare_lines_subparser(
+                     _iter, lineOffset, num, line)
+-    except FileNotFoundError:
++    except (IOError, OSError):
+         pass
+     return prep_lines
+ 
+ 
+ def get_items(stash, _file, lineOffset=0):
+     res = []
+-    __regex_var = r"^(?P<varname>([A-Z0-9a-z_-]|\$|\{|\})+?)(\[(?P<ident>(\w|-)+)\])*(?P<varop>(\s|\t)*(\+|\?|\:|\.)*=(\+)*(\s|\t)*)(?P<varval>.*)"
++    __regex_var = r"^(?P<varname>([A-Z0-9a-z_-]|\$|\{|\})+?)(\[(?P<ident>(\w|-|\.)+)\])*(?P<varop>(\s|\t)*(\+|\?|\:|\.)*=(\+)*(\s|\t)*)(?P<varval>.*)"
+     __regex_func = r"^((?P<py>python)\s+|(?P<fr>fakeroot\s+))*(?P<func>[\w\.\-\+\{\}\$]+)?\s*\(\s*\)\s*\{(?P<funcbody>.*)\s*\}"
+     __regex_inherit = r"^.*?inherit(\s+|\t+)(?P<inhname>.+)"
+     __regex_comments = r"^(\s|\t)*#+\s*(?P<body>.*)"
+diff --git a/oelint_adv/rule_base/rule_append_protvars.py b/oelint_adv/rule_base/rule_append_protvars.py
+index 04af268..5b29aec 100644
+--- a/oelint_adv/rule_base/rule_append_protvars.py
++++ b/oelint_adv/rule_base/rule_append_protvars.py
+@@ -5,11 +5,11 @@ from oelint_adv.const_vars import get_protected_append_vars
+ 
+ class VarQuoted(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.append.protvars",
+-                         severity="error",
+-                         message="Variable '{VAR}' shouldn't be set as part of a bbappend",
+-                         onlyappend=True,
+-                         appendix=get_protected_append_vars())
++        super(VarQuoted, self).__init__(id="oelint.append.protvars",
++                                        severity="error",
++                                        message="Variable '{VAR}' shouldn't be set as part of a bbappend",
++                                        onlyappend=True,
++                                        appendix=get_protected_append_vars())
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_comment_notraling.py b/oelint_adv/rule_base/rule_comment_notraling.py
+index eedde45..bbffc0c 100644
+--- a/oelint_adv/rule_base/rule_comment_notraling.py
++++ b/oelint_adv/rule_base/rule_comment_notraling.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_item import PythonBlock, Function
+ 
+ class NoCommentsTrailing(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.comments.notrailing",
+-                         severity="error",
+-                         message="Comments shall be put on seperate lines")
++        super(NoCommentsTrailing, self).__init__(id="oelint.comments.notrailing",
++                                                 severity="error",
++                                                 message="Comments shall be put on seperate lines")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_file_include.py b/oelint_adv/rule_base/rule_file_include.py
+index aa6d559..ec7a337 100644
+--- a/oelint_adv/rule_base/rule_file_include.py
++++ b/oelint_adv/rule_base/rule_file_include.py
+@@ -6,9 +6,9 @@ from oelint_adv.helper_files import find_local_or_in_layer, expand_term
+ 
+ class FileIncludeNotFound(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.file.includenotfound",
+-                         severity="warning",
+-                         message="'{FILE}' was not found")
++        super(FileIncludeNotFound, self).__init__(id="oelint.file.includenotfound",
++                                                  severity="warning",
++                                                  message="'{FILE}' was not found")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_file_includevsrequire.py b/oelint_adv/rule_base/rule_file_includevsrequire.py
+index d05355c..99b26ef 100644
+--- a/oelint_adv/rule_base/rule_file_includevsrequire.py
++++ b/oelint_adv/rule_base/rule_file_includevsrequire.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class FileIncludeVsRequire(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.file.requireinclude",
+-                         severity="warning",
+-                         message="Use 'require {FILE}' instead of 'include {FILE}'")
++        super(FileIncludeVsRequire, self).__init__(id="oelint.file.requireinclude",
++                                                   severity="warning",
++                                                   message="Use 'require {FILE}' instead of 'include {FILE}'")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_file_patch_signedoff.py b/oelint_adv/rule_base/rule_file_patch_signedoff.py
+index 4f66c1a..8d9045c 100644
+--- a/oelint_adv/rule_base/rule_file_patch_signedoff.py
++++ b/oelint_adv/rule_base/rule_file_patch_signedoff.py
+@@ -7,9 +7,9 @@ from oelint_adv.helper_files import get_files
+ 
+ class FilePatchIsSignedOff(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.file.patchsignedoff",
+-                         severity="warning",
+-                         message="Patch '{FILE}' should contain a Signed-Off entry")
++        super(FilePatchIsSignedOff, self).__init__(id="oelint.file.patchsignedoff",
++                                                   severity="warning",
++                                                   message="Patch '{FILE}' should contain a Signed-Off entry")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_file_patch_upstreamstatus.py b/oelint_adv/rule_base/rule_file_patch_upstreamstatus.py
+index 49e3709..dc17305 100644
+--- a/oelint_adv/rule_base/rule_file_patch_upstreamstatus.py
++++ b/oelint_adv/rule_base/rule_file_patch_upstreamstatus.py
+@@ -7,9 +7,9 @@ from oelint_adv.helper_files import get_files
+ 
+ class FilePatchIsUpstreamStatus(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.file.upstreamstatus",
+-                         severity="info",
+-                         message="Patch '{FILE}' should contain an Upstream-Status entry")
++        super(FilePatchIsUpstreamStatus, self).__init__(id="oelint.file.upstreamstatus",
++                                                        severity="info",
++                                                        message="Patch '{FILE}' should contain an Upstream-Status entry")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_file_require.py b/oelint_adv/rule_base/rule_file_require.py
+index 1927811..7cd17e6 100644
+--- a/oelint_adv/rule_base/rule_file_require.py
++++ b/oelint_adv/rule_base/rule_file_require.py
+@@ -7,9 +7,9 @@ from oelint_adv.helper_files import find_local_or_in_layer, expand_term
+ 
+ class FileRequireNotFound(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.file.requirenotfound",
+-                         severity="error",
+-                         message="'{FILE}' was not found")
++        super(FileRequireNotFound, self).__init__(id="oelint.file.requirenotfound",
++                                                  severity="error",
++                                                  message="'{FILE}' was not found")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_func_machinespec.py b/oelint_adv/rule_base/rule_func_machinespec.py
+index 074fdbd..4b22b5f 100644
+--- a/oelint_adv/rule_base/rule_func_machinespec.py
++++ b/oelint_adv/rule_base/rule_func_machinespec.py
+@@ -7,9 +7,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarPnBpnUsage(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.func.machinespecific",
+-                         severity="error",
+-                         message="'{}' is set machine specific ['{}'], but a matching COMPATIBLE_MACHINE entry is missing")
++        super(VarPnBpnUsage, self).__init__(id="oelint.func.machinespecific",
++                                            severity="error",
++                                            message="'{}' is set machine specific ['{}'], but a matching COMPATIBLE_MACHINE entry is missing")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_newline_consecutive.py b/oelint_adv/rule_base/rule_newline_consecutive.py
+index 659100c..cfbd528 100644
+--- a/oelint_adv/rule_base/rule_newline_consecutive.py
++++ b/oelint_adv/rule_base/rule_newline_consecutive.py
+@@ -3,9 +3,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class NewLineConsecutive(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.newline.consecutive",
+-                         severity="warning",
+-                         message="Consecutive blank lines should be avoided")
++        super(NewLineConsecutive, self).__init__(id="oelint.newline.consecutive",
++                                                 severity="warning",
++                                                 message="Consecutive blank lines should be avoided")
+ 
+     def __getMatches(self, _file, stash):
+         res = {}
+diff --git a/oelint_adv/rule_base/rule_newline_end.py b/oelint_adv/rule_base/rule_newline_end.py
+index c3a7862..fe39056 100644
+--- a/oelint_adv/rule_base/rule_newline_end.py
++++ b/oelint_adv/rule_base/rule_newline_end.py
+@@ -3,9 +3,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class NewLineEOF(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.newline.eof",
+-                         severity="warning",
+-                         message="File shall end on a newline")
++        super(NewLineEOF, self).__init__(id="oelint.newline.eof",
++                                         severity="warning",
++                                         message="File shall end on a newline")
+ 
+     def __getMatches(self, _file, stash):
+         res = {}
+diff --git a/oelint_adv/rule_base/rule_nospace_line_begin.py b/oelint_adv/rule_base/rule_nospace_line_begin.py
+index 331169e..c29e56c 100644
+--- a/oelint_adv/rule_base/rule_nospace_line_begin.py
++++ b/oelint_adv/rule_base/rule_nospace_line_begin.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_item import PythonBlock, Function
+ 
+ class NoSpaceBeginningRule(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.spaces.linebeginning",
+-                         severity="warning",
+-                         message="Line shall not begin with a space")
++        super(NoSpaceBeginningRule, self).__init__(id="oelint.spaces.linebeginning",
++                                                   severity="warning",
++                                                   message="Line shall not begin with a space")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_nospace_line_cont.py b/oelint_adv/rule_base/rule_nospace_line_cont.py
+index d49a983..10f26ee 100644
+--- a/oelint_adv/rule_base/rule_nospace_line_cont.py
++++ b/oelint_adv/rule_base/rule_nospace_line_cont.py
+@@ -4,9 +4,9 @@ import re
+ 
+ class NoSpaceRuleCont(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.spaces.linecont",
+-                         severity="error",
+-                         message="No spaces after line continuation")
++        super(NoSpaceRuleCont, self).__init__(id="oelint.spaces.linecont",
++                                              severity="error",
++                                              message="No spaces after line continuation")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_nospace_line_empty.py b/oelint_adv/rule_base/rule_nospace_line_empty.py
+index bc5770f..5562778 100644
+--- a/oelint_adv/rule_base/rule_nospace_line_empty.py
++++ b/oelint_adv/rule_base/rule_nospace_line_empty.py
+@@ -3,9 +3,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class NoSpaceEmptyLineRule(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.spaces.emptyline",
+-                         severity="warning",
+-                         message="Empty lines shall not contain spaces")
++        super(NoSpaceEmptyLineRule, self).__init__(id="oelint.spaces.emptyline",
++                                                   severity="warning",
++                                                   message="Empty lines shall not contain spaces")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_nospace_line_end.py b/oelint_adv/rule_base/rule_nospace_line_end.py
+index 314d4b4..d450d54 100644
+--- a/oelint_adv/rule_base/rule_nospace_line_end.py
++++ b/oelint_adv/rule_base/rule_nospace_line_end.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class NoSpaceTrailingRule(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.spaces.lineend",
+-                         severity="warning",
+-                         message="Line shall not end with a space")
++        super(NoSpaceTrailingRule, self).__init__(id="oelint.spaces.lineend",
++                                                  severity="warning",
++                                                  message="Line shall not end with a space")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_notabs.py b/oelint_adv/rule_base/rule_notabs.py
+index b511892..891cdbf 100644
+--- a/oelint_adv/rule_base/rule_notabs.py
++++ b/oelint_adv/rule_base/rule_notabs.py
+@@ -4,9 +4,9 @@ import re
+ 
+ class NoTabs(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.tabs.notabs",
+-                         severity="warning",
+-                         message="Don't use tabs use spaces")
++        super(NoTabs, self).__init__(id="oelint.tabs.notabs",
++                                     severity="warning",
++                                     message="Don't use tabs use spaces")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_addnotaskbody.py b/oelint_adv/rule_base/rule_tasks_addnotaskbody.py
+index fe5dd5a..9aef98b 100644
+--- a/oelint_adv/rule_base/rule_tasks_addnotaskbody.py
++++ b/oelint_adv/rule_base/rule_tasks_addnotaskbody.py
+@@ -6,9 +6,9 @@ from oelint_adv.const_func import FUNC_ORDER
+ 
+ class TaskAddNoTaskBody(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.addnotaskbody",
+-                         severity="warning",
+-                         message="The added task '{FUNC}' is not existing or has no body")
++        super(TaskAddNoTaskBody, self).__init__(id="oelint.task.addnotaskbody",
++                                                severity="warning",
++                                                message="The added task '{FUNC}' is not existing or has no body")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_customorder.py b/oelint_adv/rule_base/rule_tasks_customorder.py
+deleted file mode 100644
+index d2aee6b..0000000
+--- a/oelint_adv/rule_base/rule_tasks_customorder.py
++++ /dev/null
+@@ -1,70 +0,0 @@
+-import re
+-
+-from anytree import LoopError
+-from anytree import Node
+-from oelint_adv.cls_item import TaskAdd
+-from oelint_adv.cls_rule import Rule
+-
+-
+-class TaskCustomOrder(Rule):
+-    def __init__(self):
+-        super().__init__(id="oelint.task.customorder",
+-                         severity="error",
+-                         message="<FOO>")
+-
+-    def __getNodeFromException(self, msg):
+-        m = re.match(r"^.*Node\(\'(?P<path>.*)\'\)\.$", msg)
+-        if m:
+-            return [x for x in m.group("path").split("/") if x]
+-        return []
+-
+-    def check(self, _file, stash):
+-        res = []
+-        items = stash.GetItemsFor(
+-            filename=_file, classifier=TaskAdd.CLASSIFIER)
+-        _nodes = []
+-        for item in items:
+-            for t in item.After:
+-                _n = None
+-                _m = None
+-                try:
+-                    _t = [y for y in _nodes if y.name == t]
+-                    if not any(_t):
+-                        _n = Node(t)
+-                        _nodes.append(_n)
+-                    else:
+-                        _n = _t[0]
+-                    _t = [y for y in _nodes if y.name == item.FuncName]
+-                    if not any(_t):
+-                        _m = Node(item.FuncName)
+-                        _nodes.append(_m)
+-                    else:
+-                        _m = _t[0]
+-                    if _m not in _n.children:
+-                        _n.children += (_m,)
+-                except LoopError as e:
+-                    _path = self.__getNodeFromException(str(e)) + [t]
+-                    res += self.finding(item.Origin, item.InFileLine,
+-                                        "Assignment creates a cyclic dependency - Path={}".format("->".join(_path)))
+-            for t in item.Before:
+-                try:
+-                    _n = None
+-                    _t = [y for y in _nodes if y.name == item.FuncName]
+-                    if not any(_t):
+-                        _n = Node(item.FuncName)
+-                        _nodes.append(_n)
+-                    else:
+-                        _n = _t[0]
+-                    _t = [y for y in _nodes if y.name == t]
+-                    _m = None
+-                    if not any(_t):
+-                        _m = Node(t)
+-                        _nodes.append(_m)
+-                    else:
+-                        _m = _t[0]
+-                    if _m not in _n.children:
+-                        _n.children += (_m,)
+-                except LoopError as e:
+-                    _path = self.__getNodeFromException(str(e)) + [t]
+-                    res += self.finding(item.Origin, item.InFileLine, "Assignment creates a cyclic dependency - Path={}".format("->".join(_path)))
+-        return res
+diff --git a/oelint_adv/rule_base/rule_tasks_doc_strings.py b/oelint_adv/rule_base/rule_tasks_doc_strings.py
+index d795097..8c98d63 100644
+--- a/oelint_adv/rule_base/rule_tasks_doc_strings.py
++++ b/oelint_adv/rule_base/rule_tasks_doc_strings.py
+@@ -6,9 +6,9 @@ from oelint_adv.const_func import KNOWN_FUNCS
+ 
+ class TaskDocStrings(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.docstrings",
+-                         severity="info",
+-                         message="Every custom task should have a doc string set by task[doc] = \"\"")
++        super(TaskDocStrings, self).__init__(id="oelint.task.docstrings",
++                                             severity="info",
++                                             message="Every custom task should have a doc string set by task[doc] = \"\"")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_multiappends.py b/oelint_adv/rule_base/rule_tasks_multiappends.py
+index 200747d..e7037eb 100644
+--- a/oelint_adv/rule_base/rule_tasks_multiappends.py
++++ b/oelint_adv/rule_base/rule_tasks_multiappends.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class TaskMultiAppends(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.multiappends",
+-                         severity="error",
+-                         message="Multiple appends to the same function in the same file won't work in bitbake")
++        super(TaskMultiAppends, self).__init__(id="oelint.task.multiappends",
++                                               severity="error",
++                                               message="Multiple appends to the same function in the same file won't work in bitbake")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_no_cp.py b/oelint_adv/rule_base/rule_tasks_no_cp.py
+index b2bcba2..065f9e5 100644
+--- a/oelint_adv/rule_base/rule_tasks_no_cp.py
++++ b/oelint_adv/rule_base/rule_tasks_no_cp.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class TaskInstallNoCp(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.nocopy",
+-                         severity="error",
+-                         message="'cp' shall not be used in do_install. Use 'install'")
++        super(TaskInstallNoCp, self).__init__(id="oelint.task.nocopy",
++                                              severity="error",
++                                              message="'cp' shall not be used in do_install. Use 'install'")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_no_mkdir.py b/oelint_adv/rule_base/rule_tasks_no_mkdir.py
+index 67c1b38..1867d51 100644
+--- a/oelint_adv/rule_base/rule_tasks_no_mkdir.py
++++ b/oelint_adv/rule_base/rule_tasks_no_mkdir.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class TaskInstallNoMkdir(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.nomkdir",
+-                         severity="error",
+-                         message="'mkdir' shall not be used in do_install. Use 'install'")
++        super(TaskInstallNoMkdir, self).__init__(id="oelint.task.nomkdir",
++                                                 severity="error",
++                                                 message="'mkdir' shall not be used in do_install. Use 'install'")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_nopython_prefix.py b/oelint_adv/rule_base/rule_tasks_nopython_prefix.py
+index ed07459..0e9044d 100644
+--- a/oelint_adv/rule_base/rule_tasks_nopython_prefix.py
++++ b/oelint_adv/rule_base/rule_tasks_nopython_prefix.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class TaskNoPythonPrefix(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.nopythonprefix",
+-                         severity="warning",
+-                         message="Tasks containing shell code, should not be prefixed with python in function header")
++        super(TaskNoPythonPrefix, self).__init__(id="oelint.task.nopythonprefix",
++                                                 severity="warning",
++                                                 message="Tasks containing shell code, should not be prefixed with python in function header")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_order.py b/oelint_adv/rule_base/rule_tasks_order.py
+index b5bb21e..dee6bc8 100644
+--- a/oelint_adv/rule_base/rule_tasks_order.py
++++ b/oelint_adv/rule_base/rule_tasks_order.py
+@@ -5,10 +5,10 @@ from oelint_adv.const_func import FUNC_ORDER
+ 
+ class TaskOrder(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.order",
+-                         severity="warning",
+-                         message="<FOO>",
+-                         appendix=FUNC_ORDER)
++        super(TaskOrder, self).__init__(id="oelint.task.order",
++                                        severity="warning",
++                                        message="<FOO>",
++                                        appendix=FUNC_ORDER)
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_tasks_python_prefix.py b/oelint_adv/rule_base/rule_tasks_python_prefix.py
+index f53f775..3184c14 100644
+--- a/oelint_adv/rule_base/rule_tasks_python_prefix.py
++++ b/oelint_adv/rule_base/rule_tasks_python_prefix.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class TaskPythonPrefix(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.task.pythonprefix",
+-                         severity="warning",
+-                         message="Tasks containing python code, should be prefixed with python in function header")
++        super(TaskPythonPrefix, self).__init__(id="oelint.task.pythonprefix",
++                                               severity="warning",
++                                               message="Tasks containing python code, should be prefixed with python in function header")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_appendop.py b/oelint_adv/rule_base/rule_var_appendop.py
+index fe542dd..1cb559f 100644
+--- a/oelint_adv/rule_base/rule_var_appendop.py
++++ b/oelint_adv/rule_base/rule_var_appendop.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarAppendOperation(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.appendop",
+-                         severity="error",
+-                         message="Use '_append' instead of ' += '")
++        super(VarAppendOperation, self).__init__(id="oelint.vars.appendop",
++                                                 severity="error",
++                                                 message="Use '_append' instead of ' += '")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_autorev.py b/oelint_adv/rule_base/rule_var_autorev.py
+index a04d5be..dcd1f4f 100644
+--- a/oelint_adv/rule_base/rule_var_autorev.py
++++ b/oelint_adv/rule_base/rule_var_autorev.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarAutorev(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.autorev",
+-                         severity="warning",
+-                         message="The usage of 'AUTOREV' for SRCREV leads to not reproducible builds")
++        super(VarAutorev, self).__init__(id="oelint.vars.autorev",
++                                         severity="warning",
++                                         message="The usage of 'AUTOREV' for SRCREV leads to not reproducible builds")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_bbvars.py b/oelint_adv/rule_base/rule_var_bbvars.py
+index 11eb9b8..796d50f 100644
+--- a/oelint_adv/rule_base/rule_var_bbvars.py
++++ b/oelint_adv/rule_base/rule_var_bbvars.py
+@@ -5,10 +5,10 @@ from oelint_adv.const_vars import get_protected_vars
+ 
+ class VarQuoted(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.bbvars",
+-                         severity="warning",
+-                         message="Variable '{VAR}' should be set on a disto/layer or local.conf level, not in a recipe",
+-                         appendix=get_protected_vars())
++        super(VarQuoted, self).__init__(id="oelint.vars.bbvars",
++                                        severity="warning",
++                                        message="Variable '{VAR}' should be set on a disto/layer or local.conf level, not in a recipe",
++                                        appendix=get_protected_vars())
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_bugtracker_url.py b/oelint_adv/rule_base/rule_var_bugtracker_url.py
+index d0d1bc1..539d9e9 100644
+--- a/oelint_adv/rule_base/rule_var_bugtracker_url.py
++++ b/oelint_adv/rule_base/rule_var_bugtracker_url.py
+@@ -5,9 +5,9 @@ from oelint_adv.helper_files import get_scr_components
+ 
+ class VarBugtrackerIsUrl(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.bugtrackerisurl",
+-                         severity="warning",
+-                         message="'BUGTRACKER' should be an URL")
++        super(VarBugtrackerIsUrl, self).__init__(id="oelint.vars.bugtrackerisurl",
++                                                 severity="warning",
++                                                 message="'BUGTRACKER' should be an URL")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_depends_append.py b/oelint_adv/rule_base/rule_var_depends_append.py
+index 10815cb..0b944f0 100644
+--- a/oelint_adv/rule_base/rule_var_depends_append.py
++++ b/oelint_adv/rule_base/rule_var_depends_append.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarDependsAppend(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.dependsappend",
+-                         severity="error",
+-                         message="DEPENDS should only be appended, not overwritten")
++        super(VarDependsAppend, self).__init__(id="oelint.vars.dependsappend",
++                                               severity="error",
++                                               message="DEPENDS should only be appended, not overwritten")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_depends_ordered.py b/oelint_adv/rule_base/rule_var_depends_ordered.py
+index 8da8835..ee81db4 100644
+--- a/oelint_adv/rule_base/rule_var_depends_ordered.py
++++ b/oelint_adv/rule_base/rule_var_depends_ordered.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarDependsOrdered(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.dependsordered",
+-                         severity="warning",
+-                         message="[R]DEPENDS entries should be ordered alphabetically")
++        super(VarDependsOrdered, self).__init__(id="oelint.vars.dependsordered",
++                                                severity="warning",
++                                                message="[R]DEPENDS entries should be ordered alphabetically")
+ 
+     def __get_tuple_wildcard_index(self, _list, elem):
+         for i in range(len(_list)):
+diff --git a/oelint_adv/rule_base/rule_var_descriptionsame.py b/oelint_adv/rule_base/rule_var_descriptionsame.py
+index 3236a17..17825dc 100644
+--- a/oelint_adv/rule_base/rule_var_descriptionsame.py
++++ b/oelint_adv/rule_base/rule_var_descriptionsame.py
+@@ -3,9 +3,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarDescSame(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.descriptionsame",
+-                         severity="warning",
+-                         message="'DESCRIPTION' is the same a 'SUMMARY' - it can be removed then")
++        super(VarDescSame, self).__init__(id="oelint.vars.descriptionsame",
++                                          severity="warning",
++                                          message="'DESCRIPTION' is the same a 'SUMMARY' - it can be removed then")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_descriptiontooshort.py b/oelint_adv/rule_base/rule_var_descriptiontooshort.py
+index 989ed86..2f07a7a 100644
+--- a/oelint_adv/rule_base/rule_var_descriptiontooshort.py
++++ b/oelint_adv/rule_base/rule_var_descriptiontooshort.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarDescSameTooBrief(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.descriptiontoobrief",
+-                         severity="warning",
+-                         message="'DESCRIPTION' is the shorter than 'SUMMARY'")
++        super(VarDescSameTooBrief, self).__init__(id="oelint.vars.descriptiontoobrief",
++                                                  severity="warning",
++                                                  message="'DESCRIPTION' is the shorter than 'SUMMARY'")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_doublemodify.py b/oelint_adv/rule_base/rule_var_doublemodify.py
+index 68e0f40..dd046c9 100644
+--- a/oelint_adv/rule_base/rule_var_doublemodify.py
++++ b/oelint_adv/rule_base/rule_var_doublemodify.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarSectionLowercase(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.doublemodify",
+-                         severity="error",
+-                         message="Multiple modifiers of append/prepend/remove/+= found in one operation")
++        super(VarSectionLowercase, self).__init__(id="oelint.vars.doublemodify",
++                                                  severity="error",
++                                                  message="Multiple modifiers of append/prepend/remove/+= found in one operation")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_duplicates.py b/oelint_adv/rule_base/rule_var_duplicates.py
+index 8d3e2c7..05656c8 100644
+--- a/oelint_adv/rule_base/rule_var_duplicates.py
++++ b/oelint_adv/rule_base/rule_var_duplicates.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarDuplicates(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.duplicate",
+-                         severity="warning",
+-                         message="<FOO>")
++        super(VarDuplicates, self).__init__(id="oelint.vars.duplicate",
++                                            severity="warning",
++                                            message="<FOO>")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_filesextrapaths.py b/oelint_adv/rule_base/rule_var_filesextrapaths.py
+index 4c03bbf..4a7f3bb 100644
+--- a/oelint_adv/rule_base/rule_var_filesextrapaths.py
++++ b/oelint_adv/rule_base/rule_var_filesextrapaths.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarBugtrackerIsUrl(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.fileextrapaths",
+-                         severity="warning",
+-                         message="'FILESEXTRAPATHS' shouldn't be used in a bb file")
++        super(VarBugtrackerIsUrl, self).__init__(id="oelint.vars.fileextrapaths",
++                                                 severity="warning",
++                                                 message="'FILESEXTRAPATHS' shouldn't be used in a bb file")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_filesextrapathsop.py b/oelint_adv/rule_base/rule_var_filesextrapathsop.py
+index 1df109d..0986734 100644
+--- a/oelint_adv/rule_base/rule_var_filesextrapathsop.py
++++ b/oelint_adv/rule_base/rule_var_filesextrapathsop.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarBugtrackerIsUrl(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.fileextrapathsop",
+-                         severity="error",
+-                         message="'FILESEXTRAPATHS' should only be used in combination with ' := '")
++        super(VarBugtrackerIsUrl, self).__init__(id="oelint.vars.fileextrapathsop",
++                                                 severity="error",
++                                                 message="'FILESEXTRAPATHS' should only be used in combination with ' := '")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_homepage.py b/oelint_adv/rule_base/rule_var_homepage.py
+index 5130884..a09e1f9 100644
+--- a/oelint_adv/rule_base/rule_var_homepage.py
++++ b/oelint_adv/rule_base/rule_var_homepage.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarHomepagePrefix(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.homepageprefix",
+-                         severity="warning",
+-                         message="'HOMEPAGE' should start with 'http://' or 'https://'")
++        super(VarHomepagePrefix, self).__init__(id="oelint.vars.homepageprefix",
++                                                severity="warning",
++                                                message="'HOMEPAGE' should start with 'http://' or 'https://'")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_homepageping.py b/oelint_adv/rule_base/rule_var_homepageping.py
+index 614cbff..90d5a2c 100644
+--- a/oelint_adv/rule_base/rule_var_homepageping.py
++++ b/oelint_adv/rule_base/rule_var_homepageping.py
+@@ -1,15 +1,19 @@
+ from oelint_adv.cls_item import Variable
+ from oelint_adv.cls_rule import Rule
+ 
+-from urllib.request import urlopen, Request
+-from urllib.error import HTTPError, URLError
++try:
++    from urllib.request import urlopen, Request
++    from urllib.error import HTTPError, URLError
++except ImportError:
++    from urllib2 import urlopen, Request
++    from urllib2 import HTTPError, URLError
+ 
+ 
+ class VarHomepagePrefix(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.homepageping",
+-                         severity="warning",
+-                         message="'HOMEPAGE' isn't reachable")
++        super(VarHomepagePrefix, self).__init__(id="oelint.vars.homepageping",
++                                                severity="warning",
++                                                message="'HOMEPAGE' isn't reachable")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_inconsspaces.py b/oelint_adv/rule_base/rule_var_inconsspaces.py
+index a2ba136..39e6e34 100644
+--- a/oelint_adv/rule_base/rule_var_inconsspaces.py
++++ b/oelint_adv/rule_base/rule_var_inconsspaces.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarInconSpaces(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.inconspaces",
+-                         severity="error",
+-                         message="<FOO>")
++        super(VarInconSpaces, self).__init__(id="oelint.vars.inconspaces",
++                                             severity="error",
++                                             message="<FOO>")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_insaneskip.py b/oelint_adv/rule_base/rule_var_insaneskip.py
+index 794183e..6a4033c 100644
+--- a/oelint_adv/rule_base/rule_var_insaneskip.py
++++ b/oelint_adv/rule_base/rule_var_insaneskip.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarInsaneSkip(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.insaneskip",
+-                         severity="error",
+-                         message="INSANE_SKIP should be avoided at any cost")
++        super(VarInsaneSkip, self).__init__(id="oelint.vars.insaneskip",
++                                            severity="error",
++                                            message="INSANE_SKIP should be avoided at any cost")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_license_remote.py b/oelint_adv/rule_base/rule_var_license_remote.py
+index 92b1551..c130f0f 100644
+--- a/oelint_adv/rule_base/rule_var_license_remote.py
++++ b/oelint_adv/rule_base/rule_var_license_remote.py
+@@ -5,9 +5,9 @@ from oelint_adv.helper_files import get_scr_components, expand_term
+ 
+ class VarLicenseRemoteFile(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.licenseremotefile",
+-                         severity="warning",
+-                         message="License-File should be a remote file")
++        super(VarLicenseRemoteFile, self).__init__(id="oelint.var.licenseremotefile",
++                                                   severity="warning",
++                                                   message="License-File should be a remote file")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_machinespec.py b/oelint_adv/rule_base/rule_var_machinespec.py
+index b36c1d1..0e169a2 100644
+--- a/oelint_adv/rule_base/rule_var_machinespec.py
++++ b/oelint_adv/rule_base/rule_var_machinespec.py
+@@ -7,9 +7,9 @@ from oelint_adv.helper_files import get_valid_package_names, get_valid_named_res
+ 
+ class VarPnBpnUsage(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.machinespecific",
+-                         severity="error",
+-                         message="'{}' is set machine specific ['{}'], but a matching COMPATIBLE_MACHINE entry is missing")
++        super(VarPnBpnUsage, self).__init__(id="oelint.vars.machinespecific",
++                                            severity="error",
++                                            message="'{}' is set machine specific ['{}'], but a matching COMPATIBLE_MACHINE entry is missing")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_misspell.py b/oelint_adv/rule_base/rule_var_misspell.py
+index bcafcb7..9b4d1a8 100644
+--- a/oelint_adv/rule_base/rule_var_misspell.py
++++ b/oelint_adv/rule_base/rule_var_misspell.py
+@@ -6,9 +6,9 @@ from difflib import SequenceMatcher
+ 
+ class VarMisspell(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.mispell",
+-                         severity="warning",
+-                         message="<FOO>")
++        super(VarMisspell, self).__init__(id="oelint.vars.mispell",
++                                          severity="warning",
++                                          message="<FOO>")
+ 
+     def get_best_match(self, item, _list, minconfidence=0.8):
+         _dict = sorted([(SequenceMatcher(None, item, k).ratio(), k)
+diff --git a/oelint_adv/rule_base/rule_var_multilineindent.py b/oelint_adv/rule_base/rule_var_multilineindent.py
+index 1d8628e..5639bf5 100644
+--- a/oelint_adv/rule_base/rule_var_multilineindent.py
++++ b/oelint_adv/rule_base/rule_var_multilineindent.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarMultiLineIndent(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.multilineident",
+-                         severity="info",
+-                         message="On a multiline assignment, line indent is desirable. Current {}/{}")
++        super(VarMultiLineIndent, self).__init__(id="oelint.vars.multilineident",
++                                                 severity="info",
++                                                 message="On a multiline assignment, line indent is desirable. Current {}/{}")
+ 
+     def check(self, _file, stash):
+         res = []
+@@ -16,7 +16,7 @@ class VarMultiLineIndent(Rule):
+             if not i.IsMultiLine():
+                 continue
+             _rawclean = i.Raw
+-            _startoffset = _rawclean.find("= \"") + 3
++            _startoffset = 4  # Forces the four-space indentation
+             _value = _rawclean[_startoffset:]
+             _lines = [x for x in _value.split("\\\n") if x]
+             if any(_lines):
+diff --git a/oelint_adv/rule_base/rule_var_notneededspace.py b/oelint_adv/rule_base/rule_var_notneededspace.py
+index 6ad6fec..bc01688 100644
+--- a/oelint_adv/rule_base/rule_var_notneededspace.py
++++ b/oelint_adv/rule_base/rule_var_notneededspace.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarSectionLowercase(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.notneededspace",
+-                         severity="info",
+-                         message="Space at the beginning of the var is not needed")
++        super(VarSectionLowercase, self).__init__(id="oelint.vars.notneededspace",
++                                                  severity="info",
++                                                  message="Space at the beginning of the var is not needed")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_p_usage.py b/oelint_adv/rule_base/rule_var_p_usage.py
+index 73a06de..288d0ec 100644
+--- a/oelint_adv/rule_base/rule_var_p_usage.py
++++ b/oelint_adv/rule_base/rule_var_p_usage.py
+@@ -5,9 +5,9 @@ from oelint_adv.helper_files import get_scr_components
+ 
+ class VarPnBpnUsage(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.pbpusage",
+-                         severity="error",
+-                         message="${BP} should be used instead of ${P}")
++        super(VarPnBpnUsage, self).__init__(id="oelint.vars.pbpusage",
++                                            severity="error",
++                                            message="${BP} should be used instead of ${P}")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_pkgspecific.py b/oelint_adv/rule_base/rule_var_pkgspecific.py
+index e472c9d..6291d4e 100644
+--- a/oelint_adv/rule_base/rule_var_pkgspecific.py
++++ b/oelint_adv/rule_base/rule_var_pkgspecific.py
+@@ -6,15 +6,15 @@ from oelint_adv.helper_files import get_valid_package_names
+ class VarPkgSpecific(Rule):
+     def __init__(self):
+         self.needles = ['RDEPENDS', 'RRECOMMENDS', 'RSUGGESTS', 'RCONFLICTS', 'RPROVIDES', 'RREPLACES',
+-                   'FILES', 'pkg_preinst', 'pkg_postinst', 'pkg_prerm', 'pkg_postrm', 'ALLOW_EMPTY']
+-        super().__init__(id="oelint.vars.pkgspecific",
+-                         severity="error",
+-                         message="Variable {VAR} is package-specific and therefore it should be {VAR}_${PN}",
+-                         appendix=self.needles)
++                        'FILES', 'pkg_preinst', 'pkg_postinst', 'pkg_prerm', 'pkg_postrm', 'ALLOW_EMPTY']
++        super(VarPkgSpecific, self).__init__(id="oelint.vars.pkgspecific",
++                                             severity="error",
++                                             message="Variable {VAR} is package-specific and therefore it should be {VAR}_${PN}",
++                                             appendix=self.needles)
+ 
+     def check(self, _file, stash):
+         res = []
+-        
++
+         _packages = get_valid_package_names(stash, _file)
+         items = stash.GetItemsFor(
+             filename=_file, classifier=Variable.CLASSIFIER)
+diff --git a/oelint_adv/rule_base/rule_var_pn_usage.py b/oelint_adv/rule_base/rule_var_pn_usage.py
+index e754848..35d0af5 100644
+--- a/oelint_adv/rule_base/rule_var_pn_usage.py
++++ b/oelint_adv/rule_base/rule_var_pn_usage.py
+@@ -5,9 +5,9 @@ from oelint_adv.helper_files import get_scr_components
+ 
+ class VarPnBpnUsage(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.pnbpnusage",
+-                         severity="error",
+-                         message="${BPN} should be used instead of ${PN}")
++        super(VarPnBpnUsage, self).__init__(id="oelint.vars.pnbpnusage",
++                                            severity="error",
++                                            message="${BPN} should be used instead of ${PN}")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_pn_usage_discouraged.py b/oelint_adv/rule_base/rule_var_pn_usage_discouraged.py
+index 924b636..1e9eef1 100644
+--- a/oelint_adv/rule_base/rule_var_pn_usage_discouraged.py
++++ b/oelint_adv/rule_base/rule_var_pn_usage_discouraged.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarPnUsageDiscouraged(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.pnusagediscouraged",
+-                         severity="warning",
+-                         message="Variable shouldn't contain ${PN} or ${BPN}")
++        super(VarPnUsageDiscouraged, self).__init__(id="oelint.vars.pnusagediscouraged",
++                                                    severity="warning",
++                                                    message="Variable shouldn't contain ${PN} or ${BPN}")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_quoted.py b/oelint_adv/rule_base/rule_var_quoted.py
+index 240cbf9..ff9cf1c 100644
+--- a/oelint_adv/rule_base/rule_var_quoted.py
++++ b/oelint_adv/rule_base/rule_var_quoted.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarQuoted(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.valuequoted",
+-                         severity="error",
+-                         message="Variable value should be quoted")
++        super(VarQuoted, self).__init__(id="oelint.vars.valuequoted",
++                                        severity="error",
++                                        message="Variable value should be quoted")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_section_lowercase.py b/oelint_adv/rule_base/rule_var_section_lowercase.py
+index 7b3d261..917ba3e 100644
+--- a/oelint_adv/rule_base/rule_var_section_lowercase.py
++++ b/oelint_adv/rule_base/rule_var_section_lowercase.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarSectionLowercase(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.sectionlowercase",
+-                         severity="warning",
+-                         message="'SECTION' should only lowercase characters")
++        super(VarSectionLowercase, self).__init__(id="oelint.vars.sectionlowercase",
++                                                  severity="warning",
++                                                  message="'SECTION' should only lowercase characters")
+ 
+     def __getMatches(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_spaces_assignment.py b/oelint_adv/rule_base/rule_var_spaces_assignment.py
+index 21887b6..861d8ce 100644
+--- a/oelint_adv/rule_base/rule_var_spaces_assignment.py
++++ b/oelint_adv/rule_base/rule_var_spaces_assignment.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarSpacesOnAssignment(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.spacesassignment",
+-                         severity="warning",
+-                         message="Suggest spaces around variable assignment. E.g. 'FOO = \"BAR\"'")
++        super(VarSpacesOnAssignment, self).__init__(id="oelint.vars.spacesassignment",
++                                                    severity="warning",
++                                                    message="Suggest spaces around variable assignment. E.g. 'FOO = \"BAR\"'")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_src_uri.py b/oelint_adv/rule_base/rule_var_src_uri.py
+index f88c48d..b4c0c75 100644
+--- a/oelint_adv/rule_base/rule_var_src_uri.py
++++ b/oelint_adv/rule_base/rule_var_src_uri.py
+@@ -6,9 +6,9 @@ from oelint_adv.parser import INLINE_BLOCK
+ 
+ class VarSRCUriOptions(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.srcurioptions",
+-                         severity="warning",
+-                         message="<FOO>")
++        super(VarSRCUriOptions, self).__init__(id="oelint.vars.srcurioptions",
++                                               severity="warning",
++                                               message="<FOO>")
+         self._general_options = [
+             "apply",
+             "destsuffix",
+diff --git a/oelint_adv/rule_base/rule_var_src_uri_checksum.py b/oelint_adv/rule_base/rule_var_src_uri_checksum.py
+new file mode 100644
+index 0000000..e609526
+--- /dev/null
++++ b/oelint_adv/rule_base/rule_var_src_uri_checksum.py
+@@ -0,0 +1,73 @@
++from oelint_adv.cls_item import Variable
++from oelint_adv.cls_rule import Rule
++from oelint_adv.helper_files import get_scr_components
++from oelint_adv.parser import INLINE_BLOCK
++
++
++class VarSRCUriOptions(Rule):
++    def __init__(self):
++        super(VarSRCUriOptions, self).__init__(id="oelint.vars.srcurichecksum",
++                                               severity="error",
++                                               message="<FOO>")
++
++    def check(self, _file, stash):
++        res = []
++        items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
++                                  attribute=Variable.ATTR_VAR, attributeValue="SRC_URI")
++        md5sum = []
++        sha256sum = []
++        res_candidate = []
++        for i in items:
++            if i.Flag.endswith("md5sum"):
++                if i.Flag == "md5sum":
++                    md5sum.append("")
++                else:
++                    md5sum.append(i.Flag.rsplit(".", 1)[0])
++            elif i.Flag.endswith("sha256sum"):
++                if i.Flag == "sha256sum":
++                    sha256sum.append("")
++                else:
++                    sha256sum.append(i.Flag.rsplit(".", 1)[0])
++            else:
++                lines = [y.strip('"') for y in i.get_items() if y]
++                for x in lines:
++                    if x == INLINE_BLOCK:
++                        continue
++                    _url = get_scr_components(x)
++                    if _url["scheme"] in ["http", "https", "ftp", "ftps", "sftp", "s3"]:
++                        name = ""
++                        if "name" in _url["options"]:
++                            name = _url["options"]["name"]
++                        res_candidate.append((name, i.Origin, i.InFileLine + lines.index(x)))
++
++        res_candidate.sort(key=lambda tup: tup[0])
++
++        no_name_src_uri = False
++        for (name, filename, filelines) in res_candidate:
++            message = ""
++            if name == "":
++                if no_name_src_uri:
++                    message = "if SRC_URI have multiple URLs, each URL has checksum"
++                else:
++                    if "" not in md5sum:
++                        message = "SRC_URI[md5sum]"
++                    if "" not in sha256sum:
++                        if len(message) > 0:
++                            message += ", "
++                        message += "SRC_URI[sha256sum]"
++                    if len(message) > 0:
++                        message += " is(are) needed"
++                no_name_src_uri = True
++            else:
++                if name not in md5sum:
++                    message = "SRC_URI[%s.md5sum]" % name
++                if name not in sha256sum:
++                    if len(message) > 0:
++                      message += ", "
++                    message += "SRC_URI[%s.sha256sum]" % name
++                if len(message) > 0:
++                    message += " is(are) needed"
++            if len(message) > 0:
++                res += self.finding(filename, filelines, message)
++
++        return res
+diff --git a/oelint_adv/rule_base/rule_var_src_uri_domains.py b/oelint_adv/rule_base/rule_var_src_uri_domains.py
+index 01510fc..19ef77e 100644
+--- a/oelint_adv/rule_base/rule_var_src_uri_domains.py
++++ b/oelint_adv/rule_base/rule_var_src_uri_domains.py
+@@ -6,9 +6,9 @@ from oelint_adv.parser import INLINE_BLOCK
+ 
+ class VarSRCUriOptions(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.srcuridomains",
+-                         severity="warning",
+-                         message="Recipe is pulling from different domains, this will likely cause issues")
++        super(VarSRCUriOptions, self).__init__(id="oelint.vars.srcuridomains",
++                                               severity="warning",
++                                               message="Recipe is pulling from different domains, this will likely cause issues")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_src_uri_wildcard.py b/oelint_adv/rule_base/rule_var_src_uri_wildcard.py
+index 2aea3da..81e932c 100644
+--- a/oelint_adv/rule_base/rule_var_src_uri_wildcard.py
++++ b/oelint_adv/rule_base/rule_var_src_uri_wildcard.py
+@@ -7,9 +7,9 @@ import re
+ 
+ class VarSRCURIWildcard(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.srcuriwildcard",
+-                         severity="error",
+-                         message="'SRC_URI' should not contain any wildcards")
++        super(VarSRCURIWildcard, self).__init__(id="oelint.var.srcuriwildcard",
++                                                severity="error",
++                                                message="'SRC_URI' should not contain any wildcards")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_summary_80chars.py b/oelint_adv/rule_base/rule_var_summary_80chars.py
+index 59ca077..11ed6e2 100644
+--- a/oelint_adv/rule_base/rule_var_summary_80chars.py
++++ b/oelint_adv/rule_base/rule_var_summary_80chars.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarSummary80Chars(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.summary80chars",
+-                         severity="warning",
+-                         message="'SUMMARY' should not be longer than 80 characters")
++        super(VarSummary80Chars, self).__init__(id="oelint.vars.summary80chars",
++                                                severity="warning",
++                                                message="'SUMMARY' should not be longer than 80 characters")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_var_summary_linebreaks.py b/oelint_adv/rule_base/rule_var_summary_linebreaks.py
+index 8d74c08..fa8953f 100644
+--- a/oelint_adv/rule_base/rule_var_summary_linebreaks.py
++++ b/oelint_adv/rule_base/rule_var_summary_linebreaks.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarSummaryLinebreaks(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.vars.summarylinebreaks",
+-                         severity="warning",
+-                         message="'SUMMARY' should not contain line breaks")
++        super(VarSummaryLinebreaks, self).__init__(id="oelint.vars.summarylinebreaks",
++                                                   severity="warning",
++                                                   message="'SUMMARY' should not contain line breaks")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_bbclassextends.py b/oelint_adv/rule_base/rule_vars_bbclassextends.py
+index 2ab7e56..56717f5 100644
+--- a/oelint_adv/rule_base/rule_vars_bbclassextends.py
++++ b/oelint_adv/rule_base/rule_vars_bbclassextends.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarBbclassextend(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.bbclassextend",
+-                         severity="info",
+-                         message="BBCLASSEXTEND should be set if possible")
++        super(VarBbclassextend, self).__init__(id="oelint.var.bbclassextend",
++                                               severity="info",
++                                               message="BBCLASSEXTEND should be set if possible")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_improperinherit.py b/oelint_adv/rule_base/rule_vars_improperinherit.py
+index ffa34cd..b35c582 100644
+--- a/oelint_adv/rule_base/rule_vars_improperinherit.py
++++ b/oelint_adv/rule_base/rule_vars_improperinherit.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarImproperInherit(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.improperinherit",
+-                         severity="error",
+-                         message="'{INH}' is not a proper bbclass name")
++        super(VarImproperInherit, self).__init__(id="oelint.var.improperinherit",
++                                                 severity="error",
++                                                 message="'{INH}' is not a proper bbclass name")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_mandatory_exists.py b/oelint_adv/rule_base/rule_vars_mandatory_exists.py
+index 1509141..b2a7f1a 100644
+--- a/oelint_adv/rule_base/rule_vars_mandatory_exists.py
++++ b/oelint_adv/rule_base/rule_vars_mandatory_exists.py
+@@ -5,11 +5,11 @@ from oelint_adv.const_vars import get_mandatory_vars
+ 
+ class VarMandatoryExists(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.mandatoryvar",
+-                         severity="error",
+-                         message="<FOO>",
+-                         onappend=False,
+-                         appendix=get_mandatory_vars())
++        super(VarMandatoryExists, self).__init__(id="oelint.var.mandatoryvar",
++                                                 severity="error",
++                                                 message="<FOO>",
++                                                 onappend=False,
++                                                 appendix=get_mandatory_vars())
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_multiinclude.py b/oelint_adv/rule_base/rule_vars_multiinclude.py
+index 1078460..079ee0e 100644
+--- a/oelint_adv/rule_base/rule_vars_multiinclude.py
++++ b/oelint_adv/rule_base/rule_vars_multiinclude.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarMultiInclude(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.multiinclude",
+-                         severity="warning",
+-                         message="'{INC}' is included multiple times")
++        super(VarMultiInclude, self).__init__(id="oelint.var.multiinclude",
++                                              severity="warning",
++                                              message="'{INC}' is included multiple times")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_multiinherit.py b/oelint_adv/rule_base/rule_vars_multiinherit.py
+index e626326..150df18 100644
+--- a/oelint_adv/rule_base/rule_vars_multiinherit.py
++++ b/oelint_adv/rule_base/rule_vars_multiinherit.py
+@@ -6,7 +6,7 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarMultiInherit(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.multiinherit",
++        super(VarMultiInherit, self).__init__(id="oelint.var.multiinherit",
+                          severity="warning",
+                          message="'{INH}' is included multiple times")
+ 
+diff --git a/oelint_adv/rule_base/rule_vars_native_filename.py b/oelint_adv/rule_base/rule_vars_native_filename.py
+index aad14f0..df0f843 100644
+--- a/oelint_adv/rule_base/rule_vars_native_filename.py
++++ b/oelint_adv/rule_base/rule_vars_native_filename.py
+@@ -4,9 +4,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarNativeFilename(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.nativefilename",
+-                         severity="warning",
+-                         message="native-recipe-files should include '-native' in file name")
++        super(VarNativeFilename, self).__init__(id="oelint.var.nativefilename",
++                                                severity="warning",
++                                                message="native-recipe-files should include '-native' in file name")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_order.py b/oelint_adv/rule_base/rule_vars_order.py
+index 026651f..93e3e97 100644
+--- a/oelint_adv/rule_base/rule_vars_order.py
++++ b/oelint_adv/rule_base/rule_vars_order.py
+@@ -5,10 +5,10 @@ from oelint_adv.const_vars import VAR_ORDER
+ 
+ class VarsOrder(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.order",
+-                         severity="warning",
+-                         message="<FOO>",
+-                         appendix=[self.__cleanname(x) for x in VAR_ORDER])
++        super(VarsOrder, self).__init__(id="oelint.var.order",
++                                        severity="warning",
++                                        message="<FOO>",
++                                        appendix=[self.__cleanname(x) for x in VAR_ORDER])
+ 
+     def __cleanname(self, _input):
+         return _input.replace("$", "").replace("{", "").replace("}", "")
+diff --git a/oelint_adv/rule_base/rule_vars_pathhardcode.py b/oelint_adv/rule_base/rule_vars_pathhardcode.py
+index 15e38b4..e0eadb6 100644
+--- a/oelint_adv/rule_base/rule_vars_pathhardcode.py
++++ b/oelint_adv/rule_base/rule_vars_pathhardcode.py
+@@ -25,10 +25,10 @@ class VarsPathHardcode(Rule):
+             "/com": "${sharedstatedir}",
+             "/etc": "${sysconfdir}",
+         })
+-        super().__init__(id="oelint.vars.pathhardcode",
+-                         severity="warning",
+-                         message="<FOO>",
+-                         appendix=[v.strip("$").strip("{").strip("}") for v in self._map.values()])
++        super(VarsPathHardcode, self).__init__(id="oelint.vars.pathhardcode",
++                                               severity="warning",
++                                               message="<FOO>",
++                                               appendix=[v.strip("$").strip("{").strip("}") for v in self._map.values()])
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_suggested.py b/oelint_adv/rule_base/rule_vars_suggested.py
+index aacc07f..4ea00af 100644
+--- a/oelint_adv/rule_base/rule_vars_suggested.py
++++ b/oelint_adv/rule_base/rule_vars_suggested.py
+@@ -5,11 +5,11 @@ from oelint_adv.const_vars import get_suggested_vars
+ 
+ class VarSuggestedExists(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.suggestedvar",
+-                         severity="info",
+-                         message="<FOO>",
+-                         onappend=False,
+-                         appendix=get_suggested_vars())
++        super(VarSuggestedExists, self).__init__(id="oelint.var.suggestedvar",
++                                                 severity="info",
++                                                 message="<FOO>",
++                                                 onappend=False,
++                                                 appendix=get_suggested_vars())
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_variable_override.py b/oelint_adv/rule_base/rule_vars_variable_override.py
+index 5f1e8b0..4854089 100644
+--- a/oelint_adv/rule_base/rule_vars_variable_override.py
++++ b/oelint_adv/rule_base/rule_vars_variable_override.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarOverride(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.var.override",
+-                         severity="error",
+-                         message="<FOO>")
++        super(VarOverride, self).__init__(id="oelint.var.override",
++                                          severity="error",
++                                          message="<FOO>")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_jetm/rule_var_depends_singleline.py b/oelint_adv/rule_jetm/rule_var_depends_singleline.py
+index 6433ed6..e8c0838 100644
+--- a/oelint_adv/rule_jetm/rule_var_depends_singleline.py
++++ b/oelint_adv/rule_jetm/rule_var_depends_singleline.py
+@@ -6,9 +6,9 @@ from oelint_adv.cls_rule import Rule
+ 
+ class VarDependsSingleLine(Rule):
+     def __init__(self):
+-        super().__init__(id="oelint.jetm.vars.dependssingleline",
+-                         severity="warning",
+-                         message="Each [R]DEPENDS entry should be put into a single line")
++        super(VarDependsSingleLine, self).__init__(id="oelint.jetm.vars.dependssingleline",
++                                                   severity="warning",
++                                                   message="Each [R]DEPENDS entry should be put into a single line")
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/requirements.txt b/requirements.txt
+index 37d884c..c27ab25 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,3 +1,2 @@
+-urllib3>=1.21.1
+ anytree>=2.7.0
+-colorama>=0.4.3
+\ No newline at end of file
++colorama>=0.4.3
+diff --git a/setup.py b/setup.py
+index 50e2d17..47b32aa 100644
+--- a/setup.py
++++ b/setup.py
+@@ -7,7 +7,7 @@ try:
+     _long_description = subprocess.check_output(
+         ["pandoc", "--from", "markdown", "--to", "rst", "README.md"]).decode("utf-8")
+     _long_description_content_type = "text/x-rst"
+-except (subprocess.CalledProcessError, FileNotFoundError):
++except (subprocess.CalledProcessError, IOError, OSError):
+     pass
+ 
+ requirements = []
+diff --git a/tests/rule_tasks_customorder_bad b/tests/rule_tasks_customorder_bad
+deleted file mode 100644
+index ace9904..0000000
+--- a/tests/rule_tasks_customorder_bad
++++ /dev/null
+@@ -1,16 +0,0 @@
+-#!/bin/sh
+-TESTFILE="${TMP}oelint_adv_test.bb"
+-trap "rm -f ${TESTFILE}" EXIT
+-TESTID="oelint.task.customorder"
+-TESTOCC="1"
+-cat > ${TESTFILE} << EOF
+-do_foo() {
+-    :
+-}
+-addtask do_compile after do_configure before do_foo
+-addtask do_configure after do_compile
+-addtask do_foo before do_configure
+-EOF
+-[ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) -ge "${TESTOCC}" ] && exit 0
+-echo "Test for ${0} failed"
+-exit 1
+\ No newline at end of file
+diff --git a/tests/rule_var_src_uri_checksum_bad1 b/tests/rule_var_src_uri_checksum_bad1
+new file mode 100644
+index 0000000..ea8a7ea
+--- /dev/null
++++ b/tests/rule_var_src_uri_checksum_bad1
+@@ -0,0 +1,17 @@
++#!/bin/sh
++TESTFILE="${TMP}oelint_adv_test.bb"
++trap "rm -f ${TESTFILE}" EXIT
++TESTID="oelint.vars.srcurichecksum"
++TESTOCC="3"
++cat > ${TESTFILE} << EOF
++SRC_URI += "ftp://foo;name=f3"
++SRC_URI += "http://foo;name=f1"
++SRC_URI += "https://foo;name=f2"
++SRC_URI[f1.md5sum] = "a"
++SRC_URI[f2.sha256sum] = "a"
++EOF
++[ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
++python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
++_got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
++echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
++exit 1
+diff --git a/tests/rule_var_src_uri_checksum_bad2 b/tests/rule_var_src_uri_checksum_bad2
+new file mode 100644
+index 0000000..ce06d21
+--- /dev/null
++++ b/tests/rule_var_src_uri_checksum_bad2
+@@ -0,0 +1,22 @@
++#!/bin/sh
++TESTFILE="${TMP}oelint_adv_test.bb"
++trap "rm -f ${TESTFILE}" EXIT
++TESTID="oelint.vars.srcurichecksum"
++TESTOCC="1"
++cat > ${TESTFILE} << EOF
++SRC_URI += "ftp://foo"
++SRC_URI += "ftp://foo"
++SRC_URI += "http://foo;name=f1"
++SRC_URI += "https://foo;name=f2"
++SRC_URI[f1.md5sum] = "a"
++SRC_URI[f1.sha256sum] = "a"
++SRC_URI[f2.md5sum] = "a"
++SRC_URI[f2.sha256sum] = "a"
++SRC_URI[md5sum] = "a"
++SRC_URI[sha256sum] = "a"
++EOF
++[ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
++python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
++_got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
++echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
++exit 1
+diff --git a/tests/rule_tasks_customorder_good b/tests/rule_var_src_uri_checksum_bad3
+similarity index 77%
+rename from tests/rule_tasks_customorder_good
+rename to tests/rule_var_src_uri_checksum_bad3
+index 9cb7b55..30671c3 100644
+--- a/tests/rule_tasks_customorder_good
++++ b/tests/rule_var_src_uri_checksum_bad3
+@@ -1,14 +1,14 @@
+ #!/bin/sh
+ TESTFILE="${TMP}oelint_adv_test.bb"
+ trap "rm -f ${TESTFILE}" EXIT
+-TESTID="oelint.task.customorder"
+-TESTOCC="0"
++TESTID="oelint.vars.srcurichecksum"
++TESTOCC="1"
+ cat > ${TESTFILE} << EOF
+-addtask do_compile after do_foo
+-addtask do_configure after do_compile
++SRC_URI += "ftp://foo"
++SRC_URI[sha256sum] = "a"
+ EOF
+ [ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
+ python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
+ _got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
+ echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
+-exit 1
+\ No newline at end of file
++exit 1
+diff --git a/tests/rule_var_src_uri_checksum_good1 b/tests/rule_var_src_uri_checksum_good1
+new file mode 100644
+index 0000000..ee83e85
+--- /dev/null
++++ b/tests/rule_var_src_uri_checksum_good1
+@@ -0,0 +1,41 @@
++#!/bin/sh
++TESTFILE="${TMP}oelint_adv_test.bb"
++trap "rm -f ${TESTFILE}" EXIT
++TESTID="oelint.vars.srcurichecksum"
++TESTOCC="0"
++cat > ${TESTFILE} << EOF
++SRC_URI += "file://foo"
++SRC_URI += "bzr://foo"
++SRC_URI += "crcc://foo"
++SRC_URI += "cvs://foo"
++SRC_URI += "ftp://foo;name=f3"
++SRC_URI += "git://foo;name"
++SRC_URI += "gitsm://foo"
++SRC_URI += "gitannex://foo"
++SRC_URI += "hg://foo"
++SRC_URI += "http://foo;name=f1"
++SRC_URI += "https://foo;name=f2"
++SRC_URI += "osc://foo"
++SRC_URI += "p4://foo"
++SRC_URI += "repo://foo"
++SRC_URI += "ssh://foo"
++SRC_URI += "s3://foo;name=f5"
++SRC_URI += "sftp://foo;name=f4"
++SRC_URI += "npm://foo"
++SRC_URI += "svn://foo"
++SRC_URI[f1.md5sum] = "a"
++SRC_URI[f1.sha256sum] = "a"
++SRC_URI[f2.md5sum] = "a"
++SRC_URI[f2.sha256sum] = "a"
++SRC_URI[f3.md5sum] = "a"
++SRC_URI[f3.sha256sum] = "a"
++SRC_URI[f4.md5sum] = "a"
++SRC_URI[f4.sha256sum] = "a"
++SRC_URI[f5.md5sum] = "a"
++SRC_URI[f5.sha256sum] = "a"
++EOF
++[ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
++python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
++_got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
++echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
++exit 1
+diff --git a/tests/rule_var_src_uri_checksum_good2 b/tests/rule_var_src_uri_checksum_good2
+new file mode 100644
+index 0000000..25578e2
+--- /dev/null
++++ b/tests/rule_var_src_uri_checksum_good2
+@@ -0,0 +1,18 @@
++#!/bin/sh
++TESTFILE="${TMP}oelint_adv_test.bb"
++trap "rm -f ${TESTFILE}" EXIT
++TESTID="oelint.vars.srcurichecksum"
++TESTOCC="0"
++cat > ${TESTFILE} << EOF
++SRC_URI += "ftp://foo"
++SRC_URI += "ftp://foo;name=f1"
++SRC_URI[md5sum] = "a"
++SRC_URI[sha256sum] = "a"
++SRC_URI[f1.md5sum] = "a"
++SRC_URI[f1.sha256sum] = "a"
++EOF
++[ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
++python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
++_got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
++echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
++exit 1
+diff --git a/tests/rule_vars_multiinherit_good b/tests/rule_vars_multiinherit_good
+index fdc7ae3..43b1058 100644
+--- a/tests/rule_vars_multiinherit_good
++++ b/tests/rule_vars_multiinherit_good
+@@ -13,4 +13,4 @@ EOF
+ python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
+ _got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
+ echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
+-exit 1
+\ No newline at end of file
++exit 1
+diff --git a/tests/rule_vars_suggested_bad b/tests/rule_vars_suggested_bad
+index a500613..532d796 100644
+--- a/tests/rule_vars_suggested_bad
++++ b/tests/rule_vars_suggested_bad
+@@ -2,7 +2,7 @@
+ TESTFILE="${TMP}oelint_adv_test.bb"
+ trap "rm -f ${TESTFILE}" EXIT
+ TESTID="oelint.var.suggestedvar.*"
+-TESTOCC="4"
++TESTOCC="2"
+ cat > ${TESTFILE} << EOF
+ A = "1"
+ EOF
+@@ -10,4 +10,4 @@ EOF
+ python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
+ _got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
+ echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
+-exit 1
+\ No newline at end of file
++exit 1
+diff --git a/tests/rule_vars_suggested_good b/tests/rule_vars_suggested_good
+index 2acdb18..0f2165c 100644
+--- a/tests/rule_vars_suggested_good
++++ b/tests/rule_vars_suggested_good
+@@ -5,12 +5,10 @@ TESTID="oelint.var.suggestedvar.*"
+ TESTOCC="0"
+ cat > ${TESTFILE} << EOF
+ BUGTRACKER = "1"
+-BBCLASSEXTEND = "1"
+-CVE_PRODUCT = "1"
+ AUTHOR = "foo"
+ EOF
+ [ $(python3 -m oelint_adv ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l) = "${TESTOCC}" ] && exit 0;
+ python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1
+ _got=$(python3 -m oelint_adv --addrules=jetm ${TESTFILE} 2>&1 | grep ":${TESTID}:" | wc -l)
+ echo "Test for ${0} failed - got ${_got} expected ${TESTOCC}"
+-exit 1
+\ No newline at end of file
++exit 1
