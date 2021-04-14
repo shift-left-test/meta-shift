@@ -70,8 +70,8 @@ def test_cmake_project_do_checktest(test_clang_build):
 
 def test_cmake_project_do_checkrecipe(test_clang_build):
     with externalsrc_execute(test_clang_build, "cmake-project", "checkrecipe") as o:
-        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Checking the specified recipes or files for the styling issues...")
-        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint_adv:Done.")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Checking the specified recipes or files for the styling issues...")
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_sage_native_project_do_build(test_clang_build):
