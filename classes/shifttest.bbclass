@@ -102,9 +102,9 @@ def timeout(func, cmd, d, **options):
     if not isinstance(cmd, str):
         cmd = " ".join(map(str, cmd))
 
-    period = d.getVar("SHIFT_TIMEOUT", True)
+    period = d.getVar("SHIFT_TIMEOUT", True) or None
     if period and not cmd.startswith("timeout"):
-        cmd = "timeout %d %s" % (int(round(period)), cmd)
+        cmd = "timeout %s %s" % (period, cmd)
 
     return func(cmd, d, **options)
 
@@ -482,3 +482,4 @@ python() {
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
+
