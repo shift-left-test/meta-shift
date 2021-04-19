@@ -130,7 +130,7 @@ def exec_proc(cmd, d, **options):
     class Popen(bb.process.Popen):
         defaults = {
             "stdout": subprocess.PIPE,
-            "stderr": subprocess.PIPE,
+            "stderr": None,
             "stdin": None,
             "shell": True,
         }
