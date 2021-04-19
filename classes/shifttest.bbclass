@@ -298,6 +298,11 @@ python shifttest_do_checktest() {
     if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
         bb.fatal("the task requires meta-clang to be present")
 
+    dot_git_path = dd.expand("${S}/.git")
+    if not os.path.exists(dot_git_path) or not os.path.isdir(dot_git_path):
+        warn("No .git directory in source directory", dd)
+        return
+
     work_dir = dd.expand("${WORKDIR}/mutation_test_tmp")
     expected_dir = os.path.join(work_dir, "original")
     actual_dir = os.path.join(work_dir, "actual")
@@ -337,6 +342,11 @@ python shifttest_do_checktest() {
     elapsed = round(time.time() - started)
     # Extra amount of time within a range of 5 seconds to 2 minutes
     elapsed = elapsed + clamp(round(elapsed * 0.2), 5, 120)
+
+    test_result_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
+    if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
+        warn("No test result files generated at %s" % test_result_dir, dd)
+        return
 
     bb.debug(1, "Creating the mutation database")
     mutant_file = os.path.join(work_dir, "mutables.db")
