@@ -197,8 +197,11 @@ python shifttest_do_checkcode() {
 
         if not os.path.exists(json_file):
             plain("Creating the compile_commands.json using compiledb", d)
-            exec_proc("compiledb --command-style -n make", d, cwd=d.getVar("B", True))
-            temporary = True
+            try:
+                exec_proc("compiledb --command-style -n make", d, cwd=d.getVar("B", True))
+                temporary = True
+            except bb.process.ExecutionError as e:
+                warn("Fail to create the compile_commands.json using compiledb", d)
 
         # Run sage
         exec_proc(cmdline, d, cwd=d.getVar("B", True))
@@ -325,8 +328,12 @@ python shifttest_do_checktest() {
         bb.utils.copyfile(json_file, new_file)
     else:
         bb.debug(1, "Creating compile_commands.json using compiledb")
-        check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
-        bb.utils.movefile(json_file, new_file)
+        try:
+            check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
+            bb.utils.movefile(json_file, new_file)
+        except bb.process.ExecutionError as e:
+            warn("Fail to create the compile_commands.json using compiledb", d)
+            return
 
     # Insert the target option to the file
     replace_files([new_file],
@@ -492,4 +499,3 @@ python() {
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
-
