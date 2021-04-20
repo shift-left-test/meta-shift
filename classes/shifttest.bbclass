@@ -190,8 +190,11 @@ python shifttest_do_checkcode() {
 
         if not os.path.exists(json_file):
             plain("Creating the compile_commands.json using compiledb", d)
-            exec_proc("compiledb --command-style -n make", d, cwd=d.getVar("B", True))
-            temporary = True
+            try:
+                exec_proc("compiledb --command-style -n make", d, cwd=d.getVar("B", True))
+                temporary = True
+            except bb.process.ExecutionError as e:
+                warn("Fail to create the compile_commands.json using compiledb", d)
 
         # Run sage
         exec_proc(cmdline, d, cwd=d.getVar("B", True))
