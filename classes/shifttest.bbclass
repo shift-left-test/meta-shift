@@ -314,7 +314,7 @@ python shifttest_do_checktest() {
         return
 
     if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
-        bb.fatal("the task requires meta-clang to be present")
+        fatal("The task requires meta-clang to be present", dd)
 
     dot_git_path = dd.expand("${S}/.git")
     if not os.path.exists(dot_git_path) or not os.path.isdir(dot_git_path):
@@ -347,7 +347,7 @@ python shifttest_do_checktest() {
             check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
             bb.utils.movefile(json_file, new_file)
         except bb.process.ExecutionError as e:
-            warn("Fail to create the compile_commands.json using compiledb", d)
+            warn("Failed to create the compile_commands.json using compiledb", dd)
             return
 
     # Insert the target option to the file
@@ -459,14 +459,11 @@ python shifttest_do_checkrecipe() {
         return
 
     if not dd.getVar("FILE", True):
-        bb.fatal("Fail to find recipe file")
+        fatal("Failed to find the recipe file", dd)
 
     cmdline = ["oelint-adv", dd.getVar("FILE", True)]
 
-    bbapend = dd.getVar("__BBAPPEND", True)
-    if bbapend:
-        cmdline.append(bbapend)
-
+    cmdline.append(dd.getVar("__BBAPPEND", True) or "")
 
     if dd.getVar("SHIFT_REPORT_DIR", True):
         report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
@@ -491,25 +488,25 @@ python shifttest_do_report() {
         return
 
     if not dd.getVar("SHIFT_REPORT_DIR", True):
-        bb.fatal("You should set SHIFT_REPORT_DIR for making reports")
+        fatal("You should set SHIFT_REPORT_DIR to make reports", dd)
 
-    plain("Making report for do_checkcode", dd)
+    plain("Making a report for do_checkcode", dd)
     exec_func("do_checkcode", dd)
 
-    plain("Making report for do_test", dd)
+    plain("Making a report for do_test", dd)
     exec_func("do_test", dd)
 
-    plain("Making report for do_coverage", dd)
+    plain("Making a report for do_coverage", dd)
     exec_func("do_coverage", dd)
 
-    plain("Making report for do_checkrecipe", dd)
+    plain("Making a report for do_checkrecipe", dd)
     exec_func("do_checkrecipe", dd)
 
     if "clang-layer" in dd.getVar("BBFILE_COLLECTIONS", True).split():
-        plain("Making report for do_checktest", dd)
+        plain("Making a report for do_checktest", dd)
         exec_func("do_checktest", dd)
     else:
-        plain("Skipping do_ckectest because there is no clang-layer", dd)
+        plain("Skipping do_checktest because there is no clang-layer", dd)
 }
 
 
