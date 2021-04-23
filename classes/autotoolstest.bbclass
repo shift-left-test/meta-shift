@@ -2,7 +2,7 @@ inherit autotools
 inherit shifttest
 inherit shiftutils
 
-do_configure_prepend() {
+do_configure_prepend_class-target() {
     # add coverage flags to cxxflags & cflags
     if [ ! -z ${CXXFLAGS+x} ]; then
         export CXXFLAGS_ORI="$CXXFLAGS"
@@ -15,7 +15,7 @@ do_configure_prepend() {
     export CFLAGS="$CFLAGS -O0 -fprofile-arcs -ftest-coverage"
 }
 
-do_configure_append() {
+do_configure_append_class-target() {
     # restore environment variables
     if [ ! -z ${CXXFLAGS_ORI+x} ]; then
         export CXXFLAGS="$CXXFLAGS_ORI"
@@ -56,6 +56,10 @@ python autotoolstest_do_checkcode() {
 python autotoolstest_do_test() {
     dd = d.createCopy()
     env = os.environ.copy()
+
+    if isNativeCrossSDK(dd.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", dd)
+        return
 
     # Set up the test runner
     env["LOG_COMPILER"] = dd.expand("${WORKDIR}/test-runner.sh")
