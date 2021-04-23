@@ -2,11 +2,11 @@ inherit cmake
 inherit shifttest
 inherit shiftutils
 
-OECMAKE_C_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
-OECMAKE_CXX_FLAGS_append = " -O0 -fprofile-arcs -ftest-coverage"
+OECMAKE_C_FLAGS_append_class-target = " -O0 -fprofile-arcs -ftest-coverage"
+OECMAKE_CXX_FLAGS_append_class-target = " -O0 -fprofile-arcs -ftest-coverage"
 
-EXTRA_OECMAKE_append = " -DCMAKE_CROSSCOMPILING_EMULATOR='${@shiftutils_qemu_cmake_emulator(d)}'"
-EXTRA_OECMAKE_append = " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+EXTRA_OECMAKE_append_class-target = " -DCMAKE_CROSSCOMPILING_EMULATOR='${@shiftutils_qemu_cmake_emulator(d)}'"
+EXTRA_OECMAKE_append_class-target = " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
 python cmaketest_do_checkcode() {
     bb.build.exec_func("shifttest_do_checkcode", d)
@@ -15,6 +15,10 @@ python cmaketest_do_checkcode() {
 python cmaketest_do_test() {
     dd = d.createCopy()
     env = os.environ.copy()
+
+    if isNativeCrossSDK(dd.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", dd)
+        return
 
     # To access the shared libraries of other packages
     env["LD_LIBRARY_PATH"] = dd.expand("${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}")
