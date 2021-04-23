@@ -2,10 +2,10 @@ inherit qmake5
 inherit shifttest
 inherit shiftutils
 
-EXTRA_QMAKEVARS_PRE_append = " CONFIG+=gcov"
-EXTRA_QMAKEVARS_PRE_append = " CONFIG+=insignificant_test"
+EXTRA_QMAKEVARS_PRE_append_class-target = " CONFIG+=gcov"
+EXTRA_QMAKEVARS_PRE_append_class-target = " CONFIG+=insignificant_test"
 
-FILES_${PN}_append = " ${OE_QMAKE_PATH_TESTS}"
+FILES_${PN}_append_class-target = " ${OE_QMAKE_PATH_TESTS}"
 
 python qmake5test_do_checkcode() {
     bb.build.exec_func("shifttest_do_checkcode", d)
@@ -14,6 +14,10 @@ python qmake5test_do_checkcode() {
 python qmake5test_do_test() {
     dd = d.createCopy()
     env = os.environ.copy()
+
+    if isNativeCrossSDK(dd.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", dd)
+        return
 
     # To access the shared libraries of other packages
     env["LD_LIBRARY_PATH"] = dd.expand("${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}")
