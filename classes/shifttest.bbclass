@@ -1,4 +1,4 @@
-DEPENDS_prepend = "\
+DEPENDS_prepend_class-target = "\
     gtest \
     gmock \
     lcov-native \
@@ -16,7 +16,7 @@ DEPENDS_prepend = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
     "
 
-DEBUG_BUILD = "1"
+DEBUG_BUILD_class-target = "1"
 
 
 def plain(s, d):
@@ -41,6 +41,10 @@ def fatal(s, d):
     if d.getVar("SHIFT_SUPPRESS_OUTPUT", True):
         return
     bb.fatal(s)
+
+
+def isNativeCrossSDK(pn):
+    return pn.startswith("nativesdk-") or "-cross-" in pn or "-crosssdk" in pn or pn.endswith("-native")
 
 
 def mkdirhier(path, clean=False):
@@ -167,6 +171,9 @@ do_checkcode[nostamp] = "1"
 do_checkcode[doc] = "Runs static analysis for the target"
 
 python shifttest_do_checkcode() {
+    if isNativeCrossSDK(d.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", d)
+        return
 
     # Configure default arguments
     cmdline = ["sage", "--verbose",
@@ -230,6 +237,10 @@ do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage metrics for the target"
 
 python shifttest_do_coverage() {
+    if isNativeCrossSDK(d.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", d)
+        return
+
     LCOV_DATAFILE_BASE = d.expand("${B}/coverage_base.info")
     LCOV_DATAFILE_TEST = d.expand("${B}/coverage_test.info")
     LCOV_DATAFILE_TOTAL = d.expand("${B}/coverage_total.info")
@@ -297,6 +308,10 @@ do_checktest[doc] = "Runs mutation tests for the target"
 
 python shifttest_do_checktest() {
     dd = d.createCopy()
+
+    if isNativeCrossSDK(dd.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", dd)
+        return
 
     if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
         bb.fatal("the task requires meta-clang to be present")
@@ -439,6 +454,10 @@ do_checkrecipe[doc] = "Check target recipe for the OpenEmbedded Style Guide issu
 python shifttest_do_checkrecipe() {
     dd = d.createCopy()
 
+    if isNativeCrossSDK(dd.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", dd)
+        return
+
     if not dd.getVar("FILE", True):
         bb.fatal("Fail to find recipe file")
 
@@ -459,12 +478,17 @@ python shifttest_do_checkrecipe() {
     exec_proc(cmdline, dd)
 }
 
+
 addtask report after do_compile do_install do_populate_sysroot
 do_report[nostamp] = "1"
 do_report[doc] = "Makes reports for the target"
 
 python shifttest_do_report() {
     dd = d.createCopy()
+
+    if isNativeCrossSDK(dd.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", dd)
+        return
 
     if not dd.getVar("SHIFT_REPORT_DIR", True):
         bb.fatal("You should set SHIFT_REPORT_DIR for making reports")
