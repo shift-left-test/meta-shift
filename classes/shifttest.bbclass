@@ -308,14 +308,11 @@ python shifttest_do_checkrecipe() {
         return
 
     if not dd.getVar("FILE", True):
-        bb.fatal("Fail to find recipe file")
+        fatal("Failed to find the recipe file", dd)
 
     cmdline = ["oelint-adv", dd.getVar("FILE", True)]
 
-    bbapend = dd.getVar("__BBAPPEND", True)
-    if bbapend:
-        cmdline.append(bbapend)
-
+    cmdline.append(dd.getVar("__BBAPPEND", True) or "")
 
     if dd.getVar("SHIFT_REPORT_DIR", True):
         report_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
@@ -340,18 +337,18 @@ python shifttest_do_report() {
         return
 
     if not dd.getVar("SHIFT_REPORT_DIR", True):
-        bb.fatal("You should set SHIFT_REPORT_DIR for making reports")
+        fatal("You should set SHIFT_REPORT_DIR to make reports", dd)
 
-    plain("Making report for do_checkcode", dd)
+    plain("Making a report for do_checkcode", dd)
     exec_func("do_checkcode", dd)
 
-    plain("Making report for do_test", dd)
+    plain("Making a report for do_test", dd)
     exec_func("do_test", dd)
 
-    plain("Making report for do_coverage", dd)
+    plain("Making a report for do_coverage", dd)
     exec_func("do_coverage", dd)
 
-    plain("Making report for do_checkrecipe", dd)
+    plain("Making a report for do_checkrecipe", dd)
     exec_func("do_checkrecipe", dd)
 }
 
@@ -366,4 +363,5 @@ python() {
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
+
 
