@@ -98,10 +98,6 @@ def exec_func(func, d, verbose=True, timeout=0):
         os.chdir(cwd)
 
 
-def clamp(value, smallest, largest):
-    return sorted((value, smallest, largest))[1]
-
-
 def timeout(func, cmd, d, **options):
     if not isinstance(cmd, str):
         cmd = " ".join(map(str, cmd))
@@ -361,9 +357,7 @@ python shifttest_do_checktest() {
     import time
     started = time.time()
     exec_func("do_test", dd)
-    elapsed = round(time.time() - started)
-    # Extra amount of time within a range of 5 seconds to 2 minutes
-    elapsed = elapsed + clamp(round(elapsed * 0.2), 5, 120)
+    elapsed = round(time.time() - started) * 2.0
 
     test_result_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
     if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
@@ -511,8 +505,11 @@ python shifttest_do_report() {
 
 
 python() {
+    if d.getVar("SHIFT_TIMEOUT", True):
+        fatal("You cannot use SHIFT_TIMEOUT as it is internal to shifttest.bbclass.", d)
+
+    # Synchronize the tasks
     if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
-        # Synchronize the tasks
         d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
