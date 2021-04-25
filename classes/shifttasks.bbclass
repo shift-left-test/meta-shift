@@ -45,7 +45,7 @@ addtask coverageall
 do_coverageall[recrdeptask] = "do_coverageall do_coverage"
 do_coverageall[recideptask] = "do_${BB_DEFAULT_TASK}"
 do_coverageall[nostamp] = "1"
-do_coverageall[doc] = "Measures code coverage metrics for all recipes required to build the target"
+do_coverageall[doc] = "Measures code coverage for all recipes required to build the target"
 do_coverageall[postfuncs] = "show_affected_recipes"
 do_coverageall[vardepsexclude] = "show_affected_recipes"
 do_coverageall() {
@@ -56,7 +56,7 @@ addtask checkrecipeall
 do_checkrecipeall[recrdeptask] = "do_checkrecipeall do_checkrecipe"
 do_checkrecipeall[recideptask] = "do_${BB_DEFAULT_TASK}"
 do_checkrecipeall[nostamp] = "1"
-do_checkrecipeall[doc] = "Check all recipes required to build the target for the OpenEmbedded Style Guide issues."
+do_checkrecipeall[doc] = "Checks all recipes required to build the target against the OpenEmbedded style guide"
 do_checkrecipeall[postfuncs] = "show_affected_recipes"
 do_checkrecipeall[vardepsexclude] = "show_affected_recipes"
 do_checkrecipeall() {
@@ -73,3 +73,4 @@ do_reportall[vardepsexclude] = "show_affected_recipes"
 do_reportall() {
     :
 }
+
