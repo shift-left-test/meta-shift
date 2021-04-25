@@ -17,6 +17,10 @@ DEPENDS_prepend_class-target = "\
 DEBUG_BUILD_class-target = "1"
 
 
+def debug(s, level=1):
+    bb.debug(level, s)
+
+
 def plain(s, d):
     if d.getVar("SHIFT_SUPPRESS_OUTPUT", True):
         return
@@ -47,7 +51,7 @@ def isNativeCrossSDK(pn):
 
 def mkdirhier(path, clean=False):
     if clean and os.path.exists(path):
-        bb.debug(1, "Removing the existing directory: %s" % path)
+        debug("Removing the existing directory: %s" % path)
         bb.utils.remove(path, True)
     bb.utils.mkdirhier(path)
 
@@ -66,7 +70,7 @@ def replace_files(files, pattern, repl):
     import fileinput
     import re
     for filename in files:
-        bb.debug(1, "Replacing contents: %s" % filename)
+        debug("Replacing contents: %s" % filename)
         for line in fileinput.input(filename, inplace=True):
             print(re.sub(pattern, repl, line).rstrip())
 
@@ -113,7 +117,7 @@ def check_call(cmd, d, **options):
     if not isinstance(cmd, str):
         cmd = " ".join(map(str, cmd))
 
-    bb.debug(1, 'Executing: "%s"' % cmd)
+    debug('Executing: "%s"' % cmd)
     import subprocess
     try:
         subprocess.check_call(cmd, **options)
@@ -149,7 +153,7 @@ def exec_proc(cmd, d, **options):
     if not isinstance(cmd, str):
         cmd = " ".join(map(str, cmd))
 
-    bb.debug(1, 'Executing: "%s"' % cmd)
+    debug('Executing: "%s"' % cmd)
     with Popen(cmd, **options) as proc:
         for line in proc.stdout:
             plain(line.decode("utf-8").rstrip(), d)
@@ -182,7 +186,7 @@ python shifttest_do_checkcode() {
         cmdline.extend(["--output-path", report_dir])
 
     # Configure tool options
-    bb.debug(1, "Configuring the checkcode tool options")
+    debug("Configuring the checkcode tool options")
     for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split():
         options = d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True)
         if options:
@@ -227,7 +231,7 @@ shifttest_do_test() {
 
 addtask coverage after do_test
 do_coverage[nostamp] = "1"
-do_coverage[doc] = "Measures code coverage metrics for the target"
+do_coverage[doc] = "Measures code coverage for the target"
 
 python shifttest_do_coverage() {
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
@@ -298,7 +302,7 @@ python shifttest_do_coverage() {
 addtask checkrecipe
 do_checkrecipe[nostamp] = "1"
 do_checkrecipe[depends] += "oelint-adv-native:do_populate_sysroot"
-do_checkrecipe[doc] = "Check target recipe for the OpenEmbedded Style Guide issues."
+do_checkrecipe[doc] = "Checks the target recipe against the OpenEmbedded style guide"
 
 python shifttest_do_checkrecipe() {
     dd = d.createCopy()
