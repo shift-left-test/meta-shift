@@ -190,8 +190,8 @@ python shifttest_do_checkcode() {
 
     # Configure tool options
     debug("Configuring the checkcode tool options")
-    for tool in (d.getVar("CHECKCODE_TOOLS", True) or "").split():
-        options = d.getVarFlag("CHECKCODE_TOOL_OPTIONS", tool, True)
+    for tool in (d.getVar("SHIFT_CHECKCODE_TOOLS", True) or "").split():
+        options = d.getVarFlag("SHIFT_CHECKCODE_TOOL_OPTIONS", tool, True)
         if options:
             cmdline.append(tool + ":" + options.replace(" ", "\ "))
         else:
@@ -370,19 +370,19 @@ python shifttest_do_checktest() {
 
     debug("Creating the mutation database")
     mutant_file = os.path.join(work_dir, "mutables.db")
-    verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)) else ""
+    verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)) else ""
     exec_proc(["sentinel", "populate",
                "--work-dir", work_dir,
                "--build-dir", work_dir,
                "--output-dir", work_dir,
-               "--generator", dd.getVar("CHECKTEST_GENERATOR", True),
-               "--scope", dd.getVar("CHECKTEST_SCOPE", True),
-               "--limit", dd.getVar("CHECKTEST_LIMIT", True),
+               "--generator", dd.getVar("SHIFT_CHECKTEST_GENERATOR", True),
+               "--scope", dd.getVar("SHIFT_CHECKTEST_SCOPE", True),
+               "--limit", dd.getVar("SHIFT_CHECKTEST_LIMIT", True),
                "--mutants-file-name", os.path.basename(mutant_file),
-               " ".join(["--extensions=" + ext for ext in dd.getVar("CHECKTEST_EXTENSIONS", True).split()]),
-               " ".join(["--exclude=" + ext for ext in dd.getVar("CHECKTEST_EXCLUDES", True).split()]),
+               " ".join(["--extensions=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXTENSIONS", True).split()]),
+               " ".join(["--exclude=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True).split()]),
                verbose,
-               dd.expand("--seed ${CHECKTEST_SEED}") if dd.getVar("CHECKTEST_SEED", True) else "",
+               dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
                dd.getVar("S", True)], dd)
 
     for line in readlines(mutant_file):
@@ -404,7 +404,7 @@ python shifttest_do_checktest() {
                 bb.utils.remove(actual_dir, True)
                 bb.utils.mkdirhier(actual_dir)
                 exec_func("do_test", dd,
-                          bb.utils.to_boolean(dd.getVar("CHECKTEST_VERBOSE", True)),
+                          bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)),
                           timeout=elapsed)
             except bb.process.ExecutionError as e:
                 debug("do_checktest failed: %s" % e)
