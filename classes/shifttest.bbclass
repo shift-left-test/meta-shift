@@ -182,6 +182,11 @@ python shifttest_do_checkcode() {
                "--tool-path", d.expand("${STAGING_DIR_NATIVE}${bindir}"),
                "--target-triple", d.getVar("TARGET_SYS", True)]
 
+    import shlex
+    exc_list = shlex.split(d.getVar("SHIFT_CHECKCODE_EXCLUDES", True))
+    if len(exc_list) > 0:
+        cmdline.append('--exclude-path="%s"' % " ".join(exc_list))
+
     # Configure the output path argument
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
@@ -272,6 +277,22 @@ python shifttest_do_coverage() {
                 "--rc", "lcov_branch_coverage=1",
                 d.expand('"${S}/*"'),
                 "-o", LCOV_DATAFILE], d)
+
+    if d.getVar("SHIFT_COVERAGE_EXCLUDES", True):
+        cmd = ["lcov", "--remove", LCOV_DATAFILE, "-o", LCOV_DATAFILE]
+        exc_path_list = []
+        import shlex
+        for exc in shlex.split(d.getVar("SHIFT_COVERAGE_EXCLUDES", True)):
+            exc_path = os.path.join(d.getVar("S", True), exc)
+            if os.path.exists(exc_path):
+                if os.path.isdir(exc_path):
+                    exc_path_list += find_files(exc_path, "*")
+                else:
+                    exc_path_list.append(exc_path)
+            else:
+                warn("SHIFT_COVERAGE_EXCLUDES: %s doesn't exist" % str(exc_path), d)
+        if len(exc_path_list) > 0:
+            check_call(cmd + exc_path_list, d)
 
     plain("GCC Code Coverage Report", d)
     exec_proc(["lcov", "--list", LCOV_DATAFILE, "--rc", "lcov_branch_coverage=1"], d)
@@ -369,6 +390,7 @@ python shifttest_do_checktest() {
         return
 
     debug("Creating the mutation database")
+    import shlex
     mutant_file = os.path.join(work_dir, "mutables.db")
     verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)) else ""
     exec_proc(["sentinel", "populate",
@@ -380,7 +402,7 @@ python shifttest_do_checktest() {
                "--limit", dd.getVar("SHIFT_CHECKTEST_LIMIT", True),
                "--mutants-file-name", os.path.basename(mutant_file),
                " ".join(["--extensions=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXTENSIONS", True).split()]),
-               " ".join(["--exclude=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True).split()]),
+               " ".join(['--exclude="%s"' % ext for ext in shlex.split(dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True))]),
                verbose,
                dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
                dd.getVar("S", True)], dd)
@@ -521,3 +543,5 @@ python() {
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
+
+
