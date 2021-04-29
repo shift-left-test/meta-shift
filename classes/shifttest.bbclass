@@ -379,6 +379,9 @@ python shifttest_do_report() {
 
 
 python() {
+    if d.getVar("SHIFT_TIMEOUT", True):
+        fatal("You cannot use SHIFT_TIMEOUT as it is internal to shifttest.bbclass.", d)
+
     # Synchronize the tasks
     if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
         d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
