@@ -88,7 +88,10 @@ python autotoolstest_do_test() {
         timeout(check_call ,"make check", dd, env=env, cwd=dd.getVar("B", True))
     except bb.process.ExecutionError as e:
         if e.exitcode == 124:
-            raise e
+            if dd.getVar("SHIFT_TIMEOUT", True):
+                raise e
+            else:
+                warn("Unexpected timeout occurs", dd)
         pass
 
     # Print test logs
