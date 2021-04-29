@@ -393,19 +393,24 @@ python shifttest_do_checktest() {
     import shlex
     mutant_file = os.path.join(work_dir, "mutables.db")
     verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)) else ""
-    exec_proc(["sentinel", "populate",
-               "--work-dir", work_dir,
-               "--build-dir", work_dir,
-               "--output-dir", work_dir,
-               "--generator", dd.getVar("SHIFT_CHECKTEST_GENERATOR", True),
-               "--scope", dd.getVar("SHIFT_CHECKTEST_SCOPE", True),
-               "--limit", dd.getVar("SHIFT_CHECKTEST_LIMIT", True),
-               "--mutants-file-name", os.path.basename(mutant_file),
-               " ".join(["--extensions=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXTENSIONS", True).split()]),
-               " ".join(['--exclude="%s"' % ext for ext in shlex.split(dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True))]),
-               verbose,
-               dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
-               dd.getVar("S", True)], dd)
+
+    try:
+        exec_proc(["sentinel", "populate",
+                   "--work-dir", work_dir,
+                   "--build-dir", work_dir,
+                   "--output-dir", work_dir,
+                   "--generator", dd.getVar("SHIFT_CHECKTEST_GENERATOR", True),
+                   "--scope", dd.getVar("SHIFT_CHECKTEST_SCOPE", True),
+                   "--limit", dd.getVar("SHIFT_CHECKTEST_LIMIT", True),
+                   "--mutants-file-name", os.path.basename(mutant_file),
+                   " ".join(["--extensions=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXTENSIONS", True).split()]),
+                   " ".join(['--exclude="%s"' % ext for ext in shlex.split(dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True))]),
+                   verbose,
+                   dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
+                   dd.getVar("S", True)], dd)
+    except bb.process.ExecutionError as e:
+        warn("Populating failed: %s" % e)
+        return
 
     for line in readlines(mutant_file):
         try:
@@ -462,7 +467,11 @@ python shifttest_do_checktest() {
         mkdirhier(report_dir, True)
         cmdline.extend(["--output-dir", report_dir])
 
-    exec_proc(cmdline, dd)
+    try:
+        exec_proc(cmdline, dd)
+    except bb.process.ExecutionError as e:
+        warn("Reporting failed: %s" % e)
+        return
 }
 
 
