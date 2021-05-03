@@ -87,11 +87,10 @@ python autotoolstest_do_test() {
         timeout(check_call ,"make check", d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
         warn(str(e), d)
-        if e.exitcode == 124:
-            if d.getVar("SHIFT_TIMEOUT", True):
-                raise e
-            else:
-                warn("Unexpected timeout occurs", d)
+        if d.getVar("SHIFT_TIMEOUT", True) and e.exitcode == 124:
+            err = bb.BBHandledException(e)
+            err.exitcode = e.exitcode
+            raise err
 
     # Print test logs
     for f in find_files(d.getVar("B", True), "test-suite.log"):
