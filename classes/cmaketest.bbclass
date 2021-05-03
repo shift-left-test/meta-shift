@@ -52,11 +52,10 @@ python cmaketest_do_test() {
         timeout(exec_proc, "ctest --output-on-failure", d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
         warn(str(e), d)
-        if e.exitcode == 124:
-            if d.getVar("SHIFT_TIMEOUT", True):
-                raise e
-            else:
-                warn("Unexpected timeout occurs", d)
+        if d.getVar("SHIFT_TIMEOUT", True) and e.exitcode == 124:
+            err = bb.BBHandledException(e)
+            err.exitcode = e.exitcode
+            raise err
 
     if configured:
         if os.path.exists(report_dir):

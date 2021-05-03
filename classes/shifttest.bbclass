@@ -286,12 +286,9 @@ python shifttest_do_checktest() {
                 exec_func("do_test", dd,
                           bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)),
                           timeout=elapsed)
-            except bb.process.ExecutionError as e:
-                debug("do_checktest failed: %s" % e)
-                if e.exitcode == 124:
-                    test_state = "timeout"
-                else:
-                    test_state = "build_failure"
+            except (bb.BBHandledException, bb.process.ExecutionError) as e:
+                debug("Failed to run do_checktest: %s" % e)
+                test_state = "timeout" if e.exitcode == 124 else "build_failure"
 
             debug("Evaluating the test result")
             exec_proc(["sentinel", "evaluate",
