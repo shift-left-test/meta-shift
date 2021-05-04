@@ -199,3 +199,12 @@ def shiftutils_qemu_cmake_emulator_sdktarget(data):
 
     return qemu_binary + ";" + qemu_options.replace(' ', ';') + ";-L;\$ENV{SDKTARGETSYSROOT}" \
         + ";-E;LD_LIBRARY_PATH=" + ":".join(library_paths)
+
+
+def shiftutils_write_metadata(data, report_dir):
+    import json
+    json_dict = dict()
+    json_dict["S"] = data.getVar("S", True)
+
+    with open(os.path.join(report_dir, "metadata"), "w") as f:
+        f.write(json.dumps(json_dict, indent=2) + "\n")
