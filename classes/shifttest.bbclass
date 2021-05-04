@@ -44,6 +44,9 @@ python shifttest_do_checkcode() {
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
         mkdirhier(report_dir, True)
+
+        shiftutils_write_metadata(d, report_dir)
+
         cmdline.extend(["--output-path", report_dir])
 
     # Configure tool options
@@ -155,6 +158,8 @@ python shifttest_do_coverage() {
 
         mkdirhier(report_dir, True)
 
+        shiftutils_write_metadata(d, report_dir)
+
         check_call(["genhtml", LCOV_DATAFILE,
                     "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
                     "--demangle-cpp",
@@ -195,6 +200,9 @@ python shifttest_do_checkrecipe() {
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
         mkdirhier(report_dir, True)
+
+        shiftutils_write_metadata(d, report_dir)
+
         report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("--output %s" % report_path)
 
