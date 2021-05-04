@@ -33,6 +33,7 @@ from contextlib import contextmanager
 CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1" disabled="0" errors="0"'
 CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" errors="0"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
+METADATA_S = '"S": "'
 
 
 class TEST:
@@ -79,12 +80,16 @@ def test_cmake_project_do_report(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
+    assert EXISTS(TEST.RESULT("cmake-project", "metadata"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata"))
 
     assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(TEST.CHECK("cmake-project", "metadata"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata"))
 
 
 def test_cmake_project_do_coverage(report_build):
@@ -111,6 +116,8 @@ def test_cmake_project_do_coverage(report_build):
         assert f.contains('name="cmake-project.minus.src"')
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
 
+    assert READ(TEST.COVERAGE("cmake-project", "metadata")).contains(METADATA_S)
+
 
 def test_cmake_project_do_checkcode(report_build):
     report_build.files.remove("report")
@@ -123,6 +130,8 @@ def test_cmake_project_do_checkcode(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
+    assert READ(TEST.CHECK("cmake-project", "metadata")).contains(METADATA_S)
+
 
 def test_cmake_project_do_checkrecipe(report_build):
     report_build.files.remove("report")
@@ -133,3 +142,5 @@ def test_cmake_project_do_checkrecipe(report_build):
     with READ(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
+
+    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata")).contains(METADATA_S)

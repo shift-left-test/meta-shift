@@ -29,6 +29,8 @@ python cmaketest_do_test() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
         mkdirhier(report_dir, True)
 
+        shiftutils_write_metadata(d, report_dir)
+
         # Create Google test report files
         env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
 
