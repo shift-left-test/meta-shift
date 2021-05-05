@@ -79,16 +79,16 @@ def test_cmake_project_do_report(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
-    assert EXISTS(TEST.RESULT("cmake-project", "metadata"))
+    assert EXISTS(TEST.RESULT("cmake-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata.json"))
 
 
 def test_cmake_project_do_coverage(report_build):
@@ -115,7 +115,7 @@ def test_cmake_project_do_coverage(report_build):
         assert f.contains('name="cmake-project.minus.src"')
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
 
-    assert READ(TEST.COVERAGE("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkcode(report_build):
@@ -129,7 +129,7 @@ def test_cmake_project_do_checkcode(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkrecipe(report_build):
@@ -142,4 +142,4 @@ def test_cmake_project_do_checkrecipe(report_build):
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata.json")).contains(METADATA_S)
