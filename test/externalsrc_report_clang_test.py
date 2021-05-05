@@ -84,21 +84,21 @@ def test_cmake_project_do_report(report_clang_build):
     EXISTS = report_clang_build.files.exists
 
     assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
-    assert EXISTS(TEST.RESULT("cmake-project", "metadata"))
+    assert EXISTS(TEST.RESULT("cmake-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
     assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
     assert EXISTS(TEST.CHECKTEST("cmake-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECKTEST("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata.json"))
 
 
 def test_cmake_project_do_coverage(report_clang_build):
@@ -125,7 +125,7 @@ def test_cmake_project_do_coverage(report_clang_build):
         assert f.contains('name="cmake-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.COVERAGE("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkcode(report_clang_build):
@@ -139,7 +139,7 @@ def test_cmake_project_do_checkcode(report_clang_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checktest(report_clang_build):
@@ -153,7 +153,7 @@ def test_cmake_project_do_checktest(report_clang_build):
     with READ(TEST.CHECKTEST("cmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
-    assert READ(TEST.CHECKTEST("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKTEST("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkrecipe(report_clang_build):
@@ -166,4 +166,4 @@ def test_cmake_project_do_checkrecipe(report_clang_build):
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata.json")).contains(METADATA_S)
