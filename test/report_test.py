@@ -74,78 +74,78 @@ def test_core_image_minimal_do_reportall(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
-    assert EXISTS(TEST.RESULT("cmake-project", "metadata"))
+    assert EXISTS(TEST.RESULT("cmake-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.RESULT("qmake5-project", "test-qt5-gtest.xml"))
     assert EXISTS(TEST.RESULT("qmake5-project", "tests/plus_test/test_result.xml"))
     assert EXISTS(TEST.RESULT("qmake5-project", "tests/minus_test/test_result.xml"))
-    assert EXISTS(TEST.RESULT("qmake5-project", "metadata"))
+    assert EXISTS(TEST.RESULT("qmake5-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("qmake5-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("qmake5-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("qmake5-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("qmake5-project", "metadata.json"))
 
     assert EXISTS(TEST.RESULT("autotools-project", "operatorTest.xml"))
-    assert EXISTS(TEST.RESULT("autotools-project", "metadata"))
+    assert EXISTS(TEST.RESULT("autotools-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("autotools-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("autotools-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("autotools-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("autotools-project", "metadata.json"))
 
     assert EXISTS(TEST.RESULT("humidifier-project", "unittest.xml"))
-    assert EXISTS(TEST.RESULT("humidifier-project", "metadata"))
+    assert EXISTS(TEST.RESULT("humidifier-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("humidifier-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("humidifier-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("humidifier-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("humidifier-project", "metadata.json"))
 
     assert EXISTS(TEST.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml"))
-    assert EXISTS(TEST.RESULT("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.RESULT("sqlite3wrapper", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "index.html"))
     assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "metadata.json"))
 
     assert EXISTS(TEST.RESULT("stringutils", "unittest.bin.xml"))
-    assert EXISTS(TEST.RESULT("stringutils", "metadata"))
+    assert EXISTS(TEST.RESULT("stringutils", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("stringutils", "index.html"))
     assert EXISTS(TEST.COVERAGE("stringutils", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("stringutils", "metadata"))
+    assert EXISTS(TEST.COVERAGE("stringutils", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "metadata"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("autotools-project", "metadata"))
+    assert EXISTS(TEST.CHECK("autotools-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("humidifier-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("humidifier-project", "metadata"))
+    assert EXISTS(TEST.CHECK("humidifier-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("sqlite3wrapper", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.CHECK("sqlite3wrapper", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("stringutils", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("stringutils", "metadata"))
+    assert EXISTS(TEST.CHECK("stringutils", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("stringutils", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("stringutils", "metadata.json"))
 
 
 def test_cmake_project_do_coverageall(report_build):
@@ -171,8 +171,8 @@ def test_cmake_project_do_coverageall(report_build):
         assert f.contains('name="cmake-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.RESULT("cmake-project", "metadata")).contains(METADATA_S)
-    assert READ(TEST.COVERAGE("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.RESULT("cmake-project", "metadata.json")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkcodeall(report_build):
@@ -185,7 +185,7 @@ def test_cmake_project_do_checkcodeall(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkrecipeall(report_build):
@@ -197,7 +197,7 @@ def test_cmake_project_do_checkrecipeall(report_build):
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 
@@ -209,16 +209,16 @@ def test_cmake_project_do_reportall(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
-    assert EXISTS(TEST.RESULT("cmake-project", "metadata"))
+    assert EXISTS(TEST.RESULT("cmake-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata.json"))
 
 
 def test_qmake5_project_do_coverageall(report_build):
@@ -250,8 +250,8 @@ def test_qmake5_project_do_coverageall(report_build):
         assert f.contains('name="qmake5-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.COVERAGE("qmake5-project", "metadata")).contains(METADATA_S)
-    assert READ(TEST.RESULT("qmake5-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("qmake5-project", "metadata.json")).contains(METADATA_S)
+    assert READ(TEST.RESULT("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_qmake5_project_do_checkcodeall(report_build):
@@ -264,7 +264,7 @@ def test_qmake5_project_do_checkcodeall(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("qmake5-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_qmake5_project_do_checkrecipeall(report_build):
@@ -276,7 +276,7 @@ def test_qmake5_project_do_checkrecipeall(report_build):
         assert f.contains('qmake5-project_1.0.0.bb')
         assert f.contains('qmake5-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("qmake5-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 def test_qmake5_project_do_reportall(report_build):
     report_build.files.remove("report")
@@ -288,16 +288,16 @@ def test_qmake5_project_do_reportall(report_build):
     assert EXISTS(TEST.RESULT("qmake5-project", "test-qt5-gtest.xml"))
     assert EXISTS(TEST.RESULT("qmake5-project", "tests/plus_test/test_result.xml"))
     assert EXISTS(TEST.RESULT("qmake5-project", "tests/minus_test/test_result.xml"))
-    assert EXISTS(TEST.RESULT("qmake5-project", "metadata"))
+    assert EXISTS(TEST.RESULT("qmake5-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("qmake5-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("qmake5-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("qmake5-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("qmake5-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "metadata"))
+    assert EXISTS(TEST.CHECK("qmake5-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("qmake5-project", "metadata.json"))
 
 
 def test_autotools_project_do_coverageall(report_build):
@@ -321,8 +321,8 @@ def test_autotools_project_do_coverageall(report_build):
         assert f.contains('name="autotools-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.RESULT("autotools-project", "metadata")).contains(METADATA_S)
-    assert READ(TEST.COVERAGE("autotools-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.RESULT("autotools-project", "metadata.json")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_autotools_project_do_checkcodeall(report_build):
@@ -335,7 +335,7 @@ def test_autotools_project_do_checkcodeall(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("autotools-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_autotools_project_do_checkrecipeall(report_build):
@@ -347,7 +347,7 @@ def test_autotools_project_do_checkrecipeall(report_build):
         assert f.contains('autotools-project_1.0.0.bb')
         assert f.contains('autotools-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("autotools-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_autotools_project_do_reportall(report_build):
@@ -358,16 +358,16 @@ def test_autotools_project_do_reportall(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("autotools-project", "operatorTest.xml"))
-    assert EXISTS(TEST.RESULT("autotools-project", "metadata"))
+    assert EXISTS(TEST.RESULT("autotools-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("autotools-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("autotools-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("autotools-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("autotools-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("autotools-project", "metadata"))
+    assert EXISTS(TEST.CHECK("autotools-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("autotools-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("autotools-project", "metadata.json"))
 
 
 def test_humidifier_project_do_coverageall(report_build):
@@ -388,8 +388,8 @@ def test_humidifier_project_do_coverageall(report_build):
         assert f.contains('<method name="FakeHumiditySensor::getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('<method name="FakeHumiditySensor::gmock_getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.RESULT("humidifier-project", "metadata")).contains(METADATA_S)
-    assert READ(TEST.COVERAGE("humidifier-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.RESULT("humidifier-project", "metadata.json")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("humidifier-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_humidifier_project_do_checkcodeall(report_build):
@@ -402,7 +402,7 @@ def test_humidifier_project_do_checkcodeall(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("humidifier-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("humidifier-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_humidifier_project_do_checkrecipeall(report_build):
@@ -414,7 +414,7 @@ def test_humidifier_project_do_checkrecipeall(report_build):
         assert f.contains('humidifier-project_1.0.0.bb')
         assert f.contains('humidifier-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("humidifier-project", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("humidifier-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_humidifier_project_do_reportall(report_build):
@@ -425,16 +425,16 @@ def test_humidifier_project_do_reportall(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("humidifier-project", "unittest.xml"))
-    assert EXISTS(TEST.RESULT("humidifier-project", "metadata"))
+    assert EXISTS(TEST.RESULT("humidifier-project", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("humidifier-project", "index.html"))
     assert EXISTS(TEST.COVERAGE("humidifier-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("humidifier-project", "metadata"))
+    assert EXISTS(TEST.COVERAGE("humidifier-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("humidifier-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("humidifier-project", "metadata"))
+    assert EXISTS(TEST.CHECK("humidifier-project", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("humidifier-project", "metadata.json"))
 
 
 def test_sqlite3logger_do_coverageall(report_build):
@@ -452,8 +452,8 @@ def test_sqlite3logger_do_coverageall(report_build):
         assert f.contains('<method name="SQLite3Wrapper::Statement::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('<method name="SQLite3Wrapper::Database::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.RESULT("sqlite3wrapper", "metadata")).contains(METADATA_S)
-    assert READ(TEST.COVERAGE("sqlite3wrapper", "metadata")).contains(METADATA_S)
+    assert READ(TEST.RESULT("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
 
     assert READ(TEST.RESULT("stringutils", "unittest.bin.xml")).contains('classname="stringutils.StringTest"')
     assert READ(TEST.COVERAGE("stringutils", "index.html")).contains(LCOV_HTML_TITLE)
@@ -461,8 +461,8 @@ def test_sqlite3logger_do_coverageall(report_build):
         assert f.contains('name="stringutils.include.util"')
         assert f.contains('<method name="bool util::string::contains&lt;char&gt;(char const*, char const*)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(TEST.RESULT("stringutils", "metadata")).contains(METADATA_S)
-    assert READ(TEST.COVERAGE("stringutils", "metadata")).contains(METADATA_S)
+    assert READ(TEST.RESULT("stringutils", "metadata.json")).contains(METADATA_S)
+    assert READ(TEST.COVERAGE("stringutils", "metadata.json")).contains(METADATA_S)
 
 
 def test_sqlite3logger_do_checkcodeall(report_build):
@@ -478,7 +478,7 @@ def test_sqlite3logger_do_checkcodeall(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("stringutils", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("stringutils", "metadata.json")).contains(METADATA_S)
 
     with READ(TEST.CHECK("sqlite3wrapper", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
@@ -486,9 +486,9 @@ def test_sqlite3logger_do_checkcodeall(report_build):
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("sqlite3wrapper", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECK("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
 
-    
+
 def test_sqlite3logger_project_do_checkrecipeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake sqlite3logger -c checkrecipeall").stderr.empty()
@@ -498,13 +498,13 @@ def test_sqlite3logger_project_do_checkrecipeall(report_build):
         assert f.contains('sqlite3wrapper_0.1.0.bb')
         assert f.contains('sqlite3wrapper_0.1.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("stringutils", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("stringutils", "metadata.json")).contains(METADATA_S)
 
     with READ(TEST.CHECKRECIPE("stringutils", "recipe_violations.json")) as f:
         assert f.contains('stringutils_0.0.1.bb')
         assert f.contains('stringutils_0.0.1.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("sqlite3wrapper", "metadata")).contains(METADATA_S)
+    assert READ(TEST.CHECKRECIPE("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
 
 
 def test_sqlite3logger_do_reportall(report_build):
@@ -515,25 +515,25 @@ def test_sqlite3logger_do_reportall(report_build):
     EXISTS = report_build.files.exists
 
     assert EXISTS(TEST.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml"))
-    assert EXISTS(TEST.RESULT("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.RESULT("sqlite3wrapper", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "index.html"))
     assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.COVERAGE("sqlite3wrapper", "metadata.json"))
 
     assert EXISTS(TEST.RESULT("stringutils", "unittest.bin.xml"))
-    assert EXISTS(TEST.RESULT("stringutils", "metadata"))
+    assert EXISTS(TEST.RESULT("stringutils", "metadata.json"))
     assert EXISTS(TEST.COVERAGE("stringutils", "index.html"))
     assert EXISTS(TEST.COVERAGE("stringutils", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("stringutils", "metadata"))
+    assert EXISTS(TEST.COVERAGE("stringutils", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("sqlite3wrapper", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.CHECK("sqlite3wrapper", "metadata.json"))
 
     assert EXISTS(TEST.CHECK("stringutils", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("stringutils", "metadata"))
+    assert EXISTS(TEST.CHECK("stringutils", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("sqlite3wrapper", "metadata.json"))
 
     assert EXISTS(TEST.CHECKRECIPE("stringutils", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("stringutils", "metadata"))
+    assert EXISTS(TEST.CHECKRECIPE("stringutils", "metadata.json"))
