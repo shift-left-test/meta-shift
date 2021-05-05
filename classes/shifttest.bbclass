@@ -320,7 +320,7 @@ python shifttest_do_checktest() {
     if d.getVar("SHIFT_REPORT_DIR", True):  # Use original datastore
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checktest")
         mkdirhier(report_dir, True)
-       
+
         shiftutils_write_metadata(d, report_dir)
 
         cmdline.extend(["--output-dir", report_dir])
