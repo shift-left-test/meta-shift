@@ -170,6 +170,12 @@ def shiftutils_qemu_run_cmd(data):
         return ""
 
 
+def save_as_json(dictionary, path):
+    import json
+    with open(path, "w") as f:
+        f.write(json.dumps(dictionary, indent=2) + "\n")
+
+
 def shiftutils_qemu_cmake_emulator(data):
     return shiftutils_qemu_run_cmd(data).replace(' ', ';')
 
@@ -199,12 +205,3 @@ def shiftutils_qemu_cmake_emulator_sdktarget(data):
 
     return qemu_binary + ";" + qemu_options.replace(' ', ';') + ";-L;\$ENV{SDKTARGETSYSROOT}" \
         + ";-E;LD_LIBRARY_PATH=" + ":".join(library_paths)
-
-
-def shiftutils_write_metadata(data, report_dir):
-    import json
-    json_dict = dict()
-    json_dict["S"] = data.getVar("S", True)
-
-    with open(os.path.join(report_dir, "metadata.json"), "w") as f:
-        f.write(json.dumps(json_dict, indent=2) + "\n")
