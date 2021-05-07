@@ -36,10 +36,14 @@ LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 METADATA_S = '"S": "'
 
 
-class TEST:
+class REPORT:
     PF = {
         "cmake-project": "cmake-project-1.0.0-r0",
     }
+
+    @classmethod
+    def ROOT(cls, recipe, path):
+        return os.path.join("report", cls.PF[recipe], path)
 
     @classmethod
     def RESULT(cls, recipe, path):
@@ -78,17 +82,12 @@ def test_cmake_project_do_report(report_build):
 
     EXISTS = report_build.files.exists
 
-    assert EXISTS(TEST.RESULT("cmake-project", "OperatorTest.xml"))
-    assert EXISTS(TEST.RESULT("cmake-project", "metadata.json"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "index.html"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "coverage.xml"))
-    assert EXISTS(TEST.COVERAGE("cmake-project", "metadata.json"))
-
-    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
-
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json"))
-    assert EXISTS(TEST.CHECKRECIPE("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.RESULT("cmake-project", "OperatorTest.xml"))
+    assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
+    assert EXISTS(REPORT.COVERAGE("cmake-project", "coverage.xml"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
 
 
 def test_cmake_project_do_coverage(report_build):
@@ -99,23 +98,23 @@ def test_cmake_project_do_coverage(report_build):
 
     READ = report_build.files.read
 
-    with READ(TEST.RESULT("cmake-project", "OperatorTest_1.xml")) as f:
+    with READ(REPORT.RESULT("cmake-project", "OperatorTest_1.xml")) as f:
         assert f.contains('classname="cmake-project.PlusTest"')
         assert f.contains(CMAKE_GT_PLUS_TEST_FAILED_LOG)
 
-    with READ(TEST.RESULT("cmake-project", "OperatorTest_3.xml")) as f:
+    with READ(REPORT.RESULT("cmake-project", "OperatorTest_3.xml")) as f:
         assert f.contains('classname="cmake-project.MinusTest"')
         assert f.contains(CMAKE_GT_MINUS_TEST_FAILED_LOG)
 
-    assert READ(TEST.COVERAGE("cmake-project", "index.html")).contains(LCOV_HTML_TITLE)
+    assert READ(REPORT.COVERAGE("cmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
-    with READ(TEST.COVERAGE("cmake-project", "coverage.xml")) as f:
+    with READ(REPORT.COVERAGE("cmake-project", "coverage.xml")) as f:
         assert f.contains('name="cmake-project.plus.src"')
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::plus(int, int)" signature="">')
         assert f.contains('name="cmake-project.minus.src"')
         assert f.contains('<method branch-rate="1.0" line-rate="1.0" name="arithmetic::minus(int, int)" signature="">')
 
-    assert READ(TEST.COVERAGE("cmake-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkcode(report_build):
@@ -123,13 +122,13 @@ def test_cmake_project_do_checkcode(report_build):
     with externalsrc_execute(report_build, "cmake-project", "checkcode") as o:
         assert o.stderr.empty()
     READ = report_build.files.read
-    with READ(TEST.CHECK("cmake-project", "sage_report.json")) as f:
+    with READ(REPORT.CHECK("cmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("cmake-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checkrecipe(report_build):
@@ -138,8 +137,8 @@ def test_cmake_project_do_checkrecipe(report_build):
         assert o.stderr.empty()
     READ = report_build.files.read
 
-    with READ(TEST.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
+    with READ(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
-    assert READ(TEST.CHECKRECIPE("cmake-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
