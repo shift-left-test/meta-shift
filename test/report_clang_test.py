@@ -40,12 +40,16 @@ SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
 METADATA_S = '"S": "'
 
 
-class TEST:
+class REPORT:
     PF = {
         "cmake-project": "cmake-project-1.0.0-r0",
         "qmake5-project": "qmake5-project-1.0.0-r0",
         "autotools-project": "autotools-project-1.0.0-r0",
     }
+
+    @classmethod
+    def ROOT(cls, recipe, path):
+        return os.path.join("report", cls.PF[recipe], path)
 
     @classmethod
     def CHECK(cls, recipe, path):
@@ -63,54 +67,50 @@ def test_core_image_minimal_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("qmake5-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
 
-    assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("qmake5-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
 
-    assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("autotools-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "style.css"))
 
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECKTEST("qmake5-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("qmake5-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("qmake5-project", "style.css"))
 
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "index.html"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "metadata.json"))
-
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "index.html"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "style.css"))
 
 
 def test_cmake_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake cmake-project -c checkcodeall").stderr.empty()
     READ = report_clang_build.files.read
-    with READ(TEST.CHECK("cmake-project", "sage_report.json")) as f:
+    with READ(REPORT.CHECK("cmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("cmake-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_checktestall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake cmake-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
-    with READ(TEST.CHECKTEST("cmake-project", "mutations.xml")) as f:
+    with READ(REPORT.CHECKTEST("cmake-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
-    with READ(TEST.CHECKTEST("cmake-project", "index.html")) as f:
+    with READ(REPORT.CHECKTEST("cmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
-    assert READ(TEST.CHECKTEST("cmake-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_cmake_project_do_reportall(report_clang_build):
@@ -120,38 +120,38 @@ def test_cmake_project_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("cmake-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("cmake-project", "metadata.json"))
 
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "index.html"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("cmake-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "style.css"))
 
 
 def test_qmake5_project_do_checkcodeall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake qmake5-project -c checkcodeall").stderr.empty()
     READ = report_clang_build.files.read
-    with READ(TEST.CHECK("qmake5-project", "sage_report.json")) as f:
+    with READ(REPORT.CHECK("qmake5-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("qmake5-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_qmake5_project_do_checktestall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake qmake5-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
-    with READ(TEST.CHECKTEST("qmake5-project", "mutations.xml")) as f:
+    with READ(REPORT.CHECKTEST("qmake5-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
-    with READ(TEST.CHECKTEST("qmake5-project", "index.html")) as f:
+    with READ(REPORT.CHECKTEST("qmake5-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
-    assert READ(TEST.CHECKTEST("qmake5-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_qmake5_project_do_reportall(report_clang_build):
@@ -161,13 +161,13 @@ def test_qmake5_project_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("qmake5-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("qmake5-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("qmake5-project", "metadata.json"))
 
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "index.html"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("qmake5-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECK("qmake5-project", "sage_report.json"))
+
+    assert EXISTS(REPORT.CHECKTEST("qmake5-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("qmake5-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("qmake5-project", "style.css"))
 
 
 def test_autotools_project_do_checkcodeall(report_clang_build):
@@ -175,25 +175,25 @@ def test_autotools_project_do_checkcodeall(report_clang_build):
     assert report_clang_build.shell.execute("bitbake autotools-project -c checkcodeall").stderr.empty()
     READ = report_clang_build.files.read
 
-    with READ(TEST.CHECK("autotools-project", "sage_report.json")) as f:
+    with READ(REPORT.CHECK("autotools-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(TEST.CHECK("autotools-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_autotools_project_do_checktestall(report_clang_build):
     report_clang_build.files.remove("report")
     assert report_clang_build.shell.execute("bitbake autotools-project -c checktestall").stderr.empty()
     READ = report_clang_build.files.read
-    with READ(TEST.CHECKTEST("autotools-project", "mutations.xml")) as f:
+    with READ(REPORT.CHECKTEST("autotools-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
-    with READ(TEST.CHECKTEST("autotools-project", "index.html")) as f:
+    with READ(REPORT.CHECKTEST("autotools-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
-    assert READ(TEST.CHECKTEST("autotools-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
 def test_autotools_project_do_reportall(report_clang_build):
@@ -203,10 +203,10 @@ def test_autotools_project_do_reportall(report_clang_build):
 
     EXISTS = report_clang_build.files.exists
 
-    assert EXISTS(TEST.CHECK("autotools-project", "sage_report.json"))
-    assert EXISTS(TEST.CHECK("autotools-project", "metadata.json"))
+    assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
 
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "mutations.xml"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "index.html"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "style.css"))
-    assert EXISTS(TEST.CHECKTEST("autotools-project", "metadata.json"))
+    assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
+
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "style.css"))
