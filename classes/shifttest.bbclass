@@ -47,7 +47,8 @@ python shifttest_do_checkcode() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
         mkdirhier(report_dir, True)
 
-        shiftutils_write_metadata(d, report_dir)
+        save_as_json({"S": d.getVar("S", True) or ""},
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
 
         cmdline.extend(["--output-path", report_dir])
 
@@ -160,7 +161,8 @@ python shifttest_do_coverage() {
 
         mkdirhier(report_dir, True)
 
-        shiftutils_write_metadata(d, report_dir)
+        save_as_json({"S": d.getVar("S", True) or ""},
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
 
         check_call(["genhtml", LCOV_DATAFILE,
                     "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
@@ -321,7 +323,8 @@ python shifttest_do_checktest() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checktest")
         mkdirhier(report_dir, True)
 
-        shiftutils_write_metadata(d, report_dir)
+        save_as_json({"S": d.getVar("S", True) or ""},
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
 
         cmdline.extend(["--output-dir", report_dir])
 
@@ -354,7 +357,8 @@ python shifttest_do_checkrecipe() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
         mkdirhier(report_dir, True)
 
-        shiftutils_write_metadata(d, report_dir)
+        save_as_json({"S": d.getVar("S", True) or ""},
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
 
         report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("--output %s" % (report_path))

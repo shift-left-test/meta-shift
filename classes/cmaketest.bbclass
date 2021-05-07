@@ -33,7 +33,8 @@ python cmaketest_do_test() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
         mkdirhier(report_dir, True)
 
-        shiftutils_write_metadata(d, report_dir)
+        save_as_json({"S": d.getVar("S", True) or ""},
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
 
         # Create Google test report files
         env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
