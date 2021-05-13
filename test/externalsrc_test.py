@@ -63,6 +63,11 @@ def test_cmake_project_do_checkcode(test_build):
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
+def test_cmake_project_do_checkcache(test_build):
+    with externalsrc_execute(test_build, "cmake-project", "checkcache") as o:
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
+
+
 def test_cmake_project_do_checkrecipe(test_build):
     with externalsrc_execute(test_build, "cmake-project", "checkrecipe") as o:
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Checking the specified recipes or files for the styling issues...")
