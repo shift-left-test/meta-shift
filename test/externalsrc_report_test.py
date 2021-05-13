@@ -63,6 +63,10 @@ class REPORT:
         return os.path.join("report", cls.PF[recipe], "checktest", path)
 
     @classmethod
+    def CHECKCACHE(cls, recipe, path):
+        return os.path.join("report", cls.PF[recipe], "checkcache", path)
+
+    @classmethod
     def CHECKRECIPE(cls, recipe, path):
         return os.path.join("report", cls.PF[recipe], "checkrecipe", path)
 
@@ -140,6 +144,20 @@ def test_cmake_project_do_checkcode(report_clang_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
+
+
+def test_cmake_project_do_checkcache(report_clang_build):
+    report_clang_build.files.remove("report")
+    with externalsrc_execute(report_clang_build, "cmake-project", "checkcache") as o:
+        assert o.stderr.empty()
+    READ = report_clang_build.files.read
+    with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 

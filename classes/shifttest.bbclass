@@ -336,6 +336,106 @@ python shifttest_do_checktest() {
 }
 
 
+addtask checkcache after do_build
+do_checkcache[nostamp] = "1"
+do_checkcache[doc] = "Check cache availability of the recipe"
+
+python shifttest_do_checkcache() {
+    def make_plain_report(print_list):
+        def newline(new_str=""):
+            return "%s\n" % new_str
+
+        ret = ""
+        for title, found, missed in print_list:
+            wanted = len(found) + len(missed)
+            ret += newline(title)
+            ret += newline("-" * len(title))
+            if wanted != 0:
+                ret += newline("Wanted : %d (%d%%)" % (wanted, 100 * wanted / wanted))
+                ret += newline("Found  : %d (%d%%)" % (len(found), 100 * len(found) / wanted))
+                for task in found:
+                    ret += newline("    %s" % task)
+                ret += newline("Missed : %d (%d%%)" % (len(missed), 100 * len(missed) / wanted))
+                for task in missed:
+                    ret += newline("    %s" % task)
+            else:
+                ret += newline("Wanted : %d (-%%)" % (wanted))
+                ret += newline("Found  : %d (-%%)" % (len(found)))
+                ret += newline("Missed : %d (-%%)" % (len(missed)))
+            ret += newline()
+        
+        return ret
+
+    def make_json_report(print_list):
+        import json
+        json_dict = dict()
+
+        for title, found, missed in print_list:
+            json_dict[title] = dict()
+            json_dict[title]["Summary"] = dict()
+            json_dict[title]["Summary"]["Wanted"] = len(found) + len(missed)
+            json_dict[title]["Summary"]["Found"] = len(found)
+            json_dict[title]["Summary"]["Missed"] = len(missed)
+            json_dict[title]["Found"] = [str(x) for x in found]
+            json_dict[title]["Missed"] = [str(x) for x in missed]
+
+        return json.dumps(json_dict, indent=2) + "\n"
+
+    if isNativeCrossSDK(d.getVar("PN", True) or ""):
+        warn("Unsupported class type of the recipe", d)
+        return
+
+    if "checkcache" not in str(d.getVar("INHERIT", True)):
+        fatal("The task needs to inherit checkcache", d)
+
+    found_source = list()
+    missed_source = list()
+
+    total_depends = set()
+    taskdepdata = shiftutils_get_taskdepdata(d)
+    if taskdepdata:
+        for td in taskdepdata:
+            total_depends.add(taskdepdata[td][0])
+
+    total_depends_remove_virtual = set()
+    
+    for dep in total_depends:
+        if dep.startswith("virtual/"):
+            dep = d.getVar("PREFERRED_PROVIDER_%s" % dep, True)
+
+        if dep:
+            total_depends_remove_virtual.add(dep)
+
+    for dep in total_depends_remove_virtual:
+        try:
+            path = d.expand("${TOPDIR}/checkcache/%s" % dep)
+
+            with open(os.path.join(path,"source_availability"), "r") as f:
+                source_availability = bool(f.read())
+                if source_availability:
+                    found_source.append(dep)
+                else:
+                    missed_source.append(dep)
+
+        except Exception as e:
+            debug("Failed to read information of %s:%s" % (dep, str(e)))
+
+    found_source.sort()
+    missed_source.sort()
+
+    plain(make_plain_report([("Source Availability", found_source, missed_source)]), d)
+
+    if d.getVar("SHIFT_REPORT_DIR", True):
+        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcache")
+        mkdirhier(report_dir, True)
+
+        save_as_json({"S": d.getVar("S", True) or ""},
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+
+        with open(os.path.join(report_dir, "caches.json"), "w") as f:
+            f.write(make_json_report([("Source", found_source, missed_source)]))
+}
+
 addtask checkrecipe
 do_checkrecipe[nostamp] = "1"
 do_checkrecipe[depends] += "oelint-adv-native:do_populate_sysroot"
@@ -389,6 +489,13 @@ python shifttest_do_report() {
     plain("Making a report for do_coverage", d)
     exec_func("do_coverage", d)
 
+    if "checkcache" in str(d.getVar("INHERIT", True)):
+        plain("Making a report for do_checkcache", d)
+        exec_func("do_checkcache", d)
+    else:
+        warn("Skipping do_checkcache because checkcache is not inherited", d)
+        
+
     plain("Making a report for do_checkrecipe", d)
     exec_func("do_checkrecipe", d)
 
@@ -410,6 +517,7 @@ python() {
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
         d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
+        d.appendVarFlag("do_checkcache", "lockfiles", "${TMPDIR}/do_checkcache.lock")
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
