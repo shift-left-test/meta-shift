@@ -228,3 +228,10 @@ def shiftutils_qemu_cmake_emulator_sdktarget(data):
 
     return qemu_binary + ";" + qemu_options.replace(' ', ';') + ";-L;\$ENV{SDKTARGETSYSROOT}" \
         + ";-E;LD_LIBRARY_PATH=" + ":".join(library_paths)
+
+
+def shiftutils_get_taskdepdata(data):
+    taskdepdata = data.getVar("BB_TASKDEPDATA", False)
+    return taskdepdata
+
+shiftutils_get_taskdepdata[vardepsexclude] += "BB_TASKDEPDATA"
