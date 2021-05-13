@@ -113,8 +113,12 @@ python autotoolstest_do_checkrecipe() {
     bb.build.exec_func("shifttest_do_checkrecipe", d)
 }
 
+python autotoolstest_do_checkcache() {
+    bb.build.exec_func("shifttest_do_checkcache", d)
+}
+
 python autotoolstest_do_report() {
     bb.build.exec_func("shifttest_do_report", d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checkrecipe do_report
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checkrecipe do_checkcache do_report

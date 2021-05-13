@@ -66,6 +66,10 @@ class REPORT:
         return os.path.join("report", cls.PF[recipe], "checkcode", path)
 
     @classmethod
+    def CHECKCACHE(cls, recipe, path):
+        return os.path.join("report", cls.PF[recipe], "checkcache", path)
+
+    @classmethod
     def CHECKRECIPE(cls, recipe, path):
         return os.path.join("report", cls.PF[recipe], "checkrecipe", path)
 
@@ -82,6 +86,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("cmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("cmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
 
     assert EXISTS(REPORT.ROOT("qmake5-project", "metadata.json"))
@@ -91,6 +96,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("qmake5-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("qmake5-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("qmake5-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("qmake5-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
 
     assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
@@ -98,6 +104,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("autotools-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("autotools-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("autotools-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json"))
 
     assert EXISTS(REPORT.ROOT("humidifier-project", "metadata.json"))
@@ -105,6 +112,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("humidifier-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("humidifier-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
 
     assert EXISTS(REPORT.ROOT("sqlite3wrapper", "metadata.json"))
@@ -112,6 +120,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "index.html"))
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("sqlite3wrapper", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
 
     assert EXISTS(REPORT.ROOT("stringutils", "metadata.json"))
@@ -119,6 +128,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("stringutils", "index.html"))
     assert EXISTS(REPORT.COVERAGE("stringutils", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("stringutils", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("stringutils", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("stringutils", "recipe_violations.json"))
 
 
@@ -161,6 +171,19 @@ def test_cmake_project_do_checkcodeall(report_build):
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
+def test_cmake_project_do_checkcacheall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake cmake-project -c checkcacheall").stderr.empty()
+    READ = report_build.files.read
+    with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
+
+    assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
+
+
 def test_cmake_project_do_checkrecipeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake cmake-project -c checkrecipeall").stderr.empty()
@@ -171,7 +194,6 @@ def test_cmake_project_do_checkrecipeall(report_build):
         assert f.contains('cmake-project_1.0.0.bbappend')
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
-
 
 
 def test_cmake_project_do_reportall(report_build):
@@ -186,6 +208,7 @@ def test_cmake_project_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("cmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("cmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
 
 
@@ -234,6 +257,19 @@ def test_qmake5_project_do_checkcodeall(report_build):
     assert READ(REPORT.ROOT("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 
+def test_qmake5_project_do_checkcacheall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake qmake5-project -c checkcacheall").stderr.empty()
+    READ = report_build.files.read
+    with READ(REPORT.CHECKCACHE("qmake5-project", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
+
+    assert READ(REPORT.ROOT("qmake5-project", "metadata.json")).contains(METADATA_S)
+
+
 def test_qmake5_project_do_checkrecipeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake qmake5-project -c checkrecipeall").stderr.empty()
@@ -259,6 +295,7 @@ def test_qmake5_project_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("qmake5-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("qmake5-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("qmake5-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("qmake5-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
 
 
@@ -299,6 +336,19 @@ def test_autotools_project_do_checkcodeall(report_build):
     assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
+def test_autotools_project_do_checkcacheall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake autotools-project -c checkcacheall").stderr.empty()
+    READ = report_build.files.read
+    with READ(REPORT.CHECKCACHE("autotools-project", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
+
+    assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
+
+
 def test_autotools_project_do_checkrecipeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake autotools-project -c checkrecipeall").stderr.empty()
@@ -323,6 +373,7 @@ def test_autotools_project_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("autotools-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("autotools-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("autotools-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json"))
 
 
@@ -360,6 +411,19 @@ def test_humidifier_project_do_checkcodeall(report_build):
     assert READ(REPORT.ROOT("humidifier-project", "metadata.json")).contains(METADATA_S)
 
 
+def test_humidifier_project_do_checkcacheall(report_build):
+    report_build.files.remove("report")
+    assert report_build.shell.execute("bitbake humidifier-project -c checkcacheall").stderr.empty()
+    READ = report_build.files.read
+    with READ(REPORT.CHECKCACHE("humidifier-project", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
+
+    assert READ(REPORT.ROOT("humidifier-project", "metadata.json")).contains(METADATA_S)
+
+
 def test_humidifier_project_do_checkrecipeall(report_build):
     report_build.files.remove("report")
     assert report_build.shell.execute("bitbake humidifier-project -c checkrecipeall").stderr.empty()
@@ -384,6 +448,7 @@ def test_humidifier_project_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("humidifier-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("humidifier-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
 
 
@@ -436,6 +501,29 @@ def test_sqlite3logger_do_checkcodeall(report_build):
 
     assert READ(REPORT.ROOT("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
 
+def test_sqlite3logger_do_checkcacheall(report_build):
+    report_build.files.remove("report")
+
+    assert report_build.shell.execute("bitbake sqlite3logger -c checkcacheall").stderr.empty()
+
+    READ = report_build.files.read
+
+    with READ(REPORT.CHECKCACHE("stringutils", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
+
+    assert READ(REPORT.ROOT("stringutils", "metadata.json")).contains(METADATA_S)
+
+    with READ(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json")) as f:
+        assert f.contains('"Source": {{')
+        assert f.contains('"Summary": {{')
+        assert f.contains('"Found": [')
+        assert f.contains('"Missed": [')
+
+    assert READ(REPORT.ROOT("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
+
 
 def test_sqlite3logger_project_do_checkrecipeall(report_build):
     report_build.files.remove("report")
@@ -467,11 +555,13 @@ def test_sqlite3logger_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "index.html"))
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("sqlite3wrapper", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
 
     assert EXISTS(REPORT.ROOT("stringutils", "metadata.json"))
     assert EXISTS(REPORT.RESULT("stringutils", "unittest.bin.xml"))
     assert EXISTS(REPORT.COVERAGE("stringutils", "index.html"))
     assert EXISTS(REPORT.COVERAGE("stringutils", "coverage.xml"))
+    assert EXISTS(REPORT.CHECKCACHE("stringutils", "caches.json"))
     assert EXISTS(REPORT.CHECK("stringutils", "sage_report.json"))
     assert EXISTS(REPORT.CHECKRECIPE("stringutils", "recipe_violations.json"))
