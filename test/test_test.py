@@ -114,6 +114,21 @@ def test_core_image_minimal_do_checkcodeall(test_build):
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
+def test_core_image_minimal_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake core-image-minimal -c checkcache")
+    assert o.stderr.contains("ERROR: Task do_checkcache does not exist for target core-image-minimal")
+
+
+def test_core_image_minimal_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake core-image-minimal -c checkcacheall")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Source Availability")
+
+
 def test_core_image_minimal_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c checkrecipe")
     assert o.stderr.contains("ERROR: Task do_checkrecipe does not exist for target core-image-minimal")
@@ -186,6 +201,16 @@ def test_cmake_project_do_checkcodeall(test_build):
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
+
+
+def test_cmake_project_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake cmake-project -c checkcache")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
+
+
+def test_cmake_project_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake cmake-project -c checkcacheall")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
 def test_cmake_project_do_checkrecipe(test_build):
@@ -265,6 +290,16 @@ def test_qmake5_project_do_checkcodeall(test_build):
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
+def test_qmake5_project_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake qmake5-project -c checkcache")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+
+
+def test_qmake5_project_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake qmake5-project -c checkcacheall")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+
+
 def test_qmake5_project_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake qmake5-project -c checkrecipe")
     assert o.stdout.contains("qmake5-project_1.0.0.bb")
@@ -335,6 +370,16 @@ def test_autotools_project_do_checkcodeall(test_build):
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
+
+
+def test_autotools_project_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake autotools-project -c checkcache")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
+
+
+def test_autotools_project_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake autotools-project -c checkcacheall")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
 def test_autotools_project_do_checkrecipe(test_build):
@@ -408,6 +453,17 @@ def test_humidifier_project_do_checkcodeall(test_build):
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
+
+
+def test_humidifier_project_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake humidifier-project -c checkcache")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
+
+
+def test_humidifier_project_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake humidifier-project -c checkcacheall")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
+
 
 def test_humidifier_project_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake humidifier-project -c checkrecipe")
@@ -486,6 +542,17 @@ def test_sqlite3logger_do_checkcodeall(test_build):
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
+
+
+def test_sqlite3logger_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake sqlite3logger -c checkcache")
+    assert o.stderr.contains("ERROR: Task do_checkcache does not exist for target sqlite3logger")
+
+
+def test_sqlite3logger_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake sqlite3logger -c checkcacheall")
+    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Source Availability")
 
 
 def test_sqlite3logger_do_checkrecipe(test_build):
