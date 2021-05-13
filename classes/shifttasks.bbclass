@@ -63,6 +63,17 @@ do_checktestall() {
     :
 }
 
+addtask checkcacheall
+do_checkcacheall[recrdeptask] = "do_checkcacheall do_checkcache"
+do_checkcacheall[recideptask] = "do_${BB_DEFAULT_TASK}"
+do_checkcacheall[nostamp] = "1"
+do_checkcacheall[doc] = "Checks cache availability of all recipes required to build the target"
+do_checkcacheall[postfuncs] = "show_affected_recipes"
+do_checkcacheall[vardepsexclude] = "show_affected_recipes"
+do_checkcacheall() {
+    :
+}
+
 addtask checkrecipeall
 do_checkrecipeall[recrdeptask] = "do_checkrecipeall do_checkrecipe"
 do_checkrecipeall[recideptask] = "do_${BB_DEFAULT_TASK}"
@@ -84,4 +95,3 @@ do_reportall[vardepsexclude] = "show_affected_recipes"
 do_reportall() {
     :
 }
-
