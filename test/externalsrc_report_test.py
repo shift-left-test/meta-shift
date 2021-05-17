@@ -141,7 +141,7 @@ def test_cmake_project_do_checkcache(report_build):
         assert o.stderr.empty()
     READ = report_build.files.read
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
