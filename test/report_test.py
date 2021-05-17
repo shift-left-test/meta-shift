@@ -176,7 +176,7 @@ def test_cmake_project_do_checkcacheall(report_build):
     assert report_build.shell.execute("bitbake cmake-project -c checkcacheall").stderr.empty()
     READ = report_build.files.read
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
@@ -262,7 +262,7 @@ def test_qmake5_project_do_checkcacheall(report_build):
     assert report_build.shell.execute("bitbake qmake5-project -c checkcacheall").stderr.empty()
     READ = report_build.files.read
     with READ(REPORT.CHECKCACHE("qmake5-project", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
@@ -341,7 +341,7 @@ def test_autotools_project_do_checkcacheall(report_build):
     assert report_build.shell.execute("bitbake autotools-project -c checkcacheall").stderr.empty()
     READ = report_build.files.read
     with READ(REPORT.CHECKCACHE("autotools-project", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
@@ -415,7 +415,7 @@ def test_humidifier_project_do_checkcacheall(report_build):
     assert report_build.shell.execute("bitbake humidifier-project -c checkcacheall").stderr.empty()
     READ = report_build.files.read
     with READ(REPORT.CHECKCACHE("humidifier-project", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
@@ -508,7 +508,7 @@ def test_sqlite3logger_do_checkcacheall(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKCACHE("stringutils", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
@@ -516,7 +516,7 @@ def test_sqlite3logger_do_checkcacheall(report_build):
     assert READ(REPORT.ROOT("stringutils", "metadata.json")).contains(METADATA_S)
 
     with READ(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json")) as f:
-        assert f.contains('"Source": {{')
+        assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
