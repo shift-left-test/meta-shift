@@ -279,7 +279,7 @@ python shifttest_do_checkcache() {
                      d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
 
         with open(os.path.join(report_dir, "caches.json"), "w") as f:
-            f.write(make_json_report([("Source", found_source, missed_source)]))
+            f.write(make_json_report([("Shared State", [], []), ("Premirror", found_source, missed_source)]))
 }
 
 
