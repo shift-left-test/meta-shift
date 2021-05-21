@@ -121,11 +121,17 @@ def test_core_image_minimal_do_checkcache(test_build):
 
 def test_core_image_minimal_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c checkcacheall")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Source Availability")
 
 
@@ -205,11 +211,13 @@ def test_cmake_project_do_checkcodeall(test_build):
 
 def test_cmake_project_do_checkcache(test_build):
     o = test_build.shell.execute("bitbake cmake-project -c checkcache")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
 def test_cmake_project_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake cmake-project -c checkcacheall")
+    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
@@ -292,11 +300,13 @@ def test_qmake5_project_do_checkcodeall(test_build):
 
 def test_qmake5_project_do_checkcache(test_build):
     o = test_build.shell.execute("bitbake qmake5-project -c checkcache")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
 def test_qmake5_project_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake qmake5-project -c checkcacheall")
+    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
@@ -374,11 +384,13 @@ def test_autotools_project_do_checkcodeall(test_build):
 
 def test_autotools_project_do_checkcache(test_build):
     o = test_build.shell.execute("bitbake autotools-project -c checkcache")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
 def test_autotools_project_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake autotools-project -c checkcacheall")
+    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
@@ -457,11 +469,13 @@ def test_humidifier_project_do_checkcodeall(test_build):
 
 def test_humidifier_project_do_checkcache(test_build):
     o = test_build.shell.execute("bitbake humidifier-project -c checkcache")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
 def test_humidifier_project_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake humidifier-project -c checkcacheall")
+    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
@@ -551,7 +565,9 @@ def test_sqlite3logger_do_checkcache(test_build):
 
 def test_sqlite3logger_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake sqlite3logger -c checkcacheall")
+    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Source Availability")
 
 

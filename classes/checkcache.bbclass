@@ -35,6 +35,9 @@ python checkcacheinternal() {
     bb.utils.mkdirhier(path)
     with open(os.path.join(path,"source_availability"), "w") as f:
         f.write(str(Fetch2(d).check_premirrors()))
+    
+    with open(os.path.join(path, "hashfilename"), "w") as f:
+        f.write(str(d.getVar("BB_HASHFILENAME", True)))
 }
 
 SSTATEPOSTINSTFUNCS_append = " checkcacheinternal"
