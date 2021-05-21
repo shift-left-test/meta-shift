@@ -64,6 +64,7 @@ def test_cmake_project_do_checkcode(test_clang_build):
 
 def test_cmake_project_do_checkcache(test_clang_build):
     with externalsrc_execute(test_clang_build, "cmake-project", "checkcache") as o:
+        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
 
 

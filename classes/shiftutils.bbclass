@@ -230,8 +230,190 @@ def shiftutils_qemu_cmake_emulator_sdktarget(data):
         + ";-E;LD_LIBRARY_PATH=" + ":".join(library_paths)
 
 
-def shiftutils_get_taskdepdata(data):
-    taskdepdata = data.getVar("BB_TASKDEPDATA", False)
-    return taskdepdata
+def shiftutils_get_source_availability(d):
+    taskdepdata = d.getVar("BB_TASKDEPDATA", False)
 
-shiftutils_get_taskdepdata[vardepsexclude] += "BB_TASKDEPDATA"
+    total_depends = set()
+    if taskdepdata:
+        for td in taskdepdata:
+            dep = taskdepdata[td][0]
+            if dep:
+                total_depends.add(dep)
+
+    found_source = list()
+    missed_source = list()
+
+    for dep in total_depends:
+        try:
+            path = d.expand("${TOPDIR}/checkcache/%s" % dep)
+
+            with open(os.path.join(path,"source_availability"), "r") as f:
+                source_availability = f.read()
+                if source_availability == "True":
+                    found_source.append(dep)
+                elif source_availability == "False":
+                    missed_source.append(dep)
+                else:
+                    raise Exception("Unknown Value(%s)" % source_availability)
+
+        except Exception as e:
+            debug("Failed to read source_availability of %s:%s" % (dep, str(e)))
+
+    found_source.sort()
+    missed_source.sort()
+
+    return found_source, missed_source
+
+shiftutils_get_source_availability[vardepsexclude] += "BB_TASKDEPDATA"
+
+def shiftutils_get_sstate_availability(d, siginfo=False):
+    # migration from poky/meta/classes/sstate.bbclass::sstate_checkhashes
+
+    mirrors = d.getVar("SSTATE_MIRRORS", True)
+    if not mirrors:
+        bb.warn("Skipping check Shared State Availability because SSTATE_MIRRORS is not set.")
+        return list(), list()
+
+    if bb.utils.to_boolean(d.getVar('BB_NO_NETWORK', True)):
+        bb.warn("Skipping check Shared State Availability because BB_NO_NETWORK is set.")
+        return list(), list()
+
+    sq_data = {"hash": dict(), "unihash": dict(), "hashfn": dict(), "fn_task": dict()}
+
+    sstatetasks = str(d.getVar("SSTATETASKS", True)).split()
+
+    taskdepdata = d.getVar("BB_TASKDEPDATA", False)
+    if taskdepdata:
+        for td in taskdepdata:
+            if taskdepdata[td][1] in sstatetasks:
+                dep = taskdepdata[td][0]
+                try:
+                    path = d.expand("${TOPDIR}/checkcache/%s" % dep)
+
+                    with open(os.path.join(path,"hashfilename"), "r") as f:
+                        hashfilename = str(f.read())
+                except Exception as e:
+                    debug("Failed to read hashfilename of %s:%s" % (dep, str(e)))
+                else:
+                    sq_data["hashfn"][td] = hashfilename
+                    sq_data["hash"][td] = taskdepdata[td][5]
+                    try:
+                        sq_data["unihash"][td] = taskdepdata[td][6]
+                    except:
+                        sq_data["unihash"][td] = None
+                    sq_data["fn_task"][td] = "%s:%s" % (taskdepdata[td][0], taskdepdata[td][1])
+
+
+    currentcount = 0
+
+    found = set()
+    missed = set()
+    extension = ".tgz"
+    if siginfo:
+        extension = extension + ".siginfo"
+
+    def gethash(task):
+        if sq_data['unihash'][task]:
+            return sq_data['unihash'][task]
+        return sq_data['hash'][task]
+
+    def getpathcomponents(task, d):
+        # Magic data from BB_HASHFILENAME
+        splithashfn = sq_data['hashfn'][task].split(" ")
+        spec = splithashfn[1]
+        if splithashfn[0] == "True":
+            extrapath = d.getVar("NATIVELSBSTRING", True) + "/"
+        else:
+            extrapath = ""
+        
+        tname = bb.runqueue.taskname_from_tid(task)[3:]
+
+        if tname in ["fetch", "unpack", "patch", "populate_lic", "preconfigure"] and splithashfn[2]:
+            spec = splithashfn[2]
+            extrapath = ""
+
+        return spec, extrapath, tname
+
+    if mirrors:
+        # Copy the data object and override DL_DIR and SRC_URI
+        localdata = bb.data.createCopy(d)
+
+        import tempfile
+        tmp_dldir = tempfile.mkdtemp(prefix="checkcache-tempdir-")
+
+        localdata.delVar('MIRRORS')
+        localdata.setVar('FILESPATH', tmp_dldir)
+        localdata.setVar('DL_DIR', tmp_dldir)
+        localdata.setVar('PREMIRRORS', mirrors)
+
+        bb.debug(2, "SState using premirror of: %s" % mirrors)
+
+        # if BB_NO_NETWORK is set but we also have SSTATE_MIRROR_ALLOW_NETWORK,
+        # we'll want to allow network access for the current set of fetches.
+        if bb.utils.to_boolean(localdata.getVar('BB_NO_NETWORK', True)) and \
+                bb.utils.to_boolean(localdata.getVar('SSTATE_MIRROR_ALLOW_NETWORK', True)):
+            localdata.delVar('BB_NO_NETWORK')
+
+        from bb.fetch2 import FetchConnectionCache
+        def checkstatus_init(thread_worker):
+            thread_worker.connection_cache = FetchConnectionCache()
+
+        def checkstatus_end(thread_worker):
+            thread_worker.connection_cache.close_connections()
+
+        def checkstatus(thread_worker, arg):
+            (tid, sstatefile) = arg
+
+            localdata2 = bb.data.createCopy(localdata)
+            srcuri = "file://" + sstatefile
+            localdata.setVar('SRC_URI', srcuri)
+            bb.debug(2, "SState: Attempting to fetch %s" % srcuri)
+
+            try:
+                fetcher = bb.fetch2.Fetch(srcuri.split(), localdata2,
+                            connection_cache=thread_worker.connection_cache)
+                fetcher.checkstatus()
+                bb.debug(2, "SState: Successful fetch test for %s" % srcuri)
+                found.add(tid)
+                if tid in missed:
+                    missed.remove(tid)
+            except:
+                missed.add(tid)
+                bb.debug(2, "SState: Unsuccessful fetch test for %s" % srcuri)
+                pass
+
+        tasklist = []
+        for tid in sq_data['hash']:
+            if tid in found:
+                continue
+            spec, extrapath, tname = getpathcomponents(tid, d)
+            sstatefile = d.expand(extrapath + generate_sstatefn(spec, gethash(tid), d) + "_" + tname + extension)
+            tasklist.append((tid, sstatefile))
+
+        if tasklist:
+            import multiprocessing
+            nproc = min(multiprocessing.cpu_count(), len(tasklist))
+
+            bb.event.enable_threadlock()
+            pool = oe.utils.ThreadedPool(nproc, len(tasklist),
+                    worker_init=checkstatus_init, worker_end=checkstatus_end)
+            for t in tasklist:
+                pool.add_task(checkstatus, t)
+            pool.start()
+            pool.wait_completion()
+            bb.event.disable_threadlock()
+        try:
+            bb.utils.remove(tmp_dldir, True)
+        except:
+            pass
+
+    found = list(found)
+    found = [sq_data['fn_task'][x] for x in found]
+    found.sort()
+    missed = list(missed)
+    missed = [sq_data['fn_task'][x] for x in missed]
+    missed.sort()
+
+    return found, missed
+
+shiftutils_get_sstate_availability[vardepsexclude] += "BB_TASKDEPDATA NATIVELSBSTRING"
