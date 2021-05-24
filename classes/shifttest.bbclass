@@ -103,6 +103,12 @@ python shifttest_do_coverage() {
         warn("Unsupported class type of the recipe", d)
         return
 
+    if d.getVar("SHIFT_REPORT_DIR", True):
+        test_result_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
+        if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
+            warn("No test result files generated at %s" % test_result_dir, d)
+            return
+
     LCOV_DATAFILE_BASE = d.expand("${B}/coverage_base.info")
     LCOV_DATAFILE_TEST = d.expand("${B}/coverage_test.info")
     LCOV_DATAFILE_TOTAL = d.expand("${B}/coverage_total.info")
