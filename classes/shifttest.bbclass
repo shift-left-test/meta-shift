@@ -256,6 +256,16 @@ python shifttest_do_checktest() {
         warn("No test result files generated at %s" % test_result_dir, dd)
         return
 
+    try:
+        exec_func("do_coverage", dd)
+        coverage_file = dd.expand("${B}/coverage.info")
+        coverage_info = shiftutils_get_coverage_info(dd, coverage_file)
+    except Exception as e:
+        warn("Failed to read %s: %s" % (coverage_file, str(e)), dd)
+        coverage_info = dict()
+
+    debug("coverage_info: %s" % str(coverage_info))
+
     debug("Creating the mutation database")
     mutant_file = os.path.join(work_dir, "mutables.db")
     verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)) else ""
@@ -279,6 +289,23 @@ python shifttest_do_checktest() {
         return
 
     for line in readlines(mutant_file):
+        mutated_file = line.split(",")[1]
+        mutated_line = line.split(",")[3]
+        if not (mutated_file in coverage_info and mutated_line in coverage_info[mutated_file]):
+            debug("Mutated code line uncovered by test cases - ignore (%s)" % str(line))
+            try:
+                exec_proc(["sentinel", "evaluate",
+                           "--mutant", '"%s"' % line,
+                           "--expected", expected_dir,
+                           "--actual", actual_dir,
+                           "--output-dir", eval_dir,
+                           "--test-state", "uncovered",
+                           verbose,
+                           dd.getVar("S", True)], dd)
+            except:
+                pass
+            continue
+
         try:
             debug("Mutating the source")
             exec_proc(["sentinel", "mutate",
