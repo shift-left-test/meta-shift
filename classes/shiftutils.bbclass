@@ -414,3 +414,22 @@ def shiftutils_get_sstate_availability(d, siginfo=False):
     return found, missed
 
 shiftutils_get_sstate_availability[vardepsexclude] += "BB_TASKDEPDATA NATIVELSBSTRING"
+
+def shiftutils_get_coverage_info(data, coverage_file) :
+    coverage_info = dict()
+    if os.path.exists(coverage_file):
+        current_file = ""
+        with open(coverage_file, "r") as f:
+            for line in f.read().splitlines():
+                if line.startswith("SF"):
+                    current_file = line.split(":")[1]
+                    coverage_info[current_file] = list()
+
+                if line.startswith("DA"):
+                    v = line.split(":")[1].split(",")
+                    if v[1] != "0":
+                        coverage_info[current_file].append(v[0])
+    else:
+        warn("No coverage info file generated at %s" % coverage_file, data)
+
+    return coverage_info
