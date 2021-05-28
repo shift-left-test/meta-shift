@@ -32,23 +32,18 @@ import tempfile
 
 
 def test_populate_sdk(sdk_build):
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/host/installed-packages.txt")
-    assert pkgs.contains("nativesdk-cmake_3.18.2-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-cppcheck_2.0-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-cpplint_1.4.5-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-gcovr_4.2-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-lcov_1.14-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-qemu_5.1.0-r0_x86_64-nativesdk.ipk")
-
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/target/installed-packages.txt")
-    assert pkgs.contains("fff_1.0-r0_{TUNE_PKGARCH}.ipk")
-    assert pkgs.contains("googletest_1.10.0-r0_{TUNE_PKGARCH}.ipk")
-
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
-    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.18/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.18/Modules/FindGMock.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.19/Modules/CMakeUtils.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.19/Modules/FindGMock.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cppcheck")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cpplint")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/gcovr")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/lcov")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/qemu-")
+    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
+    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/gtest/gtest.h")
 
 
 def test_humidifier_project(sdk_build):

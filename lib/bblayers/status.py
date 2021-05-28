@@ -82,7 +82,7 @@ def status(args):
     def findAllImages():
         images = []
         pkg_pn = tinfoil.cooker.recipecaches[''].pkg_pn
-        (latest_versions, preferred_versions) = tinfoil.find_providers()
+        (latest_versions, preferred_versions, required) = tinfoil.find_providers()
         for p in sorted(pkg_pn):
             pref = preferred_versions[p]
             realfn = bb.cache.virtualfn2realfn(pref[1])

@@ -51,7 +51,7 @@ def do_test_recipes(args):
         sys.exit(1)
 
     pkg_pn = tinfoil.cooker.recipecaches[''].pkg_pn
-    (latest_versions, preferred_versions) = tinfoil.find_providers()
+    (latest_versions, preferred_versions, required) = tinfoil.find_providers()
 
     print("{} {} {}".format("recipe".ljust(30), "version".ljust(20), "layer".ljust(20)))
     print("=" * 74)

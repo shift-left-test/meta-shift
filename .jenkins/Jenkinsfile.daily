@@ -4,7 +4,7 @@ pipeline {
         parallelsAlwaysFailFast()
     }
     stages {
-        stage("gatesgarth-next") {
+        stage("hardknott-next") {
             matrix {
                 agent {
                     docker {
