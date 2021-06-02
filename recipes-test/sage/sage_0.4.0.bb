@@ -33,3 +33,4 @@ do_install_append_class-native() {
 }
 
 BBCLASSEXTEND = "native nativesdk"
+
