@@ -121,7 +121,7 @@ def inspect(args):
         sys.stderr.write("Specified layer '%s' doesn't exist\n" % args.layername)
         return
 
-    report = ReporterJson() if args.json else Reporter()
+    report = ReporterJson() if args.output else Reporter()
 
     report.section("General Information")
     report.add_value("Layer", layer)
@@ -149,7 +149,6 @@ def register_commands(subparsers):
     parser = subparsers.add_parser("inspect",
                                    help="Show the detailed information on the specified layer",
                                    description="Return the detailed information on the specified layer including images, machines, distros, etc.")
-    parser.add_argument("-j", "--json", help="prints JSON formatted information", action="store_true")
     parser.add_argument("-o", "--output", help="save the output to a file")
     parser.add_argument("layername", help="the layer name to inspect")
     parser.set_defaults(func=inspect, parserecipes=True)
