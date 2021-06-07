@@ -124,6 +124,7 @@ def inspect(args):
     reporter.section("Additional Information")
     reporter.add_value("Recipe", recipefile.split(":")[-1])  # To remove extra prefixes (e.g. virtual, nativesdk)
     reporter.add_value("Appends", appendfiles)
+
     reporter.add_value("SRC_URI", recipedata.getVar("SRC_URI", True).split())
     reporter.add_value("Work", recipedata.getVar("WORKDIR", True))
     reporter.add_value("Source", recipedata.getVar("S", True))
@@ -136,7 +137,12 @@ def inspect(args):
     for inherit_class in recipe_inherits:
         classname = os.path.splitext(os.path.basename(inherit_class))[0]
         inherits[classname] = inherit_class
-    provides = tinfoil.cooker_data.fn_provides[recipefile]
+
+    from collections import OrderedDict
+    inherits = OrderedDict(sorted(inherits.items()))
+
+    provides = sorted(tinfoil.cooker_data.fn_provides[recipefile])
+
     dependedby = []
 
     for fn, pn in tinfoil.cooker_data.pkg_fn.items():
@@ -147,11 +153,11 @@ def inspect(args):
             dependedby.append(pn)
 
     reporter.add_value("Inherits", inherits)
-    reporter.add_value("Depends", tinfoil.cooker_data.deps[recipefile])
-    reporter.add_value("Depended By", dependedby)
-    reporter.add_value("RDepends", tinfoil.cooker_data.rundeps[recipefile])
+    reporter.add_value("Depends", sorted(tinfoil.cooker_data.deps[recipefile]))
+    reporter.add_value("Depended By", sorted(dependedby))
+    reporter.add_value("RDepends", sorted(tinfoil.cooker_data.rundeps[recipefile]))
     reporter.add_value("Provides", provides)
-    reporter.add_value("Packages", recipedata.getVar("PACKAGES", True).split())
+    reporter.add_value("Packages", sorted(recipedata.getVar("PACKAGES", True).split()))
 
     output = open(args.output, "w") if args.output else sys.stdout
     reporter.dump(output)
