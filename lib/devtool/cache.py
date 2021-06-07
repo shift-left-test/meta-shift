@@ -213,10 +213,12 @@ def cache(args, config, basepath, workspace):
     print("INFO: Parsing in progress... This may take a few minutes to complete.")
     try:
         tasks, recipes = parse(args, basepath)
-        found_shared_state = [x for x in tasks if x.isSetsceneTask()]
-        missed_shared_state = [x for x in tasks if not x.isSetsceneTask()]
-        found_source = [x for x in recipes if x.isAvailable()]
-        missed_source = [x for x in recipes if not x.isAvailable()]
+
+        from operator import methodcaller
+        found_shared_state = sorted([x for x in tasks if x.isSetsceneTask()], key=methodcaller("__str__"))
+        missed_shared_state = sorted([x for x in tasks if not x.isSetsceneTask()], key=methodcaller("__str__"))
+        found_source = sorted([x for x in recipes if x.isAvailable()], key=methodcaller("__str__"))
+        missed_source = sorted([x for x in recipes if not x.isAvailable()], key=methodcaller("__str__"))
 
         if args.output:
             make_report = make_json_report
