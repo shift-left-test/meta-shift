@@ -96,7 +96,7 @@ def inspect(args):
     def findFiles(path, suffix=".conf"):
         if not os.path.exists(path):
             return []
-        return [ os.path.splitext(os.path.basename(f))[0] for f in os.listdir(path) if f.endswith(suffix) ]
+        return sorted([ os.path.splitext(os.path.basename(f))[0] for f in os.listdir(path) if f.endswith(suffix) ])
 
     def findImages(layername):
         images = []
@@ -113,7 +113,7 @@ def inspect(args):
                        inherit_class in tinfoil.cooker_data.inherits.get(preffile, [])):
                 continue
             images.append(p)
-        return images
+        return sorted(images)
 
     layer, name, path, layerconf = findByName(args.layername)
 
