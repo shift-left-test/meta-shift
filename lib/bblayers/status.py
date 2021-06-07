@@ -91,7 +91,7 @@ def status(args):
                        inherit_class in tinfoil.cooker_data.inherits.get(preffile, [])):
                 continue
             images.append(p)
-        return images
+        return sorted(images)
 
     report = Reporter()
 
@@ -107,11 +107,11 @@ def status(args):
     for layer, name, layerdir in bblayers():
         machines.extend(findFiles(os.path.join(layerdir, "conf", "machine")))
         distros.extend(findFiles(os.path.join(layerdir, "conf", "distro")))
-
+        
     report.section("Additional Information")
     report.add_value("Images", findAllImages())
-    report.add_value("Machines", machines)
-    report.add_value("Distros", distros)
+    report.add_value("Machines", sorted(machines))
+    report.add_value("Distros", sorted(distros))
 
     report.dump()
 

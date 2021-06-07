@@ -135,7 +135,12 @@ def inspect(args):
     for inherit_class in recipe_inherits:
         classname = os.path.splitext(os.path.basename(inherit_class))[0]
         inherits[classname] = inherit_class
-    provides = recipedata.getVar("PROVIDES", True).split()
+
+    from collections import OrderedDict
+    inherits = OrderedDict(sorted(inherits.items()))
+
+    provides = sorted(recipedata.getVar("PROVIDES", True).split())
+
     dependedby = []
 
     for fn, pn in tinfoil.cooker_data.pkg_fn.items():
@@ -146,11 +151,11 @@ def inspect(args):
             dependedby.append(pn)
 
     reporter.add_value("Inherits", inherits)
-    reporter.add_value("Depends", tinfoil.cooker_data.deps[recipefile])
-    reporter.add_value("Depended By", dependedby)
-    reporter.add_value("RDepends", tinfoil.cooker_data.rundeps[recipefile])
+    reporter.add_value("Depends", sorted(tinfoil.cooker_data.deps[recipefile]))
+    reporter.add_value("Depended By", sorted(dependedby))
+    reporter.add_value("RDepends", sorted(tinfoil.cooker_data.rundeps[recipefile]))
     reporter.add_value("Provides", provides)
-    reporter.add_value("Packages", recipedata.getVar("PACKAGES", True).split())
+    reporter.add_value("Packages", sorted(recipedata.getVar("PACKAGES", True).split()))
 
     output = open(args.output, "w") if args.output else sys.stdout
     reporter.dump(output)
