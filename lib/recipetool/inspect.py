@@ -137,7 +137,7 @@ def inspect(args):
         inherits[classname] = inherit_class
 
     from collections import OrderedDict
-    inherits = OrderedDict(sorted(inherits.items()))
+    inherits = OrderedDict(sorted(inherits.items(), key=lambda t:t[0]))
 
     provides = sorted(recipedata.getVar("PROVIDES", True).split())
 
@@ -153,7 +153,7 @@ def inspect(args):
     reporter.add_value("Inherits", inherits)
     reporter.add_value("Depends", sorted([tinfoil.cooker_data.pkg_fn[tinfoil.cooker.findBestProvider(p)[3]] for p in tinfoil.cooker_data.deps[recipefile]]))
     reporter.add_value("Depended By", sorted(dependedby))
-    reporter.add_value("RDepends", sorted(tinfoil.cooker_data.rundeps[recipefile]))
+    reporter.add_value("RDepends", OrderedDict(sorted(tinfoil.cooker_data.rundeps[recipefile].items(), key=lambda t:t[0])))
     reporter.add_value("Provides", provides)
     reporter.add_value("Packages", sorted(recipedata.getVar("PACKAGES", True).split()))
 
