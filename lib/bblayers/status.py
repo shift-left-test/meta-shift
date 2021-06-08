@@ -107,7 +107,7 @@ def status(args):
     for layer, name, layerdir in bblayers():
         machines.extend(findFiles(os.path.join(layerdir, "conf", "machine")))
         distros.extend(findFiles(os.path.join(layerdir, "conf", "distro")))
-        
+
     report.section("Additional Information")
     report.add_value("Images", findAllImages())
     report.add_value("Machines", sorted(machines))
