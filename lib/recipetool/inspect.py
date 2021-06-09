@@ -153,7 +153,11 @@ def inspect(args):
     reporter.add_value("Inherits", inherits)
     reporter.add_value("Depends", sorted([tinfoil.cooker_data.pkg_fn[tinfoil.cooker.findBestProvider(p)[3]] for p in tinfoil.cooker_data.deps[recipefile]]))
     reporter.add_value("Depended By", sorted(dependedby))
-    reporter.add_value("RDepends", OrderedDict(sorted(tinfoil.cooker_data.rundeps[recipefile].items(), key=lambda t:t[0])))
+
+    rdepends = tinfoil.cooker_data.rundeps[recipefile]
+    rdepends = dict((k,sorted(v)) for k,v in rdepends.items())
+    rdepends = OrderedDict(sorted(rdepends.items(), key=lambda t:t[0]))
+    reporter.add_value("RDepends", rdepends)
     reporter.add_value("Provides", provides)
     reporter.add_value("Packages", sorted(recipedata.getVar("PACKAGES", True).split()))
 
