@@ -88,6 +88,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("cmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "files.json"))
 
     assert EXISTS(REPORT.ROOT("qmake5-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("qmake5-project", "test-qt5-gtest.xml"))
@@ -98,6 +99,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("qmake5-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("qmake5-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("qmake5-project", "files.json"))
 
     assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("autotools-project", "operatorTest.xml"))
@@ -106,6 +108,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("autotools-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "files.json"))
 
     assert EXISTS(REPORT.ROOT("humidifier-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("humidifier-project", "unittest.xml"))
@@ -114,6 +117,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("humidifier-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("humidifier-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "files.json"))
 
     assert EXISTS(REPORT.ROOT("sqlite3wrapper", "metadata.json"))
     assert EXISTS(REPORT.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml"))
@@ -122,6 +126,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("sqlite3wrapper", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "files.json"))
 
     assert EXISTS(REPORT.ROOT("stringutils", "metadata.json"))
     assert EXISTS(REPORT.RESULT("stringutils", "unittest.bin.xml"))
@@ -130,6 +135,7 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("stringutils", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("stringutils", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("stringutils", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("stringutils", "files.json"))
 
 
 def test_cmake_project_do_coverageall(report_build):
@@ -193,6 +199,10 @@ def test_cmake_project_do_checkrecipeall(report_build):
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
+    with READ(REPORT.CHECKRECIPE("cmake-project", "files.json")) as f:
+        assert f.contains('cmake-project_1.0.0.bb')
+        assert f.contains('cmake-project_1.0.0.bbappend')
+
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
 
@@ -210,6 +220,7 @@ def test_cmake_project_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("cmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "files.json"))
 
 
 def test_qmake5_project_do_coverageall(report_build):
@@ -279,6 +290,10 @@ def test_qmake5_project_do_checkrecipeall(report_build):
         assert f.contains('qmake5-project_1.0.0.bb')
         assert f.contains('qmake5-project_1.0.0.bbappend')
 
+    with READ(REPORT.CHECKRECIPE("qmake5-project", "files.json")) as f:
+        assert f.contains('qmake5-project_1.0.0.bb')
+        assert f.contains('qmake5-project_1.0.0.bbappend')
+
     assert READ(REPORT.ROOT("qmake5-project", "metadata.json")).contains(METADATA_S)
 
 def test_qmake5_project_do_reportall(report_build):
@@ -297,6 +312,7 @@ def test_qmake5_project_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("qmake5-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("qmake5-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake5-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("qmake5-project", "files.json"))
 
 
 def test_autotools_project_do_coverageall(report_build):
@@ -358,6 +374,10 @@ def test_autotools_project_do_checkrecipeall(report_build):
         assert f.contains('autotools-project_1.0.0.bb')
         assert f.contains('autotools-project_1.0.0.bbappend')
 
+    with READ(REPORT.CHECKRECIPE("autotools-project", "files.json")) as f:
+        assert f.contains('autotools-project_1.0.0.bb')
+        assert f.contains('autotools-project_1.0.0.bbappend')
+
     assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
 
@@ -375,6 +395,7 @@ def test_autotools_project_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("autotools-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "files.json"))
 
 
 def test_humidifier_project_do_coverageall(report_build):
@@ -432,6 +453,10 @@ def test_humidifier_project_do_checkrecipeall(report_build):
         assert f.contains('humidifier-project_1.0.0.bb')
         assert f.contains('humidifier-project_1.0.0.bbappend')
 
+    with READ(REPORT.CHECKRECIPE("humidifier-project", "files.json")) as f:
+        assert f.contains('humidifier-project_1.0.0.bb')
+        assert f.contains('humidifier-project_1.0.0.bbappend')
+
     assert READ(REPORT.ROOT("humidifier-project", "metadata.json")).contains(METADATA_S)
 
 
@@ -449,6 +474,7 @@ def test_humidifier_project_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("humidifier-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("humidifier-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "files.json"))
 
 
 def test_sqlite3logger_do_coverageall(report_build):
@@ -533,9 +559,17 @@ def test_sqlite3logger_project_do_checkrecipeall(report_build):
         assert f.contains('sqlite3wrapper_0.1.0.bb')
         assert f.contains('sqlite3wrapper_0.1.0.bbappend')
 
+    with READ(REPORT.CHECKRECIPE("sqlite3wrapper", "files.json")) as f:
+        assert f.contains('sqlite3wrapper_0.1.0.bb')
+        assert f.contains('sqlite3wrapper_0.1.0.bbappend')
+
     assert READ(REPORT.ROOT("stringutils", "metadata.json")).contains(METADATA_S)
 
     with READ(REPORT.CHECKRECIPE("stringutils", "recipe_violations.json")) as f:
+        assert f.contains('stringutils_0.0.1.bb')
+        assert f.contains('stringutils_0.0.1.bbappend')
+
+    with READ(REPORT.CHECKRECIPE("stringutils", "files.json")) as f:
         assert f.contains('stringutils_0.0.1.bb')
         assert f.contains('stringutils_0.0.1.bbappend')
 
@@ -556,11 +590,13 @@ def test_sqlite3logger_do_reportall(report_build):
     assert EXISTS(REPORT.CHECK("sqlite3wrapper", "sage_report.json"))
     assert EXISTS(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "files.json"))
 
     assert EXISTS(REPORT.ROOT("stringutils", "metadata.json"))
     assert EXISTS(REPORT.RESULT("stringutils", "unittest.bin.xml"))
     assert EXISTS(REPORT.COVERAGE("stringutils", "index.html"))
     assert EXISTS(REPORT.COVERAGE("stringutils", "coverage.xml"))
-    assert EXISTS(REPORT.CHECKCACHE("stringutils", "caches.json"))
     assert EXISTS(REPORT.CHECK("stringutils", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("stringutils", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("stringutils", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("stringutils", "files.json"))
