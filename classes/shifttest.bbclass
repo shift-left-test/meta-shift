@@ -211,7 +211,7 @@ python shifttest_do_checkcache() {
                 ret += newline("Found  : %d (-%%)" % (len(found)))
                 ret += newline("Missed : %d (-%%)" % (len(missed)))
             ret += newline()
-        
+
         return ret
 
     def make_json_report(print_list):
@@ -262,6 +262,15 @@ do_checkrecipe[depends] += "oelint-adv-native:do_populate_sysroot"
 do_checkrecipe[doc] = "Checks the target recipe against the OpenEmbedded style guide"
 
 python shifttest_do_checkrecipe() {
+    def lines_of_code(files):
+        pairs = []
+        for file in files:
+            pairs.append({
+                "file": file,
+                "code_lines": sum(1 for line in open(file, "r") if line.strip())
+            })
+        return { "lines_of_code": pairs }
+
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
@@ -279,6 +288,11 @@ python shifttest_do_checkrecipe() {
 
         save_as_json({"S": d.getVar("S", True) or ""},
                      d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+
+        bb_files = d.getVar("FILE", True) + " " + d.getVar("__BBAPPEND", True) or ""
+        bb_files = bb_files.strip().split()
+        save_as_json(lines_of_code(bb_files),
+                     d.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe/files.json"))
 
         report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("--output %s" % report_path)
@@ -314,7 +328,7 @@ python shifttest_do_report() {
         exec_func("do_checkcache", d)
     else:
         warn("Skipping do_checkcache because checkcache is not inherited", d)
-        
+
 
     plain("Making a report for do_checkrecipe", d)
     exec_func("do_checkrecipe", d)
