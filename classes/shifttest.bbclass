@@ -10,9 +10,6 @@ DEPENDS_prepend_class-target = "\
     cppcheck-native \
     cpplint-native \
     compiledb-native \
-    metrixpp-native \
-    duplo-native \
-    flawfinder-native \
     sage-native \
     oelint-adv-native \
     "
@@ -250,7 +247,7 @@ python shifttest_do_checkcache() {
             total_depends.add(taskdepdata[td][0])
 
     total_depends_remove_virtual = set()
-    
+
     for dep in total_depends:
         if dep.startswith("virtual/"):
             dep = d.getVar("PREFERRED_PROVIDER_%s" % dep, True)
