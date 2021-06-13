@@ -17,6 +17,9 @@ inherit setuptools
 
 DEPENDS += "\
     ${PYTHON_PN}-texttable \
+    flawfinder \
+    duplo \
+    metrixpp \
 "
 
 RDEPENDS_${PN} += "\

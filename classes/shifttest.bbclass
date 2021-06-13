@@ -10,9 +10,6 @@ DEPENDS_prepend_class-target = "\
     cppcheck-native \
     cpplint-native \
     compiledb-native \
-    metrixpp-native \
-    duplo-native \
-    flawfinder-native \
     sage-native \
     oelint-adv-native \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
