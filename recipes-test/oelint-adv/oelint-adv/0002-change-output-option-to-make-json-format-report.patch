@@ -1,17 +1,8 @@
-From 8d00b6f39fdff613ca584f93d9bbaf6397f5844b Mon Sep 17 00:00:00 2001
-From: "sangmo.kang" <sangmo.kang@lge.com>
-Date: Tue, 13 Apr 2021 04:51:24 +0000
-Subject: [PATCH] change output option to make json format report
-
----
- oelint_adv/__main__.py | 29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
-
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
-index 62c6f18..4ab567b 100644
+index 97529a2..244650d 100644
 --- a/oelint_adv/__main__.py
 +++ b/oelint_adv/__main__.py
-@@ -16,8 +16,8 @@ def create_argparser():
+@@ -22,8 +22,8 @@ def create_argparser():
          description='Advanced OELint - Check bitbake recipes against OECore styleguide')
      parser.add_argument("--suppress", default=[],
                          action="append", help="Rules to suppress")
@@ -22,10 +13,11 @@ index 62c6f18..4ab567b 100644
      parser.add_argument("--fix", action="store_true", default=False,
                          help="Automatically try to fix the issues")
      parser.add_argument("--nobackup", action="store_true", default=False,
-@@ -57,6 +57,23 @@ def create_argparser():
-     return args
+@@ -191,17 +191,35 @@ def run(args):
+         traceback.print_exc()
+     return []
  
- 
++
 +def make_json_report(issues):
 +    json_dict = dict()
 +    json_dict["issues"] = list()
@@ -43,12 +35,10 @@ index 62c6f18..4ab567b 100644
 +    return json.dumps(json_dict, indent=2) + "\n"
 +
 +
- def main():
-     args = create_argparser()
-     rules = [x for x in load_rules(args,
-@@ -104,12 +121,12 @@ def main():
+ def main():  # pragma: no cover
+     args = arguments_post(parse_arguments())
  
-     issues = sorted(set(issues), key=lambda x: x[0])
+     issues = run(args)
  
 -    if args.output != sys.stderr:
 +    if args.output != sys.stdout:
@@ -61,8 +51,6 @@ index 62c6f18..4ab567b 100644
 +    else:
 +        args.output.write("\n".join([x[1] for x in issues]) + "\n")
  
- 
  if __name__ == '__main__':
--- 
-2.30.0
+     main()  # pragma: no cover
 
