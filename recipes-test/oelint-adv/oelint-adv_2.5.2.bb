@@ -8,22 +8,25 @@ LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e926c89aceef6c1a4247d5df08f94533"
 
 SRC_URI = "git://github.com/priv-kweihmann/oelint-adv.git;protocol=https;nobranch=1"
-SRCREV = "5d03063283b7109b029dec88247306a1c72479df"
+SRCREV = "1870b508602bf535337d2c5af8ecb034fd41dab7"
 
 SRC_URI += "file://0001-compatibility-with-python2.patch \
             file://0002-change-output-option-to-make-json-format-report.patch \
-            file://0003-add-logger.patch"
+            file://0003-add-logger.patch \
+            file://0004-changes-for-custom-rule.patch"
 
 S = "${WORKDIR}/git"
 
 inherit setuptools
 
 DEPENDS += "\
+    oelint-parser \
     ${PYTHON_PN}-colorama \
     ${PYTHON_PN}-anytree \
 "
 
 RDEPENDS_${PN} += "\
+    oelint-parser \
     ${PYTHON_PN}-colorama \
     ${PYTHON_PN}-anytree \
 "
