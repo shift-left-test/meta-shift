@@ -26,4 +26,4 @@ CC: @sunggon82.kim
 /due in 20 days
 /estimate 2w
 /label ~bug
-/milestone %"0.4.0"
+/milestone %"0.5.0"

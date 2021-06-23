@@ -11,5 +11,5 @@
 
 /wip
 /label ~enhancement
-/milestone %"0.4.0"
+/milestone %"0.5.0"
 /assign @sunggon82.kim
