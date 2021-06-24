@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a44c3c7..71b74be 100644
+index aeeea15..4f914e3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -8,7 +8,7 @@ index a44c3c7..71b74be 100644
  project(duplo)
  file(GLOB SOURCES src/*.cpp)
  
-@@ -7,6 +7,8 @@ SET(DUPLO_VERSION "\"v1.0.0\"" CACHE STRING "Duplo version")
+@@ -7,6 +7,8 @@ SET(DUPLO_VERSION "\"v1.0.1\"" CACHE STRING "Duplo version")
  if(MSVC)
  else()
      add_compile_options(-O3 -Wall -Werror -std=c++17)
@@ -19,14 +19,14 @@ index a44c3c7..71b74be 100644
 +
 +install(TARGETS duplo DESTINATION bin)
 diff --git a/src/Duplo.cpp b/src/Duplo.cpp
-index 82d2cc7..a3db079 100644
+index 2ca907b..d543595 100644
 --- a/src/Duplo.cpp
 +++ b/src/Duplo.cpp
 @@ -116,7 +116,9 @@ namespace {
                      if (longestFiles.size() < 10) {
                          addSorted(numLines, lines[i]);
                      } else {
--                        auto [l, r] = longestFiles.back();
+-                        auto& [l, r] = longestFiles.back();
 +                        unsigned int l;
 +                        std::string r;
 +                        std::tie(l,r) = longestFiles.back();
@@ -37,24 +37,23 @@ index 82d2cc7..a3db079 100644
                  << std::sqrt(matrix.max_size())
                  << " lines at most." << std::endl
                  << "Longest files:" << std::endl;
--            for (auto [l, f] : longestFiles) {
-+            for (auto lf : longestFiles) {
+-            for (auto& [l, f] : longestFiles) {
++            for (auto& lf : longestFiles) {
 +                unsigned int l;
 +                std::string f;
 +                std::tie(l,f) = lf;
                  stream << l << ": " << f << std::endl;
              }
  
-@@ -152,14 +157,18 @@ namespace {
+@@ -152,14 +157,17 @@ namespace {
              stream
                  << ex.what() << std::endl
                  << "Longest files:" << std::endl;
--            for (auto [l, f] : longestFiles) {
-+            for (auto lf : longestFiles) {
+-            for (auto& [l, f] : longestFiles) {
++            for (auto& lf : longestFiles) {
 +                unsigned int l;
 +                std::string f;
 +                std::tie(l,f) = lf;
-+
                  stream << l << ": " << f << std::endl;
              }
  
@@ -66,7 +65,7 @@ index 82d2cc7..a3db079 100644
      }
  
      unsigned ReportSeq(
-@@ -382,7 +391,11 @@ void Duplo::Run(const Options& options) {
+@@ -382,7 +390,11 @@ void Duplo::Run(const Options& options) {
      }
  
      auto lines = LoadFileList(options.GetListFilename());
@@ -75,7 +74,8 @@ index 82d2cc7..a3db079 100644
 +    std::vector<MatchType> matrix;
 +    unsigned int files;
 +    unsigned int locsTotal;
-+    std::tie(sourceFiles, matrix, files, locsTotal) = 
++    std::tie(sourceFiles, matrix, files, locsTotal) =
          LoadSourceFiles(lines, options.GetMinChars(), options.GetIgnorePrepStuff());
  
      // hash maps
+
