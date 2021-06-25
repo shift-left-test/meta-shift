@@ -1,9 +1,5 @@
----
- setup.py | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
 diff --git a/setup.py b/setup.py
-index d013772..6968c7f 100644
+index 23f9c87..87a740d 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -34,5 +34,4 @@ setuptools.setup(
@@ -11,9 +7,5 @@ index d013772..6968c7f 100644
          ]
      },
 -    python_requires='>=3.5',
--)
-\ No newline at end of file
-+)
--- 
-2.31.1
+ )
 
