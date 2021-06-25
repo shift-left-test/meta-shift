@@ -5,15 +5,16 @@ HOMEPAGE = "https://metrixplusplus.github.io/home.html"
 BUGTRACKER = "https://github.com/metrixplusplus/metrixplusplus/issues"
 SECTION = "devel"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=fa326b4a8b6570216bf32b2a9b38d919"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=2eb11559d123a93fbde4d5567e366e2d"
 
 SRC_URI = "git://github.com/metrixplusplus/metrixplusplus.git;protocol=https;nobranch=1 \
            file://remove-python-requires.patch"
 
-SRCREV = "cb87f5650f12dee6025dc81cdaa99806ff6a4f86"
+SRCREV = "8b1a4b956507f0097d7761ddad02df897492fecc"
 
 S = "${WORKDIR}/git"
 
 inherit setuptools3
 
 BBCLASSEXTEND = "native nativesdk"
+
