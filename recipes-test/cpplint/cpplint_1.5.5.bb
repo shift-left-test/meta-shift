@@ -11,8 +11,8 @@ PYPI_PACKAGE = "cpplint"
 
 SRC_URI += "file://0001-remove-pytest-runner-dependency.patch"
 
-SRC_URI[md5sum] = "1762216775e1666bbba3e5a3a92e82f9"
-SRC_URI[sha256sum] = "08b384606136146ac1d32a2ffb60623a5dc1b20434588eaa0fa12a6e24eb3bf5"
+SRC_URI[md5sum] = "88e9cf6a216c4281dab488d398589236"
+SRC_URI[sha256sum] = "18e768d8a4e0c329d88f1272b0283bbc3beafce76f48ee0caeb44ddbf505bba5"
 
 inherit pypi setuptools
 
@@ -34,3 +34,4 @@ do_install_append_class-nativesdk() {
 }
 
 BBCLASSEXTEND = "native nativesdk"
+
