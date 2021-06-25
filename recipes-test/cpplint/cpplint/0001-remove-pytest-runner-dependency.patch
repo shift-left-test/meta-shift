@@ -1,31 +1,30 @@
 diff --git a/setup.py b/setup.py
-index ea022e2..91e56ae 100755
+index aef5c4e..01692bd 100755
 --- a/setup.py
 +++ b/setup.py
-@@ -36,10 +36,6 @@ class Lint(Cmd):
-         self.execute('cpplint.py')
+@@ -40,8 +40,6 @@ def read_without_comments(filename):
+     with open(filename) as f:
+         return [line for line in f.read().splitlines() if not len(line) == 0 and not line.startswith('#')]
  
- 
--with open('test-requirements') as f:
--    test_required = f.read().splitlines()
--
+-test_required = read_without_comments('test-requirements')
 -
  setup(name='cpplint',
        version=cpplint.__VERSION__,
        py_modules=['cpplint'],
-@@ -71,14 +67,9 @@ setup(name='cpplint',
+@@ -72,14 +70,9 @@ setup(name='cpplint',
        description='Automated checker to ensure C++ files follow Google\'s style guide',
        long_description=open('README.rst').read(),
        license='BSD-3-Clause',
 -      setup_requires=[
--          "pytest-runner"
+-          "pytest-runner==5.2"
 -      ],
 -      tests_require=test_required,
        # extras_require allow pip install .[dev]
        extras_require={
 -          'test': test_required,
--          'dev': open('dev-requirements').read().splitlines() + test_required
-+          'dev': open('dev-requirements').read().splitlines()
+-          'dev': read_without_comments('dev-requirements') + test_required
++          'dev': read_without_comments('dev-requirements')
        },
        cmdclass={
            'lint': Lint
+
