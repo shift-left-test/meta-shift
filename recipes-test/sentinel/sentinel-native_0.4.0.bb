@@ -16,7 +16,7 @@ DEPENDS_class-native += "\
     ncurses-native \
 "
 
-SRC_URI = "git://mod.lge.com/hub/yocto/addons/sentinel.git;protocol=http;nobranch=1"
+SRC_URI = "git://mod.lge.com/hub/yocto/sentinel.git;protocol=http;nobranch=1"
 SRCREV = "b88b71e8609ba1a7f1f4e7230ec1f028bb68ee57"
 
 S = "${WORKDIR}/git"
