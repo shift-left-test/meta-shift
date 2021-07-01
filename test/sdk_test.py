@@ -41,7 +41,7 @@ def test_populate_sdk(sdk_build):
     assert pkgs.contains("nativesdk-qemu_4.2.0-r0_x86_64-nativesdk.ipk")
 
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/target/installed-packages.txt")
-    assert pkgs.contains("fff_1.0-r0_{TUNE_PKGARCH}.ipk")
+    assert pkgs.contains("fff_1.1-r0_{TUNE_PKGARCH}.ipk")
     assert pkgs.contains("googletest_1.10.0-r0_{TUNE_PKGARCH}.ipk")
 
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
