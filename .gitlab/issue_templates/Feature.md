@@ -14,4 +14,3 @@ CC: @sunggon82.kim
 /due in 20 days
 /estimate 2w
 /label ~enhancement
-/milestone %"0.5.0"
