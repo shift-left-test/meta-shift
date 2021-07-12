@@ -266,11 +266,12 @@ do_checkrecipe[doc] = "Checks the target recipe against the OpenEmbedded style g
 python shifttest_do_checkrecipe() {
     def lines_of_code(files):
         pairs = []
-        for file in files:
-            pairs.append({
-                "file": file,
-                "code_lines": sum(1 for line in open(file, "r") if line.strip())
-            })
+        for f in files:
+            with open(f, "r") as fd:
+                pairs.append({
+                    "file": f,
+                    "code_lines": sum(1 for line in fd if line.strip())
+                })
         return { "lines_of_code": pairs }
 
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
