@@ -13,7 +13,8 @@ SRCREV = "1870b508602bf535337d2c5af8ecb034fd41dab7"
 SRC_URI += "file://0001-compatibility-with-python2.patch \
             file://0002-change-output-option-to-make-json-format-report.patch \
             file://0003-add-logger.patch \
-            file://0004-changes-for-custom-rule.patch"
+            file://0004-changes-for-custom-rule.patch \
+            file://0005-disable-SSL-CERTIFICATE_VERIFY_FAILED.patch"
 
 S = "${WORKDIR}/git"
 
