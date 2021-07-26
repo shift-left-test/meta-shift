@@ -59,7 +59,6 @@ def test_cmake_project_do_checkcode(test_clang_build):
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* flawfinder is running...")
 
 
 def test_cmake_project_do_checkcache(test_clang_build):
