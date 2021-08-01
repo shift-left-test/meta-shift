@@ -1,4 +1,3 @@
-inherit autotools
 inherit shifttest
 
 
