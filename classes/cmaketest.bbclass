@@ -1,4 +1,3 @@
-inherit cmake
 inherit shifttest
 
 
