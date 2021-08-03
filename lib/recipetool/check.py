@@ -96,15 +96,10 @@ def check(args, files):
 
     if args.output:
         output = open(args.output, "w")
-        make_report = make_json_report
-    else:
-        output = sys.stderr
-        make_report = make_plain_report
-
-    output.write(make_report(issues))
-
-    if args.output:
+        output.write(make_json_report(issues))
         output.close()
+
+    sys.stderr.write(make_plain_report(issues))
 
 
 def checkrecipes(args):
