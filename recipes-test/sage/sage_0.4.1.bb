@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d41d8cd98f00b204e9800998ecf8427e"
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sage.git;protocol=http;nobranch=1"
 
-SRCREV = "ce840091697c39ba3537440bdc94bf74c6d9b403"
+SRCREV = "65a444ed6e1899b73b254bcfeff7af0cea3140df"
 
 S = "${WORKDIR}/git"
 
