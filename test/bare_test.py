@@ -4,7 +4,7 @@
 """
 MIT License
 
-Copyright (c) 2020 Sung Gon Kim
+Copyright (c) 2020 LG Electronics, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -232,5 +232,4 @@ def test_oelint_adv(bare_build):
 
 def test_oelint_adv_native(bare_build):
     assert bare_build.shell.execute("bitbake oelint-adv-native").stderr.empty()
-
 

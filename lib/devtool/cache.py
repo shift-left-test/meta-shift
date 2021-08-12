@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2020 Sung Gon Kim
+# Copyright (c) 2020 LG Electronics, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -204,7 +204,7 @@ def make_plain_report(args, found_shared_state, missed_shared_state,
             for task in missed:
                 ret += newline("    %s" % task)
         ret += newline()
-    
+
     return ret
 
 

@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2020 Sung Gon Kim
+# Copyright (c) 2020 LG Electronics, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,7 @@ def make_json_report(issues):
         item["rule"] = split_data[3]
         item["description"] = split_data[4]
         json_dict["issues"].append(item)
-    
+
     return json.dumps(json_dict, indent=2) + "\n"
 
 
