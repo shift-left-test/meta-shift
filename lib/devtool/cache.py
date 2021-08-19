@@ -175,15 +175,20 @@ def make_plain_report(args, found_shared_state, missed_shared_state,
         wanted = len(found) + len(missed)
         ret += newline(title)
         ret += newline("-" * len(title))
-        ret += newline("Wanted : %d (%d%%)" % (wanted, 100 * wanted / wanted))
-        ret += newline("Found  : %d (%d%%)" % (len(found), 100 * len(found) / wanted))
-        if args.found:
-            for task in found:
-                ret += newline("    %s" % task)
-        ret += newline("Missed : %d (%d%%)" % (len(missed), 100 * len(missed) / wanted))
-        if args.missed:
-            for task in missed:
-                ret += newline("    %s" % task)
+        if wanted != 0:
+            ret += newline("Wanted : %d (%d%%)" % (wanted, 100 * wanted / wanted))
+            ret += newline("Found  : %d (%d%%)" % (len(found), 100 * len(found) / wanted))
+            if args.found:
+                for task in found:
+                    ret += newline("    %s" % task)
+            ret += newline("Missed : %d (%d%%)" % (len(missed), 100 * len(missed) / wanted))
+            if args.missed:
+                for task in missed:
+                    ret += newline("    %s" % task)
+        else:
+            ret += newline("Wanted : %d (-%%)" % (wanted))
+            ret += newline("Found  : %d (-%%)" % (len(found)))
+            ret += newline("Missed : %d (-%%)" % (len(missed)))
         ret += newline()
     
     return ret
