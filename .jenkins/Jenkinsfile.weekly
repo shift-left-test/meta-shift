@@ -26,13 +26,24 @@ pipeline {
                             BB_GENERATE_MIRROR_TARBALLS = "1"
                         }
                         steps {
-                            sh "python3 -m pytest -xvv --basetemp=${env.WORKSPACE}/temp"
+                            sh '''#!/bin/bash
+                               ./test/mini-mcf.py -c ./test/conf/report.conf -r ./meta-layers
+                               source ./meta-layers/poky/oe-init-build-env
+                               export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE DL_DIR SSTATE_DIR BB_GENERATE_MIRROR_TARBALLS"
+                               bitbake core-image-minimal --runall=fetch
+                               bitbake core-image-minimal -c reportall --runall=fetch
+                               bitbake core-image-minimal -c populate_sdk --runall=fetch
+                               bitbake core-image-minimal
+                               bitbake core-image-minimal -c reportall
+                               bitbake core-image-minimal -c populate_sdk
+                               '''
                         }
                     }
                     stage("Cleanup") {
                         steps {
                             sh "rm -rf ${env.WORKSPACE}/build-res/downloads/git2"
                             sh "rm -rf ${env.WORKSPACE}/build-res/downloads/svn"
+                            sh "find ${env.WORKSPACE}/build-res -name '*bad-checksum*' -delete"
                             sh "find ${env.WORKSPACE}/build-res/downloads -type f -name '*.done' -delete"
                         }
                     }
