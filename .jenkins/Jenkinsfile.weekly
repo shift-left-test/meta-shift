@@ -51,7 +51,7 @@ pipeline {
                         }
                         steps {
                             dir("${env.WORKSPACE}/build-res") {
-                                sh 'find . -type f -exec curl -u$AUTH_USR:$AUTH_PSW -T {} http://cart.lge.com/yocto-mirrors/{} \\;'
+                                sh 'find . -type f -exec curl -u$AUTH_USR:$AUTH_PSW -T {} http://cart.lge.com/yocto-mirrors/morty/{} \\;'
                             }
                         }
                     }
