@@ -1,8 +1,5 @@
 pipeline {
     agent none
-    options {
-        parallelsAlwaysFailFast()
-    }
     stages {
         stage("jethro-next") {
             matrix {
@@ -26,15 +23,7 @@ pipeline {
                             BB_GENERATE_MIRROR_TARBALLS = "1"
                         }
                         steps {
-                            sh '''#!/bin/bash
-                               ./test/mini-mcf.py -c ./test/conf/report.conf -r ./meta-layers
-                               source ./meta-layers/poky/oe-init-build-env
-                               export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE DL_DIR SSTATE_DIR BB_GENERATE_MIRROR_TARBALLS"
-                               bitbake core-image-minimal -c fetchall
-                               bitbake core-image-minimal
-                               bitbake core-image-minimal -c reportall
-                               bitbake core-image-minimal -c populate_sdk
-                               '''
+                            sh "python3 -m pytest -xvv --basetemp=${env.WORKSPACE}/temp"
                         }
                     }
                     stage("Cleanup") {
@@ -47,11 +36,11 @@ pipeline {
                     }
                     stage("Upload") {
                         environment {
-                            AUTH = credentials("df64c294-9273-4b28-9625-a276771388c5")
+                            AUTH = credentials("331c406b-c9a7-491a-8788-b26299dc2338")
                         }
                         steps {
                             dir("${env.WORKSPACE}/build-res") {
-                                sh 'find . -type f -exec curl -u$AUTH_USR:$AUTH_PSW -T {} http://cart.lge.com/yocto-mirrors/jethro/{} \\;'
+                                sh 'find . -type f -exec curl -u$AUTH_USR:$AUTH_PSW -T {} http://10.177.237.78:9090/repository/build-res/jethro/{} \\;'
                             }
                         }
                     }
