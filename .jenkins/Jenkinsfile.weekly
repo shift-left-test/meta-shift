@@ -1,5 +1,8 @@
 pipeline {
     agent none
+    options {
+        parallelsAlwaysFailFast()
+    }
     stages {
         stage("gatesgarth-next") {
             matrix {
