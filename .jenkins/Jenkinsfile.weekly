@@ -1,5 +1,8 @@
 pipeline {
     agent none
+    options {
+        parallelsAlwaysFailFast()
+    }
     stages {
         stage("pyro-next") {
             matrix {
