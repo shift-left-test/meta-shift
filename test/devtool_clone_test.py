@@ -33,9 +33,9 @@ from contextlib import contextmanager
 def test_cmake_project_srcrev(test_build):
     def check_cmake_project_srcrev(target_srcrev):
         try:
-            gitdir = os.path.join("workspace", "sources", "cmake-project")
             test_build.shell.run("devtool create-workspace")
-            o = test_build.shell.execute("devtool clone cmake-project %s %s" % (target_srcrev, gitdir))
+            gitdir = os.path.join("workspace", "sources", "cmake-project")
+            o = test_build.shell.execute("devtool clone cmake-project %s --srcrev=%s" % (gitdir, target_srcrev))
             assert o.returncode == 0
             assert test_build.files.exists(gitdir)
 
@@ -53,9 +53,10 @@ def test_cmake_project_srcrev(test_build):
 
 def test_wrong_srcrev(test_build):
     try:
-        o = test_build.shell.execute("devtool clone sage-native ffffffffffffffffffffffffffffffffffffffff")
+        test_build.shell.run("devtool create-workspace")
+        gitdir = os.path.join("workspace", "sources", "cmake-project")
+        o = test_build.shell.execute("devtool clone sage-native %s --srcrev=ffffffffffffffffffffffffffffffffffffffff" % gitdir)
         assert o.returncode != 0
-        assert not test_build.files.exists(os.path.join("workspace", "sources", "sage-native"))
     finally:
         test_build.shell.run("bitbake-layers remove-layer workspace")
         test_build.files.remove("workspace")
@@ -63,12 +64,60 @@ def test_wrong_srcrev(test_build):
 
 def test_fail_patch(test_build):
     try:
+        test_build.shell.run("devtool create-workspace")
         gitdir = os.path.join("workspace", "sources", "oelint-adv-native")
-        o = test_build.shell.execute("devtool clone oelint-adv-native 8c9b4d2a0c9bb7bce995de0268edcd886fd9ed13 %s" % gitdir)
+        o = test_build.shell.execute("devtool clone oelint-adv-native %s --srcrev=8c9b4d2a0c9bb7bce995de0268edcd886fd9ed13" % gitdir)
         assert o.stderr.contains("Function failed: patch_do_patch")
         assert o.returncode != 0
         assert not test_build.files.exists(gitdir)
     finally:
+        test_build.shell.run("bitbake-layers remove-layer workspace")
+        test_build.files.remove("workspace")
+
+def test_fail_clone_with_srctree(test_build):
+    try:
+        test_build.shell.run("devtool create-workspace")
+        gitdir = os.path.join("workspace", "sources", "cmake-project")
+        o = test_build.shell.execute("devtool modify cmake-project %s -x" % gitdir)
+        assert o.returncode == 0
+        assert test_build.files.exists(gitdir)
+
+        o = test_build.shell.execute("devtool clone cmake-project %s --srcrev=4dc56f8d6145f5b54583e0ac0c7ca508e9b3f987" % gitdir)
+        assert o.returncode != 0
+        assert test_build.files.exists(gitdir)
+    finally:
+        test_build.shell.run("devtool reset cmake-project")
+        test_build.shell.run("bitbake-layers remove-layer workspace")
+        test_build.files.remove("workspace")
+
+def test_empty_srcrev(test_build):
+    try:
+        test_build.shell.run("devtool create-workspace")
+        gitdir = os.path.join("workspace", "sources", "cmake-project")
+        o = test_build.shell.execute("devtool modify cmake-project %s -x" % gitdir)
+        assert o.returncode == 0
+        gitdir = os.path.join("workspace", "sources", "cmake-project")
+        assert test_build.files.exists(gitdir)
+
+        o = test_build.shell.execute("git --git-dir %s/.git rev-parse HEAD" % os.path.join(test_build.build_dir, gitdir))
+        assert o.returncode == 0
+        ori_srcrev = str(o.stdout)
+    finally:
+        test_build.shell.run("devtool reset cmake-project")
+        test_build.shell.run("bitbake-layers remove-layer workspace")
+        test_build.files.remove("workspace")
+
+    try:
+        test_build.shell.run("devtool create-workspace")
+        o = test_build.shell.execute("devtool clone cmake-project %s" % gitdir)
+        assert o.returncode == 0
+        assert test_build.files.exists(gitdir)
+
+        o = test_build.shell.execute("git --git-dir %s/.git rev-parse HEAD" % os.path.join(test_build.build_dir, gitdir))
+        assert o.returncode == 0
+        assert ori_srcrev == str(o.stdout)
+    finally:
+        test_build.shell.run("devtool reset cmake-project")
         test_build.shell.run("bitbake-layers remove-layer workspace")
         test_build.files.remove("workspace")
 
