@@ -34,6 +34,11 @@ logger.setLevel(logging.WARNING)
 def clone(args, config, basepath, clone_workspace):
     """Modify the source for an existing recipe and change the source revision to fetch
     """
+
+    if not args.srcrev:
+        args.no_extract = False
+        return modify(args, config, basepath, clone_workspace)
+
     srctree = None
     tinfoil = setup_tinfoil(basepath=basepath, tracking=True)
     if not tinfoil:
@@ -53,10 +58,6 @@ def clone(args, config, basepath, clone_workspace):
             srctree = get_default_srctree(config, pn)
 
         rd.setVar("SRCREV_pn-%s" % pn, args.srcrev)
-    except:
-        if srctree and os.path.exists(srctree):
-            shutil.rmtree(srctree)
-        raise
     finally:
         tinfoil.shutdown()
 
@@ -66,21 +67,17 @@ def clone(args, config, basepath, clone_workspace):
 
     args.no_extract = True
     ret = modify(args, config, basepath, clone_workspace)
-    try:
-        if ret != 0:
-            raise DevtoolError("Failed to modify source")
+    if ret != 0:
+        raise DevtoolError("Failed to modify source")
 
-        appendfile = recipe_to_append(recipefile, config, args.wildcard)
-        if not os.path.exists(appendfile):
-            raise DevtoolError("Failed to find bbappend file")
-        try:
-            with open(appendfile, 'a') as f:
-                f.write('\nSRCREV = "%s"\n' % (args.srcrev))
-        except:
-            raise DevtoolError("Failed to add new source revision to bbappend file")
+    appendfile = recipe_to_append(recipefile, config, args.wildcard)
+    if not os.path.exists(appendfile):
+        raise DevtoolError("Failed to find bbappend file")
+    try:
+        with open(appendfile, 'a') as f:
+            f.write('\nSRCREV = "%s"\n' % (args.srcrev))
     except:
-        bb.process.run('devtool reset %s --remove-work' % args.recipename)
-        raise
+        raise DevtoolError("Failed to add new source revision to bbappend file")
 
     return ret
 
@@ -92,8 +89,8 @@ def register_commands(subparsers, context):
                                        description='Exactly same as devtool-modify, except that the source revision is changed',
                                        group='starting', order=89)
     parser_modify.add_argument('recipename', help='Name of existing recipe to edit (just name - no version, path or extension)')
-    parser_modify.add_argument('srcrev', help='Source revision to fetch if fetching from an SCM such as git')
     parser_modify.add_argument('srctree', nargs='?', help='Path to external source tree. If not specified, a subdirectory of %s will be used.' % defsrctree)
+    parser_modify.add_argument('--srcrev', nargs='?', help='Source revision to fetch if fetching from an SCM such as git. If not specified, SRCREV of recipe will be used.')
     parser_modify.add_argument('--wildcard', '-w', action="store_true", help='Use wildcard for unversioned bbappend')
     group = parser_modify.add_mutually_exclusive_group()
     group.add_argument('--same-dir', '-s', help='Build in same directory as source', action="store_true")
