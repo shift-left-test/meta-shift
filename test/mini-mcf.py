@@ -45,21 +45,21 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
-Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer"])
+Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "branch"])
 
 REPOS = [
-    Repo("poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta"),
-    Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-poky"),
-    Repo("meta-yocto-bsp", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto-bsp"),
-    Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe"),
-    Repo("meta-multimedia", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-multimedia"),
-    Repo("meta-python", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-python"),
-    Repo("meta-networking", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-networking"),
-    Repo("meta-raspberrypi", "http://mod.lge.com/hub/yocto/mirror/meta-raspberrypi.git", "meta-raspberrypi", ""),
-    Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", ""),
-    Repo("meta-shift", None, "meta-shift", ""),
-    Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", ""),
-    Repo("meta-sample-test", "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "meta-sample-test", ""),
+    Repo("poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta", None),
+    Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-poky", None),
+    Repo("meta-yocto-bsp", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto-bsp", None),
+    Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
+    Repo("meta-multimedia", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
+    Repo("meta-python", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-python", None),
+    Repo("meta-networking", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
+    Repo("meta-raspberrypi", "http://mod.lge.com/hub/yocto/mirror/meta-raspberrypi.git", "meta-raspberrypi", "", None),
+    Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", "", None),
+    Repo("meta-shift", None, "meta-shift", "", None),
+    Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", "", None),
+    Repo("meta-sample-test", "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "meta-sample-test", "", None),
 ]
 
 
@@ -93,12 +93,15 @@ def download_repo(url, branch, path):
 
 
 def download_repos(args):
+    def getOrDefault(value, defaultValue):
+        return value if value else defaultValue
+
     logger.info("Downloading the repositories to '{0}'...".format(args.repo_dir))
     for repo in REPOS:
         if repo.name == "meta-shift":
             continue
         p = os.path.join(args.repo_dir, repo.location)
-        download_repo(repo.url, args.branch, p)
+        download_repo(repo.url, getOrDefault(repo.branch, args.branch), p)
 
 
 def configure_template(conf_dir):
@@ -137,7 +140,7 @@ BBLAYERS ?= " \\
 
 def configure_local(conf_dir, conf_data):
     logger.info("Creating 'local.conf'...")
-    LOCAL_CONF = '''MACHINE ??= "qemuarm64"
+    LOCAL_CONF = '''
 DISTRO = "poky"
 PACKAGE_CLASSES = "package_ipk"
 EXTRA_IMAGE_FEATURES = ""
@@ -197,4 +200,3 @@ if __name__ == "__main__":
     download_repos(args)
     configure(args)
     print_usage(args)
-
