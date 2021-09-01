@@ -383,6 +383,19 @@ def test_build(request, tmpdir_factory):
 
 
 @pytest.fixture(scope="session")
+def test_qt6_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="gatesgarth", conf_file="conf/test_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
 def report_build(request, tmpdir_factory):
     repo_dir = str(tmpdir_factory.mktemp("repo"))
     build_dir = str(tmpdir_factory.mktemp("build"))
@@ -393,6 +406,19 @@ def report_build(request, tmpdir_factory):
 
     request.addfinalizer(cleanup)
     return BuildEnvironment(branch="gatesgarth", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def report_qt6_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="gatesgarth", conf_file="conf/report_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -409,6 +435,19 @@ def test_clang_build(request, tmpdir_factory):
 
 
 @pytest.fixture(scope="session")
+def test_clang_qt6_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="gatesgarth", conf_file="conf/test_clang_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
 def report_clang_build(request, tmpdir_factory):
     repo_dir = str(tmpdir_factory.mktemp("repo"))
     build_dir = str(tmpdir_factory.mktemp("build"))
@@ -419,6 +458,19 @@ def report_clang_build(request, tmpdir_factory):
 
     request.addfinalizer(cleanup)
     return BuildEnvironment(branch="gatesgarth", conf_file="conf/report_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
+
+
+@pytest.fixture(scope="session")
+def report_clang_qt6_build(request, tmpdir_factory):
+    repo_dir = str(tmpdir_factory.mktemp("repo"))
+    build_dir = str(tmpdir_factory.mktemp("build"))
+
+    def cleanup():
+        shutil.rmtree(repo_dir)
+        shutil.rmtree(build_dir)
+
+    request.addfinalizer(cleanup)
+    return BuildEnvironment(branch="gatesgarth", conf_file="conf/report_clang_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
