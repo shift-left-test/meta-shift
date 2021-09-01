@@ -57,6 +57,7 @@ REPOS = [
     Repo("meta-networking", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
     Repo("meta-raspberrypi", "http://mod.lge.com/hub/yocto/mirror/meta-raspberrypi.git", "meta-raspberrypi", "", None),
     Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", "", None),
+    Repo("meta-qt6", "http://mod.lge.com/hub/yocto/mirror/meta-qt6.git", "meta-qt6", "", "6.2"),
     Repo("meta-clang", "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", "", None),
