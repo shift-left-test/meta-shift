@@ -35,11 +35,15 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 * do_checkcodeall
 * do_coverage
 * do_coverageall
+* do_report
+* do_reportall
 * do_test
 * do_testall
 
 ### List of bitbake tools
 
+* devtool cache
+* devtool clone
 * devtool show
 * recipetool test-layers
 * recipetool test-recipes
