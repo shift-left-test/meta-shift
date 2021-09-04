@@ -15,6 +15,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 * autotools (via meta)
 * cmake (via meta)
 * CMakeUtils (1.0.0)
+* clang-tidy (via meta-clang)
 * cppcheck (2.0)
 * cpplint (1.4.5)
 * fff (1.0)
@@ -24,6 +25,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 * lcov (via meta-oe)
 * qemu-native (via meta)
 * qmake5 (via meta-qt5)
+* qmake6 (via meta-qt6)
 * SAGE (0.2.0)
 * sentinel (0.1.0)
 
@@ -38,12 +40,15 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 * do_checktestall
 * do_coverage
 * do_coverageall
+* do_report
+* do_reportall
 * do_test
 * do_testall
 
 ### List of bitbake tools
 
 * devtool cache
+* devtool clone
 * devtool show
 * bitbake-layers inspect
 * bitbake-layers status
@@ -60,6 +65,7 @@ The following meta-layers are necessary in order to install the tools provided b
 * meta-oe (meta-openembedded)
 * meta-python (meta-openembedded)
 * meta-qt5 (meta-qt5) [Optional]
+* meta-qt6 (meta-qt6) [Optional]
 * meta-clang (meta-clang) [Optional]
 
 
