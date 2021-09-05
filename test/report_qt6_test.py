@@ -37,7 +37,7 @@ METADATA_S = '"S": "'
 
 class REPORT:
     PF = {
-        "qmake6-project": "qmake6-project-1.0.0-r0",
+        "qmake-project": "qmake-project-1.0.0-r0",
     }
 
     @classmethod
@@ -72,104 +72,104 @@ def test_core_image_minimal_do_reportall(report_qt6_build):
 
     EXISTS = report_qt6_build.files.exists
 
-    assert EXISTS(REPORT.ROOT("qmake6-project", "metadata.json"))
-    assert EXISTS(REPORT.RESULT("qmake6-project", "test-qt5-gtest.xml"))
-    assert EXISTS(REPORT.RESULT("qmake6-project", "tests/plus_test/test_result.xml"))
-    assert EXISTS(REPORT.RESULT("qmake6-project", "tests/minus_test/test_result.xml"))
-    assert EXISTS(REPORT.COVERAGE("qmake6-project", "index.html"))
-    assert EXISTS(REPORT.COVERAGE("qmake6-project", "coverage.xml"))
-    assert EXISTS(REPORT.CHECK("qmake6-project", "sage_report.json"))
-    assert EXISTS(REPORT.CHECKCACHE("qmake6-project", "caches.json"))
-    assert EXISTS(REPORT.CHECKRECIPE("qmake6-project", "recipe_violations.json"))
-    assert EXISTS(REPORT.CHECKRECIPE("qmake6-project", "files.json"))
+    assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
+    assert EXISTS(REPORT.RESULT("qmake-project", "test-qt-gtest.xml"))
+    assert EXISTS(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml"))
+    assert EXISTS(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml"))
+    assert EXISTS(REPORT.COVERAGE("qmake-project", "index.html"))
+    assert EXISTS(REPORT.COVERAGE("qmake-project", "coverage.xml"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("qmake-project", "caches.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "files.json"))
 
 
-def test_qmake6_project_do_coverageall(report_qt6_build):
+def test_qmake_project_do_coverageall(report_qt6_build):
     report_qt6_build.files.remove("report")
 
-    assert report_qt6_build.shell.execute("bitbake qmake6-project -c coverageall").stderr.empty()
+    assert report_qt6_build.shell.execute("bitbake qmake-project -c coverageall").stderr.empty()
 
     READ = report_qt6_build.files.read
 
-    with READ(REPORT.RESULT("qmake6-project", "test-qt5-gtest.xml")) as f:
-        assert f.contains('classname="qmake6-project.PlusTest"')
+    with READ(REPORT.RESULT("qmake-project", "test-qt-gtest.xml")) as f:
+        assert f.contains('classname="qmake-project.PlusTest"')
         assert f.contains(NORMAL_GT_PLUS_TEST_FAILED_LOG)
-        assert f.contains('classname="qmake6-project.MinusTest"')
+        assert f.contains('classname="qmake-project.MinusTest"')
         assert f.contains(NORMAL_GT_MINUS_TEST_FAILED_LOG)
 
-    with READ(REPORT.RESULT("qmake6-project", "tests/plus_test/test_result.xml")) as f:
-        assert f.contains('name="qmake6-project.PlusTest"')
+    with READ(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml")) as f:
+        assert f.contains('name="qmake-project.PlusTest"')
 
-    with READ(REPORT.RESULT("qmake6-project", "tests/minus_test/test_result.xml")) as f:
-        assert f.contains('name="qmake6-project.MinusTest"')
+    with READ(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml")) as f:
+        assert f.contains('name="qmake-project.MinusTest"')
 
-    assert READ(REPORT.COVERAGE("qmake6-project", "index.html")).contains(LCOV_HTML_TITLE)
+    assert READ(REPORT.COVERAGE("qmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
-    with READ(REPORT.COVERAGE("qmake6-project", "coverage.xml")) as f:
-        assert f.contains('name="qmake6-project.plus.src"')
+    with READ(REPORT.COVERAGE("qmake-project", "coverage.xml")) as f:
+        assert f.contains('name="qmake-project.plus.src"')
         assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('name="qmake6-project.minus.src"')
+        assert f.contains('name="qmake-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    assert READ(REPORT.ROOT("qmake6-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
 
-def test_qmake6_project_do_checkcodeall(report_qt6_build):
+def test_qmake_project_do_checkcodeall(report_qt6_build):
     report_qt6_build.files.remove("report")
-    assert report_qt6_build.shell.execute("bitbake qmake6-project -c checkcodeall").stderr.empty()
+    assert report_qt6_build.shell.execute("bitbake qmake-project -c checkcodeall").stderr.empty()
     READ = report_qt6_build.files.read
-    with READ(REPORT.CHECK("qmake6-project", "sage_report.json")) as f:
+    with READ(REPORT.CHECK("qmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
 
-    assert READ(REPORT.ROOT("qmake6-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
 
-def test_qmake6_project_do_checkcacheall(report_qt6_build):
+def test_qmake_project_do_checkcacheall(report_qt6_build):
     report_qt6_build.files.remove("report")
-    assert report_qt6_build.shell.execute("bitbake qmake6-project -c checkcacheall").stderr.empty()
+    assert report_qt6_build.shell.execute("bitbake qmake-project -c checkcacheall").stderr.empty()
     READ = report_qt6_build.files.read
-    with READ(REPORT.CHECKCACHE("qmake6-project", "caches.json")) as f:
+    with READ(REPORT.CHECKCACHE("qmake-project", "caches.json")) as f:
         assert f.contains('"Shared State": {{')
         assert f.contains('"Premirror": {{')
         assert f.contains('"Summary": {{')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
-    assert READ(REPORT.ROOT("qmake6-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
 
-def test_qmake6_project_do_checkrecipeall(report_qt6_build):
+def test_qmake_project_do_checkrecipeall(report_qt6_build):
     report_qt6_build.files.remove("report")
-    assert report_qt6_build.shell.execute("bitbake qmake6-project -c checkrecipeall").stderr.empty()
+    assert report_qt6_build.shell.execute("bitbake qmake-project -c checkrecipeall").stderr.empty()
     READ = report_qt6_build.files.read
 
-    with READ(REPORT.CHECKRECIPE("qmake6-project", "recipe_violations.json")) as f:
-        assert f.contains('qmake6-project_1.0.0.bb')
-        assert f.contains('qmake6-project_1.0.0.bbappend')
+    with READ(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json")) as f:
+        assert f.contains('qmake-project_1.0.0.bb')
+        assert f.contains('qmake-project_1.0.0.bbappend')
 
-    with READ(REPORT.CHECKRECIPE("qmake6-project", "files.json")) as f:
-        assert f.contains('qmake6-project_1.0.0.bb')
-        assert f.contains('qmake6-project_1.0.0.bbappend')
+    with READ(REPORT.CHECKRECIPE("qmake-project", "files.json")) as f:
+        assert f.contains('qmake-project_1.0.0.bb')
+        assert f.contains('qmake-project_1.0.0.bbappend')
 
-    assert READ(REPORT.ROOT("qmake6-project", "metadata.json")).contains(METADATA_S)
+    assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-def test_qmake6_project_do_reportall(report_qt6_build):
+def test_qmake_project_do_reportall(report_qt6_build):
     report_qt6_build.files.remove("report")
 
-    assert report_qt6_build.shell.execute("bitbake qmake6-project -c reportall").stderr.empty()
+    assert report_qt6_build.shell.execute("bitbake qmake-project -c reportall").stderr.empty()
 
     EXISTS = report_qt6_build.files.exists
 
-    assert EXISTS(REPORT.ROOT("qmake6-project", "metadata.json"))
-    assert EXISTS(REPORT.RESULT("qmake6-project", "test-qt5-gtest.xml"))
-    assert EXISTS(REPORT.RESULT("qmake6-project", "tests/plus_test/test_result.xml"))
-    assert EXISTS(REPORT.RESULT("qmake6-project", "tests/minus_test/test_result.xml"))
-    assert EXISTS(REPORT.COVERAGE("qmake6-project", "index.html"))
-    assert EXISTS(REPORT.COVERAGE("qmake6-project", "coverage.xml"))
-    assert EXISTS(REPORT.CHECK("qmake6-project", "sage_report.json"))
-    assert EXISTS(REPORT.CHECKCACHE("qmake6-project", "caches.json"))
-    assert EXISTS(REPORT.CHECKRECIPE("qmake6-project", "recipe_violations.json"))
-    assert EXISTS(REPORT.CHECKRECIPE("qmake6-project", "files.json"))
+    assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
+    assert EXISTS(REPORT.RESULT("qmake-project", "test-qt-gtest.xml"))
+    assert EXISTS(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml"))
+    assert EXISTS(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml"))
+    assert EXISTS(REPORT.COVERAGE("qmake-project", "index.html"))
+    assert EXISTS(REPORT.COVERAGE("qmake-project", "coverage.xml"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECKCACHE("qmake-project", "caches.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json"))
+    assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "files.json"))
