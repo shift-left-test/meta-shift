@@ -38,8 +38,8 @@ def test_core_image_minimal_do_testall(test_build):
     assert o.stdout.contains("NOTE: recipe core-image-minimal-1.0-r0: task do_testall: Started")
     assert o.stdout.contains("NOTE: recipe core-image-minimal-1.0-r0: task do_testall: Succeeded")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
@@ -57,9 +57,9 @@ def test_core_image_minimal_do_coverageall(test_build):
     assert o.stdout.contains("NOTE: recipe core-image-minimal-1.0-r0: task do_coverageall: Succeeded")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
@@ -82,10 +82,10 @@ def test_core_image_minimal_do_checkcodeall(test_build):
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
@@ -117,8 +117,8 @@ def test_core_image_minimal_do_checkcacheall(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c checkcacheall")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Shared State Availability")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Source Availability")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Shared State Availability")
@@ -137,7 +137,7 @@ def test_core_image_minimal_do_checkrecipe(test_build):
 def test_core_image_minimal_do_checkrecipeall(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c checkrecipeall")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
@@ -227,10 +227,10 @@ def test_cmake_project_do_checkrecipeall(test_build):
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
-def test_qmake5_project_do_build(test_build):
-    assert test_build.shell.execute("bitbake qmake5-project").stderr.empty()
+def test_qmake_project_do_build(test_build):
+    assert test_build.shell.execute("bitbake qmake-project").stderr.empty()
 
-    project = test_build.parse("qmake5-project")
+    project = test_build.parse("qmake-project")
     assert project.packages.contains("qtbase")
     assert project.packages.containsAny("gtest", "googletest")
     assert project.packages.contains("cppcheck-native")
@@ -242,76 +242,76 @@ def test_qmake5_project_do_build(test_build):
     assert project.packages.contains("oelint-adv-native")
 
 
-def test_qmake5_project_do_test(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c test")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
+def test_qmake_project_do_test(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c test")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
 
 
-def test_qmake5_project_do_testall(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c testall")
-    assert o.stdout.contains("NOTE: recipe qmake5-project-1.0.0-r0: task do_testall: Started")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("NOTE: recipe qmake5-project-1.0.0-r0: task do_testall: Succeeded")
+def test_qmake_project_do_testall(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c testall")
+    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_testall: Started")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
+    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_testall: Succeeded")
 
 
-def test_qmake5_project_do_coverage(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c coverage")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
+def test_qmake_project_do_coverage(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c coverage")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
 
 
-def test_qmake5_project_do_coverageall(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c coverageall")
-    assert o.stdout.contains("NOTE: recipe qmake5-project-1.0.0-r0: task do_coverageall: Started")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("NOTE: recipe qmake5-project-1.0.0-r0: task do_coverageall: Succeeded")
+def test_qmake_project_do_coverageall(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c coverageall")
+    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_coverageall: Started")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
+    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_coverageall: Succeeded")
 
 
-def test_qmake5_project_do_checkcode(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c checkcode")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+def test_qmake_project_do_checkcode(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c checkcode")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
-def test_qmake5_project_do_checkcodeall(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c checkcodeall")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+def test_qmake_project_do_checkcodeall(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c checkcodeall")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
 
-def test_qmake5_project_do_checkcache(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c checkcache")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Shared State Availability")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+def test_qmake_project_do_checkcache(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c checkcache")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
-def test_qmake5_project_do_checkcacheall(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c checkcacheall")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Shared State Availability")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkcache: Source Availability")
+def test_qmake_project_do_checkcacheall(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c checkcacheall")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Source Availability")
 
 
-def test_qmake5_project_do_checkrecipe(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c checkrecipe")
-    assert o.stdout.contains("qmake5-project_1.0.0.bb")
-    assert o.stdout.contains("qmake5-project_1.0.0.bbappend")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
+def test_qmake_project_do_checkrecipe(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c checkrecipe")
+    assert o.stdout.contains("qmake-project_1.0.0.bb")
+    assert o.stdout.contains("qmake-project_1.0.0.bbappend")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
-def test_qmake5_project_do_checkrecipeall(test_build):
-    o = test_build.shell.execute("bitbake qmake5-project -c checkrecipeall")
-    assert o.stdout.contains("qmake5-project_1.0.0.bb")
-    assert o.stdout.contains("qmake5-project_1.0.0.bbappend")
-    assert o.stdout.contains("qmake5-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
+def test_qmake_project_do_checkrecipeall(test_build):
+    o = test_build.shell.execute("bitbake qmake-project -c checkrecipeall")
+    assert o.stdout.contains("qmake-project_1.0.0.bb")
+    assert o.stdout.contains("qmake-project_1.0.0.bbappend")
+    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_autotools_project_do_build(test_build):
