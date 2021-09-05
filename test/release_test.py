@@ -96,42 +96,42 @@ def test_cmake_project_do_checkcodeall(release_build):
     assert o.stdout.contains("WARNING: cmake-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 
-def test_qmake5_project_do_build(release_build):
-    assert release_build.shell.execute("bitbake qmake5-project").stderr.empty()
+def test_qmake_project_do_build(release_build):
+    assert release_build.shell.execute("bitbake qmake-project").stderr.empty()
 
-    project = release_build.parse("qmake5-project")
+    project = release_build.parse("qmake-project")
     assert project.packages.contains("qtbase")
     assert not project.packages.contains("lcov-native")
 
 
-def test_qmake5_project_do_test(release_build):
-    o = release_build.shell.execute("bitbake qmake5-project -c test")
-    assert o.stderr.contains("ERROR: Task do_test does not exist for target qmake5-project")
+def test_qmake_project_do_test(release_build):
+    o = release_build.shell.execute("bitbake qmake-project -c test")
+    assert o.stderr.contains("ERROR: Task do_test does not exist for target qmake-project")
 
 
-def test_qmake5_project_do_testall(release_build):
-    o = release_build.shell.execute("bitbake qmake5-project -c testall")
-    assert o.stdout.contains("WARNING: qmake5-project-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
+def test_qmake_project_do_testall(release_build):
+    o = release_build.shell.execute("bitbake qmake-project -c testall")
+    assert o.stdout.contains("WARNING: qmake-project-1.0.0-r0 do_testall: No recipes found to run 'do_test' task.")
 
 
-def test_qmake5_project_do_coverage(release_build):
-    o = release_build.shell.execute("bitbake qmake5-project -c coverage")
-    assert o.stderr.contains("ERROR: Task do_coverage does not exist for target qmake5-project")
+def test_qmake_project_do_coverage(release_build):
+    o = release_build.shell.execute("bitbake qmake-project -c coverage")
+    assert o.stderr.contains("ERROR: Task do_coverage does not exist for target qmake-project")
 
 
-def test_qmake5_project_do_coverageall(release_build):
-    o = release_build.shell.execute("bitbake qmake5-project -c coverageall")
-    assert o.stdout.contains("WARNING: qmake5-project-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
+def test_qmake_project_do_coverageall(release_build):
+    o = release_build.shell.execute("bitbake qmake-project -c coverageall")
+    assert o.stdout.contains("WARNING: qmake-project-1.0.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
 
-def test_qmake5_project_do_checkcode(release_build):
-    o = release_build.shell.execute("bitbake qmake5-project -c checkcode")
-    assert o.stderr.contains("ERROR: Task do_checkcode does not exist for target qmake5-project")
+def test_qmake_project_do_checkcode(release_build):
+    o = release_build.shell.execute("bitbake qmake-project -c checkcode")
+    assert o.stderr.contains("ERROR: Task do_checkcode does not exist for target qmake-project")
 
 
-def test_qmake5_project_do_checkcodeall(release_build):
-    o = release_build.shell.execute("bitbake qmake5-project -c checkcodeall")
-    assert o.stdout.contains("WARNING: qmake5-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
+def test_qmake_project_do_checkcodeall(release_build):
+    o = release_build.shell.execute("bitbake qmake-project -c checkcodeall")
+    assert o.stdout.contains("WARNING: qmake-project-1.0.0-r0 do_checkcodeall: No recipes found to run 'do_checkcode' task.")
 
 
 def test_autotools_project_do_build(release_build):
