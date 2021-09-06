@@ -445,7 +445,7 @@ python shifttest_do_checkrecipe() {
             with open(f, "r") as fd:
                 pairs.append({
                     "file": f,
-                    "code_lines": sum(1 for line in fd if line.strip())
+                    "code_lines": sum(1 for line in fd)
                 })
         return { "lines_of_code": pairs }
 
