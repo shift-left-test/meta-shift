@@ -69,15 +69,21 @@ def get_layername(layerconf):
         return regexp.search(f.read()).groups()[0]
 
 
-def find_layers_from(basepath):
+def find_layers_from(basepath, maxdepth):
     """
     Find the test-configured layers from the given base directory
 
     :param basepath: base path to look up
+    :param maxdepth: max depth to search directories recursively
     :return: test-configure layers
     """
     layers = []
+    basepath = basepath.rstrip(os.path.sep)
+    maxdepth += basepath.count(os.path.sep)
     for root, dirs, files in os.walk(basepath):
+        if maxdepth <= root.count(os.path.sep):
+            del dirs[:]
+
         for d in dirs:
             if d.startswith("."):
                 continue
@@ -154,7 +160,7 @@ def process(args):
     :param args: arguments
     """
     basepath = args.basepath if args.basepath else find_top_directory()
-    layers = find_layers_from(basepath)
+    layers = find_layers_from(basepath, args.depth)
 
     if args.add:
         add(layers)
@@ -169,6 +175,7 @@ def register_command(subparsers):
                                    help="Show, add or remove test-configured layers.",
                                    description="Show, add or remove test-configured layers.")
     parser.add_argument("--basepath", help="base path to search test-configured layers")
+    parser.add_argument("--depth", nargs="?", type=int, default=3, help="depth to search directories recursively (default: 3)")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--show", action="store_true", help="show test-configured layers")
     group.add_argument("--add", action="store_true", help="add test-configured layers to bblayers.conf")
