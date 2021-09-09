@@ -28,6 +28,10 @@ python qmaketest_do_test() {
     env["TESTRUNNER"] = shiftutils_qemu_run_cmd(d)
     env["TESTARGS"] = "-platform offscreen"
 
+    # Let tests run in random order
+    if bb.utils.to_boolean(d.getVar("SHIFT_TEST_SHUFFLE", True)):
+        env["GTEST_SHUFFLE"] = "1"
+
     configured = d.getVar("SHIFT_REPORT_DIR", True)
 
     if configured:
