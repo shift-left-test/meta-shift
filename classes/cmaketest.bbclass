@@ -49,7 +49,8 @@ python cmaketest_do_test() {
     try:
         exec_proc("ctest --output-on-failure", d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
-        warn(str(e), d)
+        if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
+            error(str(e), d)
 
     if configured:
         if os.path.exists(report_dir):
