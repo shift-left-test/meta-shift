@@ -62,6 +62,10 @@ python autotoolstest_do_test() {
     # Set up the test runner
     env["LOG_COMPILER"] = d.expand("${WORKDIR}/test-runner.sh")
 
+    # Let tests run in random order
+    if bb.utils.to_boolean(d.getVar("SHIFT_TEST_SHUFFLE", True)):
+        env["GTEST_SHUFFLE"] = "1"
+
     configured = d.getVar("SHIFT_REPORT_DIR", True)
 
     if configured:
