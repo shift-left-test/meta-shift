@@ -57,7 +57,8 @@ python qmaketest_do_test() {
     try:
         timeout(exec_proc, "make --quiet check", d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
-        warn(str(e), d)
+        if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
+            error(str(e), d)
         if d.getVar("SHIFT_TIMEOUT", True) and e.exitcode == 124:
             err = bb.BBHandledException(e)
             err.exitcode = e.exitcode
