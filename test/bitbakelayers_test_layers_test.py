@@ -45,6 +45,11 @@ def test_show_layers(release_build):
     assert o.stdout.contains("meta-sample-test")
 
 
+def test_show_layers_with_depth(release_build):
+    o = release_build.shell.execute("bitbake-layers test-layers --show --depth 0")
+    assert not o.stdout.contains("meta-sample-test")
+
+
 def test_show_with_basepath(release_build):
     o = release_build.shell.execute("bitbake-layers test-layers --show --basepath /dev/null")
     assert not o.stdout.contains("meta-sample-test")
