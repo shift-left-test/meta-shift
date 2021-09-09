@@ -51,7 +51,11 @@ python cmaketest_do_test() {
 
     plain("Running tests...", d)
     try:
-        exec_proc("ctest --output-on-failure", d, env=env, cwd=d.getVar("B", True))
+        cmd = ["ctest", "--output-on-failure"]
+        # Let tests run in random order
+        if bb.utils.to_boolean(d.getVar("SHIFT_TEST_SHUFFLE", True)):
+            cmd.append("--schedule-random")
+        exec_proc(cmd, d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
         if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
             error(str(e), d)
