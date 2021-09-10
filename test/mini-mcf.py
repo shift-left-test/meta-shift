@@ -142,7 +142,7 @@ BBLAYERS ?= " \\
 def configure_local(conf_dir, conf_data):
     logger.info("Creating 'local.conf'...")
     LOCAL_CONF = '''
-DISTRO = "poky"
+DISTRO = "sample"
 PACKAGE_CLASSES = "package_ipk"
 EXTRA_IMAGE_FEATURES = ""
 USER_CLASSES = ""
