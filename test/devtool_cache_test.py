@@ -71,7 +71,7 @@ def test_cache_save_as_file(bare_build):
 
         with open(report_file_path) as f:
             data = json.load(f)
-            for title in ["Shared State", "Source"]:
+            for title in ["Shared State", "Premirror"]:
                 assert isinstance(data[title]["Summary"]["Wanted"], int)
                 assert isinstance(data[title]["Summary"]["Found"], int)
                 assert isinstance(data[title]["Summary"]["Missed"], int)
@@ -100,7 +100,7 @@ def test_cache_save_as_file_with_known_cmd_option(bare_build):
 
         with open(report_file_path) as f:
             data = json.load(f)
-            for title in ["Shared State", "Source"]:
+            for title in ["Shared State", "Premirror"]:
                 assert isinstance(data[title]["Summary"]["Wanted"], int)
                 assert isinstance(data[title]["Summary"]["Found"], int)
                 assert isinstance(data[title]["Summary"]["Missed"], int)
