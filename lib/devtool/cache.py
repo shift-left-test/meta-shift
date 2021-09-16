@@ -200,7 +200,7 @@ def make_json_report(args, found_shared_state, missed_shared_state,
 
     for title, found, missed in [
         ("Shared State", found_shared_state, missed_shared_state),
-        ("Source", found_source, missed_source)]:
+        ("Premirror", found_source, missed_source)]:
       json_dict[title] = dict()
       json_dict[title]["Summary"] = dict()
       json_dict[title]["Summary"]["Wanted"] = len(found) + len(missed)
