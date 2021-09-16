@@ -2,7 +2,7 @@ inherit shifttest
 
 
 EXTRA_QMAKEVARS_PRE_append_class-target = " CONFIG+=gcov"
-EXTRA_QMAKEVARS_PRE_append_class-target = " CONFIG+=insignificant_test"
+EXTRA_QMAKEVARS_PRE_append_class-target = " ${@bb.utils.contains('SHIFT_TEST_SUPPRESS_FAILURES', '1', 'CONFIG+=insignificant_test', '', d)}"
 
 FILES_${PN}_append_class-target = " ${OE_QMAKE_PATH_TESTS}"
 
@@ -45,7 +45,7 @@ python qmaketest_do_test() {
         # Create Google test report files
         env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
         # Create QT test report files
-        env["TESTARGS"] += " -xunitxml -o test_result.xml"
+        env["TESTARGS"] += " -o -,txt -o test_result.xml,xunitxml"
 
     for gcdaFile in find_files(d.getVar("B", True), "*.gcda"):
         bb.utils.remove(gcdaFile)
