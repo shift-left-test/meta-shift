@@ -81,7 +81,7 @@ endmacro()
 
 # An helper function to build libraries
 function(build_library)
-  set(options EXTERNAL)
+  set(options EXTERNAL NO_INSTALL)
   set(oneValueArgs TYPE NAME PREFIX SUFFIX VERSION ALIAS)
   set(multiValueArgs SRCS LIBS PUBLIC_HEADERS PUBLIC_SYSTEM_HEADERS PRIVATE_HEADERS PRIVATE_SYSTEM_HEADERS INSTALL_HEADERS CFLAGS CPPFLAGS CXXFLAGS COMPILE_OPTIONS LINK_OPTIONS)
   cmake_parse_arguments(BUILD
@@ -117,11 +117,13 @@ function(build_library)
     endforeach()
   endif()
 
-  install(
-    TARGETS ${BUILD_NAME}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  if(NOT BUILD_NO_INSTALL)
+    install(
+      TARGETS ${BUILD_NAME}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  endif()
 
   if(BUILD_ALIAS)
     add_library(${BUILD_ALIAS}::lib ALIAS ${BUILD_NAME})
@@ -200,6 +202,7 @@ endmacro()
 
 # An helper function to build executables
 function(build_executable)
+  set(options NO_INSTALL)
   set(oneValueArgs TYPE NAME PREFIX SUFFIX VERSION ALIAS)
   set(multiValueArgs SRCS LIBS PUBLIC_HEADERS PUBLIC_SYSTEM_HEADERS PRIVATE_HEADERS PRIVATE_SYSTEM_HEADERS CFLAGS CPPFLAGS CXXFLAGS COMPILE_OPTIONS LINK_OPTIONS)
   cmake_parse_arguments(BUILD
@@ -248,9 +251,11 @@ function(build_executable)
       PRIVATE ${GTEST_LIBRARIES} GMock::GMock GMock::Main ${CMAKE_THREAD_LIBS_INIT})
     gtest_add_tests(${BUILD_NAME} "" AUTO)
   else()
-    install(
-      TARGETS ${BUILD_NAME}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if(NOT BUILD_NO_INSTALL)
+      install(
+	TARGETS ${BUILD_NAME}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
   endif()
 
   if(BUILD_PREFIX)
@@ -305,7 +310,7 @@ endmacro()
 
 # An helper function to manage header-only interfaces
 function(build_interface)
-  set(options EXTERNAL)
+  set(options EXTERNAL NO_INSTALL)
   set(oneValueArgs NAME ALIAS)
   set(multiValueArgs SRCS LIBS PUBLIC_HEADERS PUBLIC_SYSTEM_HEADERS PRIVATE_HEADERS PRIVATE_SYSTEM_HEADERS INSTALL_HEADERS CFLAGS CPPFLAGS CXXFLAGS COMPILE_OPTIONS LINK_OPTIONS)
   cmake_parse_arguments(BUILD
@@ -338,11 +343,13 @@ function(build_interface)
     endforeach()
   endif()
 
-  install(
-    TARGETS ${BUILD_NAME}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  if(NOT BUILD_NO_INSTALL)
+    install(
+      TARGETS ${BUILD_NAME}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  endif()
 
   if(BUILD_ALIAS)
     add_library(${BUILD_ALIAS}::lib ALIAS ${BUILD_NAME})
@@ -384,7 +391,7 @@ macro(build_external_interface_library)
 endmacro()
 
 function(build_debian_package)
-  set(oneValueArgs MAINTAINER CONTACT HOMEPAGE VENDOR DESCRIPTION)
+  set(oneValueArgs MAINTAINER CONTACT HOMEPAGE VENDOR SUMMARY SECTION PRIORITY)
   set(multiValueArgs DEPENDS)
   cmake_parse_arguments(PKG
     "${options}"
@@ -399,7 +406,7 @@ function(build_debian_package)
   endif()
 
   if(PKG_CONTACT)
-    set(CPAKC_DEBIAN_PACKAGE_CONTACT ${PKG_CONTACT})
+    set(CPACK_DEBIAN_PACKAGE_CONTACT ${PKG_CONTACT})
   endif()
 
   if(PKG_HOMEPAGE)
@@ -416,6 +423,14 @@ function(build_debian_package)
 
   if(PKG_SUMMARY)
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PKG_SUMMARY})
+  endif()
+
+  if(PKG_SECTION)
+    set(CPACK_DEBIAN_PACKAGE_SECTION ${PKG_SECTION})
+  endif()
+
+  if(PKG_PRIORITY)
+    set(CPACK_DEBIAN_PACKAGE_PRIORITY ${PKG_PRIORITY})
   endif()
 
   if(EXISTS "${CMAKE_SOURCE_DIR}/LICENSE")
@@ -437,9 +452,9 @@ function(build_debian_package)
     endif()
   endif()
 
-  if(CPACK_DEPENDS)
+  if(PKG_DEPENDS)
     set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEPENDS})
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS ${PKG_DEPENDS})
   endif()
 
   set(CPACK_PACKAGE_FILE_NAME
@@ -489,7 +504,7 @@ function(register_checker)
     return()
   endif()
 
-  if(DEFINED CMAKE_CXX_${ARGS_NAME})
+  if(DEFINED CMAKE_CXX_${ARGS_NAME} AND DEFINED CMAKE_C_${ARGS_NAME})
     message(STATUS "${MESSAGE}: TRUE")
     return()
   endif()
@@ -497,6 +512,7 @@ function(register_checker)
   if(NOT ARGS_NAMES)
     message(STATUS "${MESSAGE}: TRUE")
     set(CMAKE_CXX_${ARGS_NAME} ON PARENT_SCOPE)
+    set(CMAKE_C_${ARGS_NAME} ON PARENT_SCOPE)
     return()
   endif()
 
@@ -504,6 +520,10 @@ function(register_checker)
   if(${ARGS_NAME}_PATH)
     message(STATUS "${MESSAGE}: TRUE")
     set(CMAKE_CXX_${ARGS_NAME}
+      ${${ARGS_NAME}_PATH}
+      ${ARGS_OPTIONS}
+      PARENT_SCOPE)
+    set(CMAKE_C_${ARGS_NAME}
       ${${ARGS_NAME}_PATH}
       ${ARGS_OPTIONS}
       PARENT_SCOPE)
@@ -534,7 +554,7 @@ macro(enable_static_analysis)
       NAME CPPCHECK
       NAMES cppcheck
       VERSION 3.10.0
-      OPTIONS --enable=warning,style,performance,portability --library=googletest
+      OPTIONS --enable=warning,style,performance,portability --library=googletest --error-exitcode=1
       )
   endif()
 
