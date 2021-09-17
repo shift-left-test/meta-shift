@@ -1,6 +1,6 @@
 # CMakeUtils
-# SRC_URI: http://mod.lge.com/hub/yocto/addons/CMakeUtils
-# SRCREV: 03d482bc80df7ad737e0cbd19c08bc8f0856e0e8
+# SRC_URI: http://mod.lge.com/hub/yocto/CMakeUtils
+# SRCREV: 1d8aeafaafb504ab30ef5708479d749bfc6b74eb
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
