@@ -27,7 +27,6 @@ THE SOFTWARE.
 
 import os
 import json
-import re
 import shutil
 import tempfile
 
@@ -39,9 +38,9 @@ def test_unknown_recipe(bare_build):
 
 def test_cache(bare_build):
     o = bare_build.shell.execute("devtool cache cmake-native")
-    assert re.search(r"Wanted : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
-    assert re.search(r"Found  : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
-    assert re.search(r"Missed : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert o.stdout.matches(r"Wanted : [0-9]+ \([0-9]+%\)")
+    assert o.stdout.matches(r"Found  : [0-9]+ \([0-9]+%\)")
+    assert o.stdout.matches(r"Missed : [0-9]+ \([0-9]+%\)")
 
 
 def test_cache_with_details(bare_build):
@@ -58,9 +57,9 @@ def test_cache_with_unknown_cmd_option(bare_build):
 
 def test_cache_with_known_cmd_option(bare_build):
     o = bare_build.shell.execute("devtool cache cmake-native -c configure")
-    assert re.search(r"Wanted : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
-    assert re.search(r"Found  : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
-    assert re.search(r"Missed : [0-9]+ \([0-9]+%\)", str(o.stdout), re.MULTILINE)
+    assert o.stdout.matches(r"Wanted : [0-9]+ \([0-9]+%\)")
+    assert o.stdout.matches(r"Found  : [0-9]+ \([0-9]+%\)")
+    assert o.stdout.matches(r"Missed : [0-9]+ \([0-9]+%\)")
 
 
 def test_cache_save_as_file(bare_build):
