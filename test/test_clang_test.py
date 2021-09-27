@@ -61,12 +61,12 @@ def test_core_image_minimal_do_checktest(test_clang_build):
 
 def test_core_image_minimal_do_checktestall(test_clang_build):
     o = test_clang_build.shell.execute("bitbake core-image-minimal -c checktestall")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
+    assert o.stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
+    assert o.stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
+    assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
+    assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
+    assert o.stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
+    assert o.stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
 
 
 def test_cmake_project_do_checkcode(test_clang_build):
@@ -80,8 +80,8 @@ def test_cmake_project_do_checkcode(test_clang_build):
 
 def test_cmake_project_do_checktest(test_clang_build):
     o = test_clang_build.shell.execute("bitbake cmake-project -c checktest")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
+    assert o.stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
+    assert o.stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
 
 
 def test_qmake_project_do_checkcode(test_clang_build):
@@ -95,8 +95,8 @@ def test_qmake_project_do_checkcode(test_clang_build):
 
 def test_qmake_project_do_checktest(test_clang_build):
     o = test_clang_build.shell.execute("bitbake qmake-project -c checktest")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
+    assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
+    assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
 
 
 def test_autotools_project_do_checkcode(test_clang_build):
@@ -110,8 +110,8 @@ def test_autotools_project_do_checkcode(test_clang_build):
 
 def test_autotools_project_do_checktest(test_clang_build):
     o = test_clang_build.shell.execute("bitbake autotools-project -c checktest")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checktest:                    Mutant Population Report")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checktest:                              Mutation Coverage Report")
+    assert o.stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
+    assert o.stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
 
 
 def test_do_checktest_seed_option(test_clang_build):
