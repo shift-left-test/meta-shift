@@ -147,8 +147,7 @@ def test_qmake_project_do_checkrecipeall(report_qt6_build):
     READ = report_qt6_build.files.read
 
     with READ(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json")) as f:
-        assert f.contains('qmake-project_1.0.0.bb')
-        assert f.contains('qmake-project_1.0.0.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("qmake-project", "files.json")) as f:
         assert f.contains('qmake-project_1.0.0.bb')
