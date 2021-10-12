@@ -219,13 +219,9 @@ def test_qmake_project_do_checkcacheall(test_qt6_build):
 
 def test_qmake_project_do_checkrecipe(test_qt6_build):
     o = test_qt6_build.shell.execute("bitbake qmake-project -c checkrecipe")
-    assert o.stdout.contains("qmake-project_1.0.0.bb")
-    assert o.stdout.contains("qmake-project_1.0.0.bbappend")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_qmake_project_do_checkrecipeall(test_qt6_build):
     o = test_qt6_build.shell.execute("bitbake qmake-project -c checkrecipeall")
-    assert o.stdout.contains("qmake-project_1.0.0.bb")
-    assert o.stdout.contains("qmake-project_1.0.0.bbappend")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
