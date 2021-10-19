@@ -196,8 +196,7 @@ def test_cmake_project_do_checkrecipeall(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
-        assert f.contains('cmake-project_1.0.0.bb')
-        assert f.contains('cmake-project_1.0.0.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("cmake-project", "files.json")) as f:
         assert f.contains('cmake-project_1.0.0.bb')
@@ -287,8 +286,7 @@ def test_qmake_project_do_checkrecipeall(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json")) as f:
-        assert f.contains('qmake-project_1.0.0.bb')
-        assert f.contains('qmake-project_1.0.0.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("qmake-project", "files.json")) as f:
         assert f.contains('qmake-project_1.0.0.bb')
@@ -371,8 +369,7 @@ def test_autotools_project_do_checkrecipeall(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json")) as f:
-        assert f.contains('autotools-project_1.0.0.bb')
-        assert f.contains('autotools-project_1.0.0.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("autotools-project", "files.json")) as f:
         assert f.contains('autotools-project_1.0.0.bb')
@@ -451,8 +448,7 @@ def test_humidifier_project_do_checkrecipeall(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json")) as f:
-        assert f.contains('humidifier-project_1.0.0.bb')
-        assert f.contains('humidifier-project_1.0.0.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("humidifier-project", "files.json")) as f:
         assert f.contains('humidifier-project_1.0.0.bb')
@@ -557,8 +553,7 @@ def test_sqlite3logger_project_do_checkrecipeall(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json")) as f:
-        assert f.contains('sqlite3wrapper_0.1.0.bb')
-        assert f.contains('sqlite3wrapper_0.1.0.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("sqlite3wrapper", "files.json")) as f:
         assert f.contains('sqlite3wrapper_0.1.0.bb')
@@ -567,8 +562,7 @@ def test_sqlite3logger_project_do_checkrecipeall(report_build):
     assert READ(REPORT.ROOT("stringutils", "metadata.json")).contains(METADATA_S)
 
     with READ(REPORT.CHECKRECIPE("stringutils", "recipe_violations.json")) as f:
-        assert f.contains('stringutils_0.0.1.bb')
-        assert f.contains('stringutils_0.0.1.bbappend')
+        assert f.contains('"issues": []')
 
     with READ(REPORT.CHECKRECIPE("stringutils", "files.json")) as f:
         assert f.contains('stringutils_0.0.1.bb')
