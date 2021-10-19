@@ -215,15 +215,11 @@ def test_cmake_project_do_checkcacheall(test_build):
 
 def test_cmake_project_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake cmake-project -c checkrecipe")
-    assert o.stdout.contains("cmake-project_1.0.0.bb")
-    assert o.stdout.contains("cmake-project_1.0.0.bbappend")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_cmake_project_do_checkrecipeall(test_build):
     o = test_build.shell.execute("bitbake cmake-project -c checkrecipeall")
-    assert o.stdout.contains("cmake-project_1.0.0.bb")
-    assert o.stdout.contains("cmake-project_1.0.0.bbappend")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
@@ -302,15 +298,11 @@ def test_qmake_project_do_checkcacheall(test_build):
 
 def test_qmake_project_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake qmake-project -c checkrecipe")
-    assert o.stdout.contains("qmake-project_1.0.0.bb")
-    assert o.stdout.contains("qmake-project_1.0.0.bbappend")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_qmake_project_do_checkrecipeall(test_build):
     o = test_build.shell.execute("bitbake qmake-project -c checkrecipeall")
-    assert o.stdout.contains("qmake-project_1.0.0.bb")
-    assert o.stdout.contains("qmake-project_1.0.0.bbappend")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
@@ -384,15 +376,11 @@ def test_autotools_project_do_checkcacheall(test_build):
 
 def test_autotools_project_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake autotools-project -c checkrecipe")
-    assert o.stdout.contains("autotools-project_1.0.0.bb")
-    assert o.stdout.contains("autotools-project_1.0.0.bbappend")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_autotools_project_do_checkrecipeall(test_build):
     o = test_build.shell.execute("bitbake autotools-project -c checkrecipeall")
-    assert o.stdout.contains("autotools-project_1.0.0.bb")
-    assert o.stdout.contains("autotools-project_1.0.0.bbappend")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
@@ -467,15 +455,11 @@ def test_humidifier_project_do_checkcacheall(test_build):
 
 def test_humidifier_project_do_checkrecipe(test_build):
     o = test_build.shell.execute("bitbake humidifier-project -c checkrecipe")
-    assert o.stdout.contains("humidifier-project_1.0.0.bb")
-    assert o.stdout.contains("humidifier-project_1.0.0.bbappend")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_humidifier_project_do_checkrecipeall(test_build):
     o = test_build.shell.execute("bitbake humidifier-project -c checkrecipeall")
-    assert o.stdout.contains("humidifier-project_1.0.0.bb")
-    assert o.stdout.contains("humidifier-project_1.0.0.bbappend")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
@@ -562,9 +546,5 @@ def test_sqlite3logger_do_checkrecipe(test_build):
 
 def test_sqlite3logger_do_checkrecipeall(test_build):
     o = test_build.shell.execute("bitbake sqlite3logger -c checkrecipeall")
-    assert o.stdout.contains("stringutils_0.0.1.bb")
-    assert o.stdout.contains("stringutils_0.0.1.bbappend")
     assert o.stdout.contains("stringutils-0.0.1-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    assert o.stdout.contains("sqlite3wrapper_0.1.0.bb")
-    assert o.stdout.contains("sqlite3wrapper_0.1.0.bbappend")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
