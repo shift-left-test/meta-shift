@@ -157,7 +157,6 @@ def test_cmake_project_do_checkrecipe(report_build):
     READ = report_build.files.read
 
     with READ(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
-        assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
