@@ -25,8 +25,8 @@ python qmaketest_do_test() {
     env["QT_PLUGIN_PATH"] = d.expand("${STAGING_DIR_TARGET}${OE_QMAKE_PATH_PLUGINS}")
     env["QML_IMPORT_PATH"] = d.expand("${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}")
     env["QML2_IMPORT_PATH"] = d.expand("${QML2_IMPORT_PATH}:${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}")
+    env["QT_QPA_PLATFORM"] = "offscreen"
     env["TESTRUNNER"] = shiftutils_qemu_run_cmd(d)
-    env["TESTARGS"] = "-platform offscreen"
 
     # Let tests run in random order
     if bb.utils.to_boolean(d.getVar("SHIFT_TEST_SHUFFLE", True)):
@@ -45,7 +45,7 @@ python qmaketest_do_test() {
         # Create Google test report files
         env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
         # Create QT test report files
-        env["TESTARGS"] += " -o -,txt -o test_result.xml,xunitxml"
+        env["TESTARGS"] = " -o -,txt -o test_result.xml,xunitxml"
 
     for gcdaFile in find_files(d.getVar("B", True), "*.gcda"):
         bb.utils.remove(gcdaFile)
