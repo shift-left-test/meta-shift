@@ -1,8 +1,8 @@
 SUMMARY = "Mutation Testing Tool"
 DESCRIPTION = "The mutation testing tool for the meta-shift project"
 AUTHOR = "Sung Gon Kim"
-HOMEPAGE = "http://mod.lge.com/hub/yocto/addons/sentinel"
-BUGTRACKER = "http://mod.lge.com/hub/yocto/addons/sentinel/issues"
+HOMEPAGE = "http://mod.lge.com/hub/yocto/sentinel"
+BUGTRACKER = "http://mod.lge.com/hub/yocto/sentinel/issues"
 SECTION = "devel"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=68afeac0415f7ffea472ec34ec9d20c7 \
