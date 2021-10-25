@@ -1,7 +1,5 @@
 # meta-shift
 
-[![Build Status](http://10.178.85.91:8080/buildStatus/icon?job=meta-shift)](http://10.178.85.91:8080/job/meta-shift/)
-
 > Shift-left testing for the Yocto project
 
 
@@ -14,17 +12,17 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 
 * autotools (via meta)
 * cmake (via meta)
-* CMakeUtils (1.0.0)
-* cppcheck (2.0)
-* cpplint (1.4.5)
-* fff (1.0)
-* gcovr (3.4)
+* CMakeUtils (1.2.0)
+* cppcheck (2.4.1)
+* cpplint (1.5.5)
+* fff (1.1)
+* gcovr (4.2)
 * gmock (via meta-oe)
 * gtest (via meta-oe)
 * lcov (via meta-oe)
 * qemu-native (via meta)
 * qmake5 (via meta-qt5)
-* SAGE (0.2.0)
+* SAGE (0.4.4)
 
 
 ## Features
