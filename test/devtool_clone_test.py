@@ -62,7 +62,7 @@ def test_wrong_srcrev(test_build):
 def test_fail_patch(test_build):
     try:
         o = test_build.shell.execute("devtool clone oelint-adv-native --srcrev=8c9b4d2a0c9bb7bce995de0268edcd886fd9ed13")
-        assert o.stderr.contains("ERROR: Applying '0001-compatibility-with-python2.patch' failed")
+        assert o.stderr.contains("Applying '0001-compatibility-with-python2.patch' failed")
         assert o.returncode != 0
     finally:
         test_build.shell.run("bitbake-layers remove-layer workspace")
@@ -110,4 +110,3 @@ def test_empty_srcrev(test_build):
         test_build.shell.run("devtool reset cmake-project")
         test_build.shell.run("bitbake-layers remove-layer workspace")
         test_build.files.remove("workspace")
-
