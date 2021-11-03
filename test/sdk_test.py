@@ -34,7 +34,7 @@ import tempfile
 def test_populate_sdk(sdk_build):
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/host/installed-packages.txt")
     assert pkgs.contains("nativesdk-cmake_3.10.3-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-cppcheck_2.4.1-r0_x86_64-nativesdk.ipk")
+    assert pkgs.contains("nativesdk-cppcheck_2.6-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-cpplint_1.5.5-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-gcovr_4.2-r0_x86_64-nativesdk.ipk")
     assert pkgs.contains("nativesdk-lcov_1.11-r0_x86_64-nativesdk.ipk")
