@@ -5,11 +5,11 @@ HOMEPAGE = "http://mod.lge.com/hub/yocto/addons/sage"
 BUGTRACKER = "http://mod.lge.com/hub/yocto/addons/sage/issues"
 SECTION = "devel"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=d41d8cd98f00b204e9800998ecf8427e"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5"
 
 SRC_URI = "git://mod.lge.com/hub/yocto/addons/sage.git;protocol=http;nobranch=1"
 
-SRCREV = "29639a1bf22c89d1b1b64d528bb5a6ff8d182c8e"
+SRCREV = "84f93dee60a1e09272de1e34436cbe9568cd4953"
 
 S = "${WORKDIR}/git"
 
