@@ -13,7 +13,7 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 * autotools (via meta)
 * cmake (via meta)
 * CMakeUtils (1.2.0)
-* cppcheck (2.4.1)
+* cppcheck (2.6)
 * cpplint (1.5.5)
 * fff (1.1)
 * gcovr (4.2)
@@ -44,7 +44,6 @@ This project aims to support the practice of [shift-left testing](https://en.wik
 ### List of bitbake tools
 
 * devtool cache
-* devtool clone
 * devtool show
 * bitbake-layers inspect
 * bitbake-layers status
