@@ -51,7 +51,7 @@ python shifttest_do_checkcode() {
 
     # Configure tool options
     debug("Configuring the checkcode tool options")
-    for tool in (d.getVar("SHIFT_CHECKCODE_TOOLS", True) or "").split():
+    for tool in set(["metrix++", "duplo"] + (d.getVar("SHIFT_CHECKCODE_TOOLS", True) or "").split()):
         options = d.getVarFlag("SHIFT_CHECKCODE_TOOL_OPTIONS", tool, True)
         if options:
             cmdline.append(tool + ":" + options.replace(" ", "\ "))
