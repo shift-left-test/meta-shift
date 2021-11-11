@@ -169,6 +169,14 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
         with open(local_conf, "a") as f:
             f.write('{} ?= "{}"\n'.format(key, value))
 
+    if "OWN_MIRROR_URL" in os.environ:
+        url = os.environ.get("OWN_MIRROR_URL")
+        with open(local_conf, "a") as f:
+            f.write('INHERIT_append ?= " own-mirrors uninative"\n')
+            f.write('SOURCE_MIRROR_URL ?= "{}/{}/downloads"\n'.format(url, BRANCH))
+            f.write('SSTATE_MIRRORS ?= "file://.* {}/{}/sstate-cache/PATH"\n'.format(url, BRANCH))
+            f.write('UNINATIVE_URL ?= "{}/{}/downloads/uninative/${{@d.getVarFlag(\'UNINATIVE_CHECKSUM\', d.getVar(\'BUILD_ARCH\', True), True)}}/"'.format(url, BRANCH))
+
 
 def configure(args):
     def read_json(filename):
