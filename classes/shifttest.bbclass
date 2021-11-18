@@ -282,7 +282,7 @@ python shifttest_do_checktest() {
                    dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
                    dd.getVar("S", True)], dd)
     except bb.process.ExecutionError as e:
-        warn("Populating failed: %s" % e)
+        error("Populating failed: %s" % e, dd)
         return
 
     for line in readlines(mutant_file):
@@ -361,7 +361,7 @@ python shifttest_do_checktest() {
     try:
         exec_proc(cmdline, dd)
     except bb.process.ExecutionError as e:
-        warn("Reporting failed: %s" % e)
+        warn("Reporting failed: %s" % e, dd)
         return
 }
 
