@@ -69,6 +69,10 @@ def do_test_recipes(args):
         if not is_testable(preffile):
             continue
 
+        # Ignore untestable recipes
+        if p.startswith("nativesdk-") or p.endswith("-native"):
+            continue
+
         print("{} {} {}".format(p.ljust(30), pref[0][1].ljust(20), layerdir.ljust(20)))
 
 
