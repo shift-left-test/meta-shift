@@ -72,7 +72,10 @@ python shifttest_do_checkcode() {
                 warn("Failed to create the compile_commands.json using compiledb", d)
 
         # Run sage
-        exec_proc(cmdline, d, cwd=d.getVar("B", True))
+        try:
+            exec_proc(cmdline, d, cwd=d.getVar("B", True))
+        except bb.process.ExecutionError as e:
+            error("Failed to run static analysis: %s" % e, d)
 
     finally:
         if temporary:
