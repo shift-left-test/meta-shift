@@ -23,9 +23,6 @@ python cmaketest_do_test() {
 
     env = os.environ.copy()
 
-    # To access the shared libraries of other packages
-    env["LD_LIBRARY_PATH"] = d.expand("${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}")
-
     configured = d.getVar("SHIFT_REPORT_DIR", True)
 
     if configured:
