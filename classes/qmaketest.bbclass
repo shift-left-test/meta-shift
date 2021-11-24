@@ -18,9 +18,6 @@ python qmaketest_do_test() {
 
     env = os.environ.copy()
 
-    # To access the shared libraries of other packages
-    env["LD_LIBRARY_PATH"] = d.expand("${SYSROOT_DESTDIR}${libdir}:${LD_LIBRARY_PATH}")
-
     # Configure QT test arguments
     env["QT_PLUGIN_PATH"] = d.expand("${STAGING_DIR_TARGET}${OE_QMAKE_PATH_PLUGINS}")
     env["QML_IMPORT_PATH"] = d.expand("${STAGING_DIR_TARGET}${OE_QMAKE_PATH_QML}")
