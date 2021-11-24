@@ -94,11 +94,12 @@ def check_call(cmd, d, **options):
 
 def exec_proc(cmd, d, **options):
     import subprocess
+    import select
 
     class Popen(bb.process.Popen):
         defaults = {
             "stdout": subprocess.PIPE,
-            "stderr": None,
+            "stderr": subprocess.PIPE,
             "stdin": None,
             "shell": True,
         }
@@ -122,12 +123,40 @@ def exec_proc(cmd, d, **options):
 
     debug('Executing: "%s"' % cmd)
     with Popen(cmd, **options) as proc:
-        for line in proc.stdout:
-            plain(line.decode("utf-8").rstrip(), d)
+        stdout_eof = not bool(proc.stdout)
+        stderr_eof = not bool(proc.stderr)
+
+        if stderr_eof:
+            stderr_str = None
+        else:
+            stderr_str = ""
+
+        select_target = []
+
+        if not stdout_eof:
+            select_target.append(proc.stdout)
+
+        if not stderr_eof:
+            select_target.append(proc.stderr)
+
+        while not stdout_eof or not stderr_eof:
+            proc.poll()
+            ready = select.select(select_target, [], [], 1.0)
+            if not stdout_eof and proc.stdout in ready[0]:
+                buf = proc.stdout.readline()
+                stdout_eof = len(buf) == 0
+                if not stdout_eof:
+                    plain(buf.decode("utf-8").rstrip(), d)
+
+            if not stderr_eof and proc.stderr in ready[0]:
+                buf = proc.stderr.readline()
+                stderr_eof = len(buf) == 0
+                if not stderr_eof:
+                    stderr_str += buf.decode("utf-8")
 
         proc.wait()
         if proc.returncode != 0:
-            raise bb.process.ExecutionError(cmd, proc.returncode, None, None)
+            raise bb.process.ExecutionError(cmd, proc.returncode, None, stderr_str)
 
 
 def _get_qemu_options(data, arch):
