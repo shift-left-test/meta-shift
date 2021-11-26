@@ -531,7 +531,7 @@ def test_sqlite3logger_do_checkrecipeall(test_build):
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
-def test_cmake_npe_project2_do_compile(test_build):
-    o = test_build.shell.execute("bitbake cmake-npe-project2 -c compile")
+def test_cmake_npe_project_do_compile(test_build):
+    o = test_build.shell.execute("bitbake cmake-npe-project -c compile")
     assert o.stdout.contains("Missing space before {{  [whitespace/braces]")  # by cpplint
     assert o.returncode != 0
