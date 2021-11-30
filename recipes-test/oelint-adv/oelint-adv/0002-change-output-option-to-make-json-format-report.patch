@@ -1,23 +1,22 @@
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
-index 97529a2..244650d 100644
+index 1608416..9341a33 100644
 --- a/oelint_adv/__main__.py
 +++ b/oelint_adv/__main__.py
-@@ -22,8 +22,8 @@ def create_argparser():
-         description='Advanced OELint - Check bitbake recipes against OECore styleguide')
-     parser.add_argument("--suppress", default=[],
-                         action="append", help="Rules to suppress")
--    parser.add_argument("--output", default=sys.stderr,
--                        help="Where to flush the findings (default: stderr)")
+@@ -56,8 +56,8 @@ def create_argparser():
+     parser.register('action', 'tsappend', TypeSafeAppendAction)
+     parser.add_argument('--suppress', default=[],
+                         action='tsappend', help='Rules to suppress')
+-    parser.add_argument('--output', default=sys.stderr,
+-                        help='Where to flush the findings (default: stderr)')
 +    parser.add_argument("--output", default=sys.stdout,
 +                        help="Where to flush the findings (default: stdout)")
-     parser.add_argument("--fix", action="store_true", default=False,
-                         help="Automatically try to fix the issues")
-     parser.add_argument("--nobackup", action="store_true", default=False,
-@@ -191,17 +191,35 @@ def run(args):
-         traceback.print_exc()
+     parser.add_argument('--fix', action='store_true', default=False,
+                         help='Automatically try to fix the issues')
+     parser.add_argument('--nobackup', action='store_true', default=False,
+@@ -292,6 +292,23 @@ def run(args):
      return []
  
-+
+ 
 +def make_json_report(issues):
 +    json_dict = dict()
 +    json_dict["issues"] = list()
@@ -38,19 +37,24 @@ index 97529a2..244650d 100644
  def main():  # pragma: no cover
      args = arguments_post(parse_arguments())
  
+@@ -301,14 +318,15 @@ def main():  # pragma: no cover
+ 
      issues = run(args)
  
 -    if args.output != sys.stderr:
 +    if args.output != sys.stdout:
-         args.output = open(args.output, "w")
--    args.output.write("\n".join([x[1] for x in issues]) + "\n")
+         args.output = open(args.output, 'w')
+-    args.output.write('\n'.join([x[1] for x in issues]))
+-    if issues:
+-        args.output.write('\n')
 -    if args.output != sys.stderr:
 +        args.output.write(make_json_report(issues))
          args.output.close()
--    sys.exit(len(issues))
-+    else:
-+        args.output.write("\n".join([x[1] for x in issues]) + "\n")
  
- if __name__ == '__main__':
-     main()  # pragma: no cover
-
++    sys.stdout.write('\n'.join([x[1] for x in issues]))
++    if issues:
++        sys.stdout.write('\n')
++
+     exit_code = len(issues) if not args.exit_zero else 0
+     sys.exit(exit_code)
+ 
