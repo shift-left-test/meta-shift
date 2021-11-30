@@ -18,8 +18,9 @@ from collections import OrderedDict
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from oelint_adv.cls_rule import load_rules  # nopep8
-from oelint_parser.cls_stash import Stash  # nopep8
+from shift_oelint_adv.__main__ import run  # nopep8
+from shift_oelint_adv.rule_file import set_messageformat  # nopep8
+from shift_oelint_adv.rule_file import set_suppressions  # nopep8
 
 logger = logging.getLogger('recipetool')
 
@@ -53,29 +54,23 @@ def make_json_report(issues):
 
 
 def check(args, files):
-    rules = [x for x in load_rules(args)]
-    _loadedIDs = []
-    for r in rules:
-        _loadedIDs += r.GetIDs()
-    stash = Stash(args)
-    issues = []
-    for f in files:
-        try:
-            stash.AddFile(f)
-        except (IOError, OSError):
-            pass
+    class ArgForRun:
+        def __init__(self):
+            self.addrules = ["jetm"]
+            self.customrules = []
+            self.files = files
+            self.quiet = True
+            self.fix = False
+            self.nobackup = False
 
-    stash.Finalize()
+    set_suppressions([
+        "oelint.var.suggestedvar.BBCLASSEXTEND",
+        "oelint.var.suggestedvar.CVE_PRODUCT",
+        "oelint.task.customorder"
+    ])
+    set_messageformat("{path}:{line}:{severity}:{id}:{msg}")
 
-    for f in list(set(stash.GetRecipes() + stash.GetLoneAppends())):
-        for r in rules:
-            if not r.OnAppend and f.endswith(".bbappend"):
-                continue
-            if r.OnlyAppend and not f.endswith(".bbappend"):
-                continue
-            issues += r.check(f, stash)
-
-    issues = sorted(set(issues), key=lambda x: x[0])
+    issues = run(ArgForRun())
 
     if args.output:
         output = open(args.output, "w")
