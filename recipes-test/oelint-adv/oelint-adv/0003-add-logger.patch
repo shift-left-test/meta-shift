@@ -1,14 +1,5 @@
-From cf1a0216903e7120d94d0a7d278ed1366544d832 Mon Sep 17 00:00:00 2001
-From: "sangmo.kang" <sangmo.kang@lge.com>
-Date: Fri, 18 Jun 2021 05:50:20 +0000
-Subject: [PATCH] add logger
-
----
- oelint_adv/__main__.py | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
-index 244650d..bd7d515 100644
+index 56d7423..731f69a 100644
 --- a/oelint_adv/__main__.py
 +++ b/oelint_adv/__main__.py
 @@ -3,6 +3,7 @@ import json
@@ -17,18 +8,18 @@ index 244650d..bd7d515 100644
  import sys
 +import logging
  
- from oelint_parser.cls_stash import Stash
- from oelint_parser.constants import CONSTANTS
-@@ -16,6 +17,8 @@ from oelint_adv.rule_file import set_suppressions
+ try:
+     from configparser import ConfigParser
+@@ -29,6 +30,8 @@ from oelint_adv.rule_file import set_suppressions
  
- sys.path.append(os.path.abspath(os.path.join(__file__, "..")))
+ sys.path.append(os.path.abspath(os.path.join(__file__, '..')))
  
 +logger = logging.getLogger('oelint-adv')
 +
  
- def create_argparser():
-     parser = argparse.ArgumentParser(
-@@ -210,6 +213,9 @@ def make_json_report(issues):
+ class TypeSafeAppendAction(argparse.Action):
+ 
+@@ -317,6 +320,9 @@ def make_json_report(issues):
  
  
  def main():  # pragma: no cover
@@ -37,16 +28,13 @@ index 244650d..bd7d515 100644
 +
      args = arguments_post(parse_arguments())
  
-     issues = run(args)
-@@ -221,5 +227,8 @@ def main():  # pragma: no cover
-     else:
-         args.output.write("\n".join([x[1] for x in issues]) + "\n")
+     if args.print_rulefile:
+@@ -334,6 +340,8 @@ def main():  # pragma: no cover
+     if issues:
+         sys.stdout.write('\n')
  
 +    logger.info("Done.")
 +
-+
- if __name__ == '__main__':
-     main()  # pragma: no cover
--- 
-2.32.0
-
+     exit_code = len(issues) if not args.exit_zero else 0
+     sys.exit(exit_code)
+ 
