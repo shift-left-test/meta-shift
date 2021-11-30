@@ -331,7 +331,14 @@ python shifttest_do_checkrecipe() {
         report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("--output %s" % report_path)
 
-    cmdline.append("--quiet --addrules jetm")
+    cmdline += ["--quiet",
+        "--exit-zero",
+        "--addrules", "jetm",
+        "--suppress", "oelint.var.suggestedvar.BBCLASSEXTEND",
+        "--suppress", "oelint.var.suggestedvar.CVE_PRODUCT",
+        "--suppress", "oelint.task.customorder",
+    ]
+
     exec_proc(cmdline, d)
 }
 
