@@ -1,22 +1,8 @@
-From f9a8214078fe8d2bb5db58c261b4077d895dc540 Mon Sep 17 00:00:00 2001
-From: "sangmo.kang" <sangmo.kang@lge.com>
-Date: Fri, 18 Jun 2021 05:58:42 +0000
-Subject: [PATCH] compatibility with python2
-
----
- oelint_parser/cls_item.py     | 20 ++++++++++----------
- oelint_parser/cls_stash.py    |  4 ++--
- oelint_parser/constants.py    |  2 +-
- oelint_parser/helper_files.py |  7 +++++--
- oelint_parser/parser.py       | 12 ++++++------
- setup.py                      |  2 +-
- 6 files changed, 25 insertions(+), 22 deletions(-)
-
 diff --git a/oelint_parser/cls_item.py b/oelint_parser/cls_item.py
-index 66a485c..4cfb8d1 100644
+index e3ae875..ee3280c 100644
 --- a/oelint_parser/cls_item.py
 +++ b/oelint_parser/cls_item.py
-@@ -4,7 +4,7 @@ import re
+@@ -5,7 +5,7 @@ import os
  from oelint_parser.constants import CONSTANTS
  
  
@@ -25,16 +11,16 @@ index 66a485c..4cfb8d1 100644
      """Base class for all Stash items
      """
      ATTR_LINE = "Line"
-@@ -258,7 +258,7 @@ class Variable(Item):
+@@ -270,7 +270,7 @@ class Variable(Item):
              operator {str} -- Operation performed to the variable
              flag {str} -- Optional variable flag
          """
 -        super().__init__(origin, line, infileline, rawtext, realraw)
 +        super(Variable, self).__init__(origin, line, infileline, rawtext, realraw)
-         if "inherit" != name:
-             self.__VarName, self.__SubItem, self.__PkgSpec = self.extract_sub(
+         if "inherit" != name and not flag:
+             self.__VarName, self.__SubItem = self.extract_sub(
                  name)
-@@ -438,7 +438,7 @@ class Comment(Item):
+@@ -465,7 +465,7 @@ class Comment(Item):
              rawtext {str} -- Raw input string (except inline code blocks)
              realraw {str} -- Unprocessed input
          """
@@ -43,7 +29,7 @@ index 66a485c..4cfb8d1 100644
  
      def get_items(self):
          """Get single lines of block
-@@ -466,7 +466,7 @@ class Include(Item):
+@@ -493,7 +493,7 @@ class Include(Item):
              incname {str} -- raw name of the include file
              statement {str} -- either include or require
          """
@@ -52,7 +38,7 @@ index 66a485c..4cfb8d1 100644
          self.__IncName = incname
          self.__Statement = statement
  
-@@ -514,7 +514,7 @@ class Export(Item):
+@@ -541,7 +541,7 @@ class Export(Item):
              name {str} -- variable name of the export
              value {str} -- (optional) value of the export
          """
@@ -61,7 +47,7 @@ index 66a485c..4cfb8d1 100644
          self.__Name = name
          self.__Value = value
  
-@@ -566,7 +566,7 @@ class Function(Item):
+@@ -593,7 +593,7 @@ class Function(Item):
              python {bool} -- python function according to parser (default: {False})
              fakeroot {bool} -- uses fakeroot (default: {False})
          """
@@ -70,7 +56,7 @@ index 66a485c..4cfb8d1 100644
          self.__IsPython = python is not None
          self.__IsFakeroot = fakeroot is not None
          name = name or ""
-@@ -693,7 +693,7 @@ class PythonBlock(Item):
+@@ -738,7 +738,7 @@ class PythonBlock(Item):
              realraw {str} -- Unprocessed input
              name {str} -- Function name
          """
@@ -79,7 +65,7 @@ index 66a485c..4cfb8d1 100644
          self.__FuncName = name
  
      @property
-@@ -733,7 +733,7 @@ class TaskAssignment(Item):
+@@ -778,7 +778,7 @@ class TaskAssignment(Item):
              ident {str} -- task flag
              value {str} -- value of modification
          """
@@ -88,7 +74,16 @@ index 66a485c..4cfb8d1 100644
          self.__FuncName = name
          self.__VarName = ident
          self.__VarValue = value
-@@ -795,7 +795,7 @@ class TaskAdd(Item):
+@@ -833,7 +833,7 @@ class FunctionExports(Item):
+             realraw {str} -- Unprocessed input
+             name {str} -- name of function to be exported
+         """
+-        super().__init__(origin, line, infileline, rawtext, realraw)
++        super(FunctionExports, self).__init__(origin, line, infileline, rawtext, realraw)
+         self.__FuncNames = name
+ 
+     @property
+@@ -883,7 +883,7 @@ class TaskAdd(Item):
              before {str} -- before statement (default: {""})
              after {str} -- after statement (default: {""})
          """
@@ -97,7 +92,7 @@ index 66a485c..4cfb8d1 100644
          self.__FuncName = name
          self.__Before = [x for x in (before or "").split(" ") if x]
          self.__After = [x for x in (after or "").split(" ") if x]
-@@ -851,7 +851,7 @@ class MissingFile(Item):
+@@ -939,7 +939,7 @@ class MissingFile(Item):
              filename {str} -- filename of the file that can't be found
              statement {str} -- either include or require
          """
@@ -107,7 +102,7 @@ index 66a485c..4cfb8d1 100644
          self.__Statement = statement
  
 diff --git a/oelint_parser/cls_stash.py b/oelint_parser/cls_stash.py
-index bd11b9b..0837ba6 100644
+index 098210e..735fcb4 100644
 --- a/oelint_parser/cls_stash.py
 +++ b/oelint_parser/cls_stash.py
 @@ -7,7 +7,7 @@ from oelint_parser.helper_files import expand_term, guess_recipe_name, guess_rec
@@ -119,7 +114,7 @@ index bd11b9b..0837ba6 100644
  
      def __init__(self, quiet=False):
          """constructor
-@@ -176,7 +176,7 @@ class Stash():
+@@ -182,7 +182,7 @@ class Stash():
              "PV": guess_recipe_version(filename),
              "BPN": guess_base_recipe_name(filename)
          }
@@ -127,12 +122,12 @@ index bd11b9b..0837ba6 100644
 +        _exp = dict(list(_exp.items()) + list(CONSTANTS.SetsBase.items()))
          for item in sorted(_res, key=lambda x: x.Line):
              varop = item.VarOp
-             name = item.VarName
+             name = item.VarNameComplete
 diff --git a/oelint_parser/constants.py b/oelint_parser/constants.py
-index e50441f..528dda1 100644
+index f84974b..1670553 100644
 --- a/oelint_parser/constants.py
 +++ b/oelint_parser/constants.py
-@@ -25,7 +25,7 @@ class Constants():
+@@ -26,7 +26,7 @@ class Constants():
          try:
              with open(path) as _in:
                  return json.load(_in)
@@ -167,10 +162,10 @@ index ef00da2..7fa8036 100644
      _tmp = _url.netloc
      if _url.path:
 diff --git a/oelint_parser/parser.py b/oelint_parser/parser.py
-index 62dffae..f616d99 100644
+index eb3cf2c..e415da0 100644
 --- a/oelint_parser/parser.py
 +++ b/oelint_parser/parser.py
-@@ -59,13 +59,13 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
+@@ -60,13 +60,13 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
      res = []
      raw_line = raw_line or line
      if re.search(r"\\\s*\n", raw_line):
@@ -187,7 +182,7 @@ index 62dffae..f616d99 100644
          stopiter = False
          scope_level = 0
          while not stopiter:
-@@ -75,7 +75,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
+@@ -76,7 +76,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
              if "}" in line:
                  scope_level -= 1
              try:
@@ -196,7 +191,7 @@ index 62dffae..f616d99 100644
              except StopIteration:
                  stopiter = True
              if line.strip() == "}" and not scope_level:
-@@ -86,7 +86,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
+@@ -87,7 +87,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
          stopiter = False
          while not stopiter:
              try:
@@ -205,7 +200,7 @@ index 62dffae..f616d99 100644
              except StopIteration:
                  stopiter = True
              if re.match("^[A-Za-z0-9#]+", line) or stopiter:
-@@ -130,7 +130,7 @@ def prepare_lines(_file, lineOffset=0):
+@@ -131,7 +131,7 @@ def prepare_lines(_file, lineOffset=0):
              for num, line in _iter:
                  prep_lines += prepare_lines_subparser(
                      _iter, lineOffset, num, line)
@@ -215,7 +210,7 @@ index 62dffae..f616d99 100644
      return prep_lines
  
 diff --git a/setup.py b/setup.py
-index 8c2215e..5b79139 100644
+index 3c51617..9fba916 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -7,7 +7,7 @@ try:
@@ -227,6 +222,3 @@ index 8c2215e..5b79139 100644
      pass
  
  requirements = []
--- 
-2.32.0
-
