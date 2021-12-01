@@ -83,11 +83,7 @@ python shifttest_do_checkcode() {
 }
 
 
-# To overwrite the sstate cache libraries for autotools projects
-do_install[nostamp] = "1"
-
-
-addtask test after do_compile do_install do_populate_sysroot
+addtask test after do_compile
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
 
@@ -190,7 +186,7 @@ python shifttest_do_coverage() {
 }
 
 
-addtask checktest after do_compile do_install do_populate_sysroot
+addtask checktest after do_compile
 do_checktest[nostamp] = "1"
 do_checktest[doc] = "Runs mutation tests for the target"
 
@@ -317,8 +313,6 @@ python shifttest_do_checktest() {
                 test_state = "success"
                 exec_func("do_configure", dd)
                 exec_func("do_compile", dd)
-                exec_func("do_install", dd)
-                exec_func("do_populate_sysroot", dd)
 
                 dd.setVar("SHIFT_REPORT_DIR", actual_dir)
                 bb.utils.remove(actual_dir, True)
@@ -490,7 +484,7 @@ python shifttest_do_checkrecipe() {
 }
 
 
-addtask report after do_compile do_install do_populate_sysroot
+addtask report after do_compile
 do_report[nostamp] = "1"
 do_report[doc] = "Makes reports for the target"
 
