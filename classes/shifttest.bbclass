@@ -81,11 +81,7 @@ python shifttest_do_checkcode() {
 }
 
 
-# To overwrite the sstate cache libraries for autotools projects
-do_install[nostamp] = "1"
-
-
-addtask test after do_compile do_install do_populate_sysroot
+addtask test after do_compile
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
 
@@ -315,7 +311,7 @@ python shifttest_do_checkrecipe() {
 }
 
 
-addtask report after do_compile do_install do_populate_sysroot
+addtask report after do_compile
 do_report[nostamp] = "1"
 do_report[doc] = "Makes reports for the target"
 
