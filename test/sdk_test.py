@@ -14,8 +14,8 @@ import tempfile
 
 def test_populate_sdk(sdk_build):
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.19/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.19/Modules/FindGMock.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.21/Modules/CMakeUtils.cmake")
+    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.21/Modules/FindGMock.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cppcheck")
@@ -41,7 +41,7 @@ def test_humidifier_project(sdk_build):
     assert o.stdout.contains("-- Found CPPCHECK code checker: TRUE")
     assert o.stdout.contains("-- Found CPPLINT code checker: TRUE")
     assert o.stdout.contains("-- Found gcovr program: TRUE")
-    assert o.stdout.contains("-- Found GTest: {0}/sysroots/{1}/usr/lib/libgtest.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
+    assert o.stdout.contains("-- Found GTest: {0}/sysroots/{1}/usr/lib/cmake/GTest/GTestConfig.cmake".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
     assert o.stdout.contains("-- Found GMock: {0}/sysroots/{1}/usr/lib/libgmock.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
 
     o = sdk_build.sdk_shell.execute(cd_cmd + "make all")

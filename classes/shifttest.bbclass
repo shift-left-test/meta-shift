@@ -1,7 +1,7 @@
 inherit shiftutils
 
 
-DEPENDS_prepend_class-target = "\
+DEPENDS:prepend:class-target = "\
     gtest \
     gmock \
     lcov-native \
@@ -16,7 +16,7 @@ DEPENDS_prepend_class-target = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
     "
 
-DEBUG_BUILD_class-target = "1"
+DEBUG_BUILD:class-target = "1"
 
 
 addtask checkcode after do_compile

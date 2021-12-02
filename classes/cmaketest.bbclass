@@ -1,14 +1,14 @@
 inherit shifttest
 
 
-OECMAKE_C_FLAGS_append_class-target = " -O0 -fprofile-arcs -ftest-coverage"
-OECMAKE_CXX_FLAGS_append_class-target = " -O0 -fprofile-arcs -ftest-coverage"
+OECMAKE_C_FLAGS:append:class-target = " -O0 -fprofile-arcs -ftest-coverage"
+OECMAKE_CXX_FLAGS:append:class-target = " -O0 -fprofile-arcs -ftest-coverage"
 
-EXTRA_OECMAKE_append_class-target = " -DCMAKE_CROSSCOMPILING_EMULATOR='${@shiftutils_qemu_cmake_emulator(d)}'"
-EXTRA_OECMAKE_append_class-target = " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+EXTRA_OECMAKE:append:class-target = " -DCMAKE_CROSSCOMPILING_EMULATOR='${@shiftutils_qemu_cmake_emulator(d)}'"
+EXTRA_OECMAKE:append:class-target = " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
 
-cmake_do_compile_prepend_class-target() {
+cmake_do_compile:prepend:class-target() {
     export TARGET_SYS="${TARGET_SYS}"
 }
 

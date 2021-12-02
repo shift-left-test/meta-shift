@@ -11,8 +11,8 @@ import pytest
 from contextlib import contextmanager
 
 
-CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1" disabled="0" errors="0"'
-CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" errors="0"'
+CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1" disabled="0" skipped="0" errors="0"'
+CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" skipped="0" errors="0"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
 METADATA_S = '"S": "'

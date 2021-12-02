@@ -361,7 +361,7 @@ def bare_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -374,7 +374,7 @@ def release_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -387,7 +387,7 @@ def test_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -400,7 +400,7 @@ def test_qt6_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/test_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/test_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -413,7 +413,7 @@ def report_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -426,7 +426,7 @@ def report_qt6_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/report_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/report_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -439,7 +439,7 @@ def test_clang_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/test_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/test_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -452,7 +452,7 @@ def test_clang_qt6_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/test_clang_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/test_clang_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -465,7 +465,7 @@ def report_clang_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/report_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/report_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -478,7 +478,7 @@ def report_clang_qt6_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="hardknott", conf_file="conf/report_clang_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(branch="honister", conf_file="conf/report_clang_qt6.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -491,4 +491,4 @@ def sdk_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return SdkBuildEnvironment(branch="hardknott", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return SdkBuildEnvironment(branch="honister", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)

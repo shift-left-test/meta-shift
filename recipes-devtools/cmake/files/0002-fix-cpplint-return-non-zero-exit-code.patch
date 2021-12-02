@@ -1,8 +1,8 @@
 diff --git a/Source/cmcmd.cxx b/Source/cmcmd.cxx
-index bc6ac1b..343c0f4 100644
+index 500f4874..2435d4db 100644
 --- a/Source/cmcmd.cxx
 +++ b/Source/cmcmd.cxx
-@@ -325,7 +325,7 @@ static int HandleCppLint(const std::string& runCmd,
+@@ -447,7 +447,7 @@ int HandleCppLint(const std::string& runCmd, const std::string& sourceFile,
  
    // always return 0 so the build can continue as cpplint returns non-zero
    // for any warning
@@ -10,4 +10,4 @@ index bc6ac1b..343c0f4 100644
 +  return ret;
  }
  
- static int HandleCppCheck(const std::string& runCmd,
+ int HandleCppCheck(const std::string& runCmd, const std::string& sourceFile,

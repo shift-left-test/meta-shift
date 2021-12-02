@@ -10,8 +10,8 @@ import os
 import pytest
 
 
-NORMAL_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="2" failures="1" disabled="0" errors="0"'
-NORMAL_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="2" failures="1" disabled="0" errors="0"'
+NORMAL_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="2" failures="1" disabled="0" skipped="0" errors="0"'
+NORMAL_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="2" failures="1" disabled="0" skipped="0" errors="0"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 METADATA_S = '"S": "'
 

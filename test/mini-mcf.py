@@ -16,7 +16,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "hardknott"
+BRANCH = "honister"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -138,9 +138,9 @@ BB_DISKMON_DIRS ??= "\\
     ABORT,${DL_DIR},100M,1K \\
     ABORT,${SSTATE_DIR},100M,1K \\
     ABORT,/tmp,10M,1K"
-PACKAGECONFIG_append_pn-qemu-native = " sdl"
-PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
-CONF_VERSION = "1"
+PACKAGECONFIG:append:pn-qemu-native = " sdl"
+PACKAGECONFIG:append:pn-nativesdk-qemu = " sdl"
+CONF_VERSION = "2"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 '''
     local_conf = os.path.join(conf_dir, "local.conf")

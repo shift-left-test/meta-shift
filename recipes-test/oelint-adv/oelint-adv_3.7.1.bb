@@ -26,7 +26,7 @@ DEPENDS += "\
     ${PYTHON_PN}-anytree \
 "
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     oelint-parser \
     ${PYTHON_PN}-colorama \
     ${PYTHON_PN}-anytree \

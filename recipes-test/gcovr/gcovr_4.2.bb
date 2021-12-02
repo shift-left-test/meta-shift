@@ -20,16 +20,16 @@ SRC_URI[sha256sum] = "5aae34dc81e51600cfecbbbce3c3a80ce3f7548bc0aa1faa4b74ecd18f
 
 inherit pypi setuptools3
 
-FILES_${PN}_append_class-nativesdk = " ${SDKPATHNATIVE}"
+FILES:${PN}:append:class-nativesdk = " ${SDKPATHNATIVE}"
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     ${PYTHON_PN}-jinja2 \
     ${PYTHON_PN}-lxml \
     ${PYTHON_PN}-markupsafe \
     ${PYTHON_PN}-setuptools \
 "
 
-do_install_append_class-nativesdk() {
+do_install:append:class-nativesdk() {
     echo "export GCOV=""$""{TARGET_PREFIX}gcov" > ${WORKDIR}/gcovr.sh
     install -d ${D}${SDKPATHNATIVE}/environment-setup.d
     install -m 644 ${WORKDIR}/gcovr.sh ${D}${SDKPATHNATIVE}/environment-setup.d/gcovr.sh

@@ -107,8 +107,8 @@ def parse(args, basepath):
         tmpdir = tempfile.mkdtemp(prefix="devtool-cache-")
 
         env = os.environ.copy()
-        env["BB_ENV_EXTRAWHITE"] = env.get("BB_ENV_EXTRAWHITE", "") + " TMPDIR_forcevariable"
-        env["TMPDIR_forcevariable"] = tmpdir
+        env["BB_ENV_EXTRAWHITE"] = env.get("BB_ENV_EXTRAWHITE", "") + " TMPDIR:forcevariable"
+        env["TMPDIR:forcevariable"] = tmpdir
 
         cmd = "-c %s" % args.cmd if args.cmd else ""
         output = execute("bitbake %s -n %s" % (args.recipe, cmd), env=env)

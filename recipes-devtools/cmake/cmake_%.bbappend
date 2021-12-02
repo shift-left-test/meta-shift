@@ -3,14 +3,14 @@
 
 inherit shiftutils
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI_append_class-nativesdk = " \
+SRC_URI:append:class-nativesdk = " \
     file://CMakeUtils.cmake \
     file://FindGMock.cmake \
 "
 
-do_install_append_class-nativesdk() {
+do_install:append:class-nativesdk() {
     install -d ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules
     install -m 644 ${WORKDIR}/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
     install -m 644 ${WORKDIR}/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
@@ -20,4 +20,4 @@ do_install_append_class-nativesdk() {
     install -m 644 ${WORKDIR}/crosscompiling_emulator.cmake ${D}${datadir}/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake
 }
 
-FILES_${PN} += "${datadir}/cmake/OEToolchainConfig.cmake.d"
+FILES:${PN} += "${datadir}/cmake/OEToolchainConfig.cmake.d"
