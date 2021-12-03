@@ -34,7 +34,7 @@ def test_populate_sdk(sdk_build):
 
 def test_humidifier_project(sdk_build):
     project_dir = tempfile.mkdtemp()
-    sdk_build.sdk_shell.execute("git clone http://mod.lge.com/hub/yocto/sample/humidifier-project.git {}".format(project_dir))
+    sdk_build.sdk_shell.execute("git clone https://github.com/shift-left-test/humidifier-project.git {}".format(project_dir))
     assert sdk_build.files.exists(project_dir)
 
     cd_cmd = "cd {0} && ".format(project_dir)
