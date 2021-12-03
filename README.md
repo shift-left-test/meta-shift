@@ -61,7 +61,7 @@ The following meta-layers are necessary in order to install the tools provided b
 
 ## How to add the layer to your build
 
-    $ git clone http://mod.lge.com/hub/yocto/meta-shift.git
+    $ git clone https://github.com/shift-left-test/meta-shift.git
     $ bitbake-layers add-layer meta-shift
 
 
@@ -70,11 +70,6 @@ The following meta-layers are necessary in order to install the tools provided b
 The following command runs all tests
 
     $ py.test
-
-
-## How to use
-
-Please refer to the [wiki link](http://mod.lge.com/hub/yocto/meta-shift/-/wikis/home) for more information.
 
 
 ## Licenses
