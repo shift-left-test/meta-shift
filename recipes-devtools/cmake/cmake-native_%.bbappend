@@ -1,5 +1,5 @@
 # CMakeUtils
-# SRC_URI: http://mod.lge.com/hub/yocto/CMakeUtils
+# SRC_URI: https://github.com/shift-left-test/CMakeUtils
 # SRCREV: 1d8aeafaafb504ab30ef5708479d749bfc6b74eb
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"

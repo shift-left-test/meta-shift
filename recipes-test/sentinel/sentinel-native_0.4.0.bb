@@ -1,8 +1,8 @@
 SUMMARY = "Mutation Testing Tool"
 DESCRIPTION = "The mutation testing tool for the meta-shift project"
 AUTHOR = "Sung Gon Kim"
-HOMEPAGE = "http://mod.lge.com/hub/yocto/sentinel"
-BUGTRACKER = "http://mod.lge.com/hub/yocto/sentinel/issues"
+HOMEPAGE = "https://github.com/shift-left-test/sentinel"
+BUGTRACKER = "https://github.com/shift-left-test/sentinel/issues"
 SECTION = "devel"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5 \
@@ -16,7 +16,7 @@ DEPENDS:class-native += "\
     ncurses-native \
 "
 
-SRC_URI = "git://mod.lge.com/hub/yocto/sentinel.git;protocol=http;nobranch=1"
+SRC_URI = "git://github.com/shift-left-test/sentinel.git;protocol=https;nobranch=1"
 SRCREV = "3a072c8f086c26c46e4fc0cb83a7190aba8b6225"
 
 S = "${WORKDIR}/git"
