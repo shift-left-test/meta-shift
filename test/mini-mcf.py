@@ -29,19 +29,19 @@ logger = logging.getLogger(__name__)
 Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "branch"])
 
 REPOS = [
-    Repo("poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta", None),
-    Repo("meta-poky", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-poky", None),
-    Repo("meta-yocto-bsp", "http://mod.lge.com/hub/yocto/mirror/poky.git", "poky", "meta-yocto-bsp", None),
-    Repo("meta-oe", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
-    Repo("meta-multimedia", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
-    Repo("meta-python", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-python", None),
-    Repo("meta-networking", "http://mod.lge.com/hub/yocto/mirror/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
-    Repo("meta-raspberrypi", "http://mod.lge.com/hub/yocto/mirror/meta-raspberrypi.git", "meta-raspberrypi", "", None),
-    Repo("meta-qt5", "http://mod.lge.com/hub/yocto/mirror/meta-qt5.git", "meta-qt5", "", None),
-    Repo("meta-clang", "http://mod.lge.com/hub/yocto/mirror/meta-clang.git", "meta-clang", "", None),
+    Repo("poky", "https://git.yoctoproject.org/git/poky.git", "poky", "meta", None),
+    Repo("meta-poky", "https://git.yoctoproject.org/git/poky.git", "poky", "meta-poky", None),
+    Repo("meta-yocto-bsp", "https://git.yoctoproject.org/git/poky.git", "poky", "meta-yocto-bsp", None),
+    Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
+    Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
+    Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", None),
+    Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
+    Repo("meta-raspberrypi", "https://git.yoctoproject.org/git/meta-raspberrypi.git", "meta-raspberrypi", "", None),
+    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", None),
+    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
-    Repo("meta-sample", "http://mod.lge.com/hub/yocto/sample/meta-sample.git", "meta-sample", "", None),
-    Repo("meta-sample-test", "http://mod.lge.com/hub/yocto/sample/meta-sample-test.git", "meta-sample-test", "", None),
+    Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
+    Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", None),
 ]
 
 
