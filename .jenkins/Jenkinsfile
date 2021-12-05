@@ -6,6 +6,10 @@ pipeline {
     }
     stages {
         stage("Test") {
+            environment {
+                DL_DIR = "${env.WORKSPACE}/build-res/downloads"
+                SSTATE_DIR = "${env.WORKSPACE}/build-res/sstate-cache"
+            }
             steps {
                 sh "python3 -m pytest --basetemp=${env.WORKSPACE}/temp -xvv --junitxml result.xml"
             }
@@ -22,4 +26,3 @@ pipeline {
         }
     }
 }
-
