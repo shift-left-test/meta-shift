@@ -6,7 +6,7 @@ class VarSRCUriGitTag(Rule):
     def __init__(self):
         super(VarSRCUriGitTag, self).__init__(id='oelint.vars.srcuriappend',
                          severity='error',
-                         message='Use SRC_URI_append otherwise this will override weak defaults by inherit')
+                         message='Use SRC_URI:append otherwise this will override weak defaults by inherit')
 
     def check(self, _file, stash):
         res = []

@@ -26,7 +26,7 @@ class VarUnneededFilesSetting(Rule):
             filename=_file, attribute=Variable.ATTR_VAR)
         _seenpath = {}
         for p in _expanded['PACKAGES']:
-            _files = 'FILES_{a}'.format(a=p)
+            _files = 'FILES:{a}'.format(a=p)
             _convfiles = _files.replace(_expanded['PN'][0], '${PN}')
             if _files in _expanded:
                 _pattern = _expanded[_files]

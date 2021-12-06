@@ -11,7 +11,8 @@ SRC_URI = "git://github.com/priv-kweihmann/oelint-parser.git;protocol=https;nobr
 SRCREV = "df3fb91bc21f7282612576f4d171fdb541f92ece"
 
 SRC_URI += "file://0001-compatibility-with-python2.patch \
-            file://0002-changes-for-custom-rule.patch"
+            file://0002-changes-for-custom-rule.patch \
+            file://0003-Patch-for-overridden-syntax-change-in-honister.patch"
 
 S = "${WORKDIR}/git"
 

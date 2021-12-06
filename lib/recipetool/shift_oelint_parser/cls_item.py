@@ -166,7 +166,7 @@ class Item(object):
             tmp = ""
             if "-" in i:
                 # just use the prefix in case a dash is found
-                # that addresses things like FILES_${PN}-dev
+                # that addresses things like FILES:${PN}-dev
                 tmp = "-" + "-".join(i.split("-")[1:])
                 i = i.split("-")[0]
             if re.match("[a-z0-9{}$]+", i) and _var[0] != "pkg":

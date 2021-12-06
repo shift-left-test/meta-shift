@@ -1,0 +1,1614 @@
+diff --git a/README.md b/README.md
+index 3a7d53a..5d252dc 100644
+--- a/README.md
++++ b/README.md
+@@ -161,7 +161,7 @@ Rules marked with **[S]** can have multiple sub-IDs
+ * oelint.task.order - Order of tasks **[S]**
+ * oelint.task.pythonprefix - Tasks containing python code should be prefixed with 'python' in function header
+ * oelint.var.bbclassextend - Use BBCLASSEXTEND when possible
+-* oelint.var.filesoverride - FILES_* variables should not be overridden
++* oelint.var.filesoverride - FILES:* variables should not be overridden
+ * oelint.var.improperinherit - Warn about improperly named inherits
+ * oelint.var.licenseremotefile - License shall be a file in remote source not a local file
+ * oelint.var.mandatoryvar - Check for mandatory variables **[S]**
+@@ -206,7 +206,7 @@ Rules marked with **[S]** can have multiple sub-IDs
+ * oelint.vars.sectionlowercase - SECTION should be lowercase only **[F]**
+ * oelint.vars.spacesassignment - ' = ' should be correct variable assignment
+ * oelint.vars.specific - Variable is specific to an unknown identifier
+-* oelint.vars.srcuriappend - Use SRC_URI_append otherwise this will override weak defaults by inherit
++* oelint.vars.srcuriappend - Use SRC_URI:append otherwise this will override weak defaults by inherit
+ * oelint.vars.srcuridomains - Recipe is pulling from different domains, this will likely cause issues
+ * oelint.vars.srcurifile - First item of SRC_URI should not be a file:// fetcher, if multiple fetcher are used
+ * oelint.vars.srcurigittag - 'tag' in SRC_URI-options leads to not-reproducible builds
+diff --git a/oelint_adv/rule_base/rule_var_duplicates.py b/oelint_adv/rule_base/rule_var_duplicates.py
+index 026714b..22d5629 100644
+--- a/oelint_adv/rule_base/rule_var_duplicates.py
++++ b/oelint_adv/rule_base/rule_var_duplicates.py
+@@ -10,7 +10,7 @@ class VarDuplicates(Rule):
+ 
+     def check(self, _file, stash):
+         res = []
+-        for c in ['DEPENDS', 'RDEPENDS_${PN}']:
++        for c in ['DEPENDS', 'RDEPENDS:${PN}']:
+             items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
+                                       attribute=Variable.ATTR_VAR, attributeValue=c)
+             _items = {}
+diff --git a/oelint_adv/rule_base/rule_var_filesextrapaths.py b/oelint_adv/rule_base/rule_var_filesextrapaths.py
+index 59ad18e..987483f 100644
+--- a/oelint_adv/rule_base/rule_var_filesextrapaths.py
++++ b/oelint_adv/rule_base/rule_var_filesextrapaths.py
+@@ -15,7 +15,7 @@ class VarBugtrackerIsUrl(Rule):
+         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
+                                   attribute=Variable.ATTR_VAR)
+         for i in items:
+-            if i.VarName in ['FILESEXTRAPATHS_prepend', 'FILESEXTRAPATHS_append', 'FILESEXTRAPATHS']:
++            if i.VarName in ['FILESEXTRAPATHS:prepend', 'FILESEXTRAPATHS:append', 'FILESEXTRAPATHS']:
+                 _, ext = os.path.splitext(i.Origin)
+                 if ext == '.bb':
+                     res += self.finding(i.Origin, i.InFileLine)
+diff --git a/oelint_adv/rule_base/rule_var_filesextrapathsop.py b/oelint_adv/rule_base/rule_var_filesextrapathsop.py
+index 72e4da1..8d90bed 100644
+--- a/oelint_adv/rule_base/rule_var_filesextrapathsop.py
++++ b/oelint_adv/rule_base/rule_var_filesextrapathsop.py
+@@ -13,7 +13,7 @@ class VarBugtrackerIsUrl(Rule):
+         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
+                                   attribute=Variable.ATTR_VAR)
+         for i in items:
+-            if i.VarName in ['FILESEXTRAPATHS_prepend', 'FILESEXTRAPATHS_append', 'FILESEXTRAPATHS']:
++            if i.VarName in ['FILESEXTRAPATHS:prepend', 'FILESEXTRAPATHS:append', 'FILESEXTRAPATHS']:
+                 if i.VarOp != ' := ':
+                     res += self.finding(i.Origin, i.InFileLine)
+         return res
+diff --git a/oelint_adv/rule_base/rule_var_inconsspaces.py b/oelint_adv/rule_base/rule_var_inconsspaces.py
+index 6ba53b8..ee9e1e2 100644
+--- a/oelint_adv/rule_base/rule_var_inconsspaces.py
++++ b/oelint_adv/rule_base/rule_var_inconsspaces.py
+@@ -25,5 +25,5 @@ class VarInconSpaces(Rule):
+                                     'Assignment should be \'VAR += "foo"\' not \'VAR += " foo"\'')
+             if 'append' in app_operation and not _stripped.startswith(' '):
+                 res += self.finding(i.Origin, i.InFileLine,
+-                                    'Assignment should be \'VAR_append = " foo"\' not \'VAR_append = "foo"\'')
++                                    'Assignment should be \'VAR:append = " foo"\' not \'VAR:append = "foo"\'')
+         return res
+diff --git a/oelint_adv/rule_base/rule_var_insaneskip.py b/oelint_adv/rule_base/rule_var_insaneskip.py
+index aed3433..f7aacb3 100644
+--- a/oelint_adv/rule_base/rule_var_insaneskip.py
++++ b/oelint_adv/rule_base/rule_var_insaneskip.py
+@@ -12,6 +12,6 @@ class VarInsaneSkip(Rule):
+         res = []
+         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
+                                   attribute=Variable.ATTR_VAR)
+-        for i in [x for x in items if x.VarName.startswith('INSANE_SKIP_') or x.VarName == 'INSANE_SKIP']:
++        for i in [x for x in items if x.VarName.startswith('INSANE_SKIP:') or x.VarName == 'INSANE_SKIP']:
+             res += self.finding(i.Origin, i.InFileLine)
+         return res
+diff --git a/oelint_adv/rule_base/rule_var_src_uri_append.py b/oelint_adv/rule_base/rule_var_src_uri_append.py
+index 0d58e2a..a92fb8e 100644
+--- a/oelint_adv/rule_base/rule_var_src_uri_append.py
++++ b/oelint_adv/rule_base/rule_var_src_uri_append.py
+@@ -6,7 +6,7 @@ class VarSRCUriGitTag(Rule):
+     def __init__(self):
+         super(VarSRCUriGitTag, self).__init__(id='oelint.vars.srcuriappend',
+                          severity='error',
+-                         message='Use SRC_URI_append otherwise this will override weak defaults by inherit')
++                         message='Use SRC_URI:append otherwise this will override weak defaults by inherit')
+ 
+     def check(self, _file, stash):
+         res = []
+diff --git a/oelint_adv/rule_base/rule_vars_filessetting.py b/oelint_adv/rule_base/rule_vars_filessetting.py
+index db6c7c5..22ecc90 100644
+--- a/oelint_adv/rule_base/rule_vars_filessetting.py
++++ b/oelint_adv/rule_base/rule_vars_filessetting.py
+@@ -26,7 +26,7 @@ class VarUnneededFilesSetting(Rule):
+             filename=_file, attribute=Variable.ATTR_VAR)
+         _seenpath = {}
+         for p in _expanded['PACKAGES']:
+-            _files = 'FILES_{a}'.format(a=p)
++            _files = 'FILES:{a}'.format(a=p)
+             _convfiles = _files.replace(_expanded['PN'][0], '${PN}')
+             if _files in _expanded:
+                 _pattern = _expanded[_files]
+diff --git a/tests/test_class_oelint_func_specific.py b/tests/test_class_oelint_func_specific.py
+index bab4517..1394fea 100644
+--- a/tests/test_class_oelint_func_specific.py
++++ b/tests/test_class_oelint_func_specific.py
+@@ -12,7 +12,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                  {
+                                      'oelint-adv_test.bb':
+                                      '''
+-                                     do_install_append_fooarch() {
++                                     do_install:append:fooarch() {
+                                          abc
+                                      }
+                                      ''',
+@@ -20,7 +20,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                  {
+                                      'oelint-adv_test.bb':
+                                      '''
+-                                     do_configure_bararch() {
++                                     do_configure:bararch() {
+                                          abc
+                                      }
+                                      ''',
+@@ -29,7 +29,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                      'oelint-adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE = "xyz"
+-                                     do_install_fooarch() {
++                                     do_install:fooarch() {
+                                          abc
+                                      }
+                                      ''',
+@@ -38,7 +38,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                      'oelint-adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE = "xyz"
+-                                     do_configure_append_bararch() {
++                                     do_configure:append:bararch() {
+                                          abc
+                                      }
+                                      ''',
+@@ -66,7 +66,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                  {
+                                      'oelint-adv_test.bb':
+                                      '''
+-                                     do_install_qemuall () {
++                                     do_install:qemuall () {
+                                          cp -r ${B}/testsuite ${D}${PTEST_PATH}/
+                                          cp ${B}/.config      ${D}${PTEST_PATH}/
+                                          ln -s /bin/busybox   ${D}${PTEST_PATH}/busybox
+@@ -77,7 +77,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                      'oelint-adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE = "foo"
+-                                     do_install_append_fooarch() {
++                                     do_install:append:fooarch() {
+                                          abc
+                                      }
+                                      ''',
+@@ -86,7 +86,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                      'oelint-adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE += "|bar"
+-                                     do_configure_append_bararch() {
++                                     do_configure:append:bararch() {
+                                          abc
+                                      }
+                                      ''',
+@@ -94,7 +94,7 @@ class TestClassOelintFuncSpecific(TestBaseClass):
+                                  {
+                                      'oelint-adv_test.bb':
+                                      '''
+-                                     pkg_preinst_${PN} () {
++                                     pkg_preinst:${PN} () {
+                                          abc
+                                      }
+                                      ''',
+diff --git a/tests/test_class_oelint_jetm_vars_dependssingleline.py b/tests/test_class_oelint_jetm_vars_dependssingleline.py
+index c3c9f31..ee90579 100644
+--- a/tests/test_class_oelint_jetm_vars_dependssingleline.py
++++ b/tests/test_class_oelint_jetm_vars_dependssingleline.py
+@@ -21,12 +21,12 @@ class TestClassOelintJetmDependsSingleLine(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'RDEPENDS_${PN} += "abc def"',
++                                     'RDEPENDS:${PN} += "abc def"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     RDEPENDS_${PN} += "ghi \\
++                                     RDEPENDS:${PN} += "ghi \\
+                                          jkl"
+                                      ''',
+                                  },
+@@ -59,10 +59,10 @@ class TestClassOelintJetmDependsSingleLine(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     RDEPENDS_${PN} += "abc"
+-                                     RDEPENDS_${PN} += "def"
+-                                     RDEPENDS_${PN} += "ghi"
+-                                     RDEPENDS_${PN} += "jkl"
++                                     RDEPENDS:${PN} += "abc"
++                                     RDEPENDS:${PN} += "def"
++                                     RDEPENDS:${PN} += "ghi"
++                                     RDEPENDS:${PN} += "jkl"
+                                      ''',
+                                  },
+                                  {
+@@ -95,12 +95,12 @@ class TestClassOelintJetmDependsSingleLine(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'RDEPENDS_${PN} += "abc def"',
++                                     'RDEPENDS:${PN} += "abc def"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     RDEPENDS_${PN} += "ghi \\
++                                     RDEPENDS:${PN} += "ghi \\
+                                          jkl"
+                                      ''',
+                                  },
+diff --git a/tests/test_class_oelint_task_heredocs.py b/tests/test_class_oelint_task_heredocs.py
+index 92028a7..a6ef095 100644
+--- a/tests/test_class_oelint_task_heredocs.py
++++ b/tests/test_class_oelint_task_heredocs.py
+@@ -22,7 +22,7 @@ class TestClassOelintTaskHeredocs(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          cat    <<   EOF    >${T}/some.files
+                                          abc
+                                          EOF
+diff --git a/tests/test_class_oelint_task_multifragments.py b/tests/test_class_oelint_task_multifragments.py
+index f94bab2..98e8c63 100644
+--- a/tests/test_class_oelint_task_multifragments.py
++++ b/tests/test_class_oelint_task_multifragments.py
+@@ -12,10 +12,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          b
+                                      }
+                                      ''',
+@@ -23,10 +23,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_configure_append() {
++                                     do_configure:append() {
+                                          a
+                                      }
+-                                     do_configure_append() {
++                                     do_configure:append() {
+                                          b
+                                      }
+                                      ''',
+@@ -34,10 +34,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_custom_append() {
++                                     do_custom:append() {
+                                          a
+                                      }
+-                                     do_custom_append() {
++                                     do_custom:append() {
+                                          b
+                                      }
+                                      ''',
+@@ -54,10 +54,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_install_append_class-native() {
++                                     do_install:append:class-native() {
+                                          a
+                                      }
+                                      ''',
+@@ -65,10 +65,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_install_append_class-nativesdk() {
++                                     do_install:append:class-nativesdk() {
+                                          a
+                                      }
+                                      ''',
+@@ -76,10 +76,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_install_append_class-cross() {
++                                     do_install:append:class-cross() {
+                                          a
+                                      }
+                                      ''',
+@@ -87,10 +87,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_install_append_class-target() {
++                                     do_install:append:class-target() {
+                                          a
+                                      }
+                                      ''',
+@@ -98,10 +98,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_install_prepend() {
++                                     do_install:prepend() {
+                                          a
+                                      }
+                                      ''',
+@@ -109,10 +109,10 @@ class TestClassOelintTaskMultiAppends(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          a
+                                      }
+-                                     do_somethingelse_append() {
++                                     do_somethingelse:append() {
+                                          a
+                                      }
+                                      ''',
+diff --git a/tests/test_class_oelint_task_nocp.py b/tests/test_class_oelint_task_nocp.py
+index ffcbaa0..a8616e6 100644
+--- a/tests/test_class_oelint_task_nocp.py
++++ b/tests/test_class_oelint_task_nocp.py
+@@ -12,7 +12,7 @@ class TestClassOelintTaskNoCopy(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          cp A B
+                                      }
+                                      ''',
+@@ -20,7 +20,7 @@ class TestClassOelintTaskNoCopy(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          cp * B
+                                      }
+                                      ''',
+@@ -37,7 +37,7 @@ class TestClassOelintTaskNoCopy(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          install A B
+                                      }
+                                      ''',
+diff --git a/tests/test_class_oelint_task_nomkdir.py b/tests/test_class_oelint_task_nomkdir.py
+index 1179b7b..6fc2191 100644
+--- a/tests/test_class_oelint_task_nomkdir.py
++++ b/tests/test_class_oelint_task_nomkdir.py
+@@ -20,7 +20,7 @@ class TestClassOelintTaskNoMkdir(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          mkdir -p ${TMP}sjdsdasjdha
+                                      }
+                                      ''',
+diff --git a/tests/test_class_oelint_var_filesoverride.py b/tests/test_class_oelint_var_filesoverride.py
+index 557195e..147f1fd 100644
+--- a/tests/test_class_oelint_var_filesoverride.py
++++ b/tests/test_class_oelint_var_filesoverride.py
+@@ -11,19 +11,19 @@ class TestClassOelintVarFilesOverride(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN} = " foo"',
++                                     'FILES:${PN} = " foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN} := "foo"',
++                                     'FILES:${PN} := "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN}-dev = "foo"',
++                                     'FILES:${PN}-dev = "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN}-dev := "foo"',
++                                     'FILES:${PN}-dev := "foo"',
+                                  },
+                              ],
+                              )
+@@ -40,43 +40,43 @@ class TestClassOelintVarFilesOverride(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN}_append = " foo"',
++                                     'FILES:${PN}:append = " foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN}_prepend = "foo "',
++                                     'FILES:${PN}:prepend = "foo "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN} += "foo"',
++                                     'FILES:${PN} += "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN} =+ "foo"',
++                                     'FILES:${PN} =+ "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN} .= " foo"',
++                                     'FILES:${PN} .= " foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN} =. "foo "',
++                                     'FILES:${PN} =. "foo "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN}-dev += "foo"',
++                                     'FILES:${PN}-dev += "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN}-dev =+ "foo"',
++                                     'FILES:${PN}-dev =+ "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN}-dev .= " foo"',
++                                     'FILES:${PN}-dev .= " foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILES_${PN}-dev =. "foo "',
++                                     'FILES:${PN}-dev =. "foo "',
+                                  },
+                              ],
+                              )
+diff --git a/tests/test_class_oelint_var_mandatory.py b/tests/test_class_oelint_var_mandatory.py
+index 867f6e1..a7196af 100644
+--- a/tests/test_class_oelint_var_mandatory.py
++++ b/tests/test_class_oelint_var_mandatory.py
+@@ -35,7 +35,7 @@ class TestClassOelintVarMandatoryVar(TestBaseClass):
+         'LICENSE',
+     ])
+     @pytest.mark.parametrize('extra', [
+-        'IMAGE_INSTALL_append = " foo"',
++        'IMAGE_INSTALL:append = " foo"',
+         'inherit image',
+         'inherit core-image',
+         'IMAGE_INSTALL += " foo"',
+diff --git a/tests/test_class_oelint_var_order.py b/tests/test_class_oelint_var_order.py
+index 6fba17d..38db7ba 100644
+--- a/tests/test_class_oelint_var_order.py
++++ b/tests/test_class_oelint_var_order.py
+@@ -23,12 +23,12 @@ VAR_ORDER = [
+     'EXTRA_OECONF',
+     'PACKAGE_ARCH',
+     'PACKAGES',
+-    'FILES_${PN}',
+-    'RDEPENDS_${PN}',
+-    'RRECOMMENDS_${PN}',
+-    'RSUGGESTS_${PN}',
+-    'RPROVIDES_${PN}',
+-    'RCONFLICTS_${PN}',
++    'FILES:${PN}',
++    'RDEPENDS:${PN}',
++    'RRECOMMENDS:${PN}',
++    'RSUGGESTS:${PN}',
++    'RPROVIDES:${PN}',
++    'RCONFLICTS:${PN}',
+     'BBCLASSEXTEND',
+ ]
+ 
+diff --git a/tests/test_class_oelint_var_override.py b/tests/test_class_oelint_var_override.py
+index 8a0cee1..6f132ae 100644
+--- a/tests/test_class_oelint_var_override.py
++++ b/tests/test_class_oelint_var_override.py
+@@ -78,15 +78,15 @@ class TestClassOelintVarOverride(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILESEXTRAPATH_prepend := "a:"
+-                                     FILESEXTRAPATH_prepend := "b:"
++                                     FILESEXTRAPATH:prepend := "a:"
++                                     FILESEXTRAPATH:prepend := "b:"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILESEXTRAPATH_append := ":a"
+-                                     FILESEXTRAPATH_append := ":b"
++                                     FILESEXTRAPATH:append := ":a"
++                                     FILESEXTRAPATH:append := ":b"
+                                      ''',
+                                  },
+                              ],
+diff --git a/tests/test_class_oelint_vars_appendop.py b/tests/test_class_oelint_vars_appendop.py
+index b80de30..3e72351 100644
+--- a/tests/test_class_oelint_vars_appendop.py
++++ b/tests/test_class_oelint_vars_appendop.py
+@@ -78,13 +78,13 @@ class TestClassOelintVarAppendOp(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      A ??= "1"
+-                                     A_append = "2"
++                                     A:append = "2"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     B_append = "B"
++                                     B:append = "B"
+                                      B ?= "A"
+                                      ''',
+                                  },
+@@ -92,13 +92,13 @@ class TestClassOelintVarAppendOp(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      C ??= "1"
+-                                     C_append = "2"
++                                     C:append = "2"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     D_append = "2"
++                                     D:append = "2"
+                                      D ?= "1"
+                                      ''',
+                                  },
+@@ -106,13 +106,13 @@ class TestClassOelintVarAppendOp(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      F ??= "1"
+-                                     F_prepend = "2"
++                                     F:prepend = "2"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     G_prepend = "B"
++                                     G:prepend = "B"
+                                      G ?= "A"
+                                      ''',
+                                  },
+@@ -120,13 +120,13 @@ class TestClassOelintVarAppendOp(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      H ??= "1"
+-                                     H_prepend = "2"
++                                     H:prepend = "2"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     I_prepend = "2"
++                                     I:prepend = "2"
+                                      I ?= "1"
+                                      ''',
+                                  },
+diff --git a/tests/test_class_oelint_vars_dependsappend.py b/tests/test_class_oelint_vars_dependsappend.py
+index 8b2b470..fae5868 100644
+--- a/tests/test_class_oelint_vars_dependsappend.py
++++ b/tests/test_class_oelint_vars_dependsappend.py
+@@ -28,15 +28,15 @@ class TestClassOelintVarsDependsAppend(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'DEPENDS_prepend =  "baz "',
++                                     'DEPENDS:prepend =  "baz "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'DEPENDS_append = " xyz"',
++                                     'DEPENDS:append = " xyz"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'DEPENDS_remove = "abc"',
++                                     'DEPENDS:remove = "abc"',
+                                  },
+                              ],
+                              )
+diff --git a/tests/test_class_oelint_vars_doublemodify.py b/tests/test_class_oelint_vars_doublemodify.py
+index e811e76..34f655a 100644
+--- a/tests/test_class_oelint_vars_doublemodify.py
++++ b/tests/test_class_oelint_vars_doublemodify.py
+@@ -11,39 +11,39 @@ class TestClassOelintVarsDoubleModify(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append_prepend_remove += "1"',
++                                     'A:append:prepend:remove += "1"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append_prepend += "1"',
++                                     'A:append:prepend += "1"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append += "1"',
++                                     'A:append += "1"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_prepend_remove += "1"',
++                                     'A:prepend:remove += "1"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append_remove += "1"',
++                                     'A:append:remove += "1"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_remove += "1"',
++                                     'A:remove += "1"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append_prepend_remove = " 1 "',
++                                     'A:append:prepend:remove = " 1 "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append_remove = " 1 "',
++                                     'A:append:remove = " 1 "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_prepend_remove = " 1 "',
++                                     'A:prepend:remove = " 1 "',
+                                  },
+                              ],
+                              )
+@@ -56,15 +56,15 @@ class TestClassOelintVarsDoubleModify(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append = " a"',
++                                     'A:append = " a"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_prepend = "a "',
++                                     'A:prepend = "a "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_remove = "a"',
++                                     'A:remove = "a"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+diff --git a/tests/test_class_oelint_vars_duplicate.py b/tests/test_class_oelint_vars_duplicate.py
+index ce6e363..edb2456 100644
+--- a/tests/test_class_oelint_vars_duplicate.py
++++ b/tests/test_class_oelint_vars_duplicate.py
+@@ -20,14 +20,14 @@ class TestClassOelintVarsDuplicate(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      DEPENDS = "foo"
+-                                     DEPENDS_append = " foo"
++                                     DEPENDS:append = " foo"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      DEPENDS = "foo"
+-                                     DEPENDS_prepend = " foo"
++                                     DEPENDS:prepend = " foo"
+                                      ''',
+                                  },
+                              ],
+@@ -50,7 +50,7 @@ class TestClassOelintVarsDuplicate(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      DEPENDS += "foo"
+-                                     DEPENDS_class-native += "foo"
++                                     DEPENDS:class-native += "foo"
+                                      ''',
+                                  },
+                                  {
+@@ -64,7 +64,7 @@ class TestClassOelintVarsDuplicate(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      DEPENDS += "foo"
+-                                     DEPENDS_remove = "foo"
++                                     DEPENDS:remove = "foo"
+                                      ''',
+                                  },
+                                  {
+diff --git a/tests/test_class_oelint_vars_fileextrapaths.py b/tests/test_class_oelint_vars_fileextrapaths.py
+index 3c2b437..59f2bd7 100644
+--- a/tests/test_class_oelint_vars_fileextrapaths.py
++++ b/tests/test_class_oelint_vars_fileextrapaths.py
+@@ -11,11 +11,11 @@ class TestClassOelintVarsFilextrapaths(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILESEXTRAPATHS_prepend := "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:prepend := "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILESEXTRAPATHS_append := "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:append := "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+@@ -32,11 +32,11 @@ class TestClassOelintVarsFilextrapaths(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILESEXTRAPATHS_prepend := "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:prepend := "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILESEXTRAPATHS_append := "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:append := "${THISDIR}/file"',
+                                  },
+                              ],
+                              )
+diff --git a/tests/test_class_oelint_vars_fileextrapathsop.py b/tests/test_class_oelint_vars_fileextrapathsop.py
+index 7b08f14..8b362fa 100644
+--- a/tests/test_class_oelint_vars_fileextrapathsop.py
++++ b/tests/test_class_oelint_vars_fileextrapathsop.py
+@@ -11,11 +11,11 @@ class TestClassOelintVarsFilextrapaths(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILESEXTRAPATHS_prepend .= "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:prepend .= "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILESEXTRAPATHS_append = "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:append = "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+@@ -44,11 +44,11 @@ class TestClassOelintVarsFilextrapaths(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILESEXTRAPATHS_prepend := "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:prepend := "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+-                                     'FILESEXTRAPATHS_append := "${THISDIR}/file"',
++                                     'FILESEXTRAPATHS:append := "${THISDIR}/file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+diff --git a/tests/test_class_oelint_vars_filessetting_double.py b/tests/test_class_oelint_vars_filessetting_double.py
+index 6e4021c..fc1a11a 100644
+--- a/tests/test_class_oelint_vars_filessetting_double.py
++++ b/tests/test_class_oelint_vars_filessetting_double.py
+@@ -12,27 +12,27 @@ class TestClassOelintVarsFileSettingsDouble(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILES_${PN} += "${bindir}"
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN} += "${bindir}"
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+                                      '''
+-                                     FILES_${PN} += "${bindir}"
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN} += "${bindir}"
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILES_${PN} += "${bindir}"
++                                     FILES:${PN} += "${bindir}"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILES_${PN}-doc += "${docdir}"
++                                     FILES:${PN}-doc += "${docdir}"
+                                      ''',
+                                  },
+                              ],
+@@ -47,9 +47,9 @@ class TestClassOelintVarsFileSettingsDouble(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILES_${PN} += "/opt/other/path"
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
+-                                     FILES_${PN} += "/opt/other/path"
++                                     FILES:${PN} += "/opt/other/path"
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN} += "/opt/other/path"
+                                      ''',
+                                  },
+                              ],
+@@ -64,8 +64,8 @@ class TestClassOelintVarsFileSettingsDouble(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     FILES_${PN} += "/opt/other/path"
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN} += "/opt/other/path"
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
+                                      ''',
+                                  },
+                              ],
+diff --git a/tests/test_class_oelint_vars_filessetting_hidden.py b/tests/test_class_oelint_vars_filessetting_hidden.py
+index 854ab52..ebc84e8 100644
+--- a/tests/test_class_oelint_vars_filessetting_hidden.py
++++ b/tests/test_class_oelint_vars_filessetting_hidden.py
+@@ -18,19 +18,19 @@ class TestClassOelintVarsFileSettingsHidden(TestBaseClass):
+                                       ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', '${PN}-traceroute6 ${PN}-ninfod', '', d)}"
+                                      PACKAGES =+ "${SPLITPKGS}"
+ 
+-                                     ALLOW_EMPTY_${PN} = "1"
+-                                     RDEPENDS_${PN} += "${SPLITPKGS}"
++                                     ALLOW_EMPTY:${PN} = "1"
++                                     RDEPENDS:${PN} += "${SPLITPKGS}"
+ 
+-                                     FILES_${PN} += "${bindir}"
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
+-                                     FILES_${PN}-arping = "${base_bindir}/arping"
+-                                     FILES_${PN}-tracepath = "${base_bindir}/tracepath"
+-                                     FILES_${PN}-traceroute6	= "${base_bindir}/traceroute6"
+-                                     FILES_${PN}-clockdiff = "${base_bindir}/clockdiff"
+-                                     FILES_${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
+-                                     FILES_${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
+-                                     FILES_${PN}-rdisc = "${base_sbindir}/rdisc"
+-                                     FILES_${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
++                                     FILES:${PN} += "${bindir}"
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN}-arping = "${base_bindir}/arping"
++                                     FILES:${PN}-tracepath = "${base_bindir}/tracepath"
++                                     FILES:${PN}-traceroute6	= "${base_bindir}/traceroute6"
++                                     FILES:${PN}-clockdiff = "${base_bindir}/clockdiff"
++                                     FILES:${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
++                                     FILES:${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
++                                     FILES:${PN}-rdisc = "${base_sbindir}/rdisc"
++                                     FILES:${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
+                                      ''',
+                                  },
+                                  {
+@@ -41,18 +41,18 @@ class TestClassOelintVarsFileSettingsHidden(TestBaseClass):
+                                                  ${@bb.utils.contains('PACKAGECONFIG', 'rarpd', '${PN}-rarpd', '', d)} \
+                                                  ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', '${PN}-traceroute6 ${PN}-ninfod', '', d)}"
+                                      PACKAGES += "${SPLITPKGS}"
+-                                     ALLOW_EMPTY_${PN} = "1"
+-                                     RDEPENDS_${PN} += "${SPLITPKGS}"
+-                                     FILES_${PN} += "${bindir}"
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
+-                                     FILES_${PN}-arping = "${base_bindir}/arping"
+-                                     FILES_${PN}-tracepath = "${base_bindir}/tracepath"
+-                                     FILES_${PN}-traceroute6	= "${base_bindir}/traceroute6"
+-                                     FILES_${PN}-clockdiff = "${base_bindir}/clockdiff"
+-                                     FILES_${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
+-                                     FILES_${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
+-                                     FILES_${PN}-rdisc = "${base_sbindir}/rdisc"
+-                                     FILES_${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
++                                     ALLOW_EMPTY:${PN} = "1"
++                                     RDEPENDS:${PN} += "${SPLITPKGS}"
++                                     FILES:${PN} += "${bindir}"
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN}-arping = "${base_bindir}/arping"
++                                     FILES:${PN}-tracepath = "${base_bindir}/tracepath"
++                                     FILES:${PN}-traceroute6	= "${base_bindir}/traceroute6"
++                                     FILES:${PN}-clockdiff = "${base_bindir}/clockdiff"
++                                     FILES:${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
++                                     FILES:${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
++                                     FILES:${PN}-rdisc = "${base_sbindir}/rdisc"
++                                     FILES:${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
+                                      ''',
+                                  },
+                              ],
+@@ -72,18 +72,18 @@ class TestClassOelintVarsFileSettingsHidden(TestBaseClass):
+                                       ${@bb.utils.contains('PACKAGECONFIG', 'rarpd', '${PN}-rarpd', '', d)} \
+                                       ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', '${PN}-traceroute6 ${PN}-ninfod', '', d)}"
+                                      PACKAGES += "${SPLITPKGS}"
+-                                     ALLOW_EMPTY_${PN} = "1"
+-                                     RDEPENDS_${PN} += "${SPLITPKGS}"
+-                                     FILES_${PN} = ""
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
+-                                     FILES_${PN}-arping = "${base_bindir}/arping"
+-                                     FILES_${PN}-tracepath = "${base_bindir}/tracepath"
+-                                     FILES_${PN}-traceroute6	= "${base_bindir}/traceroute6"
+-                                     FILES_${PN}-clockdiff = "${base_bindir}/clockdiff"
+-                                     FILES_${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
+-                                     FILES_${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
+-                                     FILES_${PN}-rdisc = "${base_sbindir}/rdisc"
+-                                     FILES_${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
++                                     ALLOW_EMPTY:${PN} = "1"
++                                     RDEPENDS:${PN} += "${SPLITPKGS}"
++                                     FILES:${PN} = ""
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN}-arping = "${base_bindir}/arping"
++                                     FILES:${PN}-tracepath = "${base_bindir}/tracepath"
++                                     FILES:${PN}-traceroute6	= "${base_bindir}/traceroute6"
++                                     FILES:${PN}-clockdiff = "${base_bindir}/clockdiff"
++                                     FILES:${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
++                                     FILES:${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
++                                     FILES:${PN}-rdisc = "${base_sbindir}/rdisc"
++                                     FILES:${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
+                                      ''',
+                                  },
+                                  {
+@@ -94,18 +94,18 @@ class TestClassOelintVarsFileSettingsHidden(TestBaseClass):
+                                       ${@bb.utils.contains('PACKAGECONFIG', 'rarpd', '${PN}-rarpd', '', d)} \
+                                       ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', '${PN}-traceroute6 ${PN}-ninfod', '', d)}"
+                                      PACKAGES += "${SPLITPKGS}"
+-                                     ALLOW_EMPTY_${PN} = "1"
+-                                     RDEPENDS_${PN} += "${SPLITPKGS}"
+-                                     FILES_${PN} = ""
+-                                     FILES_${PN}-ping = "${base_bindir}/ping.${BPN}"
+-                                     FILES_${PN}-arping = "${base_bindir}/arping"
+-                                     FILES_${PN}-tracepath = "${base_bindir}/tracepath"
+-                                     FILES_${PN}-traceroute6	= "${base_bindir}/traceroute6"
+-                                     FILES_${PN}-clockdiff = "${base_bindir}/clockdiff"
+-                                     FILES_${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
+-                                     FILES_${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
+-                                     FILES_${PN}-rdisc = "${base_sbindir}/rdisc"
+-                                     FILES_${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
++                                     ALLOW_EMPTY:${PN} = "1"
++                                     RDEPENDS:${PN} += "${SPLITPKGS}"
++                                     FILES:${PN} = ""
++                                     FILES:${PN}-ping = "${base_bindir}/ping.${BPN}"
++                                     FILES:${PN}-arping = "${base_bindir}/arping"
++                                     FILES:${PN}-tracepath = "${base_bindir}/tracepath"
++                                     FILES:${PN}-traceroute6	= "${base_bindir}/traceroute6"
++                                     FILES:${PN}-clockdiff = "${base_bindir}/clockdiff"
++                                     FILES:${PN}-tftpd = "${bindir} ${base_bindir}/tftpd"
++                                     FILES:${PN}-rarpd = "${base_sbindir}/rarpd  ${systemd_unitdir}/system/rarpd@.service"
++                                     FILES:${PN}-rdisc = "${base_sbindir}/rdisc"
++                                     FILES:${PN}-ninfod = "${base_sbindir}/ninfod ${sysconfdir}/init.d/ninfod.sh"
+                                      ''',
+                                  },
+                              ],
+diff --git a/tests/test_class_oelint_vars_inconspaces.py b/tests/test_class_oelint_vars_inconspaces.py
+index 0b70fca..5c9ded7 100644
+--- a/tests/test_class_oelint_vars_inconspaces.py
++++ b/tests/test_class_oelint_vars_inconspaces.py
+@@ -15,7 +15,7 @@ class TestClassOelintVarsInconSpaces(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'VAR_append = "fhhh"',
++                                     'VAR:append = "fhhh"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+@@ -40,11 +40,11 @@ class TestClassOelintVarsInconSpaces(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'VAR_append = " fhhh"',
++                                     'VAR:append = " fhhh"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILESEXTRAPATHS_append := "foo:"',
++                                     'FILESEXTRAPATHS:append := "foo:"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+diff --git a/tests/test_class_oelint_vars_insaneskip.py b/tests/test_class_oelint_vars_insaneskip.py
+index 67a030f..7da12fd 100644
+--- a/tests/test_class_oelint_vars_insaneskip.py
++++ b/tests/test_class_oelint_vars_insaneskip.py
+@@ -11,15 +11,15 @@ class TestClassOelintVarsInsaneSkip(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'INSANE_SKIP_${PN} = "a"',
++                                     'INSANE_SKIP:${PN} = "a"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'INSANE_SKIP_bla = "a"',
++                                     'INSANE_SKIP:bla = "a"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'INSANE_SKIP_bla_class-native = "a"',
++                                     'INSANE_SKIP:bla:class-native = "a"',
+                                  },
+                              ],
+                              )
+diff --git a/tests/test_class_oelint_vars_listappend.py b/tests/test_class_oelint_vars_listappend.py
+index 07be723..1914b39 100644
+--- a/tests/test_class_oelint_vars_listappend.py
++++ b/tests/test_class_oelint_vars_listappend.py
+@@ -15,15 +15,15 @@ class TestClassOelintVarsListAppend(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN}-tracepath_append = "${base_bindir}"',
++                                     'FILES:${PN}-tracepath:append = "${base_bindir}"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'RDEPENDS_${PN} .= "bar"',
++                                     'RDEPENDS:${PN} .= "bar"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'DEPENDS_prepend = "xyz"',
++                                     'DEPENDS:prepend = "xyz"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+@@ -44,15 +44,15 @@ class TestClassOelintVarsListAppend(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN}-tracepath_append = " ${base_bindir}"',
++                                     'FILES:${PN}-tracepath:append = " ${base_bindir}"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'RDEPENDS_${PN} .= " bar"',
++                                     'RDEPENDS:${PN} .= " bar"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'DEPENDS_prepend = "xyz "',
++                                     'DEPENDS:prepend = "xyz "',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+diff --git a/tests/test_class_oelint_vars_misspell.py b/tests/test_class_oelint_vars_misspell.py
+index 150e3bf..d198a41 100644
+--- a/tests/test_class_oelint_vars_misspell.py
++++ b/tests/test_class_oelint_vars_misspell.py
+@@ -28,7 +28,7 @@ class TestClassOelintVarsMispell(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'RDEPENDS_${PN} = "foo"',
++                                     'RDEPENDS:${PN} = "foo"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+@@ -55,7 +55,7 @@ class TestClassOelintVarsMispell(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      PACKAGES += "${PN}-foo"
+-                                     INITSCRIPT_PARAMS_${PN}-foo = "bar"
++                                     INITSCRIPT_PARAMS:${PN}-foo = "bar"
+                                      ''',
+                                  },
+                              ],
+diff --git a/tests/test_class_oelint_vars_notneededspace.py b/tests/test_class_oelint_vars_notneededspace.py
+index 9280537..a5ae1e7 100644
+--- a/tests/test_class_oelint_vars_notneededspace.py
++++ b/tests/test_class_oelint_vars_notneededspace.py
+@@ -52,7 +52,7 @@ class TestClassOelintVarsNotNeededSpace(TestBaseClass):
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'VAR_append = " a"',
++                                     'VAR:append = " a"',
+                                  },
+                              ],
+                              )
+diff --git a/tests/test_class_oelint_vars_pathhardcode.py b/tests/test_class_oelint_vars_pathhardcode.py
+index c472c59..03779b4 100644
+--- a/tests/test_class_oelint_vars_pathhardcode.py
++++ b/tests/test_class_oelint_vars_pathhardcode.py
+@@ -86,16 +86,16 @@ class TestClassOelintVarsPathHardcode(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN} += "/usr/lib/totally.valid.file"',
++                                     'FILES:${PN} += "/usr/lib/totally.valid.file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'FILES_${PN} += "/usr/bin/totally.valid.file"',
++                                     'FILES:${PN} += "/usr/bin/totally.valid.file"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     do_install_append() {
++                                     do_install:append() {
+                                          #To remove the default files from /etc/somefolder
+                                          rm -f ${D}${sysconfdir}/somefolder/*
+                                          install -m 0644 ${S}/usr/lib/* ${D}${libdir}
+diff --git a/tests/test_class_oelint_vars_pkgspecific.py b/tests/test_class_oelint_vars_pkgspecific.py
+index 6868949..a3b080d 100644
+--- a/tests/test_class_oelint_vars_pkgspecific.py
++++ b/tests/test_class_oelint_vars_pkgspecific.py
+@@ -60,18 +60,18 @@ class TestClassOelintVarsPKGSpecific(TestBaseClass):
+     @pytest.mark.parametrize('id', ['oelint.vars.pkgspecific'])
+     @pytest.mark.parametrize('occurrence', [0])
+     @pytest.mark.parametrize('var', [
+-        'RDEPENDS_${PN}',
+-        'RRECOMMENDS_${PN}',
+-        'RSUGGESTS_${PN}',
+-        'RCONFLICTS_${PN}',
+-        'RPROVIDES_${PN}',
+-        'RREPLACES_${PN}',
+-        'FILES_${PN}',
+-        'pkg_preinst_${PN}',
+-        'pkg_postinst_${PN}',
+-        'pkg_prerm_${PN}',
+-        'pkg_postrm_${PN}',
+-        'ALLOW_EMPTY_${PN}',
++        'RDEPENDS:${PN}',
++        'RRECOMMENDS:${PN}',
++        'RSUGGESTS:${PN}',
++        'RCONFLICTS:${PN}',
++        'RPROVIDES:${PN}',
++        'RREPLACES:${PN}',
++        'FILES:${PN}',
++        'pkg_preinst:${PN}',
++        'pkg_postinst:${PN}',
++        'pkg_prerm:${PN}',
++        'pkg_postrm:${PN}',
++        'ALLOW_EMPTY:${PN}',
+     ])
+     def test_good(self, id, occurrence, var):
+         input = {
+@@ -83,18 +83,18 @@ class TestClassOelintVarsPKGSpecific(TestBaseClass):
+     @pytest.mark.parametrize('id', ['oelint.vars.pkgspecific'])
+     @pytest.mark.parametrize('occurrence', [0])
+     @pytest.mark.parametrize('var', [
+-        'RDEPENDS_foo',
+-        'RRECOMMENDS_foo',
+-        'RSUGGESTS_foo',
+-        'RCONFLICTS_foo',
+-        'RPROVIDES_foo',
+-        'RREPLACES_foo',
+-        'FILES_foo',
+-        'pkg_preinst_foo',
+-        'pkg_postinst_foo',
+-        'pkg_prerm_foo',
+-        'pkg_postrm_foo',
+-        'ALLOW_EMPTY_foo',
++        'RDEPENDS:foo',
++        'RRECOMMENDS:foo',
++        'RSUGGESTS:foo',
++        'RCONFLICTS:foo',
++        'RPROVIDES:foo',
++        'RREPLACES:foo',
++        'FILES:foo',
++        'pkg_preinst:foo',
++        'pkg_postinst:foo',
++        'pkg_prerm:foo',
++        'pkg_postrm:foo',
++        'ALLOW_EMPTY:foo',
+     ])
+     def test_good_bbappend(self, id, occurrence, var):
+         input = {
+@@ -124,7 +124,7 @@ class TestClassOelintVarsPKGSpecific(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      PACKAGES += "abc-foo"
+-                                     RDEPENDS_abc-foo += "bar"
++                                     RDEPENDS:abc-foo += "bar"
+                                      ''',
+                                  },
+                              ],
+diff --git a/tests/test_class_oelint_vars_specific.py b/tests/test_class_oelint_vars_specific.py
+index b050175..7739bf8 100644
+--- a/tests/test_class_oelint_vars_specific.py
++++ b/tests/test_class_oelint_vars_specific.py
+@@ -11,24 +11,24 @@ class TestClassOelintVarsSpecific(TestBaseClass):
+                              [
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'A_append_fooarch = " abc"',
++                                     'A:append:fooarch = " abc"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+-                                     'B_bararch += "abc"',
++                                     'B:bararch += "abc"',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE = "xyz"
+-                                     A_append_fooarch = " abc"
++                                     A:append:fooarch = " abc"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE = "xyz"
+-                                     B_bararch += "abc"
++                                     B:bararch += "abc"
+                                      ''',
+                                  },
+                              ],
+@@ -44,67 +44,67 @@ class TestClassOelintVarsSpecific(TestBaseClass):
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      COMPATIBLE_MACHINE = "foo"
+-                                     A_append_fooarch = " abc"
++                                     A:append:fooarch = " abc"
+                                      COMPATIBLE_MACHINE += "|bar"
+-                                     B_bararch += "abc"
++                                     B:bararch += "abc"
+                                      PACKAGES =+ "${PN}-httpd ${PN}-syslog ${PN}-mdev ${PN}-udhcpd ${PN}-udhcpc ${PN}-hwclock"
+-                                     FILES_${PN}-httpd = "${sysconfdir}/init.d/busybox-httpd /srv/www"
+-                                     FILES_${PN}-syslog = "${sysconfdir}/init.d/syslog* ${sysconfdir}/syslog-startup.conf* ${sysconfdir}/syslog.conf* ${systemd_unitdir}/system/syslog.service ${sysconfdir}/default/busybox-syslog"
+-                                     FILES_${PN}-mdev = "${sysconfdir}/init.d/mdev ${sysconfdir}/mdev.conf ${sysconfdir}/mdev/*"
+-                                     FILES_${PN}-udhcpd = "${sysconfdir}/init.d/busybox-udhcpd"
+-                                     FILES_${PN}-udhcpc = "${sysconfdir}/udhcpc.d ${datadir}/udhcpc"
+-                                     FILES_${PN}-hwclock = "${sysconfdir}/init.d/hwclock.sh"
++                                     FILES:${PN}-httpd = "${sysconfdir}/init.d/busybox-httpd /srv/www"
++                                     FILES:${PN}-syslog = "${sysconfdir}/init.d/syslog* ${sysconfdir}/syslog-startup.conf* ${sysconfdir}/syslog.conf* ${systemd_unitdir}/system/syslog.service ${sysconfdir}/default/busybox-syslog"
++                                     FILES:${PN}-mdev = "${sysconfdir}/init.d/mdev ${sysconfdir}/mdev.conf ${sysconfdir}/mdev/*"
++                                     FILES:${PN}-udhcpd = "${sysconfdir}/init.d/busybox-udhcpd"
++                                     FILES:${PN}-udhcpc = "${sysconfdir}/udhcpc.d ${datadir}/udhcpc"
++                                     FILES:${PN}-hwclock = "${sysconfdir}/init.d/hwclock.sh"
+                                      DO_IPv4 := "${@bb.utils.contains('DISTRO_FEATURES', 'ipv4', 1, 0, d)}"
+                                      DO_IPv6 := "${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', 1, 0, d)}"
+-                                     SRC_URI_append_libc-musl = " file://musl.cfg "
++                                     SRC_URI:append:libc-musl = " file://musl.cfg "
+                                      SRC_URI[tarball.md5sum] = "0a367e19cdfd157e8258d87f893ee516"
+                                      SRC_URI[tarball.sha256sum] = "97648636e579462296478e0218e65e4bc1e9cd69089a3b1aeb810bff7621efb7"
+                                      PACKAGES += "${PN}-foo myrecipe-foo"
+-                                     USERADD_PARAM_myrecipe-foo = "--bar --baz"
++                                     USERADD_PARAM:myrecipe-foo = "--bar --baz"
+                                      SRC_URI = "\\
+                                          git://foo.org/baz.git;name=super \\
+                                          git://foo.org/bar.git;name=ultra \\
+                                      "
+                                      SRC_URI += "git://foo.org/${BPN}.git;name=${PN}"
+-                                     SRCREV_super = "2a76ac0ff0e702a7f553b6d7135a1089e9c3b469"
+-                                     SRCREV_ultra = "7533c21ba6c06a513eaa9500a06ae780249b9834"
+-                                     PACKAGECONFIG_class-nativesdk ??= "${PACKAGECONFIG_class-native}"
++                                     SRCREV:super = "2a76ac0ff0e702a7f553b6d7135a1089e9c3b469"
++                                     SRCREV:ultra = "7533c21ba6c06a513eaa9500a06ae780249b9834"
++                                     PACKAGECONFIG:class-nativesdk ??= "${PACKAGECONFIG:class-native}"
+                                      PACKAGES =+ "libpulsecore libpulsecommon libpulse libpulse-simple libpulse-mainloop-glib \\
+                                                  pulseaudio-server pulseaudio-misc ${@bb.utils.contains('PACKAGECONFIG', 'dbus', 'pulseaudio-module-console-kit', '', d)}"
+-                                     DEPENDS_pulseaudio-server = "foo-bar"
+-                                     DEPENDS_clang = "Unknown"
+-                                     DEPENDS_linux = "Linux"
+-                                     DEPENDS_darwin = "Darwin"
+-                                     DEPENDS_mingw32 = "Windows"
+-                                     A_oelint = "foo"
++                                     DEPENDS:pulseaudio-server = "foo-bar"
++                                     DEPENDS:clang = "Unknown"
++                                     DEPENDS:linux = "Linux"
++                                     DEPENDS:darwin = "Darwin"
++                                     DEPENDS:mingw32 = "Windows"
++                                     A:oelint = "foo"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      PACKAGE_BEFORE_PN =. "extra-pkg"
+-                                     FILES_extra-pkg = "${base_bindir}"
++                                     FILES:extra-pkg = "${base_bindir}"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+                                      PACKAGE_BEFORE_PN =. "extra-pkg"
+-                                     FILES_extra-pkg = "${base_bindir}"
++                                     FILES:extra-pkg = "${base_bindir}"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+                                      '''
+                                      COMPATIBLE_MACHINE = "xyz"
+-                                     A_append_fooarch = " abc"
++                                     A:append:fooarch = " abc"
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bbappend':
+                                      '''
+                                      COMPATIBLE_MACHINE = "xyz"
+-                                     B_bararch += "abc"
++                                     B:bararch += "abc"
+                                      ''',
+                                  },
+                                  {
+diff --git a/tests/test_class_oelint_vars_srcuriappend.py b/tests/test_class_oelint_vars_srcuriappend.py
+index 0979d2b..7f5037f 100644
+--- a/tests/test_class_oelint_vars_srcuriappend.py
++++ b/tests/test_class_oelint_vars_srcuriappend.py
+@@ -32,21 +32,21 @@ class TestClassOelintVarsSRCURIappend(TestBaseClass):
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     SRC_URI_append = " file://abc"
++                                     SRC_URI:append = " file://abc"
+                                      inherit abc
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     SRC_URI_remove = "file://abc"
++                                     SRC_URI:remove = "file://abc"
+                                      inherit abc
+                                      ''',
+                                  },
+                                  {
+                                      'oelint_adv_test.bb':
+                                      '''
+-                                     SRC_URI_prepend = "file://abc "
++                                     SRC_URI:prepend = "file://abc "
+                                      inherit abc
+                                      ''',
+                                  },
+diff --git a/tests/test_user_interface.py b/tests/test_user_interface.py
+index 8b88d94..1f3d6cc 100644
+--- a/tests/test_user_interface.py
++++ b/tests/test_user_interface.py
+@@ -16,7 +16,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -42,7 +42,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -240,8 +240,8 @@ class TestClassIntegration(TestBaseClass):
+                                          -DBUILD_SHARED_LIBS=ON \\
+                                          -DCFG_TEE_FS_PARENT_PATH='${localstatedir}/lib/tee' \\
+                                      "
+-                                     EXTRA_OECMAKE_append_toolchain-clang = " -DCFG_WERROR=0"
+-                                     do_install_append() {
++                                     EXTRA_OECMAKE:append:toolchain-clang = " -DCFG_WERROR=0"
++                                     do_install:append() {
+                                          install -D -p -m0644 ${WORKDIR}/tee-supplicant.service ${D}${systemd_system_unitdir}/tee-supplicant.service
+                                          install -D -p -m0755 ${WORKDIR}/tee-supplicant.sh ${D}${sysconfdir}/init.d/tee-supplicant
+                                          sed -i -e s:@sysconfdir@:${sysconfdir}:g \\
+@@ -249,10 +249,10 @@ class TestClassIntegration(TestBaseClass):
+                                                  ${D}${systemd_system_unitdir}/tee-supplicant.service \\
+                                                  ${D}${sysconfdir}/init.d/tee-supplicant
+                                      }
+-                                     SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
++                                     SYSTEMD_SERVICE:${PN} = "tee-supplicant.service"
+                                      INITSCRIPT_PACKAGES = "${PN}"
+-                                     INITSCRIPT_NAME_${PN} = "tee-supplicant"
+-                                     INITSCRIPT_PARAMS_${PN} = "start 10 1 2 3 4 5 . stop 90 0 6 ."
++                                     INITSCRIPT_NAME:${PN} = "tee-supplicant"
++                                     INITSCRIPT_PARAMS:${PN} = "start 10 1 2 3 4 5 . stop 90 0 6 ."
+                                      ''',
+                                      'optee-examples_3.11.0.bb':
+                                      '''
+@@ -291,20 +291,20 @@ class TestClassIntegration(TestBaseClass):
+                                          install -D -p -m0755 ${B}/ca/* ${D}${bindir}
+                                          install -D -p -m0444 ${B}/ta/* ${D}${nonarch_base_libdir}/optee_armtz
+                                      }
+-                                     FILES_${PN} += "${nonarch_base_libdir}/optee_armtz/"
++                                     FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/"
+                                      # Imports machine specific configs from staging to build
+                                      PACKAGE_ARCH = "${MACHINE_ARCH}"
+                                      ''',
+                                      'optee.inc':
+                                      '''
+                                      COMPATIBLE_MACHINE ?= "invalid"
+-                                     COMPATIBLE_MACHINE_qemuarm64 ?= "qemuarm64"
++                                     COMPATIBLE_MACHINE:qemuarm64 ?= "qemuarm64"
+                                      # Please add supported machines below or set it in .bbappend or .conf
+                                      OPTEEMACHINE ?= "${MACHINE}"
+-                                     OPTEEMACHINE_aarch64_qemuall ?= "vexpress-qemu_armv8a"
++                                     OPTEEMACHINE:aarch64:qemuall ?= "vexpress-qemu:armv8a"
+                                      OPTEE_ARCH = "null"
+-                                     OPTEE_ARCH_armv7a = "arm32"
+-                                     OPTEE_ARCH_aarch64 = "arm64"
++                                     OPTEE_ARCH:armv7a = "arm32"
++                                     OPTEE_ARCH:aarch64 = "arm64"
+                                      OPTEE_CORE = "${@d.getVar('OPTEE_ARCH').upper()}"
+                                      OPTEE_TOOLCHAIN = "${@d.getVar('TOOLCHAIN') or 'gcc'}"
+                                      OPTEE_COMPILER = "${@bb.utils.contains("BBFILE_COLLECTIONS", "clang-layer", "${OPTEE_TOOLCHAIN}", "gcc", d)}"
+@@ -352,8 +352,8 @@ class TestClassIntegration(TestBaseClass):
+                                          -DBUILD_SHARED_LIBS=ON \\
+                                          -DCFG_TEE_FS_PARENT_PATH='${localstatedir}/lib/tee' \\
+                                      "
+-                                     EXTRA_OECMAKE_append_toolchain-clang = " -DCFG_WERROR=0"
+-                                     do_install_append() {
++                                     EXTRA_OECMAKE:append:toolchain-clang = " -DCFG_WERROR=0"
++                                     do_install:append() {
+                                          install -D -p -m0644 ${WORKDIR}/tee-supplicant.service ${D}${systemd_system_unitdir}/tee-supplicant.service
+                                          install -D -p -m0755 ${WORKDIR}/tee-supplicant.sh ${D}${sysconfdir}/init.d/tee-supplicant
+                                          sed -i -e s:@sysconfdir@:${sysconfdir}:g \\
+@@ -361,10 +361,10 @@ class TestClassIntegration(TestBaseClass):
+                                                  ${D}${systemd_system_unitdir}/tee-supplicant.service \\
+                                                  ${D}${sysconfdir}/init.d/tee-supplicant
+                                      }
+-                                     SYSTEMD_SERVICE_${PN} = "tee-supplicant.service"
++                                     SYSTEMD_SERVICE:${PN} = "tee-supplicant.service"
+                                      INITSCRIPT_PACKAGES = "${PN}"
+-                                     INITSCRIPT_NAME_${PN} = "tee-supplicant"
+-                                     INITSCRIPT_PARAMS_${PN} = "start 10 1 2 3 4 5 . stop 90 0 6 ."
++                                     INITSCRIPT_NAME:${PN} = "tee-supplicant"
++                                     INITSCRIPT_PARAMS:${PN} = "start 10 1 2 3 4 5 . stop 90 0 6 ."
+                                      ''',
+                                      'optee-examples_3.11.0.bb':
+                                      '''
+@@ -403,20 +403,20 @@ class TestClassIntegration(TestBaseClass):
+                                          install -D -p -m0755 ${B}/ca/* ${D}${bindir}
+                                          install -D -p -m0444 ${B}/ta/* ${D}${nonarch_base_libdir}/optee_armtz
+                                      }
+-                                     FILES_${PN} += "${nonarch_base_libdir}/optee_armtz/"
++                                     FILES:${PN} += "${nonarch_base_libdir}/optee_armtz/"
+                                      # Imports machine specific configs from staging to build
+                                      PACKAGE_ARCH = "${MACHINE_ARCH}"
+                                      ''',
+                                      'optee.inc':
+                                      '''
+                                      COMPATIBLE_MACHINE ?= "invalid"
+-                                     COMPATIBLE_MACHINE_qemuarm64 ?= "qemuarm64"
++                                     COMPATIBLE_MACHINE:qemuarm64 ?= "qemuarm64"
+                                      # Please add supported machines below or set it in .bbappend or .conf
+                                      OPTEEMACHINE ?= "${MACHINE}"
+-                                     OPTEEMACHINE_aarch64_qemuall ?= "vexpress-qemu_armv8a"
++                                     OPTEEMACHINE:aarch64:qemuall ?= "vexpress-qemu:armv8a"
+                                      OPTEE_ARCH = "null"
+-                                     OPTEE_ARCH_armv7a = "arm32"
+-                                     OPTEE_ARCH_aarch64 = "arm64"
++                                     OPTEE_ARCH:armv7a = "arm32"
++                                     OPTEE_ARCH:aarch64 = "arm64"
+                                      OPTEE_CORE = "${@d.getVar('OPTEE_ARCH').upper()}"
+                                      OPTEE_TOOLCHAIN = "${@d.getVar('TOOLCHAIN') or 'gcc'}"
+                                      OPTEE_COMPILER = "${@bb.utils.contains("BBFILE_COLLECTIONS", "clang-layer", "${OPTEE_TOOLCHAIN}", "gcc", d)}"
+@@ -466,7 +466,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -485,7 +485,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -504,7 +504,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -523,7 +523,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  }
+                              ],
+@@ -543,7 +543,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -563,7 +563,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -585,7 +585,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -667,7 +667,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -704,7 +704,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -720,7 +720,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
+@@ -753,7 +753,7 @@ class TestClassIntegration(TestBaseClass):
+                                      'oelint adv-test.bb':
+                                      '''
+                                      VAR = "1"
+-                                     INSANE_SKIP_${PN} = "foo"
++                                     INSANE_SKIP:${PN} = "foo"
+                                      ''',
+                                  },
+                              ],
