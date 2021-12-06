@@ -8,7 +8,7 @@ LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e926c89aceef6c1a4247d5df08f94533"
 
 SRC_URI = "git://github.com/priv-kweihmann/oelint-adv.git;protocol=https;nobranch=1"
-SRCREV = "051d0b49643089a3d09a746b9efb7e28a6184d3a"
+SRCREV = "8106cb9fdd71834b131487bcef41e95f68895b4e"
 
 SRC_URI += "file://0001-compatibility-with-python2.patch \
             file://0002-change-output-option-to-make-json-format-report.patch \
