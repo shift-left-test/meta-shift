@@ -1,8 +1,8 @@
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
-index 1608416..9341a33 100644
+index 9ee0ac2..0d2c193 100644
 --- a/oelint_adv/__main__.py
 +++ b/oelint_adv/__main__.py
-@@ -56,8 +56,8 @@ def create_argparser():
+@@ -63,8 +63,8 @@ def create_argparser():
      parser.register('action', 'tsappend', TypeSafeAppendAction)
      parser.add_argument('--suppress', default=[],
                          action='tsappend', help='Rules to suppress')
@@ -13,7 +13,7 @@ index 1608416..9341a33 100644
      parser.add_argument('--fix', action='store_true', default=False,
                          help='Automatically try to fix the issues')
      parser.add_argument('--nobackup', action='store_true', default=False,
-@@ -292,6 +292,23 @@ def run(args):
+@@ -302,6 +302,23 @@ def run(args):
      return []
  
  
@@ -37,7 +37,7 @@ index 1608416..9341a33 100644
  def main():  # pragma: no cover
      args = arguments_post(parse_arguments())
  
-@@ -301,14 +318,15 @@ def main():  # pragma: no cover
+@@ -311,14 +328,15 @@ def main():  # pragma: no cover
  
      issues = run(args)
  
