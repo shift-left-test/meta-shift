@@ -1,5 +1,5 @@
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
-index 56d7423..731f69a 100644
+index 0d2c193..c7ab242 100644
 --- a/oelint_adv/__main__.py
 +++ b/oelint_adv/__main__.py
 @@ -3,6 +3,7 @@ import json
@@ -19,7 +19,7 @@ index 56d7423..731f69a 100644
  
  class TypeSafeAppendAction(argparse.Action):
  
-@@ -317,6 +320,9 @@ def make_json_report(issues):
+@@ -320,6 +323,9 @@ def make_json_report(issues):
  
  
  def main():  # pragma: no cover
@@ -29,7 +29,7 @@ index 56d7423..731f69a 100644
      args = arguments_post(parse_arguments())
  
      if args.print_rulefile:
-@@ -334,6 +340,8 @@ def main():  # pragma: no cover
+@@ -337,6 +343,8 @@ def main():  # pragma: no cover
      if issues:
          sys.stdout.write('\n')
  
