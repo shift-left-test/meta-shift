@@ -294,15 +294,18 @@ python shifttest_do_checkrecipe() {
         report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("--output %s" % report_path)
 
-    cmdline += ["--quiet",
-        "--exit-zero",
-        "--addrules", "jetm",
-        "--suppress", "oelint.var.suggestedvar.BBCLASSEXTEND",
-        "--suppress", "oelint.var.suggestedvar.CVE_PRODUCT",
-        "--suppress", "oelint.task.customorder",
-    ]
+    cmdline += ["--quiet", "--exit-zero"]
 
-    exec_proc(cmdline, d)
+    if d.getVar("SHIFT_CHECKRECIPE_SUPPRESS_RULES", True):
+        cmdline.extend(["--suppress %s" % x for x in d.getVar("SHIFT_CHECKRECIPE_SUPPRESS_RULES", True).split()])
+
+    if d.getVar("SHIFT_CHECKRECIPE_ADD_RULES", True):
+        cmdline.extend(["--addrules %s" % x for x in d.getVar("SHIFT_CHECKRECIPE_ADD_RULES", True).split()])
+
+    try:
+        exec_proc(cmdline, d)
+    except bb.process.ExecutionError as e:
+        warn("checkrecipe failed: %s" % e, d)
 }
 
 
