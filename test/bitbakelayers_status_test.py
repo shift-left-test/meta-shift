@@ -14,7 +14,7 @@ def test_default_format(bare_build):
                                 "Codename:",
                                 "Distro: poky",
                                 "Parallelism: True",
-                                "own-mirrors: True",
+                                "own-mirrors: ",
                                 "Additional Information",
                                 "----------------------",
                                 "Images:",
