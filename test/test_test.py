@@ -9,6 +9,16 @@ SPDX-License-Identifier: MIT
 import pytest
 
 
+def test_core_image_minimal_do_report(test_build):
+    o = test_build.shell.execute("bitbake core-image-minimal -c report")
+    assert o.stderr.contains("ERROR: Task do_report does not exist for target core-image-minimal")
+
+
+def test_core_image_minimal_do_reportall(test_build):
+    o = test_build.shell.execute("bitbake core-image-minimal -c reportall")
+    assert o.stderr.contains("do_report: You should set SHIFT_REPORT_DIR to make reports")
+
+
 def test_core_image_minimal_do_test(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c test")
     assert o.stderr.contains("ERROR: Task do_test does not exist for target core-image-minimal")
@@ -24,7 +34,6 @@ def test_core_image_minimal_do_testall(test_build):
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_test: Running tests...")
 
 
 def test_core_image_minimal_do_coverage(test_build):
@@ -47,8 +56,6 @@ def test_core_image_minimal_do_coverageall(test_build):
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_test: Running tests...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_coverage: GCC Code Coverage Report")
 
 
 def test_core_image_minimal_do_checkcode(test_build):
@@ -83,11 +90,6 @@ def test_core_image_minimal_do_checkcodeall(test_build):
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
 
 def test_core_image_minimal_do_checkcache(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c checkcache")
@@ -101,7 +103,6 @@ def test_core_image_minimal_do_checkcacheall(test_build):
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Source Availability")
 
 
 def test_core_image_minimal_do_checkrecipe(test_build):
@@ -116,7 +117,6 @@ def test_core_image_minimal_do_checkrecipeall(test_build):
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_cmake_project_do_build(test_build):
@@ -134,68 +134,6 @@ def test_cmake_project_do_build(test_build):
     assert project.packages.contains("oelint-adv-native")
 
 
-def test_cmake_project_do_test(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c test")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
-
-
-def test_cmake_project_do_testall(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c testall")
-    assert o.stdout.contains("NOTE: recipe cmake-project-1.0.0-r0: task do_testall: Started")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("NOTE: recipe cmake-project-1.0.0-r0: task do_testall: Succeeded")
-
-
-def test_cmake_project_do_coverage(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c coverage")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-
-
-def test_cmake_project_do_coverageall(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c coverageall")
-    assert o.stdout.contains("NOTE: recipe cmake-project-1.0.0-r0: task do_coverageall: Started")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("NOTE: recipe cmake-project-1.0.0-r0: task do_coverageall: Succeeded")
-
-
-def test_cmake_project_do_checkcode(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c checkcode")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_cmake_project_do_checkcodeall(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c checkcodeall")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_cmake_project_do_checkcache(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c checkcache")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_cmake_project_do_checkcacheall(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c checkcacheall")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_cmake_project_do_checkrecipe(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c checkrecipe")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
-def test_cmake_project_do_checkrecipeall(test_build):
-    o = test_build.shell.execute("bitbake cmake-project -c checkrecipeall")
-    assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
 def test_qmake_project_do_build(test_build):
     assert test_build.shell.execute("bitbake qmake-project").stderr.empty()
 
@@ -211,72 +149,6 @@ def test_qmake_project_do_build(test_build):
     assert project.packages.contains("oelint-adv-native")
 
 
-def test_qmake_project_do_test(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c test")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-
-
-def test_qmake_project_do_testall(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c testall")
-    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_testall: Started")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_testall: Succeeded")
-
-
-def test_qmake_project_do_coverage(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c coverage")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-
-
-def test_qmake_project_do_coverageall(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c coverageall")
-    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_coverageall: Started")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("NOTE: recipe qmake-project-1.0.0-r0: task do_coverageall: Succeeded")
-
-
-def test_qmake_project_do_checkcode(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c checkcode")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_qmake_project_do_checkcodeall(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c checkcodeall")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_qmake_project_do_checkcache(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c checkcache")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_qmake_project_do_checkcacheall(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c checkcacheall")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_qmake_project_do_checkrecipe(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c checkrecipe")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
-def test_qmake_project_do_checkrecipeall(test_build):
-    o = test_build.shell.execute("bitbake qmake-project -c checkrecipeall")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
 def test_autotools_project_do_build(test_build):
     assert test_build.shell.execute("bitbake autotools-project").stderr.empty()
 
@@ -289,227 +161,3 @@ def test_autotools_project_do_build(test_build):
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
     assert project.packages.contains("oelint-adv-native")
-
-
-def test_autotools_project_do_test(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c test")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
-
-
-def test_autotools_project_do_testall(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c testall")
-    assert o.stdout.contains("NOTE: recipe autotools-project-1.0.0-r0: task do_testall: Started")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
-    assert o.stdout.contains("NOTE: recipe autotools-project-1.0.0-r0: task do_testall: Succeeded")
-
-
-def test_autotools_project_do_coverage(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c coverage")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-
-
-def test_autotools_project_do_coverageall(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c coverageall")
-    assert o.stdout.contains("NOTE: recipe autotools-project-1.0.0-r0: task do_coverageall: Started")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("NOTE: recipe autotools-project-1.0.0-r0: task do_coverageall: Succeeded")
-
-
-def test_autotools_project_do_checkcode(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c checkcode")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_autotools_project_do_checkcodeall(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c checkcodeall")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_autotools_project_do_checkcache(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c checkcache")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_autotools_project_do_checkcacheall(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c checkcacheall")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_autotools_project_do_checkrecipe(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c checkrecipe")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
-def test_autotools_project_do_checkrecipeall(test_build):
-    o = test_build.shell.execute("bitbake autotools-project -c checkrecipeall")
-    assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
-def test_humidifier_project_do_build(test_build):
-    assert test_build.shell.execute("bitbake humidifier-project").stderr.empty()
-
-    project = test_build.parse("cmake-project")
-    assert project.packages.contains("cmake-native")
-    assert project.packages.containsAny("gtest", "googletest")
-    assert project.packages.contains("cppcheck-native")
-    assert project.packages.contains("cpplint-native")
-    assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
-    assert project.packages.contains("qemu-native")
-    assert project.packages.contains("sage-native")
-    assert project.packages.contains("oelint-adv-native")
-
-
-def test_humidifier_project_do_test(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c test")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
-
-
-def test_humidifier_project_do_testall(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c testall")
-    assert o.stdout.contains("NOTE: recipe humidifier-project-1.0.0-r0: task do_testall: Started")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("NOTE: recipe humidifier-project-1.0.0-r0: task do_testall: Succeeded")
-
-
-def test_humidifier_project_do_coverage(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c coverage")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-
-
-def test_humidifier_project_do_coverageall(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c coverageall")
-    assert o.stdout.contains("NOTE: recipe humidifier-project-1.0.0-r0: task do_coverageall: Started")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("NOTE: recipe humidifier-project-1.0.0-r0: task do_coverageall: Succeeded")
-
-
-def test_humidifier_project_do_checkcode(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c checkcode")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_humidifier_project_do_checkcodeall(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c checkcodeall")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_humidifier_project_do_checkcache(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c checkcache")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_humidifier_project_do_checkcacheall(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c checkcacheall")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_humidifier_project_do_checkrecipe(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c checkrecipe")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
-def test_humidifier_project_do_checkrecipeall(test_build):
-    o = test_build.shell.execute("bitbake humidifier-project -c checkrecipeall")
-    assert o.stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-
-
-def test_sqlite3logger_do_build(test_build):
-    assert test_build.shell.execute("bitbake sqlite3logger").stderr.empty()
-
-    project = test_build.parse("sqlite3logger")
-    assert project.packages.contains("cmake-native")
-    assert project.packages.contains("stringutils")
-    assert project.packages.contains("sqlite3wrapper")
-
-    # List of indirectly dependent packages
-    assert project.packages.containsAny("gtest", "googletest")
-    assert project.packages.contains("cppcheck-native")
-    assert project.packages.contains("cpplint-native")
-    assert project.packages.contains("lcov-native")
-    assert project.packages.contains("python-lcov-cobertura-native")
-    assert project.packages.contains("qemu-native")
-
-
-def test_sqlite3logger_do_test(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c test")
-    assert o.stderr.contains("ERROR: Task do_test does not exist for target sqlite3logger")
-
-
-def test_sqlite3logger_do_testall(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c testall")
-    assert o.stdout.contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Started")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_test: Running tests...")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_testall: Succeeded")
-
-
-def test_sqlite3logger_do_coverage(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c coverage")
-    assert o.stderr.contains("ERROR: Task do_coverage does not exist for target sqlite3logger")
-
-
-def test_sqlite3logger_do_coverageall(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c coverageall")
-    assert o.stdout.contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Started")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_test: Running tests...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_coverage: GCC Code Coverage Report")
-    assert o.stdout.contains("NOTE: recipe sqlite3logger-1.0.0-r0: task do_coverageall: Succeeded")
-
-
-def test_sqlite3logger_do_checkcode(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c checkcode")
-    assert o.stderr.contains("ERROR: Task do_checkcode does not exist for target sqlite3logger")
-
-
-def test_sqlite3logger_do_checkcodeall(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c checkcodeall")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-
-def test_sqlite3logger_do_checkcache(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c checkcache")
-    assert o.stderr.contains("ERROR: Task do_checkcache does not exist for target sqlite3logger")
-
-
-def test_sqlite3logger_do_checkcacheall(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c checkcacheall")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkcache: Source Availability")
-
-
-def test_sqlite3logger_do_checkrecipe(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c checkrecipe")
-    assert o.stderr.contains("ERROR: Task do_checkrecipe does not exist for target sqlite3logger")
-
-
-def test_sqlite3logger_do_checkrecipeall(test_build):
-    o = test_build.shell.execute("bitbake sqlite3logger -c checkrecipeall")
-    assert o.stdout.contains("stringutils-0.0.1-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    assert o.stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
