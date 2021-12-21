@@ -16,23 +16,16 @@ def test_core_image_minimal_do_checkcodeall(test_clang_qt6_build):
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
     assert o.stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-
-
-def test_core_image_minimal_do_checktest(test_clang_qt6_build):
-    o = test_clang_qt6_build.shell.execute("bitbake core-image-minimal -c checktest")
-    assert o.stderr.contains("ERROR: Task do_checktest does not exist for target core-image-minimal")
 
 
 def test_core_image_minimal_do_checktestall(test_clang_qt6_build):
@@ -43,18 +36,3 @@ def test_core_image_minimal_do_checktestall(test_clang_qt6_build):
     assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
     assert o.stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
     assert o.stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
-
-
-def test_qmake_project_do_checkcode(test_clang_qt6_build):
-    o = test_clang_qt6_build.shell.execute("bitbake qmake-project -c checkcode")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-    assert o.stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-
-
-def test_qmake_project_do_checktest(test_clang_qt6_build):
-    o = test_clang_qt6_build.shell.execute("bitbake qmake-project -c checktest")
-    assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert o.stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
