@@ -10,10 +10,6 @@ import os
 import pytest
 
 
-def test_core_image_minimal(bare_build):
-    assert bare_build.shell.execute("bitbake core-image-minimal").stderr.empty()
-
-
 def test_cmakeutils(bare_build):
     assert bare_build.shell.execute("bitbake cmake").stderr.empty()
 
