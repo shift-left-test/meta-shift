@@ -32,38 +32,38 @@ def test_populate_sdk(sdk_build):
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
 
-def test_humidifier_project(sdk_build):
+def test_sqlite3wrapper_do_build(sdk_build):
     project_dir = tempfile.mkdtemp()
-    sdk_build.sdk_shell.execute("git clone https://github.com/shift-left-test/humidifier-project.git {}".format(project_dir))
-    assert sdk_build.files.exists(project_dir)
+    try:
+        sdk_build.sdk_shell.execute("git clone https://github.com/shift-left-test/SQLite3Wrapper.git {}".format(project_dir))
+        assert sdk_build.files.exists(project_dir)
 
-    cd_cmd = "cd {0} && ".format(project_dir)
-    o = sdk_build.sdk_shell.execute(cd_cmd + "cmake -DENABLE_TESTS=ON .")
+        cd_cmd = "cd {0} && ".format(project_dir)
+        o = sdk_build.sdk_shell.execute(cd_cmd + "cmake -DWITH_TESTS=ON .")
 
-    assert o.stdout.contains("gcc -- works")
-    assert o.stdout.contains("g++ -- works")
-    assert o.stdout.contains("-- Found cross-compiling emulator: TRUE")
-    assert o.stdout.contains("-- Found CPPCHECK code checker: TRUE")
-    assert o.stdout.contains("-- Found CPPLINT code checker: TRUE")
-    assert o.stdout.contains("-- Found gcovr program: TRUE")
-    assert o.stdout.contains("-- Found GTest: {0}/sysroots/{1}/usr/lib/libgtest.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
-    assert o.stdout.contains("-- Found GMock: {0}/sysroots/{1}/usr/lib/libgmock.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
+        assert o.stdout.contains("-- Found cross-compiling emulator: TRUE")
+        assert o.stdout.contains("-- Found CPPCHECK code checker: TRUE")
+        assert o.stdout.contains("-- Found CPPLINT code checker: TRUE")
+        assert o.stdout.contains("-- Found gcovr program: TRUE")
+        assert o.stdout.contains("-- Found GTest: {0}/sysroots/{1}/usr/lib/libgtest.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
+        assert o.stdout.contains("-- Found GMock: {0}/sysroots/{1}/usr/lib/libgmock.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
 
-    o = sdk_build.sdk_shell.execute(cd_cmd + "make all")
-    assert o.returncode == 0
+        o = sdk_build.sdk_shell.execute(cd_cmd + "make all")
+        assert o.returncode == 0
 
-    o = sdk_build.sdk_shell.execute(cd_cmd + "make test")
-    assert o.stdout.contains("HumidifierTest.testNothingHappensWhenInitialized .......................   Passed")
-    assert o.stdout.contains("HumidifierTest.testNothingChangesWhenHumidityLevelAsDesired ............   Passed")
-    assert o.stdout.contains("HumidifierTest.testIncreaseHumidityLevelWhenCurrentLowerThanDesired ....   Passed")
-    assert o.stdout.contains("HumidifierTest.testDecreaseHumidityLevelWhenCurrentLargerThanDesired ...   Passed")
-    assert o.stdout.contains("100% tests passed, 0 tests failed out of 4")
+        o = sdk_build.sdk_shell.execute(cd_cmd + "make test")
+        assert o.stdout.contains("DatabaseTest.testExecuteOKWhenValidQueryGiven ..........   Passed")
+        assert o.stdout.contains("StatementTest.testExecuteOKWhenValidQueryGiven .........   Passed")
+        assert o.stdout.contains("ColumnTest.testGetColumnOKWhenValidIndexGiven ..........   Passed")
+        assert o.stdout.matches(r"\d+(\.\d+)?% tests passed, \d+ tests failed out of \d+")
 
-    o = sdk_build.sdk_shell.execute(cd_cmd + "make coverage")
-    assert o.stdout.contains("Running gcovr...")
-    assert o.stdout.contains("lines: 100.0%")
+        o = sdk_build.sdk_shell.execute(cd_cmd + "make coverage")
+        assert o.stdout.contains("Running gcovr...")
+        assert o.stdout.matches(r"lines: \d+(\.\d+)?% \(\d+ out of \d+\)")
+        assert o.stdout.matches(r"branches: \d+(\.\d+)?% \(\d+ out of \d+\)")
 
-    shutil.rmtree(project_dir)
+    finally:
+        shutil.rmtree(project_dir)
 
 
 def test_cppcheck(sdk_build):
