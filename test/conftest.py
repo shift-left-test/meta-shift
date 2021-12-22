@@ -86,7 +86,7 @@ class Output(object):
         Returns:
           True if the output contains matching text, False otherwise
         """
-        matcher = re.compile(regexp, re.MULTILINE)
+        matcher = re.compile(regexp.format(**self.kwargs), re.MULTILINE)
         return bool(matcher.search(self.output))
 
 
@@ -245,9 +245,9 @@ class BuildInfo(object):
 
 
 class BuildEnvironment(object):
-    def __init__(self, branch, conf_file, repo_dir, build_dir):
+    def __init__(self, conf_file, repo_dir, build_dir):
         self.repo_dir = repo_dir
-        self.branch = branch
+        self.branch = "jethro"
         self.conf_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), conf_file)
         self.build_dir = build_dir
         self.initWorkspace()
@@ -314,8 +314,8 @@ class BuildEnvironment(object):
 
 
 class SdkBuildEnvironment(BuildEnvironment):
-    def __init__(self, branch, conf_file, repo_dir, build_dir):
-        super(SdkBuildEnvironment, self).__init__(branch, conf_file, repo_dir, build_dir)
+    def __init__(self, conf_file, repo_dir, build_dir):
+        super(SdkBuildEnvironment, self).__init__(conf_file, repo_dir, build_dir)
         self.pre_excute_commands = []
         self.install_sdk()
 
@@ -360,7 +360,7 @@ def bare_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="jethro", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -373,7 +373,7 @@ def release_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="jethro", conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -386,7 +386,7 @@ def test_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="jethro", conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -399,7 +399,7 @@ def report_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return BuildEnvironment(branch="jethro", conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return BuildEnvironment(conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
@@ -412,4 +412,4 @@ def sdk_build(request, tmpdir_factory):
         shutil.rmtree(build_dir)
 
     request.addfinalizer(cleanup)
-    return SdkBuildEnvironment(branch="jethro", conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
+    return SdkBuildEnvironment(conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)

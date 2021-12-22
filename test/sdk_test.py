@@ -14,21 +14,21 @@ import tempfile
 
 def test_populate_sdk(sdk_build):
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}/{IMAGE_BASENAME}/host/installed-packages.txt")
-    assert pkgs.contains("nativesdk-cmake_3.3.1-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-cppcheck_2.6-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-cpplint_1.5.5-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-gcovr_4.2-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-lcov_1.11-r0_x86_64-nativesdk.ipk")
-    assert pkgs.contains("nativesdk-qemu_2.4.0-r1_x86_64-nativesdk.ipk")
+    assert pkgs.matches(r"nativesdk-cmake_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
+    assert pkgs.matches(r"nativesdk-cppcheck_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
+    assert pkgs.matches(r"nativesdk-cpplint_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
+    assert pkgs.matches(r"nativesdk-gcovr_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
+    assert pkgs.matches(r"nativesdk-lcov_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
+    assert pkgs.matches(r"nativesdk-qemu_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
 
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}/{IMAGE_BASENAME}/target/installed-packages.txt")
-    assert pkgs.contains("fff_1.1-r0_{TUNE_PKGARCH}.ipk")
-    assert pkgs.contains("gtest_1.7.0-r0_{TUNE_PKGARCH}.ipk")
+    assert pkgs.matches(r"fff_\d+(\.\d+)+-r\d+_{TUNE_PKGARCH}.ipk")
+    assert pkgs.matches(r"gtest_\d+(\.\d+)+-r\d+_{TUNE_PKGARCH}.ipk")
 
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}/{IMAGE_BASENAME}/files-in-sdk.txt")
     assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.3/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.3/Modules/FindGMock.cmake")
+    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
+    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
 
