@@ -14,8 +14,8 @@ import tempfile
 
 def test_populate_sdk(sdk_build):
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.19/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.19/Modules/FindGMock.cmake")
+    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
+    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cppcheck")
@@ -85,3 +85,4 @@ def test_cpplint(sdk_build):
     o = sdk_build.sdk_shell.execute("{} {}".format(cpplint_path, f.name))
     assert o.stderr.contains("{}:0:  No copyright message found.  You should have a line: \"Copyright [year] <Copyright Owner>\"  [legal/copyright] [5]".format(f.name))
     assert o.stderr.contains("{}:1:  Missing space before {{{{  [whitespace/braces] [5]".format(f.name))
+
