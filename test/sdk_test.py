@@ -14,8 +14,8 @@ import tempfile
 
 def test_populate_sdk(sdk_build):
     pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.21/Modules/CMakeUtils.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake-3.21/Modules/FindGMock.cmake")
+    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
+    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cmake")
     assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cppcheck")
