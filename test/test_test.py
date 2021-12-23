@@ -168,7 +168,7 @@ def test_autotools_project_do_build(test_build):
     assert project.packages.contains("oelint-adv-native")
 
 
-def test_cmake_npe_project_do_compile(test_build):
-    o = test_build.shell.execute("bitbake cmake-npe-project -c compile")
+def test_cmake_project_for_static_analysis_do_compile(test_build):
+    o = test_build.shell.execute("bitbake cmake-project-for-static-analysis -c compile")
     assert o.stdout.contains("Missing space before {{  [whitespace/braces]")  # by cpplint
     assert o.returncode != 0
