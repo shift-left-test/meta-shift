@@ -204,6 +204,14 @@ def save_as_json(dictionary, path):
         f.write(json.dumps(dictionary, indent=2) + "\n")
 
 
+def save_metadata(d):
+    metadata = {
+        "S": d.getVar("S", True) or "",
+        "PWD": os.getcwd(),
+    }
+    save_as_json(metadata, d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+
+
 def shiftutils_qemu_cmake_emulator(data):
     return shiftutils_qemu_run_cmd(data).replace(' ', ';')
 
@@ -330,7 +338,7 @@ def shiftutils_get_sstate_availability(d, siginfo=False):
             extrapath = d.getVar("NATIVELSBSTRING", True) + "/"
         else:
             extrapath = ""
-        
+
         tname = bb.runqueue.taskname_from_tid(task)[3:]
 
         if tname in ["fetch", "unpack", "patch", "populate_lic", "preconfigure"] and splithashfn[2]:
