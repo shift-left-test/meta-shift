@@ -35,8 +35,7 @@ python qmaketest_do_test() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
         mkdirhier(report_dir, True)
 
-        save_as_json({"S": d.getVar("S", True) or ""},
-                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+        save_metadata(d)
 
         plain("Generating the test result report", d)
         # Create Google test report files
@@ -106,3 +105,4 @@ python qmaketest_do_report() {
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkrecipe do_checkcache do_report
+
