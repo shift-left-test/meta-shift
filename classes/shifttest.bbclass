@@ -42,8 +42,7 @@ python shifttest_do_checkcode() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
         mkdirhier(report_dir, True)
 
-        save_as_json({"S": d.getVar("S", True) or ""},
-                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+        save_metadata(d)
 
         cmdline.extend(["--output-path", report_dir])
 
@@ -161,8 +160,7 @@ python shifttest_do_coverage() {
 
         mkdirhier(report_dir, True)
 
-        save_as_json({"S": d.getVar("S", True) or ""},
-                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+        save_metadata(d)
 
         check_call(["genhtml", LCOV_DATAFILE,
                     "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
@@ -249,8 +247,7 @@ python shifttest_do_checkcache() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcache")
         mkdirhier(report_dir, True)
 
-        save_as_json({"S": d.getVar("S", True) or ""},
-                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+        save_metadata(d)
 
         with open(os.path.join(report_dir, "caches.json"), "w") as f:
             f.write(make_json_report([("Shared State", found_sstate, missed_sstate), ("Premirror", found_source, missed_source)]))
@@ -268,7 +265,7 @@ python shifttest_do_checkrecipe() {
         for f in files:
             with open(f, "r") as fd:
                 pairs.append({
-                    "file": f,
+                    "file": os.path.relpath(f, os.getcwd()),
                     "code_lines": sum(1 for line in fd)
                 })
         return { "lines_of_code": pairs }
@@ -288,8 +285,7 @@ python shifttest_do_checkrecipe() {
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkrecipe")
         mkdirhier(report_dir, True)
 
-        save_as_json({"S": d.getVar("S", True) or ""},
-                     d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json"))
+        save_metadata(d)
 
         bb_files = d.getVar("FILE", True) + " " + d.getVar("__BBAPPEND", True) or ""
         bb_files = bb_files.strip().split()
@@ -299,7 +295,7 @@ python shifttest_do_checkrecipe() {
         report_path = os.path.join(report_dir, "recipe_violations.json")
         cmdline.append("--output %s" % report_path)
 
-    cmdline += ["--quiet", "--exit-zero"]
+    cmdline += ["--relpaths", "--quiet", "--exit-zero"]
 
     if d.getVar("SHIFT_CHECKRECIPE_SUPPRESS_RULES", True):
         cmdline.extend(["--suppress %s" % x for x in d.getVar("SHIFT_CHECKRECIPE_SUPPRESS_RULES", True).split()])
