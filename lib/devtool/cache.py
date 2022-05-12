@@ -107,7 +107,7 @@ def parse(args, basepath):
         tmpdir = tempfile.mkdtemp(prefix="devtool-cache-")
 
         env = os.environ.copy()
-        env["BB_ENV_EXTRAWHITE"] = env.get("BB_ENV_EXTRAWHITE", "") + " TMPDIR:forcevariable"
+        env["BB_ENV_PASSTHROUGH_ADDITIONS"] = env.get("BB_ENV_PASSTHROUGH_ADDITIONS", "") + " TMPDIR:forcevariable"
         env["TMPDIR:forcevariable"] = tmpdir
 
         cmd = "-c %s" % args.cmd if args.cmd else ""

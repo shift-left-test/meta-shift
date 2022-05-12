@@ -16,7 +16,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "honister"
+BRANCH = "kirkstone"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -134,10 +134,10 @@ BB_DISKMON_DIRS ??= "\\
     STOPTASKS,${DL_DIR},1G,100K \\
     STOPTASKS,${SSTATE_DIR},1G,100K \\
     STOPTASKS,/tmp,100M,100K \\
-    ABORT,${TMPDIR},100M,1K \\
-    ABORT,${DL_DIR},100M,1K \\
-    ABORT,${SSTATE_DIR},100M,1K \\
-    ABORT,/tmp,10M,1K"
+    HALT,${TMPDIR},100M,1K \\
+    HALT,${DL_DIR},100M,1K \\
+    HALT,${SSTATE_DIR},100M,1K \\
+    HALT,/tmp,10M,1K"
 PACKAGECONFIG:append:pn-qemu-native = " sdl"
 PACKAGECONFIG:append:pn-nativesdk-qemu = " sdl"
 CONF_VERSION = "2"

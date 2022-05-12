@@ -4,7 +4,7 @@ AUTHOR = "Idan Kamara"
 HOMEPAGE = "https://github.com/idank/bashlex"
 BUGTRACKER = "https://github.com/idank/bashlex/issues"
 SECTION = "devel"
-LICENSE = "GPL-3.0+"
+LICENSE = "GPL-3.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d32239bcb673463ab874e80d47fae504"
 
 PYPI_PACKAGE = "bashlex"

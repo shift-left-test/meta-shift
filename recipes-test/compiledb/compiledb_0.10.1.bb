@@ -4,7 +4,7 @@ AUTHOR = "Nick Yamane"
 HOMEPAGE = "https://github.com/nickdiego/compiledb"
 BUGTRACKER = "https://github.com/nickdiego/compiledb/issues"
 SECTION = "devel"
-LICENSE = "GPL-3.0"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://PKG-INFO;md5=1edc0f0ce6c3b1c976f0c74187d93b15"
 
 PYPI_PACKAGE = "compiledb"

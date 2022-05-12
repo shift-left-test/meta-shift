@@ -3,7 +3,7 @@ DESCRIPTION = "C/C++/Java Duplicate Source Code Block Finder"
 HOMEPAGE = "https://github.com/dlidstrom/Duplo"
 BUGTRACKER = "https://github.com/dlidstrom/Duplo/issues"
 SECTION = "devel"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=ffa10f40b98be2c2bc9608f56827ed23"
 
 SRC_URI = "git://github.com/dlidstrom/Duplo.git;protocol=https;nobranch=1 \

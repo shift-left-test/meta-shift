@@ -4,7 +4,7 @@ AUTHOR = "The cppcheck team"
 HOMEPAGE = "http://cppcheck.sourceforge.net/"
 BUGTRACKER = "https://trac.cppcheck.net/"
 SECTION = "devel"
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
 SRC_URI = "git://github.com/danmar/cppcheck.git;protocol=https;nobranch=1 \

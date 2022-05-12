@@ -4,7 +4,7 @@ AUTHOR = "Marc Brinkmann"
 HOMEPAGE = "http://github.com/mbr/shutilwhich"
 BUGTRACKER = "http://github.com/mbr/shutilwhich/issues"
 SECTION = "devel"
-LICENSE = "PSF"
+LICENSE = "PSF-2.0"
 LIC_FILES_CHKSUM = "file://PKG-INFO;md5=29a00402e8ebb60f3711b66fe4db4b44"
 
 PYPI_PACKAGE = "shutilwhich"

@@ -12,7 +12,7 @@ PYPI_PACKAGE = "anytree"
 SRC_URI[md5sum] = "25ef3e656ad16a2a6b6c187807da7e5f"
 SRC_URI[sha256sum] = "3f0f93f355a91bc3e6245319bf4c1d50e3416cc7a35cc1133c1ff38306bbccab"
 
-inherit pypi setuptools3
+inherit pypi setuptools3_legacy
 
 do_install:prepend() {
     # Remove LICCENSE from setup, as
