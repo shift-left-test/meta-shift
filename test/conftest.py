@@ -247,7 +247,7 @@ class BuildInfo(object):
 class BuildEnvironment(object):
     def __init__(self, conf_file, repo_dir, build_dir):
         self.repo_dir = repo_dir
-        self.branch = "kirkstone"
+        self.branch = "master"
         self.conf_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), conf_file)
         self.build_dir = build_dir
         self.initWorkspace()
