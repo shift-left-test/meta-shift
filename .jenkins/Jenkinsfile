@@ -1,28 +1,3 @@
-pipeline {
-    agent {
-        docker {
-            image "cart.lge.com/swte/yocto-dev:16.04"
-        }
-    }
-    stages {
-        stage("Test") {
-            environment {
-                DL_DIR = "${env.WORKSPACE}/build-res/downloads"
-                SSTATE_DIR = "${env.WORKSPACE}/build-res/sstate-cache"
-            }
-            steps {
-                sh "python3 -m pytest --basetemp=${env.WORKSPACE}/temp -xvv --junitxml result.xml"
-            }
-        }
-        stage("Report") {
-            steps {
-                junit "result.xml"
-            }
-        }
-    }
-    post {
-        always {
-            cleanWs disableDeferredWipeout: true
-        }
-    }
-}
+@Library('jenkins-shared-library') _
+
+buildMSProject(linux: '16.04')
