@@ -11,6 +11,7 @@ import pytest
 
 
 SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
+SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -43,6 +44,8 @@ def test_core_image_minimal_do_reportall(report_clang_qt6_build):
     # qmake-project
     assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKTEST("qmake-project", "mutations.xml"))
     assert EXISTS(REPORT.CHECKTEST("qmake-project", "index.html"))
     assert EXISTS(REPORT.CHECKTEST("qmake-project", "style.css"))
@@ -55,6 +58,8 @@ def test_core_image_minimal_do_reportall(report_clang_qt6_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # qmake-project:do_checktest
     with READ(REPORT.CHECKTEST("qmake-project", "mutations.xml")) as f:

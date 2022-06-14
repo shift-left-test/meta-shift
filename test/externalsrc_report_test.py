@@ -15,6 +15,7 @@ CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1
 CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" skipped="0" errors="0"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
+SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -79,6 +80,8 @@ def test_cmake_project_do_report(report_clang_build):
     assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("cmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKTEST("cmake-project", "mutations.xml"))
     assert EXISTS(REPORT.CHECKTEST("cmake-project", "index.html"))
     assert EXISTS(REPORT.CHECKTEST("cmake-project", "style.css"))
@@ -110,6 +113,8 @@ def test_cmake_project_do_report(report_clang_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("cmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # cmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
@@ -128,3 +133,4 @@ def test_cmake_project_do_report(report_clang_build):
     # cmake-project:do_checkrecipe
     with READ(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
         assert f.contains('cmake-project_1.0.0.bbappend')
+
