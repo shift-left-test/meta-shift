@@ -14,6 +14,7 @@ from contextlib import contextmanager
 CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1" disabled="0" errors="0"'
 CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" errors="0"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
+SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -74,6 +75,8 @@ def test_cmake_project_do_report(report_build):
     assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("cmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
@@ -102,6 +105,8 @@ def test_cmake_project_do_report(report_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("cmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # cmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
