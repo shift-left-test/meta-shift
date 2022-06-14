@@ -18,6 +18,7 @@ QT_PLUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qma
 QT_MINUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake-project.MinusTest"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
+SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -52,6 +53,8 @@ def test_core_image_minimal_do_reportall(report_clang_build):
     # cmake-project
     assert EXISTS(REPORT.ROOT("cmake-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKTEST("cmake-project", "mutations.xml"))
     assert EXISTS(REPORT.CHECKTEST("cmake-project", "index.html"))
     assert EXISTS(REPORT.CHECKTEST("cmake-project", "style.css"))
@@ -64,6 +67,8 @@ def test_core_image_minimal_do_reportall(report_clang_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("cmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # cmake-project:do_checktest
     with READ(REPORT.CHECKTEST("cmake-project", "mutations.xml")) as f:
@@ -74,6 +79,8 @@ def test_core_image_minimal_do_reportall(report_clang_build):
     # qmake-project
     assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKTEST("qmake-project", "mutations.xml"))
     assert EXISTS(REPORT.CHECKTEST("qmake-project", "index.html"))
     assert EXISTS(REPORT.CHECKTEST("qmake-project", "style.css"))
@@ -86,6 +93,8 @@ def test_core_image_minimal_do_reportall(report_clang_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # qmake-project:do_checktest
     with READ(REPORT.CHECKTEST("qmake-project", "mutations.xml")) as f:
@@ -96,6 +105,8 @@ def test_core_image_minimal_do_reportall(report_clang_build):
     # autotools-project
     assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("autotools-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("autotools-project", "style.css"))
     assert EXISTS(REPORT.CHECKTEST("autotools-project", "mutations.xml"))
     assert EXISTS(REPORT.CHECKTEST("autotools-project", "index.html"))
     assert EXISTS(REPORT.CHECKTEST("autotools-project", "style.css"))
@@ -108,6 +119,8 @@ def test_core_image_minimal_do_reportall(report_clang_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("autotools-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # autotools-project:do_checktest
     with READ(REPORT.CHECKTEST("autotools-project", "mutations.xml")) as f:
