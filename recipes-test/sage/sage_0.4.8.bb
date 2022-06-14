@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5"
 
 SRC_URI = "git://github.com/shift-left-test/sage.git;protocol=https;nobranch=1"
 
-SRCREV = "85502f9f25c673fc7fca5965d4ed1c323281509b"
+SRCREV = "da5ff53af1b83a7190f91271fad380e720bd939f"
 
 S = "${WORKDIR}/git"
 
@@ -35,4 +35,3 @@ do_install_append_class-native() {
 }
 
 BBCLASSEXTEND = "native nativesdk"
-
