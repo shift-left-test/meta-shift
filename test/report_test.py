@@ -17,6 +17,7 @@ CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures=
 QT_PLUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake-project.PlusTest"'
 QT_MINUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake-project.MinusTest"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
+SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -73,6 +74,8 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("cmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("cmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKCACHE("cmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "files.json"))
@@ -103,6 +106,8 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("cmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # cmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
@@ -127,6 +132,8 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("qmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("qmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKCACHE("qmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "files.json"))
@@ -163,6 +170,8 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # qmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("qmake-project", "caches.json")) as f:
@@ -185,6 +194,8 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("autotools-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("autotools-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("autotools-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("autotools-project", "style.css"))
     assert EXISTS(REPORT.CHECKCACHE("autotools-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "files.json"))
@@ -213,6 +224,8 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("autotools-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # autotools-project:do_checkcache
     with READ(REPORT.CHECKCACHE("autotools-project", "caches.json")) as f:
@@ -235,6 +248,8 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("humidifier-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("humidifier-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("humidifier-project", "style.css"))
     assert EXISTS(REPORT.CHECKCACHE("humidifier-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("humidifier-project", "files.json"))
@@ -259,6 +274,8 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("humidifier-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # humidifier-project:do_checkcache
     with READ(REPORT.CHECKCACHE("humidifier-project", "caches.json")) as f:
@@ -281,6 +298,8 @@ def test_core_image_minimal_do_reportall(report_build):
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "index.html"))
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("sqlite3wrapper", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("sqlite3wrapper", "index.html"))
+    assert EXISTS(REPORT.CHECK("sqlite3wrapper", "style.css"))
     assert EXISTS(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("sqlite3wrapper", "files.json"))
@@ -304,6 +323,8 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("sqlite3wrapper", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     # sqlite3wrapper:do_checkcache
     with READ(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json")) as f:
