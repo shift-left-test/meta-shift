@@ -13,6 +13,7 @@ import pytest
 NORMAL_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="2" failures="1" disabled="0" skipped="0" errors="0"'
 NORMAL_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="2" failures="1" disabled="0" skipped="0" errors="0"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
+SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -61,6 +62,8 @@ def test_qmake_project_do_report(report_qt6_build):
     assert EXISTS(REPORT.COVERAGE("qmake-project", "index.html"))
     assert EXISTS(REPORT.COVERAGE("qmake-project", "coverage.xml"))
     assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECK("qmake-project", "style.css"))
     assert EXISTS(REPORT.CHECKCACHE("qmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "files.json"))
@@ -95,6 +98,8 @@ def test_qmake_project_do_report(report_qt6_build):
         assert f.contains('"duplications": [')
         assert f.contains('"size": [')
         assert f.contains('"violations": [')
+    with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
+        assert f.contains(SAGE_HTML_TITLE)
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
