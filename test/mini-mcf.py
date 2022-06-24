@@ -12,6 +12,7 @@ import getpass
 import json
 import logging
 import os
+import shutil
 import subprocess
 import tempfile
 
@@ -68,11 +69,10 @@ def execute(cmd):
 
 def download_repo(url, branch, path):
     logger.info(url)
-    if not os.path.exists(path):
-        execute("git clone {0} -b {1} {2}".format(url, branch, path))
-    else:
-        execute("git --git-dir={0}/.git --work-tree={0} checkout {1}".format(path, branch))
-        execute("git --git-dir={0}/.git --work-tree={0} pull --ff-only".format(path))
+    if os.path.exists(path):
+        print("[INFO] Removing '%s'..." % path)
+        shutil.rmtree(path)
+    execute("git clone {0} -b {1} --depth 1 {2}".format(url, branch, path))
 
 
 def download_repos(args):
@@ -80,11 +80,14 @@ def download_repos(args):
         return value if value else defaultValue
 
     logger.info("Downloading the repositories to '{0}'...".format(args.repo_dir))
+    done  = []
     for repo in REPOS:
         if repo.name == "meta-shift":
             continue
         p = os.path.join(args.repo_dir, repo.location)
-        download_repo(repo.url, getOrDefault(repo.branch, args.branch), p)
+        if not repo.url in done:
+            download_repo(repo.url, getOrDefault(repo.branch, args.branch), p)
+            done.append(repo.url)
 
 
 def configure_template(conf_dir):
