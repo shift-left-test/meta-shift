@@ -111,9 +111,9 @@ def test_core_image_minimal_do_reportall(report_build):
 
     # cmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
-        assert f.contains('"Shared State": {{')
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Shared State": {')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
@@ -176,9 +176,9 @@ def test_core_image_minimal_do_reportall(report_build):
 
     # qmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("qmake-project", "caches.json")) as f:
-        assert f.contains('"Shared State": {{')
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Shared State": {')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
@@ -231,9 +231,9 @@ def test_core_image_minimal_do_reportall(report_build):
 
     # autotools-project:do_checkcache
     with READ(REPORT.CHECKCACHE("autotools-project", "caches.json")) as f:
-        assert f.contains('"Shared State": {{')
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Shared State": {')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
@@ -283,9 +283,9 @@ def test_core_image_minimal_do_reportall(report_build):
 
     # humidifier-project:do_checkcache
     with READ(REPORT.CHECKCACHE("humidifier-project", "caches.json")) as f:
-        assert f.contains('"Shared State": {{')
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Shared State": {')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
@@ -333,9 +333,9 @@ def test_core_image_minimal_do_reportall(report_build):
 
     # sqlite3wrapper:do_checkcache
     with READ(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json")) as f:
-        assert f.contains('"Shared State": {{')
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Shared State": {')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
