@@ -23,11 +23,11 @@ def test_cmakeutils_native(bare_build):
 
 def test_cmakeutils_nativesdk(bare_build):
     assert bare_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
-    f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/3.3.1-r0/sysroot-destdir" \
-        "{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
-    assert bare_build.files.read(f).containsAll('set(CMAKE_CROSSCOMPILING_EMULATOR "${{QEMU_$ENV{{OECORE_TARGET_ARCH}}}};${{QEMU_EXTRAOPTIONS}};',
-                                                '-L;$ENV{{SDKTARGETSYSROOT}};-E;',
-                                                'LD_LIBRARY_PATH=$ENV{{SDKTARGETSYSROOT}}/usr/lib:$ENV{{SDKTARGETSYSROOT}}/lib:$LD_LIBRARY_PATH"')
+    f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/*/sysroot-destdir/" \
+        "*/*/*/*/*/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
+    assert bare_build.files.read(f).containsAll('set(CMAKE_CROSSCOMPILING_EMULATOR "${QEMU_$ENV{OECORE_TARGET_ARCH}};${QEMU_EXTRAOPTIONS};',
+                                                '-L;$ENV{SDKTARGETSYSROOT};-E;',
+                                                'LD_LIBRARY_PATH=$ENV{SDKTARGETSYSROOT}/usr/lib:$ENV{SDKTARGETSYSROOT}/lib:$LD_LIBRARY_PATH"')
 
 
 def test_compiledb(bare_build):

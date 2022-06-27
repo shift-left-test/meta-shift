@@ -10,9 +10,16 @@ import getpass
 import os
 import pytest
 import re
-import subprocess
 import shutil
+import subprocess
 import time
+
+
+def findFiles(*paths):
+    import glob
+    found = glob.glob(os.path.join(*paths))
+    assert len(found) > 0
+    return found
 
 
 class Output(object):
@@ -21,14 +28,13 @@ class Output(object):
     This class provides variout output comparison helper functions.
     """
 
-    def __init__(self, output, kwargs={}):
+    def __init__(self, output):
         """ Default constructor
 
         Args:
           output (str): an output string
         """
         self.output = output.strip()
-        self.kwargs = kwargs
 
     def empty(self):
         """Assert that the output is empty
@@ -47,7 +53,7 @@ class Output(object):
         Returns:
           True if the output contains the keyword, False otherwise
         """
-        return keyword.format(**self.kwargs) in self.output
+        return keyword in self.output
 
     def containsAll(self, *keywords):
         """Assert that the output contains all the given keywords
@@ -86,7 +92,7 @@ class Output(object):
         Returns:
           True if the output contains matching text, False otherwise
         """
-        matcher = re.compile(regexp.format(**self.kwargs), re.MULTILINE)
+        matcher = re.compile(regexp, re.MULTILINE)
         return bool(matcher.search(self.output))
 
 
@@ -122,19 +128,18 @@ class Output(object):
 
 
 class FileOutput(Output):
-    def __init__(self, filename, kwargs={}):
+    def __init__(self, filename):
         self.filename = filename
         with open(os.path.join(filename), "r") as f:
-            super(FileOutput, self).__init__(f.read(), kwargs)
+            super(FileOutput, self).__init__(f.read())
 
     def __repr__(self):
         return "{0}: {1}".format(self.filename, super(FileOutput, self).__repr__())
 
 
 class Files(object):
-    def __init__(self, build_dir, kwargs={}):
+    def __init__(self, build_dir):
         self.build_dir = build_dir
-        self.kwargs = kwargs
 
     def __repr__(self):
         return "Files: ['build_dir': {0}]".format(self.build_dir)
@@ -143,10 +148,7 @@ class Files(object):
         return os.path.exists(os.path.join(self.build_dir, path))
 
     def read(self, path):
-        path = path.format(**self.kwargs)
-        f = os.path.join(self.build_dir, path)
-        assert os.path.exists(f)
-        return FileOutput(f, self.kwargs)
+        return FileOutput(findFiles(self.build_dir, path)[0])
 
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
@@ -185,10 +187,9 @@ class Outputs(object):
 
 
 class Shell(object):
-    def __init__(self, script, build_dir, kwargs={}):
+    def __init__(self, script, build_dir):
         self.script = script
         self.build_dir = build_dir
-        self.kwargs = kwargs
 
     def __repr__(self):
         return "Shell: ['script': {0}, 'build_dir': {1}]".format(self.script, self.build_dir)
@@ -204,15 +205,14 @@ class Shell(object):
         proc = subprocess.Popen(self.cmd(command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         streams = proc.communicate()
         return Outputs({
-            "stdout": Output(streams[0].decode("utf-8"), self.kwargs),
-            "stderr": Output(streams[1].decode("utf-8"), self.kwargs),
+            "stdout": Output(streams[0].decode("utf-8")),
+            "stderr": Output(streams[1].decode("utf-8")),
             "returncode": proc.returncode})
 
 
 class SdkShell(Shell):
-    def __init__(self, pre_excute_commands, kwargs={}):
+    def __init__(self, pre_excute_commands):
         self.pre_excute_commands = pre_excute_commands
-        self.kwargs = kwargs
 
     def __repr__(self):
         return "SdkShell: {0}".format(self.pre_excute_commands)
@@ -251,43 +251,11 @@ class BuildEnvironment(object):
         self.conf_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), conf_file)
         self.build_dir = build_dir
         self.initWorkspace()
-        self.parseArguments()
 
     def initWorkspace(self):
         mini_mcf = os.path.join(os.path.dirname(__file__), "mini-mcf.py")
         cmd = "{} -r {} -b {} -c {} -d {}".format(mini_mcf, self.repo_dir, self.branch, self.conf_file, self.build_dir)
         subprocess.call(cmd, shell=True)
-
-    def parseArguments(self):
-        self.kwargs = {}
-        f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
-        assert os.path.exists(f)
-        source = subprocess.check_output('bash -c "source {0} {1} && bitbake core-image-minimal -c populate_sdk -e"'.format(f, self.build_dir), shell=True).decode("utf-8")
-        for key in ("BUILD_ARCH",
-                    "TUNE_ARCH",
-                    "TUNE_PKGARCH",
-                    "SDK_NAME",
-                    "SDK_VERSION",
-                    "IMAGE_BASENAME",
-                    "REAL_MULTIMACH_TARGET_SYS",
-                    "SDKTARGETSYSROOT",
-                    "SDKPATHNATIVE",
-                    "TOOLCHAIN_OUTPUTNAME"):
-            regexp = "^(?:{key}=)(?:\")(.*)(?:\")$".format(key=key)
-            matcher = re.compile(regexp, re.MULTILINE)
-            found = matcher.search(source)
-            self.kwargs[key] = matcher.search(source).groups()[0] if found else ""
-
-        # Need to find the proper qemu executable name using TUNE_ARCH.
-        tune_arch = self.kwargs["TUNE_ARCH"]
-        if tune_arch in ("i486", "i586", "i686"):
-            self.kwargs["QEMU_ARCH"] = "i386"
-        elif tune_arch in ("powerpc"):
-            self.kwargs["QEMU_ARCH"] = "powerpc"
-        elif tune_arch in ("powerpc64"):
-            self.kwargs["QEMU_ARCH"] = "powerpc64"
-        else:
-            self.kwargs["QEMU_ARCH"] = tune_arch
 
     @property
     def shell(self):
@@ -302,11 +270,11 @@ class BuildEnvironment(object):
         f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
         assert os.path.exists(f)
         assert wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
-        return Shell(f, self.build_dir, self.kwargs)
+        return Shell(f, self.build_dir)
 
     @property
     def files(self):
-        return Files(self.build_dir, self.kwargs)
+        return Files(self.build_dir)
 
     def parse(self, recipe):
         self.shell.run("bitbake {} -g".format(recipe))
@@ -324,21 +292,18 @@ class SdkBuildEnvironment(BuildEnvironment):
         pre_excute_commands = []
         for cur_pre_excute_command in self.pre_excute_commands:
             pre_excute_commands.append(cur_pre_excute_command)
-        return SdkShell(pre_excute_commands, self.kwargs)
+        return SdkShell(pre_excute_commands)
 
     def install_sdk(self):
         assert self.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
 
         # Check that the SDK can build a specified module.
-        path = "tmp/deploy/sdk/{TOOLCHAIN_OUTPUTNAME}.sh".format(**self.kwargs)
-        installer = os.path.join(self.build_dir, path)
-        assert os.path.exists(installer)
+        installer = findFiles(self.build_dir, "tmp/deploy/sdk/*.sh")[0]
 
         self.sdk_dir = os.path.join(self.build_dir, "sdk")
         self.shell.execute("{0} -d {1} -y".format(installer, self.sdk_dir))
 
-        sdk_env_setup_path = '{0}/environment-setup-{1}'.format(self.sdk_dir, self.kwargs["REAL_MULTIMACH_TARGET_SYS"])
-        assert os.path.exists(sdk_env_setup_path)
+        sdk_env_setup_path = findFiles(self.sdk_dir, "environment-setup-*")[0]
 
         self.pre_excute_commands.append('cd {0}'.format(self.build_dir))
         self.pre_excute_commands.append('source {0}'.format(sdk_env_setup_path))
