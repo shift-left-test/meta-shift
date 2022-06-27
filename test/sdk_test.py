@@ -13,18 +13,18 @@ import tempfile
 
 
 def test_populate_sdk(sdk_build):
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
-    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
-    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cppcheck")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/cpplint")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/gcovr")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/lcov")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/bin/qemu-")
-    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
-    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/gtest/gtest.h")
+    pkgs = sdk_build.files.read("buildhistory/sdk/*/*/files-in-sdk.txt")
+    assert pkgs.matches(r".+/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
+    assert pkgs.matches(r".+/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
+    assert pkgs.matches(r".+/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+    assert pkgs.matches(r".+/usr/bin/cmake")
+    assert pkgs.matches(r".+/usr/bin/cppcheck")
+    assert pkgs.matches(r".+/usr/bin/cpplint")
+    assert pkgs.matches(r".+/usr/bin/gcovr")
+    assert pkgs.matches(r".+/usr/bin/lcov")
+    assert pkgs.matches(r".+/usr/bin/qemu-")
+    assert pkgs.matches(r".+/usr/include/fff/fff.h")
+    assert pkgs.matches(r".+/usr/include/gtest/gtest.h")
 
 
 def test_sqlite3wrapper_do_build(sdk_build):
@@ -40,8 +40,8 @@ def test_sqlite3wrapper_do_build(sdk_build):
         assert o.stdout.contains("-- Found CPPCHECK code checker: TRUE")
         assert o.stdout.contains("-- Found CPPLINT code checker: TRUE")
         assert o.stdout.contains("-- Found gcovr program: TRUE")
-        assert o.stdout.contains("-- Found GTest: {0}/sysroots/{1}/usr/lib/libgtest.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
-        assert o.stdout.contains("-- Found GMock: {0}/sysroots/{1}/usr/lib/libgmock.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
+        assert o.stdout.matches(r"-- Found GTest: {0}/sysroots/.+/usr/lib/libgtest\.a".format(sdk_build.sdk_dir))
+        assert o.stdout.matches(r"-- Found GMock: {0}/sysroots/.+/usr/lib/libgmock\.a".format(sdk_build.sdk_dir))
 
         o = sdk_build.sdk_shell.execute(cd_cmd + "make all")
         assert o.returncode == 0
@@ -84,5 +84,4 @@ def test_cpplint(sdk_build):
 
     o = sdk_build.sdk_shell.execute("{} {}".format(cpplint_path, f.name))
     assert o.stderr.contains("{}:0:  No copyright message found.  You should have a line: \"Copyright [year] <Copyright Owner>\"  [legal/copyright] [5]".format(f.name))
-    assert o.stderr.contains("{}:1:  Missing space before {{{{  [whitespace/braces] [5]".format(f.name))
-
+    assert o.stderr.contains("{}:1:  Missing space before {{  [whitespace/braces] [5]".format(f.name))
