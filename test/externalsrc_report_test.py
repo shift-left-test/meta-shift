@@ -110,12 +110,11 @@ def test_cmake_project_do_report(report_build):
 
     # cmake-project:do_checkcache
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
     # cmake-project:do_checkrecipe
     with READ(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
         assert f.contains('cmake-project_1.0.0.bbappend')
-
