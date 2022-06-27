@@ -105,9 +105,9 @@ def test_qmake_project_do_report(report_qt6_build):
 
     # do_checkcache
     with READ(REPORT.CHECKCACHE("qmake-project", "caches.json")) as f:
-        assert f.contains('"Shared State": {{')
-        assert f.contains('"Premirror": {{')
-        assert f.contains('"Summary": {{')
+        assert f.contains('"Shared State": {')
+        assert f.contains('"Premirror": {')
+        assert f.contains('"Summary": {')
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
