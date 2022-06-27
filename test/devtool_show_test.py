@@ -13,12 +13,12 @@ def test_show_global_unknown_variable(bare_build):
 
 def test_show_global_variables(bare_build):
     o = bare_build.shell.execute("devtool show TUNE_ARCH BUILD_ARCH")
-    assert o.stdout.containsAll('BUILD_ARCH="{BUILD_ARCH}"',
-                                'TUNE_ARCH="{TUNE_ARCH}"')
+    assert o.stdout.matchesAll(r'BUILD_ARCH=".+"',
+                               r'TUNE_ARCH=".+"')
 
 def test_show_global_unexpanded_variables(bare_build):
     o = bare_build.shell.execute("devtool show MACHINE_ARCH -u")
-    assert o.stdout.contains("# MACHINE_ARCH=${{@[d.getVar('TUNE_PKGARCH'), d.getVar('MACHINE')][bool(d.getVar('MACHINE'))].replace('-', '_')}}")
+    assert o.stdout.contains("# MACHINE_ARCH=${@[d.getVar('TUNE_PKGARCH'), d.getVar('MACHINE')][bool(d.getVar('MACHINE'))].replace('-', '_')}")
 
 
 def test_show_global_variable_flags(bare_build):
@@ -38,11 +38,11 @@ def test_show_recipe_unknown_variable(bare_build):
 
 def test_show_recipe_variable(bare_build):
     o = bare_build.shell.execute("devtool show -r cmake cmake_do_configure")
-    assert not o.stdout.contains("bbnote () {{")
-    assert o.stdout.contains("cmake_do_configure () {{")
+    assert not o.stdout.contains("bbnote () {")
+    assert o.stdout.contains("cmake_do_configure () {")
 
 
 def test_show_recipe_dependent_variables(bare_build):
     o = bare_build.shell.execute("devtool show -r cmake cmake_do_configure -x")
-    assert o.stdout.contains("bbnote () {{")
-    assert o.stdout.contains("cmake_do_configure () {{")
+    assert o.stdout.contains("bbnote () {")
+    assert o.stdout.contains("cmake_do_configure () {")
