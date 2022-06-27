@@ -13,7 +13,7 @@ import tempfile
 
 
 def test_populate_sdk(sdk_build):
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/host/installed-packages.txt")
+    pkgs = sdk_build.files.read("buildhistory/sdk/*/*/host/installed-packages.txt")
     assert pkgs.matches(r"nativesdk-cmake_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
     assert pkgs.matches(r"nativesdk-cppcheck_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
     assert pkgs.matches(r"nativesdk-cpplint_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
@@ -21,15 +21,15 @@ def test_populate_sdk(sdk_build):
     assert pkgs.matches(r"nativesdk-lcov_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
     assert pkgs.matches(r"nativesdk-qemu_\d+(\.\d+)+-r\d+_x86_64-nativesdk.ipk")
 
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/target/installed-packages.txt")
-    assert pkgs.matches(r"fff_\d+(\.\d+)+-r\d+_{TUNE_PKGARCH}.ipk")
-    assert pkgs.matches(r"gtest_\d+(\.\d+)+-r\d+_{TUNE_PKGARCH}.ipk")
+    pkgs = sdk_build.files.read("buildhistory/sdk/*/*/target/installed-packages.txt")
+    assert pkgs.matches(r"fff_\d+(\.\d+)+-r\d+_.+\.ipk")
+    assert pkgs.matches(r"gtest_\d+(\.\d+)+-r\d+_.+\.ipk")
 
-    pkgs = sdk_build.files.read("buildhistory/sdk/{SDK_NAME}{SDK_EXT}/{IMAGE_BASENAME}/files-in-sdk.txt")
-    assert pkgs.contains("{SDKTARGETSYSROOT}/usr/include/fff/fff.h")
-    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
-    assert pkgs.matches(r"{SDKPATHNATIVE}/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
-    assert pkgs.contains("{SDKPATHNATIVE}/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
+    pkgs = sdk_build.files.read("buildhistory/sdk/*/*/files-in-sdk.txt")
+    assert pkgs.matches(r".+/usr/include/fff/fff.h")
+    assert pkgs.matches(r".+/usr/share/cmake-\d+(\.\d+)+/Modules/CMakeUtils.cmake")
+    assert pkgs.matches(r".+/usr/share/cmake-\d+(\.\d+)+/Modules/FindGMock.cmake")
+    assert pkgs.matches(r".+/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake")
 
 
 def test_sqlite3wrapper_do_build(sdk_build):
@@ -45,8 +45,8 @@ def test_sqlite3wrapper_do_build(sdk_build):
         assert o.stdout.contains("-- Found CPPCHECK code checker: TRUE")
         assert o.stdout.contains("-- Found CPPLINT code checker: TRUE")
         assert o.stdout.contains("-- Found gcovr program: TRUE")
-        assert o.stdout.contains("-- Found GTest: {0}/sysroots/{1}/usr/lib/libgtest.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
-        assert o.stdout.contains("-- Found GMock: {0}/sysroots/{1}/usr/lib/libgmock.a".format(sdk_build.sdk_dir, sdk_build.kwargs["REAL_MULTIMACH_TARGET_SYS"]))
+        assert o.stdout.matches(r"-- Found GTest: {0}/sysroots/.+/usr/lib/libgtest\.a".format(sdk_build.sdk_dir))
+        assert o.stdout.matches(r"-- Found GMock: {0}/sysroots/.+/usr/lib/libgmock\.a".format(sdk_build.sdk_dir))
 
         o = sdk_build.sdk_shell.execute(cd_cmd + "make all")
         assert o.returncode == 0
@@ -89,4 +89,4 @@ def test_cpplint(sdk_build):
 
     o = sdk_build.sdk_shell.execute("{} {}".format(cpplint_path, f.name))
     assert o.stderr.contains("{}:0:  No copyright message found.  You should have a line: \"Copyright [year] <Copyright Owner>\"  [legal/copyright] [5]".format(f.name))
-    assert o.stderr.contains("{}:1:  Missing space before {{{{  [whitespace/braces] [5]".format(f.name))
+    assert o.stderr.contains("{}:1:  Missing space before {{  [whitespace/braces] [5]".format(f.name))
