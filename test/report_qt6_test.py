@@ -47,13 +47,16 @@ class REPORT:
         return os.path.join("report", cls.PF[recipe], "checkrecipe", path)
 
 
-def test_qmake_project_do_report(report_qt6_build):
+@pytest.fixture(scope="module")
+def shared_report_build(report_qt6_build):
     report_qt6_build.files.remove("report")
-
     assert report_qt6_build.shell.execute("bitbake qmake-project -c report").stderr.empty()
+    return report_qt6_build
 
-    EXISTS = report_qt6_build.files.exists
-    READ = report_qt6_build.files.read
+
+def test_qmake_project_do_report(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
 
     assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("qmake-project", "test-qt-gtest.xml"))
@@ -68,7 +71,11 @@ def test_qmake_project_do_report(report_qt6_build):
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "files.json"))
 
-    # do_test
+
+def test_qmake_project_do_report(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.RESULT("qmake-project", "test-qt-gtest.xml")) as f:
         assert f.contains('classname="qmake-project.PlusTest"')
         assert f.contains(NORMAL_GT_PLUS_TEST_FAILED_LOG)
@@ -81,7 +88,11 @@ def test_qmake_project_do_report(report_qt6_build):
     with READ(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml")) as f:
         assert f.contains('name="qmake-project.MinusTest"')
 
-    # do_coverage
+
+def test_qmake_project_do_coverage(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.COVERAGE("qmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
     with READ(REPORT.COVERAGE("qmake-project", "coverage.xml")) as f:
@@ -92,7 +103,11 @@ def test_qmake_project_do_report(report_qt6_build):
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-    # do_checkcode
+
+def test_qmake_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("qmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -103,7 +118,11 @@ def test_qmake_project_do_report(report_qt6_build):
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-    # do_checkcache
+
+def test_qmake_project_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKCACHE("qmake-project", "caches.json")) as f:
         assert f.contains('"Shared State": {')
         assert f.contains('"Premirror": {')
@@ -113,7 +132,11 @@ def test_qmake_project_do_report(report_qt6_build):
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-    # do_checkrecipe
+
+def test_qmake_project_do_checkrecipe(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json")) as f:
         assert f.contains('"issues": []')
 

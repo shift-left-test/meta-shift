@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-#!/usr/bin/python3
 
 """
 Copyright (c) 2020 LG Electronics Inc.
@@ -20,25 +19,19 @@ def test_core_image_minimal_do_reportall(release_build):
 
 
 def test_cmake_project_do_build(release_build):
-    assert release_build.shell.execute("bitbake cmake-project").stderr.empty()
-
-    project = release_build.parse("cmake-project")
-    assert project.packages.contains("cmake-native")
-    assert not project.packages.contains("lcov-native")
-    assert not project.packages.containsAny("gtest", "googletest")
+    stdout = release_build.shell.execute("bitbake cmake-project -e | grep ^DEPENDS=").stdout
+    assert stdout.contains("cmake-native")
+    assert not stdout.contains("lcov-native")
+    assert not stdout.containsAny("gtest", "googletest")
 
 
 def test_qmake_project_do_build(release_build):
-    assert release_build.shell.execute("bitbake qmake-project").stderr.empty()
-
-    project = release_build.parse("qmake-project")
-    assert project.packages.contains("qtbase")
-    assert not project.packages.contains("lcov-native")
+    stdout = release_build.shell.execute("bitbake qmake-project -e | grep ^DEPENDS=").stdout
+    assert stdout.contains("qtbase")
+    assert not stdout.contains("lcov-native")
 
 
 def test_autotools_project_do_build(release_build):
-    assert release_build.shell.execute("bitbake autotools-project").stderr.empty()
-
-    project = release_build.parse("autotools-project")
-    assert not project.packages.contains("lcov-native")
-    assert not project.packages.containsAny("gtest", "googletest")
+    stdout = release_build.shell.execute("bitbake autotools-project -e | grep ^DEPENDS=").stdout
+    assert not stdout.contains("lcov-native")
+    assert not stdout.containsAny("gtest", "googletest")

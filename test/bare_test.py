@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-#!/usr/bin/python3
 
 """
 Copyright (c) 2020 LG Electronics Inc.
@@ -10,192 +9,21 @@ import os
 import pytest
 
 
-def test_cmakeutils(bare_build):
-    assert bare_build.shell.execute("bitbake cmake").stderr.empty()
-
-
-def test_cmakeutils_native(bare_build):
-    assert bare_build.shell.execute("bitbake cmake-native").stderr.empty()
-    environ = bare_build.shell.execute("bitbake -e cmake-native -c install").stdout
-    assert environ.contains("CMakeUtils.cmake")
-    assert environ.contains("FindGMock.cmake")
-
-
-def test_cmakeutils_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
-    f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/*/sysroot-destdir/" \
-        "*/*/*/*/*/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
-    assert bare_build.files.read(f).containsAll('set(CMAKE_CROSSCOMPILING_EMULATOR "${QEMU_$ENV{OECORE_TARGET_ARCH}};${QEMU_EXTRAOPTIONS};',
-                                                '-L;$ENV{SDKTARGETSYSROOT};-E;',
-                                                'LD_LIBRARY_PATH=$ENV{SDKTARGETSYSROOT}/usr/lib:$ENV{SDKTARGETSYSROOT}/lib:$LD_LIBRARY_PATH"')
-
-
-def test_compiledb(bare_build):
-    assert bare_build.shell.execute("bitbake compiledb").stderr.empty()
-
-
-def test_compiledb_native(bare_build):
-    assert bare_build.shell.execute("bitbake compiledb-native").stderr.empty()
-
-
-def test_compiledb_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-compiledb").stderr.empty()
-
-
-def test_cppcheck(bare_build):
-    assert bare_build.shell.execute("bitbake cppcheck").stderr.empty()
-
-
-def test_cppcheck_native(bare_build):
-    assert bare_build.shell.execute("bitbake cppcheck-native").stderr.empty()
-
-
-def test_cppcheck_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-cppcheck").stderr.empty()
-
-
-def test_cpplint(bare_build):
-    assert bare_build.shell.execute("bitbake cpplint").stderr.empty()
-
-
-def test_cpplint_native(bare_build):
-    assert bare_build.shell.execute("bitbake cpplint-native").stderr.empty()
-
-
-def test_cpplint_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-cpplint").stderr.empty()
-
-
-def test_fff(bare_build):
-    assert bare_build.shell.execute("bitbake fff").stderr.empty()
-
-
-def test_fff_native(bare_build):
-    assert bare_build.shell.execute("bitbake fff-native").stderr.empty()
-
-
-def test_fff_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-fff").stderr.empty()
-
-
-def test_gcovr(bare_build):
-    assert bare_build.shell.execute("bitbake gcovr").stderr.empty()
-
-
-def test_gcovr_native(bare_build):
-    assert bare_build.shell.execute("bitbake gcovr-native").stderr.empty()
-
-
-def test_gcovr_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-gcovr").stderr.empty()
-
-
-def test_googletest(bare_build):
-    assert bare_build.shell.execute("bitbake gtest").stderr.empty()
-    assert bare_build.shell.execute("bitbake gmock").stderr.empty()
-
-
-def test_googletest_native(bare_build):
-    assert bare_build.shell.execute("bitbake gtest-native").stderr.empty()
-    assert bare_build.shell.execute("bitbake gmock-native").stderr.empty()
-
-
-def test_googletest_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-gtest").stderr.empty()
-    assert bare_build.shell.execute("bitbake nativesdk-gmock").stderr.empty()
-
-
-def test_lcov(bare_build):
-    assert bare_build.shell.execute("bitbake lcov").stderr.empty()
-
-
-def test_lcov_native(bare_build):
-    assert bare_build.shell.execute("bitbake lcov-native").stderr.empty()
-
-
-def test_lcov_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-lcov").stderr.empty()
-
-
-def test_python_bashlex(bare_build):
-    assert bare_build.shell.execute("bitbake python3-bashlex").stderr.empty()
-
-
-def test_python_bashlex_native(bare_build):
-    assert bare_build.shell.execute("bitbake python3-bashlex-native").stderr.empty()
-
-
-def test_python_bashlex_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python3-bashlex").stderr.empty()
-
-
-def test_python_click(bare_build):
-    assert bare_build.shell.execute("bitbake python3-click").stderr.empty()
-
-
-def test_python_click_native(bare_build):
-    assert bare_build.shell.execute("bitbake python3-click-native").stderr.empty()
-
-
-def test_python_click_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python3-click").stderr.empty()
-
-
-def test_python_lcov_cobertura(bare_build):
-    assert bare_build.shell.execute("bitbake python3-lcov-cobertura").stderr.empty()
-
-
-def test_python_lcov_cobertura_native(bare_build):
-    assert bare_build.shell.execute("bitbake python3-lcov-cobertura-native").stderr.empty()
-
-
-def test_python_lcov_cobertura_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python3-lcov-cobertura").stderr.empty()
-
-
-def test_python_shutilwhich(bare_build):
-    assert bare_build.shell.execute("bitbake python3-shutilwhich").stderr.empty()
-
-
-def test_python_shutilwhich_native(bare_build):
-    assert bare_build.shell.execute("bitbake python3-shutilwhich-native").stderr.empty()
-
-
-def test_python_shutilwhich_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-python3-shutilwhich").stderr.empty()
-
-
-def test_qemu(bare_build):
-    assert bare_build.shell.execute("bitbake qemu").stderr.empty()
-
-
-def test_qemu_native(bare_build):
-    assert bare_build.shell.execute("bitbake qemu-native").stderr.empty()
-
-
-def test_qemu_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-qemu").stderr.empty()
-
-
-def test_sage(bare_build):
-    assert bare_build.shell.execute("bitbake sage").stderr.empty()
-
-
-def test_sage_native(bare_build):
-    assert bare_build.shell.execute("bitbake sage-native").stderr.empty()
-
-
-def test_sage_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-sage").stderr.empty()
-
-
-def test_oelint_adv_nativesdk(bare_build):
-    assert bare_build.shell.execute("bitbake nativesdk-oelint-adv").stderr.empty()
-
-
-def test_oelint_adv(bare_build):
-    assert bare_build.shell.execute("bitbake oelint-adv").stderr.empty()
-
-
-def test_oelint_adv_native(bare_build):
-    assert bare_build.shell.execute("bitbake oelint-adv-native").stderr.empty()
+def test_build_recipes(bare_build):
+    recipes = ["cmake-native", "nativesdk-cmake",
+               "compiledb-native",
+               "cppcheck-native", "nativesdk-cppcheck",
+               "cpplint-native", "nativesdk-cpplint",
+               "fff",
+               "nativesdk-gcovr",
+               "gtest",
+               "gmock",
+               "lcov-native", "nativesdk-lcov",
+               "python3-bashlex",
+               "python3-click",
+               "python3-lcov-cobertura-native", "nativesdk-python3-lcov-cobertura",
+               "python3-shutilwhich",
+               "qemu-native", "nativesdk-qemu",
+               "sage-native",
+               "oelint-adv-native"]
+    assert bare_build.shell.execute("bitbake " + " ".join(recipes)).stderr.empty()
