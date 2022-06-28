@@ -14,11 +14,6 @@ def test_core_image_minimal_do_report(test_build):
     assert o.stderr.contains("ERROR: Task do_report does not exist for target core-image-minimal")
 
 
-def test_core_image_minimal_do_reportall(test_build):
-    o = test_build.shell.execute("bitbake core-image-minimal -c reportall")
-    assert o.stderr.contains("do_report: You should set SHIFT_REPORT_DIR to make reports")
-
-
 def test_core_image_minimal_do_test(test_build):
     o = test_build.shell.execute("bitbake core-image-minimal -c test")
     assert o.stderr.contains("ERROR: Task do_test does not exist for target core-image-minimal")
@@ -166,3 +161,4 @@ def test_autotools_project_do_build(test_build):
     assert project.packages.contains("qemu-native")
     assert project.packages.contains("sage-native")
     assert project.packages.contains("oelint-adv-native")
+
