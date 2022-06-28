@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-#!/usr/bin/python3
 
 """
 Copyright (c) 2020 LG Electronics Inc.
@@ -210,40 +209,6 @@ class Shell(object):
             "returncode": proc.returncode})
 
 
-class SdkShell(Shell):
-    def __init__(self, pre_excute_commands):
-        self.pre_excute_commands = pre_excute_commands
-
-    def __repr__(self):
-        return "SdkShell: {0}".format(self.pre_excute_commands)
-
-    def cmd(self, command):
-        c = 'bash -O expand_aliases -c "'
-        for cur_command in self.pre_excute_commands:
-            c += '{0} \n '.format(cur_command)
-        c += '{0}"'.format(command)
-        return c
-
-
-class BuildInfo(object):
-    def __init__(self, build_dir):
-        def readFile(path):
-            with open(path, "r") as f:
-                return f.read()
-
-        self.build_dir = build_dir
-        self.packages = FileOutput(os.path.join(build_dir, "pn-buildlist"))
-        self.tasks = FileOutput(os.path.join(build_dir, "task-depends.dot"))
-
-        @property
-        def packages(self):
-            return self.packages
-
-        @property
-        def tasks(self):
-            return self.tasks
-
-
 class BuildEnvironment(object):
     def __init__(self, conf_file, repo_dir, build_dir):
         self.repo_dir = repo_dir
@@ -275,44 +240,6 @@ class BuildEnvironment(object):
     @property
     def files(self):
         return Files(self.build_dir)
-
-    def parse(self, recipe):
-        self.shell.run("bitbake {} -g".format(recipe))
-        return BuildInfo(self.build_dir)
-
-
-class SdkBuildEnvironment(BuildEnvironment):
-    def __init__(self, conf_file, repo_dir, build_dir):
-        super(SdkBuildEnvironment, self).__init__(conf_file, repo_dir, build_dir)
-        self.pre_excute_commands = []
-        self.install_sdk()
-
-    @property
-    def sdk_shell(self):
-        pre_excute_commands = []
-        for cur_pre_excute_command in self.pre_excute_commands:
-            pre_excute_commands.append(cur_pre_excute_command)
-        return SdkShell(pre_excute_commands)
-
-    def install_sdk(self):
-        assert self.shell.execute("bitbake core-image-minimal -c populate_sdk").stderr.empty()
-
-        # Check that the SDK can build a specified module.
-        installer = findFiles(self.build_dir, "tmp/deploy/sdk/*.sh")[0]
-
-        self.sdk_dir = os.path.join(self.build_dir, "sdk")
-        self.shell.execute("{0} -d {1} -y".format(installer, self.sdk_dir))
-
-        sdk_env_setup_path = findFiles(self.sdk_dir, "environment-setup-*")[0]
-
-        self.pre_excute_commands.append('cd {0}'.format(self.build_dir))
-        self.pre_excute_commands.append('source {0}'.format(sdk_env_setup_path))
-
-        with open(sdk_env_setup_path, "r") as f:
-            regexp = "(export {key}=)(?:\")(.*)(?:\")$".format(key='OECORE_NATIVE_SYSROOT')
-            matcher = re.compile(regexp, re.MULTILINE)
-            source = f.read()
-            self.oecore_native_sysroot = matcher.search(source).groups()[1]
 
 
 @pytest.fixture(scope="session")
@@ -391,16 +318,3 @@ def report_clang_build(request, tmpdir_factory):
 
     request.addfinalizer(cleanup)
     return BuildEnvironment(conf_file="conf/report_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
-
-
-@pytest.fixture(scope="session")
-def sdk_build(request, tmpdir_factory):
-    repo_dir = str(tmpdir_factory.mktemp("repo"))
-    build_dir = str(tmpdir_factory.mktemp("build"))
-
-    def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
-
-    request.addfinalizer(cleanup)
-    return SdkBuildEnvironment(conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
