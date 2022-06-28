@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-#!/usr/bin/python3
 
 """
 Copyright (c) 2020 LG Electronics Inc.
@@ -55,20 +54,17 @@ class REPORT:
         return os.path.join("report", cls.PF[recipe], "checkrecipe", path)
 
 
-def test_core_image_minimal_do_report(report_build):
-    o = report_build.shell.execute("bitbake core-image-minimal -c report")
-    assert o.stderr.contains("ERROR: Task do_report does not exist for target core-image-minimal")
-
-
-def test_core_image_minimal_do_reportall(report_build):
+@pytest.fixture(scope="module")
+def shared_report_build(report_build):
     report_build.files.remove("report")
-
     assert report_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
+    return report_build
 
-    EXISTS = report_build.files.exists
-    READ = report_build.files.read
 
-    # cmake-project
+def test_cmake_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("cmake-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("cmake-project", "OperatorTest.xml"))
     assert EXISTS(REPORT.COVERAGE("cmake-project", "index.html"))
@@ -82,7 +78,11 @@ def test_core_image_minimal_do_reportall(report_build):
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
-    # cmake-project:do_test
+
+def test_cmake_project_do_test(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.RESULT("cmake-project", "OperatorTest_1.xml")) as f:
         assert f.contains('classname="cmake-project.PlusTest"')
         assert f.contains(CMAKE_GT_PLUS_TEST_FAILED_LOG)
@@ -91,7 +91,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('classname="cmake-project.MinusTest"')
         assert f.contains(CMAKE_GT_MINUS_TEST_FAILED_LOG)
 
-    # cmake-project:do_coverage
+
+def test_cmake_project_do_coverage(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.COVERAGE("cmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
     with READ(REPORT.COVERAGE("cmake-project", "coverage.xml")) as f:
@@ -100,7 +104,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('name="cmake-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    # cmake-project:do_checkcode
+
+def test_cmake_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("cmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -109,7 +117,11 @@ def test_core_image_minimal_do_reportall(report_build):
     with READ(REPORT.CHECK("cmake-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # cmake-project:do_checkcache
+
+def test_cmake_project_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKCACHE("cmake-project", "caches.json")) as f:
         assert f.contains('"Shared State": {')
         assert f.contains('"Premirror": {')
@@ -117,7 +129,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
-    # cmake-project:do_checkrecipe
+
+def test_cmake_project_do_checkrecipe(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json")) as f:
         assert f.contains('"issues": []')
 
@@ -125,7 +141,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('cmake-project_1.0.0.bb')
         assert f.contains('cmake-project_1.0.0.bbappend')
 
-    # qmake-project
+
+def test_qmake_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("qmake-project", "test-qt-gtest.xml"))
     assert EXISTS(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml"))
@@ -141,7 +161,11 @@ def test_core_image_minimal_do_reportall(report_build):
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-    # qmake-project:do_test
+
+def test_qmake_project_do_test(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.RESULT("qmake-project", "test-qt-gtest.xml")) as f:
         assert f.contains('classname="qmake-project.PlusTest"')
         assert f.contains(NORMAL_GT_PLUS_TEST_FAILED_LOG)
@@ -156,7 +180,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('name="qmake-project.MinusTest"')
         assert f.contains(QT_MINUS_TEST_FAILED_LOG)
 
-    # qmake-project:do_coverage
+
+def test_qmake_project_do_coverage(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.COVERAGE("qmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
     with READ(REPORT.COVERAGE("qmake-project", "coverage.xml")) as f:
@@ -165,7 +193,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('name="qmake-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    # qmake-project:do_checkcode
+
+def test_qmake_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("qmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -174,7 +206,11 @@ def test_core_image_minimal_do_reportall(report_build):
     with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # qmake-project:do_checkcache
+
+def test_qmake_project_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKCACHE("qmake-project", "caches.json")) as f:
         assert f.contains('"Shared State": {')
         assert f.contains('"Premirror": {')
@@ -182,7 +218,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
-    # qmake-project:do_checkrecipe
+
+def test_qmake_project_do_checkrecipe(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json")) as f:
         assert f.contains('"issues": []')
 
@@ -190,7 +230,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('qmake-project_1.0.0.bb')
         assert f.contains('qmake-project_1.0.0.bbappend')
 
-    # autotools-project
+
+def test_autotools_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("autotools-project", "operatorTest.xml"))
     assert EXISTS(REPORT.COVERAGE("autotools-project", "index.html"))
@@ -204,14 +248,22 @@ def test_core_image_minimal_do_reportall(report_build):
 
     assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
-    # autotools-project:do_test
+
+def test_autotools_project_do_test(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.RESULT("autotools-project", "operatorTest.xml")) as f:
         assert f.contains('classname="autotools-project.PlusTest"')
         assert f.contains(NORMAL_GT_PLUS_TEST_FAILED_LOG)
         assert f.contains('classname="autotools-project.MinusTest"')
         assert f.contains(NORMAL_GT_MINUS_TEST_FAILED_LOG)
 
-    # autotools-project:do_coverage
+
+def test_autotools_project_do_coverage(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.COVERAGE("autotools-project", "index.html")).contains(LCOV_HTML_TITLE)
 
     with READ(REPORT.COVERAGE("autotools-project", "coverage.xml")) as f:
@@ -220,7 +272,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('name="autotools-project.minus.src"')
         assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    # autotools-project:do_checkcode
+
+def test_autotools_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("autotools-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -229,7 +285,11 @@ def test_core_image_minimal_do_reportall(report_build):
     with READ(REPORT.CHECK("autotools-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # autotools-project:do_checkcache
+
+def test_autotools_project_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKCACHE("autotools-project", "caches.json")) as f:
         assert f.contains('"Shared State": {')
         assert f.contains('"Premirror": {')
@@ -237,7 +297,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
-    # autotools-project:do_checkrecipe
+
+def test_autotools_project_do_checkrecipe(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json")) as f:
         assert f.contains('"issues": []')
 
@@ -245,7 +309,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('autotools-project_1.0.0.bb')
         assert f.contains('autotools-project_1.0.0.bbappend')
 
-    # humidifier-project
+
+def test_humidifier_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("humidifier-project", "metadata.json"))
     assert EXISTS(REPORT.RESULT("humidifier-project", "unittest.xml"))
     assert EXISTS(REPORT.COVERAGE("humidifier-project", "index.html"))
@@ -259,10 +327,18 @@ def test_core_image_minimal_do_reportall(report_build):
 
     assert READ(REPORT.ROOT("humidifier-project", "metadata.json")).contains(METADATA_S)
 
-    # humidifier-project:do_test
+
+def test_humidifier_project_do_test(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.RESULT("humidifier-project", "unittest.xml")).contains('classname="humidifier-project.HumidifierTest"')
 
-    # humidifier-project:do_coverage
+
+def test_humidifier_project_do_coverage(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.COVERAGE("humidifier-project", "index.html")).contains(LCOV_HTML_TITLE)
 
     with READ(REPORT.COVERAGE("humidifier-project", "coverage.xml")) as f:
@@ -272,7 +348,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('<method name="FakeHumiditySensor::getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('<method name="FakeHumiditySensor::gmock_getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    # humidifier-project:do_checkcode
+
+def test_humidifier_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("humidifier-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -281,7 +361,11 @@ def test_core_image_minimal_do_reportall(report_build):
     with READ(REPORT.CHECK("humidifier-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # humidifier-project:do_checkcache
+
+def test_humidifier_project_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKCACHE("humidifier-project", "caches.json")) as f:
         assert f.contains('"Shared State": {')
         assert f.contains('"Premirror": {')
@@ -289,7 +373,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
-    # humidifier-project:do_checkcache
+
+def test_humidifier_project_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKRECIPE("humidifier-project", "recipe_violations.json")) as f:
         assert f.contains('"issues": []')
 
@@ -297,7 +385,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('humidifier-project_1.0.0.bb')
         assert f.contains('humidifier-project_1.0.0.bbappend')
 
-    # sqlite3wrapper
+
+def test_sqlite3wrapper(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("sqlite3wrapper", "metadata.json"))
     assert EXISTS(REPORT.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml"))
     assert EXISTS(REPORT.COVERAGE("sqlite3wrapper", "index.html"))
@@ -311,10 +403,18 @@ def test_core_image_minimal_do_reportall(report_build):
 
     assert READ(REPORT.ROOT("sqlite3wrapper", "metadata.json")).contains(METADATA_S)
 
-    # sqlite3wrapper:do_test
+
+def test_sqlite3wrapper_do_test(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml")).contains('classname="sqlite3wrapper.DatabaseTest"')
 
-    # sqlite3wrapper:do_coverage
+
+def test_sqlite3wrapper_do_coverage(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert READ(REPORT.COVERAGE("sqlite3wrapper", "index.html")).contains(LCOV_HTML_TITLE)
     with READ(REPORT.COVERAGE("sqlite3wrapper", "coverage.xml")) as f:
         assert f.contains('name="sqlite3wrapper.src"')
@@ -322,7 +422,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('<method name="SQLite3Wrapper::Statement::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
         assert f.contains('<method name="SQLite3Wrapper::Database::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
 
-    # sqlite3wrapper:do_checkcode
+
+def test_sqlite3wrapper_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("sqlite3wrapper", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -331,7 +435,11 @@ def test_core_image_minimal_do_reportall(report_build):
     with READ(REPORT.CHECK("sqlite3wrapper", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # sqlite3wrapper:do_checkcache
+
+def test_sqlite3wrapper_do_checkcache(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKCACHE("sqlite3wrapper", "caches.json")) as f:
         assert f.contains('"Shared State": {')
         assert f.contains('"Premirror": {')
@@ -339,7 +447,11 @@ def test_core_image_minimal_do_reportall(report_build):
         assert f.contains('"Found": [')
         assert f.contains('"Missed": [')
 
-    # sqlite3wrapper:do_checkrecipe
+
+def test_sqlite3wrapper_do_checkrecipe(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKRECIPE("sqlite3wrapper", "recipe_violations.json")) as f:
         assert f.contains('"issues": []')
 
