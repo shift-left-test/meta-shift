@@ -340,7 +340,7 @@ python shifttest_do_checkrecipe() {
 
 addtask report after do_compile
 do_report[nostamp] = "1"
-do_report[doc] = "Makes reports for the target"
+do_report[doc] = "Generates reports for the target"
 
 python shifttest_do_report() {
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
@@ -348,26 +348,27 @@ python shifttest_do_report() {
         return
 
     if not d.getVar("SHIFT_REPORT_DIR", True):
-        fatal("You should set SHIFT_REPORT_DIR to make reports", d)
+        warn("SHIFT_REPORT_DIR is not set. No reports will be generated.", d)
 
-    plain("Making a report for do_checkcode", d)
-    exec_func("do_checkcode", d)
+    dd = d.createCopy()
 
-    plain("Making a report for do_test", d)
-    exec_func("do_test", d)
+    dd.setVar("BB_CURRENTTASK", "checkcode")
+    exec_func("do_checkcode", dd)
 
-    plain("Making a report for do_coverage", d)
-    exec_func("do_coverage", d)
+    dd.setVar("BB_CURRENTTASK", "test")
+    exec_func("do_test", dd)
 
-    if "checkcache" in str(d.getVar("INHERIT", True)):
-        plain("Making a report for do_checkcache", d)
-        exec_func("do_checkcache", d)
+    dd.setVar("BB_CURRENTTASK", "coverage")
+    exec_func("do_coverage", dd)
+
+    if "checkcache" in str(dd.getVar("INHERIT", True)):
+        dd.setVar("BB_CURRENTTASK", "checkcache")
+        exec_func("do_checkcache", dd)
     else:
-        warn("Skipping do_checkcache because checkcache is not inherited", d)
+        warn("Skipping do_checkcache because checkcache is not inherited", dd)
 
-
-    plain("Making a report for do_checkrecipe", d)
-    exec_func("do_checkrecipe", d)
+    dd.setVar("BB_CURRENTTASK", "checkrecipe")
+    exec_func("do_checkrecipe", dd)
 }
 
 
