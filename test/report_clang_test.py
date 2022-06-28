@@ -42,15 +42,17 @@ class REPORT:
         return os.path.join("report", cls.PF[recipe], "checktest", path)
 
 
-def test_core_image_minimal_do_reportall(report_clang_build):
+@pytest.fixture(scope="module")
+def shared_report_build(report_clang_build):
     report_clang_build.files.remove("report")
-
     assert report_clang_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
+    return report_clang_build
 
-    EXISTS = report_clang_build.files.exists
-    READ = report_clang_build.files.read
 
-    # cmake-project
+def test_cmake_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("cmake-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("cmake-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECK("cmake-project", "index.html"))
@@ -61,7 +63,11 @@ def test_core_image_minimal_do_reportall(report_clang_build):
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
-    # cmake-project:do_checkcode
+
+def test_cmake_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("cmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -70,13 +76,21 @@ def test_core_image_minimal_do_reportall(report_clang_build):
     with READ(REPORT.CHECK("cmake-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # cmake-project:do_checktest
+
+def test_cmake_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKTEST("cmake-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
     with READ(REPORT.CHECKTEST("cmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
-    # qmake-project
+
+def test_qmake_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECK("qmake-project", "index.html"))
@@ -87,7 +101,11 @@ def test_core_image_minimal_do_reportall(report_clang_build):
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-    # qmake-project:do_checkcode
+
+def test_qmake_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("qmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -96,13 +114,21 @@ def test_core_image_minimal_do_reportall(report_clang_build):
     with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # qmake-project:do_checktest
+
+def test_qmake_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKTEST("qmake-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
     with READ(REPORT.CHECKTEST("qmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
-    # autotools-project
+
+def test_autotools_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("autotools-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("autotools-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECK("autotools-project", "index.html"))
@@ -113,7 +139,11 @@ def test_core_image_minimal_do_reportall(report_clang_build):
 
     assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
-    # autotools-project:do_checkcode
+
+def test_autotools_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("autotools-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -122,7 +152,11 @@ def test_core_image_minimal_do_reportall(report_clang_build):
     with READ(REPORT.CHECK("autotools-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # autotools-project:do_checktest
+
+def test_autotools_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKTEST("autotools-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
     with READ(REPORT.CHECKTEST("autotools-project", "index.html")) as f:

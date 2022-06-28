@@ -33,15 +33,17 @@ class REPORT:
         return os.path.join("report", cls.PF[recipe], "checktest", path)
 
 
-def test_core_image_minimal_do_reportall(report_clang_qt6_build):
+@pytest.fixture(scope="module")
+def shared_report_build(report_clang_qt6_build):
     report_clang_qt6_build.files.remove("report")
-
     assert report_clang_qt6_build.shell.execute("bitbake core-image-minimal -c reportall").stderr.empty()
+    return report_clang_qt6_build
 
-    EXISTS = report_clang_qt6_build.files.exists
-    READ = report_clang_qt6_build.files.read
 
-    # qmake-project
+def test_qmake_project(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     assert EXISTS(REPORT.ROOT("qmake-project", "metadata.json"))
     assert EXISTS(REPORT.CHECK("qmake-project", "sage_report.json"))
     assert EXISTS(REPORT.CHECK("qmake-project", "index.html"))
@@ -52,7 +54,11 @@ def test_core_image_minimal_do_reportall(report_clang_qt6_build):
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
-    # qmake-project:do_checkcode
+
+def test_qmake_project_do_checkcode(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECK("qmake-project", "sage_report.json")) as f:
         assert f.contains('"complexity": [')
         assert f.contains('"duplications": [')
@@ -61,7 +67,11 @@ def test_core_image_minimal_do_reportall(report_clang_qt6_build):
     with READ(REPORT.CHECK("qmake-project", "index.html")) as f:
         assert f.contains(SAGE_HTML_TITLE)
 
-    # qmake-project:do_checktest
+
+def test_qmake_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
     with READ(REPORT.CHECKTEST("qmake-project", "mutations.xml")) as f:
         assert f.contains('</mutations>')
     with READ(REPORT.CHECKTEST("qmake-project", "index.html")) as f:
