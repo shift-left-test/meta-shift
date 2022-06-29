@@ -12,18 +12,18 @@ import tempfile
 import pytest
 
 
-def test_check(bare_build):
-    o = bare_build.shell.execute("recipetool check cmake-native")
+def test_check(release_build):
+    o = release_build.shell.execute("recipetool check cmake-native")
     o.stdout.contains("INFO: Checking the specified recipes or files for the styling issues...")
     o.stdout.contains(":warning:")
     o.stdout.contains("INFO: Done.")
 
 
-def test_check_save_as_file(bare_build):
+def test_check_save_as_file(release_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.json")
-        o = bare_build.shell.execute("recipetool check cmake-native --output {}".format(temp))
+        o = release_build.shell.execute("recipetool check cmake-native --output {}".format(temp))
         with open(temp, "r") as f:
             data = json.load(f)
             assert isinstance(data["issues"], list)
