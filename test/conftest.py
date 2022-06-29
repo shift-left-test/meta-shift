@@ -5,7 +5,6 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import getpass
 import os
 import pytest
 import re
@@ -240,19 +239,6 @@ class BuildEnvironment(object):
     @property
     def files(self):
         return Files(self.build_dir)
-
-
-@pytest.fixture(scope="session")
-def bare_build(request, tmpdir_factory):
-    repo_dir = str(tmpdir_factory.mktemp("repo"))
-    build_dir = str(tmpdir_factory.mktemp("build"))
-
-    def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
-
-    request.addfinalizer(cleanup)
-    return BuildEnvironment(conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
 
 
 @pytest.fixture(scope="session")
