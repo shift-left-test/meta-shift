@@ -5,7 +5,6 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import getpass
 import os
 import pytest
 import re
@@ -243,19 +242,6 @@ class BuildEnvironment(object):
 
 
 @pytest.fixture(scope="session")
-def bare_build(request, tmpdir_factory):
-    repo_dir = str(tmpdir_factory.mktemp("repo"))
-    build_dir = str(tmpdir_factory.mktemp("build"))
-
-    def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
-
-    request.addfinalizer(cleanup)
-    return BuildEnvironment(conf_file="conf/bare.conf", repo_dir=repo_dir, build_dir=build_dir)
-
-
-@pytest.fixture(scope="session")
 def release_build(request, tmpdir_factory):
     repo_dir = str(tmpdir_factory.mktemp("repo"))
     build_dir = str(tmpdir_factory.mktemp("build"))
@@ -292,29 +278,3 @@ def report_build(request, tmpdir_factory):
 
     request.addfinalizer(cleanup)
     return BuildEnvironment(conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
-
-
-@pytest.fixture(scope="session")
-def test_clang_build(request, tmpdir_factory):
-    repo_dir = str(tmpdir_factory.mktemp("repo"))
-    build_dir = str(tmpdir_factory.mktemp("build"))
-
-    def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
-
-    request.addfinalizer(cleanup)
-    return BuildEnvironment(conf_file="conf/test_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
-
-
-@pytest.fixture(scope="session")
-def report_clang_build(request, tmpdir_factory):
-    repo_dir = str(tmpdir_factory.mktemp("repo"))
-    build_dir = str(tmpdir_factory.mktemp("build"))
-
-    def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
-
-    request.addfinalizer(cleanup)
-    return BuildEnvironment(conf_file="conf/report_clang.conf", repo_dir=repo_dir, build_dir=build_dir)
