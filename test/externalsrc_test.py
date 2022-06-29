@@ -23,8 +23,8 @@ def externalsrc_execute(build, recipe, task):
 
 
 @pytest.fixture(scope="module")
-def stdout(test_clang_build):
-    with externalsrc_execute(test_clang_build, "cmake-project", "report") as o:
+def stdout(report_build):
+    with externalsrc_execute(report_build, "cmake-project", "report") as o:
         return o.stdout
 
 
@@ -42,6 +42,7 @@ def test_cmake_project_do_checkcode(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
+    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
 
 
 def test_cmake_project_do_checkcache(stdout):
@@ -59,8 +60,20 @@ def test_cmake_project_do_checkrecipe(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
-def test_sage_native_project_do_build(test_clang_build):
+def test_cmake_project_report(report_build):
+    report_build.files.remove("report")
+    with externalsrc_execute(report_build, "cmake-project", "report") as o:
+        assert o.stderr.empty()
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/metadata.json")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/test/OperatorTest.xml")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/checkcode/sage_report.json")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/checktest/mutations.xml")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
+
+
+def test_sage_native_project_do_build(report_build):
     # Test if the setuptools within devtool-modify works properly with the host python
-    with externalsrc_execute(test_clang_build, "sage-native", "build") as o:
+    with externalsrc_execute(report_build, "sage-native", "build") as o:
         assert o.stderr.empty()
         assert o.returncode == 0
