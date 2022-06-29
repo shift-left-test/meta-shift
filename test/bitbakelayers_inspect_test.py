@@ -13,8 +13,8 @@ import shutil
 import tempfile
 
 
-def test_default_format(bare_build):
-    o = bare_build.shell.execute("bitbake-layers inspect meta-poky")
+def test_default_format(release_build):
+    o = release_build.shell.execute("bitbake-layers inspect meta-poky")
     assert o.stdout.containsAll("General Information",
                                 "-------------------",
                                 "Layer: meta-poky",
@@ -33,11 +33,11 @@ def test_default_format(bare_build):
                                 "Classes:")
 
 
-def test_json_format_save_as_file(bare_build):
+def test_json_format_save_as_file(release_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.json")
-        o = bare_build.shell.execute("bitbake-layers inspect meta-poky --output {}".format(temp))
+        o = release_build.shell.execute("bitbake-layers inspect meta-poky --output {}".format(temp))
         assert not o.stdout.contains('"Name": "yocto"')
         with open(temp, "r") as f:
             data = json.load(f)
@@ -50,16 +50,16 @@ def test_json_format_save_as_file(bare_build):
         shutil.rmtree(d)
 
 
-def test_inspect_unknown_layer(bare_build):
-    o = bare_build.shell.execute("bitbake-layers inspect unknown-layer")
+def test_inspect_unknown_layer(release_build):
+    o = release_build.shell.execute("bitbake-layers inspect unknown-layer")
     assert o.stderr.contains("Specified layer 'unknown-layer' doesn't exist")
 
 
-def test_inspect_unknown_layer_save_as_file(bare_build):
+def test_inspect_unknown_layer_save_as_file(release_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.plain")
-        o = bare_build.shell.execute("bitbake-layers inspect unknown-layer --output {}".format(temp))
+        o = release_build.shell.execute("bitbake-layers inspect unknown-layer --output {}".format(temp))
         assert not os.path.exists(temp)
     finally:
         shutil.rmtree(d)
