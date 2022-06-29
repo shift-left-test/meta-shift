@@ -12,8 +12,8 @@ import shutil
 import tempfile
 
 
-def test_default_format(bare_build):
-    o = bare_build.shell.execute("recipetool inspect cpplint")
+def test_default_format(release_build):
+    o = release_build.shell.execute("recipetool inspect cpplint")
     assert o.stdout.containsAll("General Information",
                                 "-------------------",
                                 "Name: cpplint",
@@ -30,11 +30,11 @@ def test_default_format(bare_build):
                                 "Testable: False")
 
 
-def test_save_as_file(bare_build):
+def test_save_as_file(release_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.json")
-        o = bare_build.shell.execute("recipetool inspect cpplint --output {}".format(temp))
+        o = release_build.shell.execute("recipetool inspect cpplint --output {}".format(temp))
         assert not o.stdout.contains('"Name": "cpplint"')
         with open(temp, "r") as f:
             data = json.load(f)
@@ -43,16 +43,16 @@ def test_save_as_file(bare_build):
         shutil.rmtree(d)
 
 
-def test_inspect_unknown_recipe(bare_build):
-    o = bare_build.shell.execute("recipetool inspect unknown-recipe")
+def test_inspect_unknown_recipe(release_build):
+    o = release_build.shell.execute("recipetool inspect unknown-recipe")
     assert o.stderr.contains("Failed to find the recipe file for 'unknown-recipe'")
 
 
-def test_inspect_unknown_recipe_save_as_file(bare_build):
+def test_inspect_unknown_recipe_save_as_file(release_build):
     d = tempfile.mkdtemp()
     try:
         temp = os.path.join(d, "output.json")
-        o = bare_build.shell.execute("recipetool inspect unknown-recipe --output {}".format(temp))
+        o = release_build.shell.execute("recipetool inspect unknown-recipe --output {}".format(temp))
         assert not os.path.exists(temp)
     finally:
         shutil.rmtree(d)
