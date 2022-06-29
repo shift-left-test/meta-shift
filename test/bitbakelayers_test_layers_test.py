@@ -6,7 +6,6 @@ SPDX-License-Identifier: MIT
 """
 
 import pytest
-import re
 
 
 def test_mutually_exclusive_options(release_build):
