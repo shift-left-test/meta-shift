@@ -54,6 +54,17 @@ def test_cmake_project_do_checkrecipe(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
+def test_cmake_project_report(report_build):
+    report_build.files.remove("report")
+    with externalsrc_execute(report_build, "cmake-project", "report") as o:
+        assert o.stderr.empty()
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/metadata.json")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/test/OperatorTest.xml")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/checkcode/sage_report.json")
+        assert report_build.files.exists("report/cmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
+
+
 def test_sage_native_project_do_build(test_build):
     # Test if the setuptools within devtool-modify works properly with the host python
     with externalsrc_execute(test_build, "sage-native", "build") as o:
