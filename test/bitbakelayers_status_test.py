@@ -6,8 +6,8 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-def test_default_format(bare_build):
-    o = bare_build.shell.execute("bitbake-layers status")
+def test_default_format(release_build):
+    o = release_build.shell.execute("bitbake-layers status")
     assert o.stdout.containsAll("Project Configuration",
                                 "---------------------",
                                 "Machine:",

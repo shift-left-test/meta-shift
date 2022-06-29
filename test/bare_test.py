@@ -5,11 +5,10 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import os
 import pytest
 
 
-def test_build_recipes(bare_build):
+def test_build_recipes(release_build):
     recipes = ["cmake-native", "nativesdk-cmake",
                "compiledb-native",
                "cppcheck-native", "nativesdk-cppcheck",
@@ -26,4 +25,4 @@ def test_build_recipes(bare_build):
                "qemu-native", "nativesdk-qemu",
                "sage-native",
                "oelint-adv-native"]
-    assert bare_build.shell.execute("bitbake " + " ".join(recipes)).stderr.empty()
+    assert release_build.shell.execute("bitbake " + " ".join(recipes)).stderr.empty()

@@ -17,6 +17,7 @@ QT_PLUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qma
 QT_MINUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake-project.MinusTest"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
+SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
 METADATA_S = '"S": "'
 
 
@@ -53,6 +54,10 @@ class REPORT:
     def CHECKRECIPE(cls, recipe, path):
         return os.path.join("report", cls.PF[recipe], "checkrecipe", path)
 
+    @classmethod
+    def CHECKTEST(cls, recipe, path):
+        return os.path.join("report", cls.PF[recipe], "checktest", path)
+
 
 @pytest.fixture(scope="module")
 def shared_report_build(report_build):
@@ -75,6 +80,9 @@ def test_cmake_project(shared_report_build):
     assert EXISTS(REPORT.CHECKCACHE("cmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("cmake-project", "files.json"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("cmake-project", "style.css"))
 
     assert READ(REPORT.ROOT("cmake-project", "metadata.json")).contains(METADATA_S)
 
@@ -142,6 +150,16 @@ def test_cmake_project_do_checkrecipe(shared_report_build):
         assert f.contains('cmake-project_1.0.0.bbappend')
 
 
+def test_cmake_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
+    with READ(REPORT.CHECKTEST("cmake-project", "mutations.xml")) as f:
+        assert f.contains('</mutations>')
+    with READ(REPORT.CHECKTEST("cmake-project", "index.html")) as f:
+        assert f.contains(SENTINEL_HTML_TITLE)
+
+
 def test_qmake_project(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
@@ -158,6 +176,9 @@ def test_qmake_project(shared_report_build):
     assert EXISTS(REPORT.CHECKCACHE("qmake-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("qmake-project", "files.json"))
+    assert EXISTS(REPORT.CHECKTEST("qmake-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("qmake-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("qmake-project", "style.css"))
 
     assert READ(REPORT.ROOT("qmake-project", "metadata.json")).contains(METADATA_S)
 
@@ -174,11 +195,11 @@ def test_qmake_project_do_test(shared_report_build):
 
     with READ(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml")) as f:
         assert f.contains('name="qmake-project.PlusTest"')
-        assert f.contains(QT_PLUS_TEST_FAILED_LOG)
+        # assert f.contains(QT_PLUS_TEST_FAILED_LOG)
 
     with READ(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml")) as f:
         assert f.contains('name="qmake-project.MinusTest"')
-        assert f.contains(QT_MINUS_TEST_FAILED_LOG)
+        # assert f.contains(QT_MINUS_TEST_FAILED_LOG)
 
 
 def test_qmake_project_do_coverage(shared_report_build):
@@ -231,6 +252,16 @@ def test_qmake_project_do_checkrecipe(shared_report_build):
         assert f.contains('qmake-project_1.0.0.bbappend')
 
 
+def test_qmake_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
+    with READ(REPORT.CHECKTEST("qmake-project", "mutations.xml")) as f:
+        assert f.contains('</mutations>')
+    with READ(REPORT.CHECKTEST("qmake-project", "index.html")) as f:
+        assert f.contains(SENTINEL_HTML_TITLE)
+
+
 def test_autotools_project(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
@@ -245,6 +276,9 @@ def test_autotools_project(shared_report_build):
     assert EXISTS(REPORT.CHECKCACHE("autotools-project", "caches.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "recipe_violations.json"))
     assert EXISTS(REPORT.CHECKRECIPE("autotools-project", "files.json"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "mutations.xml"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "index.html"))
+    assert EXISTS(REPORT.CHECKTEST("autotools-project", "style.css"))
 
     assert READ(REPORT.ROOT("autotools-project", "metadata.json")).contains(METADATA_S)
 
@@ -308,6 +342,16 @@ def test_autotools_project_do_checkrecipe(shared_report_build):
     with READ(REPORT.CHECKRECIPE("autotools-project", "files.json")) as f:
         assert f.contains('autotools-project_1.0.0.bb')
         assert f.contains('autotools-project_1.0.0.bbappend')
+
+
+def test_autotools_project_do_checktest(shared_report_build):
+    EXISTS = shared_report_build.files.exists
+    READ = shared_report_build.files.read
+
+    with READ(REPORT.CHECKTEST("autotools-project", "mutations.xml")) as f:
+        assert f.contains('</mutations>')
+    with READ(REPORT.CHECKTEST("autotools-project", "index.html")) as f:
+        assert f.contains(SENTINEL_HTML_TITLE)
 
 
 def test_humidifier_project(shared_report_build):
