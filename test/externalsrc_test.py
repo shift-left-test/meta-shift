@@ -5,27 +5,13 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import os
 import pytest
-from contextlib import contextmanager
-
-
-@contextmanager
-def externalsrc_execute(build, recipe, task):
-    try:
-        build.shell.run("devtool modify %s" % recipe)
-        assert build.files.exists(os.path.join("workspace", "sources", recipe))
-        yield build.shell.execute("bitbake %s -c %s" % (recipe, task))
-    finally:
-        build.shell.run("devtool reset %s" % recipe)
-        build.shell.run("bitbake-layers remove-layer workspace")
-        build.files.remove("workspace")
 
 
 @pytest.fixture(scope="module")
 def stdout(report_build):
-    with externalsrc_execute(report_build, "cmake-project", "report") as o:
-        return o.stdout
+    with report_build.externalsrc("cmake-project"):
+        return report_build.shell.execute("bitbake cmake-project -c report").stdout
 
 
 def test_cmake_project_do_test(stdout):
@@ -61,9 +47,9 @@ def test_cmake_project_do_checkrecipe(stdout):
 
 
 def test_cmake_project_report(report_build):
-    report_build.files.remove("report")
-    with externalsrc_execute(report_build, "cmake-project", "report") as o:
-        assert o.stderr.empty()
+    with report_build.externalsrc("cmake-project"):
+        report_build.files.remove("report")
+        assert report_build.shell.execute("bitbake cmake-project -c report").stderr.empty()
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/metadata.json")
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/test/OperatorTest.xml")
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
@@ -74,6 +60,7 @@ def test_cmake_project_report(report_build):
 
 def test_sage_native_project_do_build(report_build):
     # Test if the setuptools within devtool-modify works properly with the host python
-    with externalsrc_execute(report_build, "sage-native", "build") as o:
+    with report_build.externalsrc("sage-native"):
+        o = report_build.shell.execute("bitbake sage-native -c build")
         assert o.stderr.empty()
         assert o.returncode == 0
