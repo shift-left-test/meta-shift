@@ -5,11 +5,7 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import os
-import json
 import pytest
-import shutil
-import tempfile
 
 
 def test_default_format(release_build):
@@ -31,16 +27,11 @@ def test_default_format(release_build):
 
 
 def test_save_as_file(release_build):
-    d = tempfile.mkdtemp()
-    try:
-        temp = os.path.join(d, "output.json")
-        o = release_build.shell.execute("recipetool inspect cpplint --output {}".format(temp))
+    with release_build.files.tempfile("report.json") as f:
+        o = release_build.shell.execute("recipetool inspect cpplint --output {}".format(f))
         assert not o.stdout.contains('"Name": "cpplint"')
-        with open(temp, "r") as f:
-            data = json.load(f)
-            assert data["General Information"]["Name"] == "cpplint"
-    finally:
-        shutil.rmtree(d)
+        data = release_build.files.asJson("report.json")
+        assert data["General Information"]["Name"] == "cpplint"
 
 
 def test_inspect_unknown_recipe(release_build):
@@ -49,13 +40,9 @@ def test_inspect_unknown_recipe(release_build):
 
 
 def test_inspect_unknown_recipe_save_as_file(release_build):
-    d = tempfile.mkdtemp()
-    try:
-        temp = os.path.join(d, "output.json")
-        o = release_build.shell.execute("recipetool inspect unknown-recipe --output {}".format(temp))
-        assert not os.path.exists(temp)
-    finally:
-        shutil.rmtree(d)
+    with release_build.files.tempfile("report.json") as f:
+        o = release_build.shell.execute("recipetool inspect unknown-recipe --output {}".format(f))
+        assert not release_build.files.exists("report.json")
 
 
 def test_cmake_project_without_test_enabled(release_build):
