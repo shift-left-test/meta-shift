@@ -5,10 +5,14 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
+from contextlib import contextmanager
+import json
 import os
 import pytest
+import random
 import re
 import shutil
+import string
 import subprocess
 import time
 
@@ -147,6 +151,18 @@ class Files(object):
 
     def read(self, path):
         return FileOutput(findFiles(self.build_dir, path)[0])
+
+    @contextmanager
+    def tempfile(self, filename=None):
+        if not filename:
+            filename = "".join(random.sample(string.ascii_lowercase, 7))
+        self.remove(filename)
+        yield os.path.join(self.build_dir, filename)
+        self.remove(filename)
+
+    def asJson(self, path):
+        with open(os.path.join(self.build_dir, path), "r") as f:
+            return json.load(f)
 
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
