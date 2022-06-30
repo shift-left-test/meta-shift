@@ -5,10 +5,7 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import os
-import json
-import shutil
-import tempfile
+import pytest
 
 
 def test_unknown_recipe(release_build):
@@ -43,47 +40,31 @@ def test_cache_with_known_cmd_option(release_build):
 
 
 def test_cache_save_as_file(release_build):
-    d = tempfile.mkdtemp()
-    try:
-        report_file_path = os.path.join(d, "cmake-native_cache_check.json")
-        release_build.shell.execute("devtool cache cmake-native -o=%s" % report_file_path)
-
-        with open(report_file_path) as f:
-            data = json.load(f)
-            for title in ["Shared State", "Premirror"]:
-                assert isinstance(data[title]["Summary"]["Wanted"], int)
-                assert isinstance(data[title]["Summary"]["Found"], int)
-                assert isinstance(data[title]["Summary"]["Missed"], int)
-                assert isinstance(data[title]["Found"], list)
-                assert isinstance(data[title]["Missed"], list)
-    finally:
-        shutil.rmtree(d)
+    with release_build.files.tempfile("report.json") as f:
+        release_build.shell.execute("devtool cache cmake-native -o=%s" % f)
+        data = release_build.files.asJson("report.json")
+        for title in ["Shared State", "Premirror"]:
+            assert isinstance(data[title]["Summary"]["Wanted"], int)
+            assert isinstance(data[title]["Summary"]["Found"], int)
+            assert isinstance(data[title]["Summary"]["Missed"], int)
+            assert isinstance(data[title]["Found"], list)
+            assert isinstance(data[title]["Missed"], list)
 
 
 def test_cache_save_as_file_with_unknown_cmd_option(release_build):
-    d = tempfile.mkdtemp()
-    try:
-        report_file_path = os.path.join(d, "cmake-native_cache_check.json")
-        o = release_build.shell.execute("devtool cache cmake-native -c unknown_task -o=%s" % report_file_path)
+    with release_build.files.tempfile("report.json") as f:
+        o = release_build.shell.execute("devtool cache cmake-native -c unknown_task -o=%s" % f)
         assert o.stderr.contains("ERROR: Task do_unknown_task does not exist")
-        assert not os.path.exists(report_file_path)
-    finally:
-        shutil.rmtree(d)
+        assert not release_build.files.exists(f)
 
 
 def test_cache_save_as_file_with_known_cmd_option(release_build):
-    d = tempfile.mkdtemp()
-    try:
-        report_file_path = os.path.join(d, "cmake-native_configure_cache_check.json")
-        release_build.shell.execute("devtool cache cmake-native -c configure -o=%s" % report_file_path)
-
-        with open(report_file_path) as f:
-            data = json.load(f)
-            for title in ["Shared State", "Premirror"]:
-                assert isinstance(data[title]["Summary"]["Wanted"], int)
-                assert isinstance(data[title]["Summary"]["Found"], int)
-                assert isinstance(data[title]["Summary"]["Missed"], int)
-                assert isinstance(data[title]["Found"], list)
-                assert isinstance(data[title]["Missed"], list)
-    finally:
-        shutil.rmtree(d)
+    with release_build.files.tempfile("report.json") as f:
+        release_build.shell.execute("devtool cache cmake-native -c configure -o=%s" % f)
+        data = release_build.files.asJson("report.json")
+        for title in ["Shared State", "Premirror"]:
+            assert isinstance(data[title]["Summary"]["Wanted"], int)
+            assert isinstance(data[title]["Summary"]["Found"], int)
+            assert isinstance(data[title]["Summary"]["Missed"], int)
+            assert isinstance(data[title]["Found"], list)
+            assert isinstance(data[title]["Missed"], list)
