@@ -9,12 +9,6 @@ import os
 import pytest
 
 
-NORMAL_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="2" failures="1" disabled="0" skipped="0" errors="0"'
-NORMAL_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="2" failures="1" disabled="0" skipped="0" errors="0"'
-CMAKE_GT_PLUS_TEST_FAILED_LOG = 'testsuite name="PlusTest" tests="1" failures="1" disabled="0" skipped="0" errors="0"'
-CMAKE_GT_MINUS_TEST_FAILED_LOG = 'testsuite name="MinusTest" tests="1" failures="1" disabled="0" skipped="0" errors="0"'
-QT_PLUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake-project.PlusTest"'
-QT_MINUS_TEST_FAILED_LOG = 'testsuite errors="0" failures="1" tests="4" name="qmake-project.MinusTest"'
 LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
 SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
 SENTINEL_HTML_TITLE = '<h1>Sentinel Mutation Coverage Report</h1>'
@@ -88,29 +82,33 @@ def test_cmake_project(shared_report_build):
 
 
 def test_cmake_project_do_test(shared_report_build):
-    EXISTS = shared_report_build.files.exists
-    READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    with READ(REPORT.RESULT("cmake-project", "OperatorTest_1.xml")) as f:
-        assert f.contains('classname="cmake-project.PlusTest"')
-        assert f.contains(CMAKE_GT_PLUS_TEST_FAILED_LOG)
+    data1 = ASXML(REPORT.RESULT("cmake-project", "OperatorTest_1.xml"))
+    assert data1.containsElementWithAttrib("testcase", {"classname":"cmake-project.PlusTest"})
+    assert data1.containsElementWithAttrib("testsuite", {"name":"PlusTest", "tests":"1", 
+        "failures":"1", "disabled":"0", "skipped":"0", "errors":"0"})
 
-    with READ(REPORT.RESULT("cmake-project", "OperatorTest_3.xml")) as f:
-        assert f.contains('classname="cmake-project.MinusTest"')
-        assert f.contains(CMAKE_GT_MINUS_TEST_FAILED_LOG)
+    data2= ASXML(REPORT.RESULT("cmake-project", "OperatorTest_3.xml"))
+    assert data2.containsElementWithAttrib("testcase", {"classname":"cmake-project.MinusTest"})
+    assert data2.containsElementWithAttrib("testsuite", {"name":"MinusTest", "tests":"1", 
+        "failures":"1", "disabled":"0", "skipped":"0", "errors":"0"})
 
 
 def test_cmake_project_do_coverage(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
     assert READ(REPORT.COVERAGE("cmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
-    with READ(REPORT.COVERAGE("cmake-project", "coverage.xml")) as f:
-        assert f.contains('name="cmake-project.plus.src"')
-        assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('name="cmake-project.minus.src"')
-        assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
+    data = ASXML(REPORT.COVERAGE("cmake-project", "coverage.xml"))
+    assert data.containsElementWithAttrib("package", {"name":"cmake-project.plus.src"})
+    assert data.containsElementWithAttrib("method", {"name":"arithmetic::plus(int, int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("package", {"name":"cmake-project.minus.src"})
+    assert data.containsElementWithAttrib("method", {"name":"arithmetic::minus(int, int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
 
 
 def test_cmake_project_do_checkcode(shared_report_build):
@@ -153,9 +151,11 @@ def test_cmake_project_do_checkrecipe(shared_report_build):
 def test_cmake_project_do_checktest(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    with READ(REPORT.CHECKTEST("cmake-project", "mutations.xml")) as f:
-        assert f.contains('</mutations>')
+    data = ASXML(REPORT.CHECKTEST("cmake-project", "mutations.xml"))
+    assert data.containsElement("mutations")
+
     with READ(REPORT.CHECKTEST("cmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -186,33 +186,41 @@ def test_qmake_project(shared_report_build):
 def test_qmake_project_do_test(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    with READ(REPORT.RESULT("qmake-project", "test-qt-gtest.xml")) as f:
-        assert f.contains('classname="qmake-project.PlusTest"')
-        assert f.contains(NORMAL_GT_PLUS_TEST_FAILED_LOG)
-        assert f.contains('classname="qmake-project.MinusTest"')
-        assert f.contains(NORMAL_GT_MINUS_TEST_FAILED_LOG)
+    data1 = ASXML(REPORT.RESULT("qmake-project", "test-qt-gtest.xml"))
+    assert data1.containsElementWithAttrib("testcase", {"classname":"qmake-project.PlusTest"})
+    assert data1.containsElementWithAttrib("testsuite", {"name":"PlusTest", "tests":"2", 
+        "failures":"1", "disabled":"0", "skipped":"0", "errors":"0"})
+    assert data1.containsElementWithAttrib("testcase", {"classname":"qmake-project.MinusTest"})
+    assert data1.containsElementWithAttrib("testsuite", {"name":"MinusTest", "tests":"2", 
+        "failures":"1", "disabled":"0", "skipped":"0", "errors":"0"})
 
-    with READ(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml")) as f:
-        assert f.contains('name="qmake-project.PlusTest"')
-        # assert f.contains(QT_PLUS_TEST_FAILED_LOG)
+    data2 = ASXML(REPORT.RESULT("qmake-project", "tests/plus_test/test_result.xml"))
+    assert data2.containsElementWithAttrib("testcase", {"classname":"PlusTest"})
+    assert data2.containsElementWithAttrib("testsuite", {"name":"qmake-project.PlusTest",
+        "tests":"4", "failures":"1", "errors":"0"})
 
-    with READ(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml")) as f:
-        assert f.contains('name="qmake-project.MinusTest"')
-        # assert f.contains(QT_MINUS_TEST_FAILED_LOG)
-
+    data3 = ASXML(REPORT.RESULT("qmake-project", "tests/minus_test/test_result.xml"))
+    assert data3.containsElementWithAttrib("testcase", {"classname":"MinusTest"})
+    assert data3.containsElementWithAttrib("testsuite", {"name":"qmake-project.MinusTest",
+        "tests":"4", "failures":"1", "errors":"0"})
+    
 
 def test_qmake_project_do_coverage(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
     assert READ(REPORT.COVERAGE("qmake-project", "index.html")).contains(LCOV_HTML_TITLE)
 
-    with READ(REPORT.COVERAGE("qmake-project", "coverage.xml")) as f:
-        assert f.contains('name="qmake-project.plus.src"')
-        assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('name="qmake-project.minus.src"')
-        assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
+    data = ASXML(REPORT.COVERAGE("qmake-project", "coverage.xml"))
+    assert data.containsElementWithAttrib("package", {"name":"qmake-project.plus.src"})
+    assert data.containsElementWithAttrib("method", {"name":"arithmetic::plus(int, int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("package", {"name":"qmake-project.minus.src"})
+    assert data.containsElementWithAttrib("method", {"name":"arithmetic::minus(int, int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
 
 
 def test_qmake_project_do_checkcode(shared_report_build):
@@ -255,9 +263,11 @@ def test_qmake_project_do_checkrecipe(shared_report_build):
 def test_qmake_project_do_checktest(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    with READ(REPORT.CHECKTEST("qmake-project", "mutations.xml")) as f:
-        assert f.contains('</mutations>')
+    data = ASXML(REPORT.CHECKTEST("qmake-project", "mutations.xml"))
+    assert data.containsElement("mutations")
+
     with READ(REPORT.CHECKTEST("qmake-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -286,25 +296,31 @@ def test_autotools_project(shared_report_build):
 def test_autotools_project_do_test(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    with READ(REPORT.RESULT("autotools-project", "operatorTest.xml")) as f:
-        assert f.contains('classname="autotools-project.PlusTest"')
-        assert f.contains(NORMAL_GT_PLUS_TEST_FAILED_LOG)
-        assert f.contains('classname="autotools-project.MinusTest"')
-        assert f.contains(NORMAL_GT_MINUS_TEST_FAILED_LOG)
+    data = ASXML(REPORT.RESULT("autotools-project", "operatorTest.xml"))
+    assert data.containsElementWithAttrib("testcase", {"classname":"autotools-project.PlusTest"})
+    assert data.containsElementWithAttrib("testsuite", {"name":"PlusTest", "tests":"2", 
+        "failures":"1", "disabled":"0", "skipped":"0", "errors":"0"})
+    assert data.containsElementWithAttrib("testcase", {"classname":"autotools-project.MinusTest"})
+    assert data.containsElementWithAttrib("testsuite", {"name":"MinusTest", "tests":"2",
+        "failures":"1", "disabled":"0", "skipped":"0", "errors":"0"})
 
 
 def test_autotools_project_do_coverage(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
     assert READ(REPORT.COVERAGE("autotools-project", "index.html")).contains(LCOV_HTML_TITLE)
 
-    with READ(REPORT.COVERAGE("autotools-project", "coverage.xml")) as f:
-        assert f.contains('name="autotools-project.plus.src"')
-        assert f.contains('<method name="arithmetic::plus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('name="autotools-project.minus.src"')
-        assert f.contains('<method name="arithmetic::minus(int, int)" signature="" line-rate="1.0" branch-rate="1.0">')
+    data = ASXML(REPORT.COVERAGE("autotools-project", "coverage.xml"))
+    assert data.containsElementWithAttrib("package", {"name":"autotools-project.plus.src"})
+    assert data.containsElementWithAttrib("method", {"name":"arithmetic::plus(int, int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("package", {"name":"autotools-project.minus.src"})
+    assert data.containsElementWithAttrib("method", {"name":"arithmetic::minus(int, int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
 
 
 def test_autotools_project_do_checkcode(shared_report_build):
@@ -347,9 +363,11 @@ def test_autotools_project_do_checkrecipe(shared_report_build):
 def test_autotools_project_do_checktest(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    with READ(REPORT.CHECKTEST("autotools-project", "mutations.xml")) as f:
-        assert f.contains('</mutations>')
+    data = ASXML(REPORT.CHECKTEST("autotools-project", "mutations.xml"))
+    assert data.containsElement("mutations")
+
     with READ(REPORT.CHECKTEST("autotools-project", "index.html")) as f:
         assert f.contains(SENTINEL_HTML_TITLE)
 
@@ -373,24 +391,29 @@ def test_humidifier_project(shared_report_build):
 
 
 def test_humidifier_project_do_test(shared_report_build):
-    EXISTS = shared_report_build.files.exists
-    READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    assert READ(REPORT.RESULT("humidifier-project", "unittest.xml")).contains('classname="humidifier-project.HumidifierTest"')
+    data = ASXML(REPORT.RESULT("humidifier-project", "unittest.xml"))
+    assert data.containsElementWithAttrib("testcase", {"classname":"humidifier-project.HumidifierTest"})
 
 
 def test_humidifier_project_do_coverage(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
     assert READ(REPORT.COVERAGE("humidifier-project", "index.html")).contains(LCOV_HTML_TITLE)
 
-    with READ(REPORT.COVERAGE("humidifier-project", "coverage.xml")) as f:
-        assert f.contains('name="humidifier-project.humidifier.src"')
-        assert f.contains('<method name="Humidifier::setPreferredHumidity(int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('<method name="Atomizer_Set(int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('<method name="FakeHumiditySensor::getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('<method name="FakeHumiditySensor::gmock_getHumidityLevel() const" signature="" line-rate="1.0" branch-rate="1.0">')
+    data = ASXML(REPORT.COVERAGE("humidifier-project", "coverage.xml"))
+    assert data.containsElementWithAttrib("package", {"name":"humidifier-project.humidifier.src"})
+    assert data.containsElementWithAttrib("method", {"name":"Humidifier::setPreferredHumidity(int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("method", {"name":"Atomizer_Set(int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("method", {"name":"FakeHumiditySensor::getHumidityLevel() const",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("method", {"name":"FakeHumiditySensor::gmock_getHumidityLevel() const",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
 
 
 def test_humidifier_project_do_checkcode(shared_report_build):
@@ -449,22 +472,27 @@ def test_sqlite3wrapper(shared_report_build):
 
 
 def test_sqlite3wrapper_do_test(shared_report_build):
-    EXISTS = shared_report_build.files.exists
-    READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
-    assert READ(REPORT.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml")).contains('classname="sqlite3wrapper.DatabaseTest"')
+    data = ASXML(REPORT.RESULT("sqlite3wrapper", "SQLite3WrapperTest.exe.xml"))
+    assert data.containsElementWithAttrib("testcase", {"classname":"sqlite3wrapper.DatabaseTest"})
 
 
 def test_sqlite3wrapper_do_coverage(shared_report_build):
     EXISTS = shared_report_build.files.exists
     READ = shared_report_build.files.read
+    ASXML = shared_report_build.files.asXml
 
     assert READ(REPORT.COVERAGE("sqlite3wrapper", "index.html")).contains(LCOV_HTML_TITLE)
-    with READ(REPORT.COVERAGE("sqlite3wrapper", "coverage.xml")) as f:
-        assert f.contains('name="sqlite3wrapper.src"')
-        assert f.contains('<method name="SQLite3Wrapper::Column::getName() const" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('<method name="SQLite3Wrapper::Statement::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
-        assert f.contains('<method name="SQLite3Wrapper::Database::check(int)" signature="" line-rate="1.0" branch-rate="1.0">')
+
+    data = ASXML(REPORT.COVERAGE("sqlite3wrapper", "coverage.xml"))
+    assert data.containsElementWithAttrib("package", {"name":"sqlite3wrapper.src"})
+    assert data.containsElementWithAttrib("method", {"name":"SQLite3Wrapper::Column::getName() const",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("method", {"name":"SQLite3Wrapper::Statement::check(int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
+    assert data.containsElementWithAttrib("method", {"name":"SQLite3Wrapper::Database::check(int)",
+        "signature":"", "line-rate":"1.0", "branch-rate":"1.0"})
 
 
 def test_sqlite3wrapper_do_checkcode(shared_report_build):
