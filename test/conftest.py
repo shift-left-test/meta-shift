@@ -15,6 +15,7 @@ import shutil
 import string
 import subprocess
 import time
+import xml.etree.ElementTree as ET
 
 
 def findFiles(*paths):
@@ -139,6 +140,87 @@ class FileOutput(Output):
         return "{0}: {1}".format(self.filename, super(FileOutput, self).__repr__())
 
 
+class XmlOutput(object):
+    """The xml output holder class
+
+    This class provides xml output comparison helper functions.
+    """
+
+    def __init__(self, root):
+        """ Default constructor
+
+        Args:
+          root (Element): root Element of xml.etree.ElementTree
+        """
+        self.root = root
+
+    def containsElement(self, element_name):
+        """Assert that the root contains the element with the given name
+
+        Args:
+          element_name (str): element name to examine
+
+        Returns:
+          True if the root contains element that meets the condition, False otherwise
+        """
+        find = False
+        for e in self.root.iter(element_name):
+            find = True
+            break
+
+        return find
+
+
+
+    def containsElementWithAttrib(self, element_name, attributes):
+        """Assert that the root contains the element with the given attributes
+
+        Args:
+          element_name (str): element name to examine
+          attributes (dict): name, value pair to examine
+
+        Returns:
+          True if the root contains element that meets the condition, False otherwise
+        """
+        find = False
+        for e in self.root.iter(element_name):
+            match = True
+
+            for key in attributes:
+                if key in e.attrib:
+                    if e.attrib[key] != attributes[key]:
+                        match = False
+                        break
+                else:
+                    match = False
+                    break
+
+            if match:
+                find = True
+                break
+
+        return find
+
+    def containsElementWithText(self, element_name, text):
+        """Assert that the root contains the element with the given text
+
+        Args:
+          element_name (str): element name to examine
+          text (str): element's text to examine
+
+        Returns:
+          True if the root contains element that meets the condition, False otherwise
+        """
+        find = False
+        for e in self.root.iter(element_name):
+            if text == e.text:
+                find = True
+                break
+
+        return find
+
+
+
 class Files(object):
     def __init__(self, build_dir):
         self.build_dir = build_dir
@@ -163,6 +245,11 @@ class Files(object):
     def asJson(self, path):
         with open(os.path.join(self.build_dir, path), "r") as f:
             return json.load(f)
+
+    def asXml(self, path):
+        tree = ET.parse(os.path.join(self.build_dir, path))
+        root = tree.getroot()
+        return  XmlOutput(root)
 
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
