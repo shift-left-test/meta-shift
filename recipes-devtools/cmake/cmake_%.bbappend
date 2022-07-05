@@ -1,5 +1,6 @@
 # CMakeUtils
-# SRCREV: 9e9f7914085ff70500c18bcf03ce1837cd7c8e74
+# SRC_URI: https://github.com/shift-left-test/CMakeUtils
+# VERSION: 1.4.0
 
 inherit shiftutils
 
