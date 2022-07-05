@@ -1,6 +1,6 @@
 # CMakeUtils
 # SRC_URI: https://github.com/shift-left-test/CMakeUtils
-# SRCREV: 1d8aeafaafb504ab30ef5708479d749bfc6b74eb
+# VERSION: 1.4.0
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
