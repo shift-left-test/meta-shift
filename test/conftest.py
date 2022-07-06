@@ -251,6 +251,22 @@ class Files(object):
         root = tree.getroot()
         return  XmlOutput(root)
 
+    def asHtml(self, path):
+        with open(os.path.join(self.build_dir, path), "r") as f:
+            xmltext = f.read()
+
+            # To avoid failing when parsing html
+            xmltext = xmltext.replace("&nbsp;%"," ")
+            xmltext = re.sub("<![^>\n]*>", "", xmltext)
+            xmltext = re.sub("=([0-9]+)", r'="\1"',xmltext)
+            xmltext = re.sub("<meta[^>\n]*>", "", xmltext)
+            xmltext = re.sub("<link[^>\n]*>", "", xmltext)
+            xmltext = re.sub("<img[^>\n]*>", "", xmltext)
+            xmltext = re.sub("<br>", "", xmltext)
+
+        root = ET.fromstring(xmltext)
+        return  XmlOutput(root)
+
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
         if os.path.isfile(f):
