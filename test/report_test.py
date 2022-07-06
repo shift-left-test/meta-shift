@@ -13,8 +13,8 @@ TEST_LOG_TEST1_FAIL1 = {"tests":"1", "failures":"1"}
 TEST_LOG_TEST2_FAIL1 = {"tests":"2", "failures":"1"}
 TEST_LOG_TEST4_FAIL1 = {"tests":"4", "failures":"1"}
 COVERAGE_LOG_100 = {"line-rate":"1.0", "branch-rate":"1.0"}
-LCOV_HTML_TITLE = '<tr><td class="title">LCOV - code coverage report</td></tr>'
-SAGE_HTML_TITLE = '<h1>Sage Report</h1>'
+LCOV_HTML_TITLE = "LCOV - code coverage report"
+SAGE_HTML_TITLE = "Sage Report"
 METADATAJSON_KEYS = {"S", "PWD"}
 SAGEREPORTJSON_KEYS = {"properties", "complexity", "duplications", "size", "violations"}
 
@@ -53,7 +53,8 @@ def test_cmake_project_do_test(shared_report_build):
 
 
 def test_cmake_project_do_coverage(shared_report_build):
-    assert shared_report_build.files.read("report/cmake-project-1.0.0-r0/coverage/index.html").contains(LCOV_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/cmake-project-1.0.0-r0/coverage/index.html")
+    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
     coverage = shared_report_build.files.asXml("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"cmake-project.plus.src"})
@@ -68,8 +69,8 @@ def test_cmake_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
         shared_report_build.files.asJson("report/cmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    with shared_report_build.files.read("report/cmake-project-1.0.0-r0/checkcode/index.html") as f:
-        assert f.contains(SAGE_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/cmake-project-1.0.0-r0/checkcode/index.html")
+    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_cmake_project_do_checkcache(shared_report_build):
@@ -121,7 +122,8 @@ def test_qmake_project_do_test(shared_report_build):
     
 
 def test_qmake_project_do_coverage(shared_report_build):
-    assert shared_report_build.files.read("report/qmake-project-1.0.0-r0/coverage/index.html").contains(LCOV_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/qmake-project-1.0.0-r0/coverage/index.html")
+    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
     coverage = shared_report_build.files.asXml("report/qmake-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"qmake-project.plus.src"})
@@ -136,8 +138,8 @@ def test_qmake_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
         shared_report_build.files.asJson("report/qmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    with shared_report_build.files.read("report/qmake-project-1.0.0-r0/checkcode/index.html") as f:
-        assert f.contains(SAGE_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/qmake-project-1.0.0-r0/checkcode/index.html")
+    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_qmake_project_do_checkcache(shared_report_build):
@@ -181,7 +183,8 @@ def test_autotools_project_do_test(shared_report_build):
 
 
 def test_autotools_project_do_coverage(shared_report_build):
-    assert shared_report_build.files.read("report/autotools-project-1.0.0-r0/coverage/index.html").contains(LCOV_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/autotools-project-1.0.0-r0/coverage/index.html")
+    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
     coverage = shared_report_build.files.asXml("report/autotools-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"autotools-project.plus.src"})
@@ -196,8 +199,8 @@ def test_autotools_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
         shared_report_build.files.asJson("report/autotools-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    with shared_report_build.files.read("report/autotools-project-1.0.0-r0/checkcode/index.html") as f:
-        assert f.contains(SAGE_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/autotools-project-1.0.0-r0/checkcode/index.html")
+    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_autotools_project_do_checkcache(shared_report_build):
@@ -238,7 +241,8 @@ def test_humidifier_project_do_test(shared_report_build):
 
 
 def test_humidifier_project_do_coverage(shared_report_build):
-    assert shared_report_build.files.read("report/humidifier-project-1.0.0-r0/coverage/index.html").contains(LCOV_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/humidifier-project-1.0.0-r0/coverage/index.html")
+    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
     coverage = shared_report_build.files.asXml("report/humidifier-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"humidifier-project.humidifier.src"})
@@ -256,8 +260,8 @@ def test_humidifier_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
         shared_report_build.files.asJson("report/humidifier-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    with shared_report_build.files.read("report/humidifier-project-1.0.0-r0/checkcode/index.html") as f:
-        assert f.contains(SAGE_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/humidifier-project-1.0.0-r0/checkcode/index.html")
+    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_humidifier_project_do_checkcache(shared_report_build):
@@ -298,7 +302,8 @@ def test_sqlite3wrapper_do_test(shared_report_build):
 
 
 def test_sqlite3wrapper_do_coverage(shared_report_build):
-    assert shared_report_build.files.read("report/sqlite3wrapper-0.1.0-r0/coverage/index.html").contains(LCOV_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/sqlite3wrapper-0.1.0-r0/coverage/index.html")
+    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
     coverage = shared_report_build.files.asXml("report/sqlite3wrapper-0.1.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"sqlite3wrapper.src"})
@@ -314,8 +319,8 @@ def test_sqlite3wrapper_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
         shared_report_build.files.asJson("report/sqlite3wrapper-0.1.0-r0/checkcode/sage_report.json").keys())
 
-    with shared_report_build.files.read("report/sqlite3wrapper-0.1.0-r0/checkcode/index.html") as f:
-        assert f.contains(SAGE_HTML_TITLE)
+    index = shared_report_build.files.asHtml("report/sqlite3wrapper-0.1.0-r0/checkcode/index.html")
+    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_sqlite3wrapper_do_checkcache(shared_report_build):
