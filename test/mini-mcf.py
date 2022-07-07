@@ -154,6 +154,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
             f.write('{} ?= "{}"\n'.format(key, value))
 
         f.write("include /etc/meta-shift/global.conf\n")
+        f.write("include ${TOPDIR}/extra.conf\n")
 
 
 def configure(args):
