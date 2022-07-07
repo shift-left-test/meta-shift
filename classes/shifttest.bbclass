@@ -139,17 +139,20 @@ python shifttest_do_coverage() {
                 "-o", LCOV_DATAFILE], d)
 
     if d.getVar("SHIFT_COVERAGE_EXCLUDES", True):
+        import glob
         cmd = ["lcov", "--remove", LCOV_DATAFILE, "-o", LCOV_DATAFILE]
         exc_path_list = []
+        source_root = d.getVar("S", True)
         for exc in shlex_split(d.getVar("SHIFT_COVERAGE_EXCLUDES", True)):
-            exc_path = os.path.join(d.getVar("S", True), exc)
-            if os.path.exists(exc_path):
-                if os.path.isdir(exc_path):
-                    exc_path_list += find_files(exc_path, "*")
-                else:
-                    exc_path_list.append(exc_path)
-            else:
-                warn("SHIFT_COVERAGE_EXCLUDES: %s doesn't exist" % str(exc_path), d)
+            exc_list = glob.glob("%s/%s" % (source_root, exc))
+            for exc_path in exc_list:
+                if os.path.exists(exc_path):
+                    if os.path.isdir(exc_path):
+                        exc_path_list += find_files(exc_path, "*")
+                    else:
+                        exc_path_list.append(exc_path)
+            if len(exc_list) == 0:
+                warn("SHIFT_COVERAGE_EXCLUDES: no file matches %s" % str(exc), d)
         if len(exc_path_list) > 0:
             check_call(cmd + exc_path_list, d)
 
