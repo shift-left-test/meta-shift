@@ -220,6 +220,14 @@ class XmlOutput(object):
         return find
 
 
+class Conf(object):
+    def __init__(self, path):
+        self.path = path
+
+    def set(self, key, value):
+        with open(self.path, "a+") as f:
+            f.write('%s = "%s"\n' % (key, value))
+
 
 class Files(object):
     def __init__(self, build_dir):
@@ -233,6 +241,11 @@ class Files(object):
 
     def read(self, path):
         return FileOutput(findFiles(self.build_dir, path)[0])
+
+    @contextmanager
+    def conf(self):
+        with self.tempfile("extra.conf") as f:
+            yield Conf(f)
 
     @contextmanager
     def tempfile(self, filename=None):
