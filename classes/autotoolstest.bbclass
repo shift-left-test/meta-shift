@@ -88,6 +88,10 @@ python autotoolstest_do_test() {
                 "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
                 "--rc", "lcov_branch_coverage=1"], d)
 
+    # Run tests matching regular expression
+    if d.getVar("SHIFT_TEST_FILTER", True):
+        env["GTEST_FILTER"] = d.getVar("SHIFT_TEST_FILTER", True)
+
     try:
         check_call("make check", d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
