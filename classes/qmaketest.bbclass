@@ -54,6 +54,10 @@ python qmaketest_do_test() {
                 "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
                 "--rc", "lcov_branch_coverage=1"], d)
 
+    # Run tests matching regular expression
+    if d.getVar("SHIFT_TEST_FILTER", True):
+        env["GTEST_FILTER"] = d.getVar("SHIFT_TEST_FILTER", True)
+
     try:
         timeout(exec_proc, "make --quiet check", d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
@@ -105,4 +109,3 @@ python qmaketest_do_report() {
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkrecipe do_checkcache do_report
-
