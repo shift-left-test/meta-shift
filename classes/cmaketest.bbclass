@@ -51,6 +51,19 @@ python cmaketest_do_test() {
         # Let tests run in random order
         if bb.utils.to_boolean(d.getVar("SHIFT_TEST_SHUFFLE", True)):
             cmd.append("--schedule-random")
+
+        # Run tests matching regular expression
+        if d.getVar("SHIFT_TEST_FILTER", True):
+            expression = d.getVar("SHIFT_TEST_FILTER")
+            rules = [(".", "\."), ("*", ".*"), (":", "|"), ("?", ".?")]
+            for rule in rules:
+                expression = expression.replace(rule[0], rule[1])
+            tokens = expression.split("-", 1)
+            if tokens[0]:
+                cmd.append("-R %s" % tokens[0])
+            if len(tokens) > 1 and tokens[1]:
+                cmd.append("-E %s" % tokens[1])
+
         exec_proc(cmd, d, env=env, cwd=d.getVar("B", True))
     except bb.process.ExecutionError as e:
         if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
