@@ -39,24 +39,24 @@ def test_cmake_project(shared_report_build):
     assert shared_report_build.files.exists("report/cmake-project-1.0.0-r0/checkrecipe/files.json")
 
     assert METADATAJSON_KEYS == set(
-        shared_report_build.files.asJson("report/cmake-project-1.0.0-r0/metadata.json").keys())
+        shared_report_build.files.readAsJson("report/cmake-project-1.0.0-r0/metadata.json").keys())
 
 
 def test_cmake_project_do_test(shared_report_build):
-    test1 = shared_report_build.files.asXml("report/cmake-project-1.0.0-r0/test/OperatorTest_1.xml")
+    test1 = shared_report_build.files.readAsXml("report/cmake-project-1.0.0-r0/test/OperatorTest_1.xml")
     assert test1.containsElementWithAttrib("testcase", {"classname":"cmake-project.PlusTest"})
     assert test1.containsElementWithAttrib("testsuite", {"name":"PlusTest", **TEST_LOG_TEST1_FAIL1})
 
-    test2 = shared_report_build.files.asXml("report/cmake-project-1.0.0-r0/test/OperatorTest_3.xml")
+    test2 = shared_report_build.files.readAsXml("report/cmake-project-1.0.0-r0/test/OperatorTest_3.xml")
     assert test2.containsElementWithAttrib("testcase", {"classname":"cmake-project.MinusTest"})
     assert test2.containsElementWithAttrib("testsuite", {"name":"MinusTest", **TEST_LOG_TEST1_FAIL1})
 
 
 def test_cmake_project_do_coverage(shared_report_build):
-    index = shared_report_build.files.asHtml("report/cmake-project-1.0.0-r0/coverage/index.html")
+    index = shared_report_build.files.readAsHtml("report/cmake-project-1.0.0-r0/coverage/index.html")
     assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
-    coverage = shared_report_build.files.asXml("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
+    coverage = shared_report_build.files.readAsXml("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"cmake-project.plus.src"})
     assert coverage.containsElementWithAttrib("method", {"name":"arithmetic::plus(int, int)",
         **COVERAGE_LOG_100})
@@ -67,23 +67,23 @@ def test_cmake_project_do_coverage(shared_report_build):
 
 def test_cmake_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
-        shared_report_build.files.asJson("report/cmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
+        shared_report_build.files.readAsJson("report/cmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    index = shared_report_build.files.asHtml("report/cmake-project-1.0.0-r0/checkcode/index.html")
+    index = shared_report_build.files.readAsHtml("report/cmake-project-1.0.0-r0/checkcode/index.html")
     assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_cmake_project_do_checkcache(shared_report_build):
-    caches = shared_report_build.files.asJson("report/cmake-project-1.0.0-r0/checkcache/caches.json")
+    caches = shared_report_build.files.readAsJson("report/cmake-project-1.0.0-r0/checkcache/caches.json")
     assert "Missed" in caches["Premirror"]
     assert "Found" in caches["Premirror"]["Summary"]
 
 
 def test_cmake_project_do_checkrecipe(shared_report_build):
-    recipe_violations = shared_report_build.files.asJson("report/cmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
+    recipe_violations = shared_report_build.files.readAsJson("report/cmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
     assert len(recipe_violations["issues"]) == 0
 
-    files = shared_report_build.files.asJson("report/cmake-project-1.0.0-r0/checkrecipe/files.json")
+    files = shared_report_build.files.readAsJson("report/cmake-project-1.0.0-r0/checkrecipe/files.json")
     assert files["lines_of_code"][0]["file"].endswith('cmake-project_1.0.0.bb')
     assert files["lines_of_code"][1]["file"].endswith('cmake-project_1.0.0.bbappend')
 
@@ -103,28 +103,28 @@ def test_qmake_project(shared_report_build):
     assert shared_report_build.files.exists("report/qmake-project-1.0.0-r0/checkrecipe/files.json")
 
     assert METADATAJSON_KEYS == set(
-        shared_report_build.files.asJson("report/qmake-project-1.0.0-r0/metadata.json").keys())
+        shared_report_build.files.readAsJson("report/qmake-project-1.0.0-r0/metadata.json").keys())
 
 
 def test_qmake_project_do_test(shared_report_build):
-    test1 = shared_report_build.files.asXml("report/qmake-project-1.0.0-r0/test/test-qt-gtest.xml")
+    test1 = shared_report_build.files.readAsXml("report/qmake-project-1.0.0-r0/test/test-qt-gtest.xml")
     assert test1.containsElementWithAttrib("testcase", {"classname":"qmake-project.PlusTest"})
     assert test1.containsElementWithAttrib("testsuite", {"name":"PlusTest", **TEST_LOG_TEST2_FAIL1})
     assert test1.containsElementWithAttrib("testcase", {"classname":"qmake-project.MinusTest"})
     assert test1.containsElementWithAttrib("testsuite", {"name":"MinusTest", **TEST_LOG_TEST2_FAIL1})
 
-    test2 = shared_report_build.files.asXml("report/qmake-project-1.0.0-r0/test/tests/plus_test/test_result.xml")
+    test2 = shared_report_build.files.readAsXml("report/qmake-project-1.0.0-r0/test/tests/plus_test/test_result.xml")
     assert test2.containsElementWithAttrib("testsuite", {"name":"qmake-project.PlusTest", **TEST_LOG_TEST4_FAIL1})
 
-    test3 = shared_report_build.files.asXml("report/qmake-project-1.0.0-r0/test/tests/minus_test/test_result.xml")
+    test3 = shared_report_build.files.readAsXml("report/qmake-project-1.0.0-r0/test/tests/minus_test/test_result.xml")
     assert test3.containsElementWithAttrib("testsuite", {"name":"qmake-project.MinusTest", **TEST_LOG_TEST4_FAIL1})
-    
+
 
 def test_qmake_project_do_coverage(shared_report_build):
-    index = shared_report_build.files.asHtml("report/qmake-project-1.0.0-r0/coverage/index.html")
+    index = shared_report_build.files.readAsHtml("report/qmake-project-1.0.0-r0/coverage/index.html")
     assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
-    coverage = shared_report_build.files.asXml("report/qmake-project-1.0.0-r0/coverage/coverage.xml")
+    coverage = shared_report_build.files.readAsXml("report/qmake-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"qmake-project.plus.src"})
     assert coverage.containsElementWithAttrib("method", {"name":"arithmetic::plus(int, int)",
         **COVERAGE_LOG_100})
@@ -135,23 +135,23 @@ def test_qmake_project_do_coverage(shared_report_build):
 
 def test_qmake_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
-        shared_report_build.files.asJson("report/qmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
+        shared_report_build.files.readAsJson("report/qmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    index = shared_report_build.files.asHtml("report/qmake-project-1.0.0-r0/checkcode/index.html")
+    index = shared_report_build.files.readAsHtml("report/qmake-project-1.0.0-r0/checkcode/index.html")
     assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_qmake_project_do_checkcache(shared_report_build):
-    caches = shared_report_build.files.asJson("report/qmake-project-1.0.0-r0/checkcache/caches.json")
+    caches = shared_report_build.files.readAsJson("report/qmake-project-1.0.0-r0/checkcache/caches.json")
     assert "Missed" in caches["Premirror"]
     assert "Found" in caches["Premirror"]["Summary"]
 
 
 def test_qmake_project_do_checkrecipe(shared_report_build):
-    recipe_violations = shared_report_build.files.asJson("report/qmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
+    recipe_violations = shared_report_build.files.readAsJson("report/qmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
     assert len(recipe_violations["issues"]) == 0
 
-    files = shared_report_build.files.asJson("report/qmake-project-1.0.0-r0/checkrecipe/files.json")
+    files = shared_report_build.files.readAsJson("report/qmake-project-1.0.0-r0/checkrecipe/files.json")
     assert files["lines_of_code"][0]["file"].endswith('qmake-project_1.0.0.bb')
     assert files["lines_of_code"][1]["file"].endswith('qmake-project_1.0.0.bbappend')
 
@@ -169,11 +169,11 @@ def test_autotools_project(shared_report_build):
     assert shared_report_build.files.exists("report/autotools-project-1.0.0-r0/checkrecipe/files.json")
 
     assert METADATAJSON_KEYS == set(
-        shared_report_build.files.asJson("report/autotools-project-1.0.0-r0/metadata.json").keys())
+        shared_report_build.files.readAsJson("report/autotools-project-1.0.0-r0/metadata.json").keys())
 
 
 def test_autotools_project_do_test(shared_report_build):
-    test = shared_report_build.files.asXml("report/autotools-project-1.0.0-r0/test/operatorTest.xml")
+    test = shared_report_build.files.readAsXml("report/autotools-project-1.0.0-r0/test/operatorTest.xml")
     assert test.containsElementWithAttrib("testcase", {"classname":"autotools-project.PlusTest"})
     assert test.containsElementWithAttrib("testsuite", {"name":"PlusTest", **TEST_LOG_TEST2_FAIL1})
     assert test.containsElementWithAttrib("testcase", {"classname":"autotools-project.MinusTest"})
@@ -181,10 +181,10 @@ def test_autotools_project_do_test(shared_report_build):
 
 
 def test_autotools_project_do_coverage(shared_report_build):
-    index = shared_report_build.files.asHtml("report/autotools-project-1.0.0-r0/coverage/index.html")
+    index = shared_report_build.files.readAsHtml("report/autotools-project-1.0.0-r0/coverage/index.html")
     assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
-    coverage = shared_report_build.files.asXml("report/autotools-project-1.0.0-r0/coverage/coverage.xml")
+    coverage = shared_report_build.files.readAsXml("report/autotools-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"autotools-project.plus.src"})
     assert coverage.containsElementWithAttrib("method", {"name":"arithmetic::plus(int, int)",
         **COVERAGE_LOG_100})
@@ -195,25 +195,25 @@ def test_autotools_project_do_coverage(shared_report_build):
 
 def test_autotools_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
-        shared_report_build.files.asJson("report/autotools-project-1.0.0-r0/checkcode/sage_report.json").keys())
+        shared_report_build.files.readAsJson("report/autotools-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    index = shared_report_build.files.asHtml("report/autotools-project-1.0.0-r0/checkcode/index.html")
+    index = shared_report_build.files.readAsHtml("report/autotools-project-1.0.0-r0/checkcode/index.html")
     assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_autotools_project_do_checkcache(shared_report_build):
-    caches = shared_report_build.files.asJson("report/autotools-project-1.0.0-r0/checkcache/caches.json")
+    caches = shared_report_build.files.readAsJson("report/autotools-project-1.0.0-r0/checkcache/caches.json")
     assert "Missed" in caches["Premirror"]
     assert "Found" in caches["Premirror"]["Summary"]
 
 
 def test_autotools_project_do_checkrecipe(shared_report_build):
-    recipe_violations = shared_report_build.files.asJson("report/autotools-project-1.0.0-r0/checkrecipe/recipe_violations.json")
+    recipe_violations = shared_report_build.files.readAsJson("report/autotools-project-1.0.0-r0/checkrecipe/recipe_violations.json")
     assert len(recipe_violations["issues"]) == 0
 
-    files = shared_report_build.files.asJson("report/autotools-project-1.0.0-r0/checkrecipe/files.json")
+    files = shared_report_build.files.readAsJson("report/autotools-project-1.0.0-r0/checkrecipe/files.json")
     assert files["lines_of_code"][0]["file"].endswith('autotools-project_1.0.0.bb')
-    assert files["lines_of_code"][1]["file"].endswith('autotools-project_1.0.0.bbappend') 
+    assert files["lines_of_code"][1]["file"].endswith('autotools-project_1.0.0.bbappend')
 
 
 def test_humidifier_project(shared_report_build):
@@ -229,19 +229,19 @@ def test_humidifier_project(shared_report_build):
     assert shared_report_build.files.exists("report/humidifier-project-1.0.0-r0/checkrecipe/files.json")
 
     assert METADATAJSON_KEYS == set(
-        shared_report_build.files.asJson("report/humidifier-project-1.0.0-r0/metadata.json").keys())
+        shared_report_build.files.readAsJson("report/humidifier-project-1.0.0-r0/metadata.json").keys())
 
 
 def test_humidifier_project_do_test(shared_report_build):
-    test = shared_report_build.files.asXml("report/humidifier-project-1.0.0-r0/test/unittest.xml")
+    test = shared_report_build.files.readAsXml("report/humidifier-project-1.0.0-r0/test/unittest.xml")
     assert test.containsElementWithAttrib("testcase", {"classname":"humidifier-project.HumidifierTest"})
 
 
 def test_humidifier_project_do_coverage(shared_report_build):
-    index = shared_report_build.files.asHtml("report/humidifier-project-1.0.0-r0/coverage/index.html")
+    index = shared_report_build.files.readAsHtml("report/humidifier-project-1.0.0-r0/coverage/index.html")
     assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
-    coverage = shared_report_build.files.asXml("report/humidifier-project-1.0.0-r0/coverage/coverage.xml")
+    coverage = shared_report_build.files.readAsXml("report/humidifier-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"humidifier-project.humidifier.src"})
     assert coverage.containsElementWithAttrib("method", {"name":"Humidifier::setPreferredHumidity(int)",
         **COVERAGE_LOG_100})
@@ -253,23 +253,23 @@ def test_humidifier_project_do_coverage(shared_report_build):
 
 def test_humidifier_project_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
-        shared_report_build.files.asJson("report/humidifier-project-1.0.0-r0/checkcode/sage_report.json").keys())
+        shared_report_build.files.readAsJson("report/humidifier-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
-    index = shared_report_build.files.asHtml("report/humidifier-project-1.0.0-r0/checkcode/index.html")
+    index = shared_report_build.files.readAsHtml("report/humidifier-project-1.0.0-r0/checkcode/index.html")
     assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_humidifier_project_do_checkcache(shared_report_build):
-    caches = shared_report_build.files.asJson("report/humidifier-project-1.0.0-r0/checkcache/caches.json")
+    caches = shared_report_build.files.readAsJson("report/humidifier-project-1.0.0-r0/checkcache/caches.json")
     assert "Missed" in caches["Premirror"]
     assert "Found" in caches["Premirror"]["Summary"]
 
 
 def test_humidifier_project_do_checkcache(shared_report_build):
-    recipe_violations = shared_report_build.files.asJson("report/humidifier-project-1.0.0-r0/checkrecipe/recipe_violations.json")
+    recipe_violations = shared_report_build.files.readAsJson("report/humidifier-project-1.0.0-r0/checkrecipe/recipe_violations.json")
     assert len(recipe_violations["issues"]) == 0
 
-    files = shared_report_build.files.asJson("report/humidifier-project-1.0.0-r0/checkrecipe/files.json")
+    files = shared_report_build.files.readAsJson("report/humidifier-project-1.0.0-r0/checkrecipe/files.json")
     assert files["lines_of_code"][0]["file"].endswith('humidifier-project_1.0.0.bb')
     assert files["lines_of_code"][1]["file"].endswith('humidifier-project_1.0.0.bbappend')
 
@@ -287,19 +287,19 @@ def test_sqlite3wrapper(shared_report_build):
     assert shared_report_build.files.exists("report/sqlite3wrapper-0.1.0-r0/checkrecipe/files.json")
 
     assert METADATAJSON_KEYS == set(
-        shared_report_build.files.asJson("report/sqlite3wrapper-0.1.0-r0/metadata.json").keys())
+        shared_report_build.files.readAsJson("report/sqlite3wrapper-0.1.0-r0/metadata.json").keys())
 
 
 def test_sqlite3wrapper_do_test(shared_report_build):
-    test = shared_report_build.files.asXml("report/sqlite3wrapper-0.1.0-r0/test/SQLite3WrapperTest.exe.xml")
+    test = shared_report_build.files.readAsXml("report/sqlite3wrapper-0.1.0-r0/test/SQLite3WrapperTest.exe.xml")
     assert test.containsElementWithAttrib("testcase", {"classname":"sqlite3wrapper.DatabaseTest"})
 
 
 def test_sqlite3wrapper_do_coverage(shared_report_build):
-    index = shared_report_build.files.asHtml("report/sqlite3wrapper-0.1.0-r0/coverage/index.html")
+    index = shared_report_build.files.readAsHtml("report/sqlite3wrapper-0.1.0-r0/coverage/index.html")
     assert index.containsElementWithText("td", LCOV_HTML_TITLE)
 
-    coverage = shared_report_build.files.asXml("report/sqlite3wrapper-0.1.0-r0/coverage/coverage.xml")
+    coverage = shared_report_build.files.readAsXml("report/sqlite3wrapper-0.1.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"sqlite3wrapper.src"})
     assert coverage.containsElementWithAttrib("method", {"name":"SQLite3Wrapper::Column::getName() const",
          **COVERAGE_LOG_100})
@@ -311,22 +311,22 @@ def test_sqlite3wrapper_do_coverage(shared_report_build):
 
 def test_sqlite3wrapper_do_checkcode(shared_report_build):
     assert SAGEREPORTJSON_KEYS == set(
-        shared_report_build.files.asJson("report/sqlite3wrapper-0.1.0-r0/checkcode/sage_report.json").keys())
+        shared_report_build.files.readAsJson("report/sqlite3wrapper-0.1.0-r0/checkcode/sage_report.json").keys())
 
-    index = shared_report_build.files.asHtml("report/sqlite3wrapper-0.1.0-r0/checkcode/index.html")
+    index = shared_report_build.files.readAsHtml("report/sqlite3wrapper-0.1.0-r0/checkcode/index.html")
     assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
 
 
 def test_sqlite3wrapper_do_checkcache(shared_report_build):
-    caches = shared_report_build.files.asJson("report/sqlite3wrapper-0.1.0-r0/checkcache/caches.json")
+    caches = shared_report_build.files.readAsJson("report/sqlite3wrapper-0.1.0-r0/checkcache/caches.json")
     assert "Missed" in caches["Premirror"]
     assert "Found" in caches["Premirror"]["Summary"]
 
 
 def test_sqlite3wrapper_do_checkrecipe(shared_report_build):
-    recipe_violations = shared_report_build.files.asJson("report/sqlite3wrapper-0.1.0-r0/checkrecipe/recipe_violations.json")
+    recipe_violations = shared_report_build.files.readAsJson("report/sqlite3wrapper-0.1.0-r0/checkrecipe/recipe_violations.json")
     assert len(recipe_violations["issues"]) == 0
 
-    files = shared_report_build.files.asJson("report/sqlite3wrapper-0.1.0-r0/checkrecipe/files.json")
+    files = shared_report_build.files.readAsJson("report/sqlite3wrapper-0.1.0-r0/checkrecipe/files.json")
     assert files["lines_of_code"][0]["file"].endswith('sqlite3wrapper_0.1.0.bb')
     assert files["lines_of_code"][1]["file"].endswith('sqlite3wrapper_0.1.0.bbappend')
