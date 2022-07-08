@@ -13,7 +13,7 @@ def test_cmake_project_coverage_filter(report_build):
         conf.set("SHIFT_COVERAGE_EXCLUDES", "program */src/*.cpp test/MinusTest.cpp")
         assert report_build.shell.execute("bitbake cmake-project -c coverage").stderr.empty()
         
-        coverage = report_build.files.asXml("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
+        coverage = report_build.files.readAsXml("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
         assert coverage.containsElementWithAttrib("class", {"filename":"test/PlusTest.cpp"})
         assert not coverage.containsElementWithAttrib("class", {"filename":"program/main.cpp"})
         assert not coverage.containsElementWithAttrib("class", {"filename":"plus/src/plus.cpp"})
@@ -26,7 +26,7 @@ def test_qmake_project_coverage_filter(report_build):
         conf.set("SHIFT_COVERAGE_EXCLUDES", "program */src/*.cpp test/MinusTest.cpp")
         assert report_build.shell.execute("bitbake qmake-project -c coverage").stderr.empty()
         
-        coverage = report_build.files.asXml("report/qmake-project-1.0.0-r0/coverage/coverage.xml")
+        coverage = report_build.files.readAsXml("report/qmake-project-1.0.0-r0/coverage/coverage.xml")
         assert coverage.containsElementWithAttrib("class", {"filename":"test/PlusTest.cpp"})
         assert not coverage.containsElementWithAttrib("class", {"filename":"program/main.cpp"})
         assert not coverage.containsElementWithAttrib("class", {"filename":"plus/src/plus.cpp"})
@@ -39,7 +39,7 @@ def test_autotools_project_coverage_filter(report_build):
         conf.set("SHIFT_COVERAGE_EXCLUDES", "program */src/*.cpp test/MinusTest.cpp")
         assert report_build.shell.execute("bitbake autotools-project -c coverage").stderr.empty()
         
-        coverage = report_build.files.asXml("report/autotools-project-1.0.0-r0/coverage/coverage.xml")
+        coverage = report_build.files.readAsXml("report/autotools-project-1.0.0-r0/coverage/coverage.xml")
         assert coverage.containsElementWithAttrib("class", {"filename":"test/PlusTest.cpp"})
         assert not coverage.containsElementWithAttrib("class", {"filename":"program/main.cpp"})
         assert not coverage.containsElementWithAttrib("class", {"filename":"plus/src/plus.cpp"})
