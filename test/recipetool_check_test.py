@@ -18,7 +18,7 @@ def test_check(release_build):
 def test_check_save_as_file(release_build):
     with release_build.files.tempfile("report.json") as f:
         o = release_build.shell.execute("recipetool check cmake-native --output {}".format(f))
-        data = release_build.files.asJson("report.json")
+        data = release_build.files.readAsJson("report.json")
         assert isinstance(data["issues"], list)
         assert len(data["issues"]) > 0
         for issue in data["issues"]:
