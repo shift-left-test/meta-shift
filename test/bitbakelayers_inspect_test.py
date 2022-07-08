@@ -33,7 +33,7 @@ def test_json_format_save_as_file(release_build):
     with release_build.files.tempfile("report.json") as f:
         o = release_build.shell.execute("bitbake-layers inspect meta-poky --output {}".format(f))
         assert not o.stdout.contains('"Name": "yocto"')
-        data = release_build.files.asJson("report.json")
+        data = release_build.files.readAsJson("report.json")
         assert data["General Information"]["Name"] == "yocto"
         assert data["General Information"]["Layer"] == "meta-poky"
         assert data["General Information"]["Priority"] == "5"
