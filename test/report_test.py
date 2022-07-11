@@ -54,7 +54,7 @@ def test_cmake_project_do_test(shared_report_build):
 
 def test_cmake_project_do_coverage(shared_report_build):
     index = shared_report_build.files.readAsHtml("report/cmake-project-1.0.0-r0/coverage/index.html")
-    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
+    assert index["html/body/table/tr/td"][1] == LCOV_HTML_TITLE
 
     coverage = shared_report_build.files.readAsXml("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"cmake-project.plus.src"})
@@ -70,7 +70,7 @@ def test_cmake_project_do_checkcode(shared_report_build):
         shared_report_build.files.readAsJson("report/cmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
     index = shared_report_build.files.readAsHtml("report/cmake-project-1.0.0-r0/checkcode/index.html")
-    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
+    assert index["html/body/h1"] == SAGE_HTML_TITLE
 
 
 def test_cmake_project_do_checkcache(shared_report_build):
@@ -122,7 +122,7 @@ def test_qmake_project_do_test(shared_report_build):
 
 def test_qmake_project_do_coverage(shared_report_build):
     index = shared_report_build.files.readAsHtml("report/qmake-project-1.0.0-r0/coverage/index.html")
-    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
+    assert index["html/body/table/tr/td"][1] == LCOV_HTML_TITLE
 
     coverage = shared_report_build.files.readAsXml("report/qmake-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"qmake-project.plus.src"})
@@ -138,7 +138,7 @@ def test_qmake_project_do_checkcode(shared_report_build):
         shared_report_build.files.readAsJson("report/qmake-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
     index = shared_report_build.files.readAsHtml("report/qmake-project-1.0.0-r0/checkcode/index.html")
-    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
+    assert index["html/body/h1"] == SAGE_HTML_TITLE
 
 
 def test_qmake_project_do_checkcache(shared_report_build):
@@ -182,7 +182,7 @@ def test_autotools_project_do_test(shared_report_build):
 
 def test_autotools_project_do_coverage(shared_report_build):
     index = shared_report_build.files.readAsHtml("report/autotools-project-1.0.0-r0/coverage/index.html")
-    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
+    assert index["html/body/table/tr/td"][1] == LCOV_HTML_TITLE
 
     coverage = shared_report_build.files.readAsXml("report/autotools-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"autotools-project.plus.src"})
@@ -198,7 +198,7 @@ def test_autotools_project_do_checkcode(shared_report_build):
         shared_report_build.files.readAsJson("report/autotools-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
     index = shared_report_build.files.readAsHtml("report/autotools-project-1.0.0-r0/checkcode/index.html")
-    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
+    assert index["html/body/h1"] == SAGE_HTML_TITLE
 
 
 def test_autotools_project_do_checkcache(shared_report_build):
@@ -239,7 +239,7 @@ def test_humidifier_project_do_test(shared_report_build):
 
 def test_humidifier_project_do_coverage(shared_report_build):
     index = shared_report_build.files.readAsHtml("report/humidifier-project-1.0.0-r0/coverage/index.html")
-    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
+    assert index["html/body/table/tr/td"][1] == LCOV_HTML_TITLE
 
     coverage = shared_report_build.files.readAsXml("report/humidifier-project-1.0.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"humidifier-project.humidifier.src"})
@@ -258,7 +258,7 @@ def test_humidifier_project_do_checkcode(shared_report_build):
         shared_report_build.files.readAsJson("report/humidifier-project-1.0.0-r0/checkcode/sage_report.json").keys())
 
     index = shared_report_build.files.readAsHtml("report/humidifier-project-1.0.0-r0/checkcode/index.html")
-    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
+    assert index["html/body/h1"] == SAGE_HTML_TITLE
 
 
 def test_humidifier_project_do_checkcache(shared_report_build):
@@ -299,7 +299,7 @@ def test_sqlite3wrapper_do_test(shared_report_build):
 
 def test_sqlite3wrapper_do_coverage(shared_report_build):
     index = shared_report_build.files.readAsHtml("report/sqlite3wrapper-0.1.0-r0/coverage/index.html")
-    assert index.containsElementWithText("td", LCOV_HTML_TITLE)
+    assert index["html/body/table/tr/td"][1] == LCOV_HTML_TITLE
 
     coverage = shared_report_build.files.readAsXml("report/sqlite3wrapper-0.1.0-r0/coverage/coverage.xml")
     assert coverage.containsElementWithAttrib("package", {"name":"sqlite3wrapper.src"})
@@ -316,7 +316,7 @@ def test_sqlite3wrapper_do_checkcode(shared_report_build):
         shared_report_build.files.readAsJson("report/sqlite3wrapper-0.1.0-r0/checkcode/sage_report.json").keys())
 
     index = shared_report_build.files.readAsHtml("report/sqlite3wrapper-0.1.0-r0/checkcode/index.html")
-    assert index.containsElementWithText("h1", SAGE_HTML_TITLE)
+    assert index["html/body/h1"] == SAGE_HTML_TITLE
 
 
 def test_sqlite3wrapper_do_checkcache(shared_report_build):
