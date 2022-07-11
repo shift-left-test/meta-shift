@@ -91,8 +91,3 @@ def parse(path):
         tree = ET.parse(path)
         root = tree.getroot()
         return XmlOutput(root)
-
-
-def parseString(string):
-    root = ET.fromstring(string)
-    return XmlOutput(root)
