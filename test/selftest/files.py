@@ -6,15 +6,14 @@ SPDX-License-Identifier: MIT
 """
 
 from contextlib import contextmanager
-from selftest.util import findFiles
-from selftest.output import FileOutput
-from selftest.output import XmlOutput
 from selftest.input import Conf
-import json
+from selftest.output import FileOutput
+from selftest.parsers import HTML
+from selftest.parsers import JSON
+from selftest.parsers import XML
+from selftest.util import findFiles
 import os
-import re
 import shutil
-import xml.etree.ElementTree as ET
 
 
 class Files(object):
@@ -44,29 +43,13 @@ class Files(object):
         return FileOutput(findFiles(self.build_dir, path)[0])
 
     def readAsJson(self, path):
-        with open(os.path.join(self.build_dir, path), "r") as f:
-            return json.load(f)
+        return JSON.parse(os.path.join(self.build_dir, path))
 
     def readAsXml(self, path):
-        tree = ET.parse(os.path.join(self.build_dir, path))
-        root = tree.getroot()
-        return  XmlOutput(root)
+        return XML.parse(os.path.join(self.build_dir, path))
 
     def readAsHtml(self, path):
-        with open(os.path.join(self.build_dir, path), "r") as f:
-            xmltext = f.read()
-
-            # To avoid failing when parsing html
-            xmltext = xmltext.replace("&nbsp;%"," ")
-            xmltext = re.sub("<![^>\n]*>", "", xmltext)
-            xmltext = re.sub("=([0-9]+)", r'="\1"',xmltext)
-            xmltext = re.sub("<meta[^>\n]*>", "", xmltext)
-            xmltext = re.sub("<link[^>\n]*>", "", xmltext)
-            xmltext = re.sub("<img[^>\n]*>", "", xmltext)
-            xmltext = re.sub("<br>", "", xmltext)
-
-        root = ET.fromstring(xmltext)
-        return  XmlOutput(root)
+        return HTML.parse(os.path.join(self.build_dir, path))
 
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
