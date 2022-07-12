@@ -5,89 +5,42 @@ Copyright (c) 2022 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import xml.etree.ElementTree as ET
+from selftest.parsers.data import multidict
+from xml.parsers import expat
 
 
-class XmlOutput(object):
-    """The xml output holder class
+class XMLReportParser(object):
+    def __init__(self, data):
+        self.data = data
+        self.tags = []
+        self.parser = expat.ParserCreate()
+        self.parser.StartElementHandler = self.handle_starttag
+        self.parser.EndElementHandler = self.handle_endtag
+        self.parser.CharacterDataHandler = self.handle_data
 
-    This class provides xml output comparison helper functions.
-    """
+    def add(self, value):
+        self.data["/".join(self.tags)] = value
 
-    def __init__(self, root):
-        """ Default constructor
+    def handle_starttag(self, tag, attrs):
+        self.tags.append(tag)
+        if attrs:
+            self.add(dict(attrs))
 
-        Args:
-          root (Element): root Element of xml.etree.ElementTree
-        """
-        self.root = root
+    def handle_endtag(self, tag):
+        if self.tags[-1] == tag:
+            self.tags.pop()
 
-    def containsElement(self, element_name):
-        """Assert that the root contains the element with the given name
+    def handle_data(self, data):
+        if data.strip():
+            self.add(data.strip())
 
-        Args:
-          element_name (str): element name to examine
-
-        Returns:
-          True if the root contains element that meets the condition, False otherwise
-        """
-        find = False
-        for e in self.root.iter(element_name):
-            find = True
-            break
-
-        return find
-
-    def containsElementWithAttrib(self, element_name, attributes):
-        """Assert that the root contains the element with the given attributes
-
-        Args:
-          element_name (str): element name to examine
-          attributes (dict): name, value pair to examine
-
-        Returns:
-          True if the root contains element that meets the condition, False otherwise
-        """
-        find = False
-        for e in self.root.iter(element_name):
-            match = True
-
-            for key in attributes:
-                if key in e.attrib:
-                    if e.attrib[key] != attributes[key]:
-                        match = False
-                        break
-                else:
-                    match = False
-                    break
-
-            if match:
-                find = True
-                break
-
-        return find
-
-    def containsElementWithText(self, element_name, text):
-        """Assert that the root contains the element with the given text
-
-        Args:
-          element_name (str): element name to examine
-          text (str): element's text to examine
-
-        Returns:
-          True if the root contains element that meets the condition, False otherwise
-        """
-        find = False
-        for e in self.root.iter(element_name):
-            if text == e.text:
-                find = True
-                break
-
-        return find
+    def feed(self, text):
+        self.parser.Parse(text)
 
 
 def parse(path):
     with open(path, "r") as f:
-        tree = ET.parse(path)
-        root = tree.getroot()
-        return XmlOutput(root)
+        data = multidict()
+        parser = XMLReportParser(data)
+        parser.feed(f.read())
+        return data
