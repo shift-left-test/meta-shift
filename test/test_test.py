@@ -22,8 +22,6 @@ def test_core_image_minimal_do_testall(stdout):
     assert stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
     assert stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
     assert stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
 
 
 def test_core_image_minimal_do_coverageall(stdout):
@@ -34,10 +32,6 @@ def test_core_image_minimal_do_coverageall(stdout):
     assert stdout.contains("qmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
     assert stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
     assert stdout.contains("autotools-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_test: Running tests...")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_test: Running tests...")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_coverage: GCC Code Coverage Report")
 
 
 def test_core_image_minimal_do_checkcodeall(stdout):
@@ -56,16 +50,6 @@ def test_core_image_minimal_do_checkcodeall(stdout):
     assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
 
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-
 
 def test_core_image_minimal_do_checkcacheall(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
@@ -74,18 +58,12 @@ def test_core_image_minimal_do_checkcacheall(stdout):
     assert stdout.contains("qmake-project-1.0.0-r0 do_checkcache: Source Availability")
     assert stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert stdout.contains("autotools-project-1.0.0-r0 do_checkcache: Source Availability")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Shared State Availability")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkcache: Source Availability")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Shared State Availability")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkcache: Source Availability")
 
 
 def test_core_image_minimal_do_checkrecipeall(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert stdout.contains("qmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     assert stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    assert stdout.contains("humidifier-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    assert stdout.contains("sqlite3wrapper-0.1.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
 
 
 def test_cmake_project_do_build(test_build):
