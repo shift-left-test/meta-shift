@@ -9,10 +9,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=a58572e3501e262ddd5da01be644887d"
 
 PYPI_PACKAGE = "cpplint"
 
-SRC_URI += "file://0001-remove-pytest-runner-dependency.patch"
+SRC_URI += "file://0001-remove-pytest-runner-dependency.patch \
+            file://0002-compatibility-with-python2.patch"
 
-SRC_URI[md5sum] = "88e9cf6a216c4281dab488d398589236"
-SRC_URI[sha256sum] = "18e768d8a4e0c329d88f1272b0283bbc3beafce76f48ee0caeb44ddbf505bba5"
+SRC_URI[md5sum] = "6c28ca4d4bae38310ca9a48629e91076"
+SRC_URI[sha256sum] = "8af99f95ed1af2d18e60467cdc13ee0441c2a14d693b7d2dbb71ad427074e491"
 
 inherit pypi setuptools3
 

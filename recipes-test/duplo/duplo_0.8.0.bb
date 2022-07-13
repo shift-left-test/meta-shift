@@ -11,7 +11,7 @@ SRC_URI = "git://github.com/dlidstrom/Duplo.git;protocol=https;nobranch=1 \
            file://0002-add-hpp-file-extension.patch \
 "
 
-SRCREV = "370e9bf76ac58e3f66779be8f3b0302f71d0cbe0"
+SRCREV = "c4e38e136755a5acafa94ecaea0e984ee5ee17d1"
 
 S = "${WORKDIR}/git"
 
