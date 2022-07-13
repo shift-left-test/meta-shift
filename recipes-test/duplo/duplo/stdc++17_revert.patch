@@ -19,7 +19,7 @@ index aeeea15..4f914e3 100644
 +
 +install(TARGETS duplo DESTINATION bin)
 diff --git a/src/Duplo.cpp b/src/Duplo.cpp
-index 2ca907b..d543595 100644
+index d044488..81b127d 100644
 --- a/src/Duplo.cpp
 +++ b/src/Duplo.cpp
 @@ -116,7 +116,9 @@ namespace {
@@ -76,6 +76,5 @@ index 2ca907b..d543595 100644
 +    unsigned int locsTotal;
 +    std::tie(sourceFiles, matrix, files, locsTotal) =
          LoadSourceFiles(lines, options.GetMinChars(), options.GetIgnorePrepStuff());
+     auto numFilesToCheck = options.GetFilesToCheck() > 0 ? std::min(options.GetFilesToCheck(), sourceFiles.size()): sourceFiles.size();
  
-     // hash maps
-
