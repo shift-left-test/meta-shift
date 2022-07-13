@@ -20,7 +20,7 @@ def test_default_format(release_build):
                                 "Bugtracker: https://github.com/cpplint/cpplint/issues",
                                 "Section: devel/python",
                                 "License: BSD-3-Clause",
-                                "Version: 1.5.5",
+                                "Version: 1.6.0",
                                 "Revision: r0",
                                 "Layer: meta-shift",
                                 "Testable: False")
