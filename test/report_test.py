@@ -38,9 +38,12 @@ def validateCoverageReport(build, directory):
     assert data["html/body/table/tr/td"][1] == "LCOV - code coverage report"
 
     data = build.files.readAsXml(os.path.join(directory, "coverage/coverage.xml"))
-    data = data["coverage/packages/package/classes/class/methods/method"]
-    assert any(map(lambda x: x["name"] == "arithmetic::minus(int, int)" and x["line-rate"] == "1.0", data))
-    assert any(map(lambda x: x["name"] == "arithmetic::plus(int, int)" and x["line-rate"] == "1.0", data))
+    method_data = data["coverage/packages/package/classes/class/methods/method"]
+    assert any(map(lambda x: x["name"] == "arithmetic::minus(int, int)" and x["line-rate"] == "1.0", method_data))
+    assert any(map(lambda x: x["name"] == "arithmetic::plus(int, int)" and x["line-rate"] == "1.0", method_data))
+    class_data = data["coverage/packages/package/classes/class"]
+    assert any(map(lambda x: x["name"] == "test.MinusTest.cpp" and x["branch-rate"] != "0.0", class_data))
+    assert any(map(lambda x: x["name"] == "test.PlusTest.cpp" and x["branch-rate"] != "0.0", class_data))
 
 
 def validateCheckcodeReport(build, directory):
