@@ -361,15 +361,19 @@ def shiftutils_get_sstate_availability(d, siginfo=False):
             localdata.delVar('BB_NO_NETWORK')
 
         from bb.fetch2 import FetchConnectionCache
-        def checkstatus_init(thread_worker):
-            thread_worker.connection_cache = FetchConnectionCache()
+        def checkstatus_init():
+            while not connection_cache_pool.full():
+                connection_cache_pool.put(FetchConnectionCache())
 
-        def checkstatus_end(thread_worker):
-            thread_worker.connection_cache.close_connections()
+        def checkstatus_end():
+            while not connection_cache_pool.empty():
+                connection_cache = connection_cache_pool.get()
+                connection_cache.close_connections()
 
-        def checkstatus(thread_worker, arg):
+        def checkstatus(arg):
             (tid, sstatefile) = arg
 
+            connection_cache = connection_cache_pool.get()
             localdata2 = bb.data.createCopy(localdata)
             srcuri = "file://" + sstatefile
             localdata.setVar('SRC_URI', srcuri)
@@ -377,7 +381,7 @@ def shiftutils_get_sstate_availability(d, siginfo=False):
 
             try:
                 fetcher = bb.fetch2.Fetch(srcuri.split(), localdata2,
-                            connection_cache=thread_worker.connection_cache)
+                            connection_cache=connection_cache)
                 fetcher.checkstatus()
                 bb.debug(2, "SState: Successful fetch test for %s" % srcuri)
                 found.add(tid)
@@ -387,6 +391,8 @@ def shiftutils_get_sstate_availability(d, siginfo=False):
                 missed.add(tid)
                 bb.debug(2, "SState: Unsuccessful fetch test for %s" % srcuri)
                 pass
+
+            connection_cache_pool.put(connection_cache)
 
         tasklist = []
         for tid in sq_data['hash']:
@@ -398,15 +404,16 @@ def shiftutils_get_sstate_availability(d, siginfo=False):
 
         if tasklist:
             import multiprocessing
+            import concurrent.futures
+            from queue import Queue
             nproc = min(multiprocessing.cpu_count(), len(tasklist))
 
             bb.event.enable_threadlock()
-            pool = oe.utils.ThreadedPool(nproc, len(tasklist),
-                    worker_init=checkstatus_init, worker_end=checkstatus_end)
-            for t in tasklist:
-                pool.add_task(checkstatus, t)
-            pool.start()
-            pool.wait_completion()
+            connection_cache_pool = Queue(nproc)
+            checkstatus_init()
+            with concurrent.futures.ThreadPoolExecutor(max_workers=nproc) as executor:
+                executor.map(checkstatus, tasklist.copy())
+            checkstatus_end()
             bb.event.disable_threadlock()
         try:
             bb.utils.remove(tmp_dldir, True)
