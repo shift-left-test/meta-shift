@@ -19,6 +19,8 @@ def test_cmake_project_coverage_filter(report_build):
         assert coverage["coverage/packages/package/classes/class"]["filename"] != "program/main.cpp"
         assert coverage["coverage/packages/package/classes/class"]["filename"] != "test/MinusTest.cpp"
         assert coverage["coverage/packages/package/classes/class"]["filename"] == "test/PlusTest.cpp"
+        assert coverage["coverage/packages/package/classes/class"]["line-rate"] == "1.0"
+        assert coverage["coverage/packages/package/classes/class"]["branch-rate"] != "0.0"
 
 
 def test_qmake_project_coverage_filter(report_build):
@@ -32,6 +34,8 @@ def test_qmake_project_coverage_filter(report_build):
         assert coverage["coverage/packages/package/classes/class"][0]["filename"] != "program/main.cpp"
         assert coverage["coverage/packages/package/classes/class"][0]["filename"] != "test/MinusTest.cpp"
         assert coverage["coverage/packages/package/classes/class"][0]["filename"] == "test/PlusTest.cpp"
+        assert coverage["coverage/packages/package/classes/class"][0]["line-rate"] == "1.0"
+        assert coverage["coverage/packages/package/classes/class"][0]["branch-rate"] != "0.0"
 
 
 def test_autotools_project_coverage_filter(report_build):
@@ -45,3 +49,5 @@ def test_autotools_project_coverage_filter(report_build):
         assert coverage["coverage/packages/package/classes/class"]["filename"] != "program/main.cppd"
         assert coverage["coverage/packages/package/classes/class"]["filename"] != "test/MinusTest.cpp"
         assert coverage["coverage/packages/package/classes/class"]["filename"] == "test/PlusTest.cpp"
+        assert coverage["coverage/packages/package/classes/class"]["line-rate"] == "1.0"
+        assert coverage["coverage/packages/package/classes/class"]["branch-rate"] != "0.0"

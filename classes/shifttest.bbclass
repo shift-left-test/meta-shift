@@ -139,7 +139,8 @@ python shifttest_do_coverage() {
 
     if d.getVar("SHIFT_COVERAGE_EXCLUDES", True):
         import glob
-        cmd = ["lcov", "--remove", LCOV_DATAFILE, "-o", LCOV_DATAFILE]
+        cmd = ["lcov", "--remove", LCOV_DATAFILE, "-o", LCOV_DATAFILE,
+               "--rc", "lcov_branch_coverage=1"]
         exc_path_list = []
         source_root = d.getVar("S", True)
         for exc in shlex_split(d.getVar("SHIFT_COVERAGE_EXCLUDES", True)):
