@@ -146,13 +146,13 @@ def exec_proc(cmd, d, **options):
                 buf = proc.stdout.readline()
                 stdout_eof = len(buf) == 0
                 if not stdout_eof:
-                    plain(buf.decode("utf-8").rstrip(), d)
+                    plain(buf.decode("utf-8", errors="replace").rstrip(), d)
 
             if not stderr_eof and proc.stderr in ready[0]:
                 buf = proc.stderr.readline()
                 stderr_eof = len(buf) == 0
                 if not stderr_eof:
-                    stderr_str += buf.decode("utf-8")
+                    stderr_str += buf.decode("utf-8", errors="replace")
 
         proc.wait()
         if proc.returncode != 0:
