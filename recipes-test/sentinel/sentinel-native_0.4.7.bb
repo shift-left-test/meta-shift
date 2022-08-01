@@ -11,6 +11,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5 \
                     file://external/fmt/LICENSE.rst;md5=af88d758f75f3c5c48a967501f24384b \
                     file://oss-pkg-info.yaml;md5=178cb5998e1dcb87b59ecac24ad3ca83"
 
+TUNE_FEATURES:class-native += "${TUNE_FEATURES:tune-${DEFAULTTUNE}}"
+
 DEPENDS:class-native += "\
     clang-cross-${TUNE_ARCH} \
     libgit2-native \
