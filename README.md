@@ -114,6 +114,7 @@ These options can be used by adding to *conf/local.conf*.
 * **SHIFT_CHECKTEST_SEED**: Random seed for the mutation generator
 * **SHIFT_CHECKTEST_VERBOSE**: Silence the test ouput while running the `do_checktest` task
 * **SHIFT_COVERAGE_EXCLUDES**: Exclude paths from code coverage analysis
+* **SHIFT_COVERAGE_BRANCH**: Generate branch coverage data
 * **SHIFT_REPORT_DIR**: A path to store report files
 * **SHIFT_TEST_FILTER**: Run tests matching regular expression
 * **SHIFT_TEST_SHUFFLE**: Randomize the order of tests

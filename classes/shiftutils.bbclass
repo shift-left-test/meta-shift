@@ -442,3 +442,7 @@ def shiftutils_get_coverage_info(data, coverage_file) :
         warn("No coverage info file generated at %s" % coverage_file, data)
 
     return coverage_info
+
+def shiftutils_get_branch_coverage_option(data, tool) :
+    flag = 1 if bb.utils.to_boolean(data.getVar("SHIFT_COVERAGE_BRANCH", True)) else 0
+    return "--rc {}_branch_coverage={}".format(tool, flag)
