@@ -110,6 +110,7 @@ python shifttest_do_coverage() {
     LCOV_DATAFILE_TEST = d.expand("${B}/coverage_test.info")
     LCOV_DATAFILE_TOTAL = d.expand("${B}/coverage_total.info")
     LCOV_DATAFILE = d.expand("${B}/coverage.info")
+    BRANCH_COVERAGE_OPTION = shiftutils_get_branch_coverage_option(d, "lcov")
 
     # Remove files if exist
     bb.utils.remove(LCOV_DATAFILE_TOTAL)
@@ -124,24 +125,24 @@ python shifttest_do_coverage() {
                 "-d", d.getVar("B", True),
                 "-o", LCOV_DATAFILE_TEST,
                 "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
-                "--rc", "lcov_branch_coverage=1"], d)
+                BRANCH_COVERAGE_OPTION], d)
 
     check_call(["lcov",
                 "-a", LCOV_DATAFILE_BASE,
                 "-a", LCOV_DATAFILE_TEST,
                 "-o", LCOV_DATAFILE_TOTAL,
-                "--rc", "lcov_branch_coverage=1"], d)
+                BRANCH_COVERAGE_OPTION], d)
 
     check_call(["lcov",
                 "--extract", LCOV_DATAFILE_TOTAL,
-                "--rc", "lcov_branch_coverage=1",
+                BRANCH_COVERAGE_OPTION,
                 d.expand('"${S}/*"'),
                 "-o", LCOV_DATAFILE], d)
 
     if d.getVar("SHIFT_COVERAGE_EXCLUDES", True):
         import glob
         cmd = ["lcov", "--remove", LCOV_DATAFILE, "-o", LCOV_DATAFILE,
-               "--rc", "lcov_branch_coverage=1"]
+               BRANCH_COVERAGE_OPTION]
         exc_path_list = []
         source_root = d.getVar("S", True)
         for exc in shlex_split(d.getVar("SHIFT_COVERAGE_EXCLUDES", True)):
@@ -158,7 +159,7 @@ python shifttest_do_coverage() {
             check_call(cmd + exc_path_list, d)
 
     plain("GCC Code Coverage Report", d)
-    exec_proc(["lcov", "--list", LCOV_DATAFILE, "--rc", "lcov_branch_coverage=1"], d)
+    exec_proc(["lcov", "--list", LCOV_DATAFILE, BRANCH_COVERAGE_OPTION], d)
 
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
@@ -173,7 +174,7 @@ python shifttest_do_coverage() {
                     "--demangle-cpp",
                     "--output-directory", report_dir,
                     "--ignore-errors", "source",
-                    "--rc", "genhtml_branch_coverage=1"], d)
+                    shiftutils_get_branch_coverage_option(d, "genhtml")], d)
 
         check_call(["nativepython3", "-m", "lcov_cobertura", LCOV_DATAFILE,
                     "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
