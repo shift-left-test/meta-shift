@@ -86,7 +86,7 @@ python autotoolstest_do_test() {
                 "-o", d.expand("${B}/coverage_base.info"),
                 "--ignore-errors", "gcov",
                 "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
-                "--rc", "lcov_branch_coverage=1"], d)
+                shiftutils_get_branch_coverage_option(d, "lcov")], d)
 
     # Run tests matching regular expression
     if d.getVar("SHIFT_TEST_FILTER", True):
