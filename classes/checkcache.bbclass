@@ -1,5 +1,3 @@
-inherit shiftutils
-
 python checkcacheinternal() {
     import bb.fetch2
 
