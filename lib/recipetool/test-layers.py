@@ -35,7 +35,7 @@ def is_test_configured(layerconf):
     :param layerconf: path to the layer.conf
     :return: True if the layer is test-configured, False otherwise
     """
-    regexp = re.compile("^LAYERDEPENDS_(?:.*)\"(?:.*)meta-shift(?:.*)\"", re.MULTILINE)
+    regexp = re.compile("LAYERDEPENDS_(?:.+?\")(?:.+?)meta-shift(?:.+?\")", re.DOTALL)
     with open(layerconf, "r") as f:
         return regexp.search(f.read())
 
@@ -47,7 +47,7 @@ def get_layername(layerconf):
     :param layerconf: path to the layer.conf
     :return: layername
     """
-    regexp = re.compile("^(?:BBFILE_COLLECTIONS)(?:.+)(?:\")(.+)(?:\")", re.MULTILINE)
+    regexp = re.compile("^(?:BBFILE_COLLECTIONS.+?\")(.+?)(?:\")", re.MULTILINE)
     with open(layerconf, "r") as f:
         return regexp.search(f.read()).groups()[0]
 
