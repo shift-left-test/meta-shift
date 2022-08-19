@@ -51,7 +51,7 @@ python cmaketest_do_test() {
         # Run tests matching regular expression
         if d.getVar("SHIFT_TEST_FILTER", True):
             expression = d.getVar("SHIFT_TEST_FILTER")
-            rules = [(".", "\."), ("*", ".*"), (":", "|"), ("?", ".?")]
+            rules = [(".", r"\."), ("*", ".*"), (":", "|"), ("?", ".?")]
             for rule in rules:
                 expression = expression.replace(rule[0], rule[1])
             tokens = expression.split("-", 1)
