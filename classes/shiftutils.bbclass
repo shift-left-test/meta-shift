@@ -216,11 +216,42 @@ def shiftutils_qemu_cmake_emulator(data):
     return shiftutils_qemu_run_cmd(data).replace(' ', ';')
 
 
-def shiftutils_get_taskdepdata(data):
-    taskdepdata = data.getVar("BB_TASKDEPDATA", False)
-    return taskdepdata
+def shiftutils_get_source_availability(d):
+    taskdepdata = d.getVar("BB_TASKDEPDATA", False)
 
-shiftutils_get_taskdepdata[vardepsexclude] += "BB_TASKDEPDATA"
+    total_depends = set()
+    if taskdepdata:
+        for td in taskdepdata:
+            dep = taskdepdata[td][0]
+            if dep:
+                total_depends.add(dep)
+
+    found_source = list()
+    missed_source = list()
+
+    for dep in total_depends:
+        try:
+            path = d.expand("${TOPDIR}/checkcache/%s" % dep)
+
+            with open(os.path.join(path,"source_availability"), "r") as f:
+                source_availability = f.read()
+                if source_availability == "True":
+                    found_source.append(dep)
+                elif source_availability == "False":
+                    missed_source.append(dep)
+                else:
+                    raise Exception("Unknown Value(%s)" % source_availability)
+
+        except Exception as e:
+            debug("Failed to read source_availability of %s:%s" % (dep, str(e)))
+
+    found_source.sort()
+    missed_source.sort()
+
+    return found_source, missed_source
+
+shiftutils_get_source_availability[vardepsexclude] += "BB_TASKDEPDATA"
+
 
 def shiftutils_get_branch_coverage_option(data, tool) :
     flag = 1 if bb.utils.to_boolean(data.getVar("SHIFT_COVERAGE_BRANCH", True)) else 0
