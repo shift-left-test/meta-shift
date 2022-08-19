@@ -72,7 +72,7 @@ python qmaketest_do_test() {
 
             # Prepend the package name to each of the testsuite tags for QTest reports
             xml_files = find_files(d.getVar("B", True), "test_result.xml")
-            replace_files(xml_files, '(<testsuite(.*?)name=")', d.expand('\g<1>${PN}.'))
+            replace_files(xml_files, '(<testsuite(.*?)name=")', d.expand(r'\g<1>${PN}.'))
 
             # Copy QTest reports to the report directory
             for xml_file in xml_files:
