@@ -53,7 +53,7 @@ python shifttest_do_checkcode() {
     for tool in set(["metrix++", "duplo"] + (d.getVar("SHIFT_CHECKCODE_TOOLS", True) or "").split()):
         options = d.getVarFlag("SHIFT_CHECKCODE_TOOL_OPTIONS", tool, True)
         if options:
-            cmdline.append(tool + ":" + options.replace(" ", "\ "))
+            cmdline.append(tool + ":" + options.replace(" ", r"\ "))
         else:
             cmdline.append(tool)
 
@@ -183,7 +183,7 @@ python shifttest_do_coverage() {
 
         if os.path.exists(xml_file):
             # Prepend the package name to each of the package tags
-            replace_files([xml_file], '(<package.*name=")', d.expand('\g<1>${PN}.'))
+            replace_files([xml_file], '(<package.*name=")', d.expand(r'\g<1>${PN}.'))
         else:
             warn("No coverage report files generated at %s" % report_dir, d)
 }
@@ -240,7 +240,7 @@ python shifttest_do_checktest() {
     # Insert the target option to the file
     replace_files([new_file],
                   '("command": ".*)(")',
-                  dd.expand('\g<1> --target=${TARGET_SYS}\g<2>'))
+                  dd.expand(r'\g<1> --target=${TARGET_SYS}\g<2>'))
 
     # Create test reports
     dd.setVar("SHIFT_REPORT_DIR", expected_dir)
