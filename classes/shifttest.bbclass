@@ -204,11 +204,7 @@ python shifttest_do_checkcache() {
             if wanted != 0:
                 ret += newline("Wanted : %d (%d%%)" % (wanted, 100 * wanted / wanted))
                 ret += newline("Found  : %d (%d%%)" % (len(found), 100 * len(found) / wanted))
-                for task in found:
-                    ret += newline("    %s" % task)
                 ret += newline("Missed : %d (%d%%)" % (len(missed), 100 * len(missed) / wanted))
-                for task in missed:
-                    ret += newline("    %s" % task)
             else:
                 ret += newline("Wanted : %d (-%%)" % (wanted))
                 ret += newline("Found  : %d (-%%)" % (len(found)))
@@ -239,42 +235,12 @@ python shifttest_do_checkcache() {
     if "checkcache" not in str(d.getVar("INHERIT", True)):
         fatal("The task needs to inherit checkcache", d)
 
-    found_source = list()
-    missed_source = list()
+    found_source, missed_source = shiftutils_get_source_availability(d)
 
-    total_depends = set()
-    taskdepdata = shiftutils_get_taskdepdata(d)
-    if taskdepdata:
-        for td in taskdepdata:
-            total_depends.add(taskdepdata[td][0])
-
-    total_depends_remove_virtual = set()
+    plain_report_str = str(make_plain_report([("Source Availability", found_source, missed_source)]))
     
-    for dep in total_depends:
-        if dep.startswith("virtual/"):
-            dep = d.getVar("PREFERRED_PROVIDER_%s" % dep, True)
-
-        if dep:
-            total_depends_remove_virtual.add(dep)
-
-    for dep in total_depends_remove_virtual:
-        try:
-            path = d.expand("${TOPDIR}/checkcache/%s" % dep)
-
-            with open(os.path.join(path,"source_availability"), "r") as f:
-                source_availability = bool(f.read())
-                if source_availability:
-                    found_source.append(dep)
-                else:
-                    missed_source.append(dep)
-
-        except Exception as e:
-            debug("Failed to read information of %s:%s" % (dep, str(e)))
-
-    found_source.sort()
-    missed_source.sort()
-
-    plain(make_plain_report([("Source Availability", found_source, missed_source)]), d)
+    for splited in plain_report_str.splitlines():
+        plain(splited, d)
 
     if d.getVar("SHIFT_REPORT_DIR", True):
         report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcache")
