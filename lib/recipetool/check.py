@@ -66,6 +66,7 @@ def check(args, files):
     set_suppressions([
         "oelint.var.suggestedvar.BBCLASSEXTEND",
         "oelint.var.suggestedvar.CVE_PRODUCT",
+        "oelint.vars.homepageping",
         "oelint.task.customorder"
     ])
     set_messageformat("{path}:{line}:{severity}:{id}:{msg}")
