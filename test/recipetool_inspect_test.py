@@ -34,6 +34,14 @@ def test_save_as_file(release_build):
         assert data["General Information"]["Name"] == "cpplint"
 
 
+def test_inspect_recursive(release_build):
+    o = release_build.shell.execute("recipetool inspect cpplint --recursive")
+    assert o.stdout.containsAll("Depends:",
+                                "Indirect Depends:",
+                                "Incoming Depends:",
+                                "Indirect Incoming Depends:")
+
+
 def test_inspect_unknown_recipe(release_build):
     o = release_build.shell.execute("recipetool inspect unknown-recipe")
     assert o.stderr.contains("Failed to find the recipe file for 'unknown-recipe'")
