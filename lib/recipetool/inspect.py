@@ -124,12 +124,12 @@ def inspect(args):
     inherits = OrderedDict(sorted(inherits.items(), key=lambda t:t[0]))
 
     if args.recursive:
-        dependedby_queue = [recipename]
-        dependedby_set = set()
+        incoming_depends_queue = [recipename]
+        incoming_depends_set = set()
         pkg_fn_items = dict(tinfoil.cooker_data.pkg_fn)
 
-        while len(dependedby_queue) > 0:
-            p = dependedby_queue.pop()
+        while len(incoming_depends_queue) > 0:
+            p = incoming_depends_queue.pop()
             rf = oe.recipeutils.pn_to_recipe(tinfoil.cooker, p)
             if rf:
                 prvds = tinfoil.cooker_data.fn_provides[rf]
@@ -140,24 +140,24 @@ def inspect(args):
                         continue
 
                     if any((prov in tinfoil.cooker_data.deps[fn]) for prov in prvds):
-                        if pn not in dependedby_set:
-                            dependedby_set.add(pn)
-                            dependedby_queue.append(pn)
+                        if pn not in incoming_depends_set:
+                            incoming_depends_set.add(pn)
+                            incoming_depends_queue.append(pn)
                             added_fn.append(fn)
 
                 for fn in added_fn:
                     del pkg_fn_items[fn]
 
-        rec_dependedby = list(dependedby_set)
+        indirect_incoming_depends = list(incoming_depends_set)
 
-    dependedby = set()
+    incoming_depends = set()
     provides = sorted(tinfoil.cooker_data.fn_provides[recipefile])
     for fn, pn in tinfoil.cooker_data.pkg_fn.items():
         if recipename == pn:
             continue
         if any((prov in tinfoil.cooker_data.deps[fn]) for prov in provides):
-            dependedby.add(pn)
-    dependedby = list(dependedby)
+            incoming_depends.add(pn)
+    incoming_depends = list(incoming_depends)
 
     if args.recursive:
         depends_queue = [recipename]
@@ -181,14 +181,14 @@ def inspect(args):
                           if oe.recipeutils.pn_to_recipe(tinfoil.cooker, d):
                               depends_set.add(d)
 
-        rec_depends_real = set()
+        indirect_depends_real = set()
         for p in depends_set:
             rf = oe.recipeutils.pn_to_recipe(tinfoil.cooker, p)
             if rf and rf in tinfoil.cooker_data.pkg_fn:
-                rec_depends_real.add(tinfoil.cooker_data.pkg_fn[rf])
+                indirect_depends_real.add(tinfoil.cooker_data.pkg_fn[rf])
             else:
-                rec_depends_real.add(p)
-        rec_depends_real = list(rec_depends_real)
+                indirect_depends_real.add(p)
+        indirect_depends_real = list(indirect_depends_real)
 
     depends = tinfoil.cooker_data.deps[recipefile]
     depends_real = []
@@ -207,10 +207,10 @@ def inspect(args):
     reporter.add_value("Inherits", inherits)
     reporter.add_value("Depends", sorted(depends_real))
     if args.recursive:
-        reporter.add_value("Recursive Depends", sorted(rec_depends_real))
-    reporter.add_value("Depended By", sorted(dependedby))
+        reporter.add_value("Indirect Depends", sorted(indirect_depends_real))
+    reporter.add_value("Incoming Depends", sorted(incoming_depends))
     if args.recursive:
-        reporter.add_value("Recursive Depended By", sorted(rec_dependedby))
+        reporter.add_value("Indirect Incoming Depends", sorted(indirect_incoming_depends))
     reporter.add_value("RDepends", rdepends)
     reporter.add_value("Provides", provides)
     reporter.add_value("Packages", sorted(recipedata.getVar("PACKAGES", True).split()))
@@ -225,7 +225,7 @@ def register_commands(subparsers):
     parser = subparsers.add_parser("inspect",
                                    help="Inspect the specified recipe information",
                                    description="Inspect the specified recipe's detailed information, including file-path, version, meta-layer, append-file, dependencies, inherits, etc.")
-    parser.add_argument("-r", "--recursive", action="store_true", help="Show the list of Depends and Depends by recursively")
-    parser.add_argument("-o", "--output", help="save the output to a file")
+    parser.add_argument("-r", "--recursive", action="store_true", help="Show the list of direct and indirect dependencies")
+    parser.add_argument("-o", "--output", help="save the output as a json file")
     parser.add_argument("recipename", help="Recipe name to inspect")
     parser.set_defaults(func=inspect, parserecipes=True)
