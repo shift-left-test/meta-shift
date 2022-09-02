@@ -2,18 +2,19 @@ inherit shiftutils
 
 
 DEPENDS:prepend:class-target = "\
-    gtest \
-    gmock \
-    lcov-native \
-    python3-lcov-cobertura-native \
-    qemu-native \
-    cppcheck-native \
-    cpplint-native \
-    compiledb-native \
-    sage-native \
-    oelint-adv-native \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
+    compiledb-native \
+    coreutils-native \
+    cppcheck-native \
+    cpplint-native \
+    gmock \
+    gtest \
+    lcov-native \
+    oelint-adv-native \
+    python3-lcov-cobertura-native \
+    qemu-native \
+    sage-native \
     "
 
 DEBUG_BUILD:class-target = "1"
@@ -541,4 +542,3 @@ python() {
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
-
