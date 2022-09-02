@@ -20,7 +20,7 @@ SRC_URI[sha256sum] = "06bb47dd1fa04de3a12720379ff382d40441074476db7c16a27e2ad79b
 
 inherit pypi setuptools3
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     ${PYTHON_PN}-bashlex \
     ${PYTHON_PN}-click \
     ${PYTHON_PN}-shutilwhich \

@@ -1,2 +1,2 @@
-DEPENDS_class-native += "libjson-xs-perl-native"
-RDEPENDS_${PN}_class-native += "libjson-xs-perl-native"
+DEPENDS:class-native += "libjson-xs-perl-native"
+RDEPENDS:${PN}:class-native += "libjson-xs-perl-native"

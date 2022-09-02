@@ -28,6 +28,6 @@ do_install() {
     oe_runmake install DESTDIR=${D} FILESDIR=${bindir} PREFIX=${prefix}
 }
 
-FILES_${PN} = "${bindir} ${datadir}"
+FILES:${PN} = "${bindir} ${datadir}"
 
 BBCLASSEXTEND = "native nativesdk"

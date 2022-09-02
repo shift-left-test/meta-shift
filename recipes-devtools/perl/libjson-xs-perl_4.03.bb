@@ -19,9 +19,9 @@ S = "${WORKDIR}/JSON-XS-${PV}"
 
 inherit cpan
 
-RDEPENDS_${PN} += "perl libcanary-stability-perl libcommon-sense-perl libtypes-serialiser-perl"
+RDEPENDS:${PN} += "perl libcanary-stability-perl libcommon-sense-perl libtypes-serialiser-perl"
 
-do_install_append_class-native() {
+do_install:append:class-native() {
   sed -i -e '1s,#!.*perl,#!${USRBINPATH}/env nativeperl,' ${D}${bindir}/json_xs
 }
 
