@@ -238,7 +238,7 @@ python shifttest_do_checkcache() {
     found_source, missed_source = shiftutils_get_source_availability(d)
 
     plain_report_str = str(make_plain_report([("Source Availability", found_source, missed_source)]))
-    
+
     for splited in plain_report_str.splitlines():
         plain(splited, d)
 
@@ -351,6 +351,6 @@ python() {
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
         d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_checkcache", "lockfiles", "${TMPDIR}/do_checkcache.lock")
-        d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checktest.lock")
+        d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checkrecipe.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
 }
