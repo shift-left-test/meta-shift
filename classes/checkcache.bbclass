@@ -38,6 +38,6 @@ python checkcacheinternal() {
         f.write(str(d.getVar("BB_HASHFILENAME", True)))
 }
 
-SSTATEPOSTINSTFUNCS_append = " checkcacheinternal"
+SSTATEPOSTINSTFUNCS:append = " checkcacheinternal"
 sstate_install[vardepsexclude] += "checkcacheinternal"
 SSTATEPOSTINSTFUNCS[vardepvalueexclude] .= "| checkcacheinternal"

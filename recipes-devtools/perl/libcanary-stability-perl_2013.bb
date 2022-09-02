@@ -18,6 +18,6 @@ S = "${WORKDIR}/Canary-Stability-${PV}"
 
 inherit cpan
 
-RDEPENDS_${PN} += "perl"
+RDEPENDS:${PN} += "perl"
 
 BBCLASSEXTEND = "native"

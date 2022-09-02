@@ -1,7 +1,7 @@
 inherit shiftutils
 
 
-DEPENDS_prepend_class-target = "\
+DEPENDS:prepend:class-target = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
     compiledb-native \
@@ -17,7 +17,7 @@ DEPENDS_prepend_class-target = "\
     sage-native \
     "
 
-DEBUG_BUILD_class-target = "1"
+DEBUG_BUILD:class-target = "1"
 
 
 addtask checkcode after do_compile

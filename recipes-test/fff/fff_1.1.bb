@@ -13,9 +13,9 @@ SRCREV = "7e09f07e5b262b1cc826189dc5057379e40ce886"
 
 S = "${WORKDIR}/git"
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
-FILES_${PN} = "${includedir}"
+FILES:${PN} = "${includedir}"
 
 do_configure() {
     :

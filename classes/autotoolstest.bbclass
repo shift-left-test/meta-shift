@@ -1,7 +1,7 @@
 inherit shifttest
 
 
-do_configure_prepend_class-target() {
+do_configure:prepend:class-target() {
     # add coverage flags to cxxflags & cflags
     if [ ! -z ${CXXFLAGS+x} ]; then
         export CXXFLAGS_ORI="$CXXFLAGS"
@@ -14,7 +14,7 @@ do_configure_prepend_class-target() {
     export CFLAGS="$CFLAGS -O0 -fprofile-arcs -ftest-coverage"
 }
 
-do_configure_append_class-target() {
+do_configure:append:class-target() {
     # restore environment variables
     if [ ! -z ${CXXFLAGS_ORI+x} ]; then
         export CXXFLAGS="$CXXFLAGS_ORI"
