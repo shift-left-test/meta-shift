@@ -110,6 +110,7 @@ These options can be used by adding to *conf/local.conf*.
 * **SHIFT_CHECKTEST_EXTENSIONS**: Extensions of source files to be mutated
 * **SHIFT_CHECKTEST_GENERATOR**: Set the mutation generator (random, uniform, or weighted)
 * **SHIFT_CHECKTEST_LIMIT**: Set the maximum limit of mutants
+* **SHIFT_CHECKTEST_MAX_TIMEOUT**: Set the maximum timeout duration of each test
 * **SHIFT_CHECKTEST_SCOPE**: Indicate which source code to mutate (all or commit)
 * **SHIFT_CHECKTEST_SEED**: Random seed for the mutation generator
 * **SHIFT_CHECKTEST_VERBOSE**: Silence the test ouput while running the `do_checktest` task

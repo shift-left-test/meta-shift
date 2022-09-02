@@ -249,7 +249,7 @@ python shifttest_do_checktest() {
     import time
     started = time.time()
     exec_func("do_test", dd)
-    elapsed = max(30, round(time.time() - started) * 2.0)
+    elapsed = max(int(dd.getVar("SHIFT_CHECKTEST_MAX_TIMEOUT", True)), round(time.time() - started) * 2.0)
 
     test_result_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
     if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
