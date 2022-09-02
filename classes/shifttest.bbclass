@@ -355,7 +355,6 @@ python() {
         d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
-        d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_checkcache", "lockfiles", "${TMPDIR}/do_checkcache.lock")
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checkrecipe.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
