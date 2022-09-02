@@ -28,17 +28,11 @@ def test_cmake_project_do_checkcode(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
 
 
 def test_cmake_project_do_checkcache(stdout):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Shared State Availability")
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
-
-
-def test_cmake_project_do_checktest(stdout):
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
 
 
 def test_cmake_project_do_checkrecipe(stdout):
@@ -54,7 +48,6 @@ def test_cmake_project_report(report_build):
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/test/OperatorTest.xml")
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/coverage/coverage.xml")
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/checkcode/sage_report.json")
-        assert report_build.files.exists("report/cmake-project-1.0.0-r0/checktest/mutations.xml")
         assert report_build.files.exists("report/cmake-project-1.0.0-r0/checkrecipe/recipe_violations.json")
 
 

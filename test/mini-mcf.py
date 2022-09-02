@@ -40,7 +40,6 @@ REPOS = [
     Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
     Repo("meta-raspberrypi", "https://git.yoctoproject.org/git/meta-raspberrypi.git", "meta-raspberrypi", "", None),
     Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", None),
-    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
     Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", None),

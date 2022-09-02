@@ -75,14 +75,6 @@ def validateCheckrecipeReport(build, directory):
     assert data["lines_of_code"][1]["file"].endswith(recipe + "_1.0.0.bbappend")
 
 
-def validateChecktestReport(build, directory):
-    data = build.files.readAsHtml(os.path.join(directory, "checktest/index.html"))
-    assert data["html/body/h1"] == "Sentinel Mutation Coverage Report"
-
-    data = build.files.readAsXml(os.path.join(directory, "checktest/mutations.xml"))
-    assert len(data["mutations/mutation"]) == 2
-
-
 @pytest.fixture(scope="module")
 def shared_report_build(report_build):
     report_build.files.remove("report")
@@ -115,10 +107,6 @@ def test_cmake_project_do_checkrecipe(shared_report_build):
     validateCheckrecipeReport(shared_report_build, "report/cmake-project-1.0.0-r0")
 
 
-def test_cmake_project_do_checktest(shared_report_build):
-    validateChecktestReport(shared_report_build, "report/cmake-project-1.0.0-r0")
-
-
 def test_qmake_project(shared_report_build):
     validateMetadata(shared_report_build, "report/qmake-project-1.0.0-r0")
 
@@ -146,10 +134,6 @@ def test_qmake_project_do_checkrecipe(shared_report_build):
     validateCheckrecipeReport(shared_report_build, "report/qmake-project-1.0.0-r0")
 
 
-def test_qmake_project_do_checktest(shared_report_build):
-    validateChecktestReport(shared_report_build, "report/qmake-project-1.0.0-r0")
-
-
 def test_autotools_project(shared_report_build):
     validateMetadata(shared_report_build, "report/autotools-project-1.0.0-r0")
 
@@ -173,27 +157,3 @@ def test_autotools_project_do_checkcache(shared_report_build):
 
 def test_autotools_project_do_checkrecipe(shared_report_build):
     validateCheckrecipeReport(shared_report_build, "report/autotools-project-1.0.0-r0")
-
-
-def test_autotools_project_do_checktest(shared_report_build):
-    validateChecktestReport(shared_report_build, "report/autotools-project-1.0.0-r0")
-
-
-@pytest.fixture(scope="module")
-def stdout(report_build):
-    return report_build.shell.execute("bitbake core-image-minimal -c reportall").stdout
-
-
-def test_core_image_minimal_do_checkcodeall(stdout):
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-    assert stdout.contains("qmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-    assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* clang-tidy is running...")
-
-
-def test_core_image_minimal_do_checktestall(stdout):
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
-    assert stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert stdout.matches("qmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
-    assert stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")

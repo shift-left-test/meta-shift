@@ -2,8 +2,6 @@ inherit shiftutils
 
 
 DEPENDS_prepend_class-target = "\
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
     compiledb-native \
     coreutils-native \
     cppcheck-native \
@@ -190,182 +188,6 @@ python shifttest_do_coverage() {
 }
 
 
-addtask checktest after do_compile
-do_checktest[nostamp] = "1"
-do_checktest[doc] = "Runs mutation tests for the target"
-
-python shifttest_do_checktest() {
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
-
-    dd = d.createCopy()
-
-    if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
-        fatal("The task requires meta-clang to be present", dd)
-
-    dot_git_path = dd.expand("${S}/.git")
-    if not os.path.exists(dot_git_path) or not os.path.isdir(dot_git_path):
-        warn("No .git directory in source directory", dd)
-        return
-
-    work_dir = dd.expand("${WORKDIR}/mutation_test_tmp")
-    expected_dir = os.path.join(work_dir, "original")
-    actual_dir = os.path.join(work_dir, "actual")
-    backup_dir = os.path.join(work_dir, "backup")
-    eval_dir = os.path.join(work_dir, "eval")
-
-    # Invalidate the pseudo database and the stamp to keep the build state safe
-    if dd.getVar("PSEUDO_LOCALSTATEDIR", True):
-        bb.utils.remove(dd.getVar("PSEUDO_LOCALSTATEDIR", True), True)
-    bb.build.del_stamp("do_configure", dd)
-
-    # Prepare the work directory
-    mkdirhier(work_dir, True)
-
-    json_file = dd.expand("${B}/compile_commands.json")
-    new_file = os.path.join(work_dir, "compile_commands.json")
-
-    # Make sure that compile_commands.json is available
-    if os.path.exists(json_file):
-        bb.utils.copyfile(json_file, new_file)
-    else:
-        debug("Creating compile_commands.json using compiledb")
-        try:
-            check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
-            bb.utils.movefile(json_file, new_file)
-        except bb.process.ExecutionError as e:
-            warn("Failed to create the compile_commands.json using compiledb", dd)
-            return
-
-    # Insert the target option to the file
-    replace_files([new_file],
-                  '("command": ".*)(")',
-                  dd.expand(r'\g<1> --target=${TARGET_SYS}\g<2>'))
-
-    # Create test reports
-    dd.setVar("SHIFT_REPORT_DIR", expected_dir)
-
-    import time
-    started = time.time()
-    exec_func("do_test", dd)
-    elapsed = max(int(dd.getVar("SHIFT_CHECKTEST_MAX_TIMEOUT", True)), round(time.time() - started) * 2.0)
-
-    test_result_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-    if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
-        warn("No test result files generated at %s" % test_result_dir, dd)
-        return
-
-    try:
-        exec_func("do_coverage", dd)
-        coverage_file = dd.expand("${B}/coverage.info")
-        coverage_info = shiftutils_get_coverage_info(dd, coverage_file)
-    except Exception as e:
-        warn("Failed to read %s: %s" % (coverage_file, str(e)), dd)
-        coverage_info = dict()
-
-    debug("coverage_info: %s" % str(coverage_info))
-
-    debug("Creating the mutation database")
-    mutant_file = os.path.join(work_dir, "mutables.db")
-    verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)) else ""
-
-    try:
-        exec_proc(["sentinel", "populate",
-                   "--work-dir", work_dir,
-                   "--build-dir", work_dir,
-                   "--output-dir", work_dir,
-                   "--generator", dd.getVar("SHIFT_CHECKTEST_GENERATOR", True),
-                   "--scope", dd.getVar("SHIFT_CHECKTEST_SCOPE", True),
-                   "--limit", dd.getVar("SHIFT_CHECKTEST_LIMIT", True),
-                   "--mutants-file-name", os.path.basename(mutant_file),
-                   " ".join(["--extensions=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXTENSIONS", True).split()]),
-                   " ".join(['--exclude="%s"' % exc for exc in shlex_split(dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True))]),
-                   verbose,
-                   dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
-                   dd.getVar("S", True)], dd)
-    except bb.process.ExecutionError as e:
-        error("Populating failed: %s" % e, dd)
-        return
-
-    for line in readlines(mutant_file):
-        mutated_file = line.split(",")[1]
-        mutated_line = line.split(",")[3]
-        if not (mutated_file in coverage_info and mutated_line in coverage_info[mutated_file]):
-            debug("Mutated code line uncovered by test cases - ignore (%s)" % str(line))
-            try:
-                exec_proc(["sentinel", "evaluate",
-                           "--mutant", '"%s"' % line,
-                           "--expected", expected_dir,
-                           "--actual", actual_dir,
-                           "--output-dir", eval_dir,
-                           "--test-state", "uncovered",
-                           verbose,
-                           dd.getVar("S", True)], dd)
-            except:
-                pass
-            continue
-
-        try:
-            debug("Mutating the source")
-            exec_proc(["sentinel", "mutate",
-                       "--mutant", '"%s"' % line,
-                       "--work-dir", backup_dir,
-                       verbose,
-                       dd.getVar("S", True)], dd)
-            try:
-                test_state = "success"
-                exec_func("do_configure", dd)
-                exec_func("do_compile", dd)
-
-                dd.setVar("SHIFT_REPORT_DIR", actual_dir)
-                bb.utils.remove(actual_dir, True)
-                bb.utils.mkdirhier(actual_dir)
-                exec_func("do_test", dd,
-                          bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)),
-                          timeout=elapsed)
-            except (bb.BBHandledException, bb.process.ExecutionError) as e:
-                debug("Failed to run do_checktest: %s" % e)
-                test_state = "timeout" if e.exitcode == 124 else "build_failure"
-
-            debug("Evaluating the test result")
-            exec_proc(["sentinel", "evaluate",
-                       "--mutant", '"%s"' % line,
-                       "--expected", expected_dir,
-                       "--actual", actual_dir,
-                       "--output-dir", eval_dir,
-                       "--test-state", test_state,
-                       verbose,
-                       dd.getVar("S", True)], dd)
-        finally:
-            debug("Restoring the mutated source")
-            for filename in oe.path.find(backup_dir):
-                os.utime(filename, None)
-            oe.path.copytree(backup_dir, dd.getVar("S", True))
-            bb.utils.remove(backup_dir, True)
-
-    # Create the mutation test report if necessary
-    cmdline = ["sentinel", "report",
-               "--evaluation-file", os.path.join(eval_dir, "EvaluationResults"),
-               verbose,
-               dd.getVar("S", True)]
-
-    if d.getVar("SHIFT_REPORT_DIR", True):  # Use original datastore
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checktest")
-        mkdirhier(report_dir, True)
-
-        save_metadata(d)
-
-        cmdline.extend(["--output-dir", report_dir])
-
-    try:
-        exec_proc(cmdline, dd)
-    except bb.process.ExecutionError as e:
-        warn("Reporting failed: %s" % e, dd)
-        return
-}
-
-
 addtask checkcache after do_build
 do_checkcache[nostamp] = "1"
 do_checkcache[doc] = "Check cache availability of the recipe"
@@ -431,6 +253,7 @@ python shifttest_do_checkcache() {
         with open(os.path.join(report_dir, "caches.json"), "w") as f:
             f.write(make_json_report([("Shared State", found_sstate, missed_sstate), ("Premirror", found_source, missed_source)]))
 }
+
 
 addtask checkrecipe
 do_checkrecipe[nostamp] = "1"
@@ -519,12 +342,6 @@ python shifttest_do_report() {
 
     dd.setVar("BB_CURRENTTASK", "checkrecipe")
     exec_func("do_checkrecipe", dd)
-
-    if "clang-layer" in dd.getVar("BBFILE_COLLECTIONS", True).split():
-        dd.setVar("BB_CURRENTTASK", "checktest")
-        exec_func("do_checktest", dd)
-    else:
-        warn("Skipping do_checktest because there is no clang-layer", dd)
 }
 
 
@@ -537,7 +354,6 @@ python() {
         d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
-        d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
         d.appendVarFlag("do_checkcache", "lockfiles", "${TMPDIR}/do_checkcache.lock")
         d.appendVarFlag("do_checkrecipe", "lockfiles", "${TMPDIR}/do_checkrecipe.lock")
         d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
