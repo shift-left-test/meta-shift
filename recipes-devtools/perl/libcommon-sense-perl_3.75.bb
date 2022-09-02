@@ -22,6 +22,6 @@ S = "${WORKDIR}/common-sense-${PV}"
 
 inherit cpan
 
-RDEPENDS_${PN} += "perl"
+RDEPENDS:${PN} += "perl"
 
 BBCLASSEXTEND = "native"

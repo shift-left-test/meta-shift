@@ -14,7 +14,7 @@ SRC_URI[sha256sum] = "3f0f93f355a91bc3e6245319bf4c1d50e3416cc7a35cc1133c1ff38306
 
 inherit pypi setuptools3
 
-do_install_prepend() {
+do_install:prepend() {
     # Remove LICCENSE from setup, as
     # it isn't really needed
     sed -i "s!include LICENSE!!g" ${S}/MANIFEST.in
@@ -25,7 +25,7 @@ DEPENDS += "\
     ${PYTHON_PN}-six \
 "
 
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     ${PYTHON_PN}-six \
 "
 

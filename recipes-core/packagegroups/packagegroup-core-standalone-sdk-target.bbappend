@@ -1,4 +1,4 @@
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     fff \
     googletest \
 "

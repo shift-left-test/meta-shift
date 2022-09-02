@@ -19,6 +19,6 @@ S = "${WORKDIR}/Types-Serialiser-${PV}"
 
 inherit cpan
 
-RDEPENDS_${PN} += "perl libcommon-sense-perl"
+RDEPENDS:${PN} += "perl libcommon-sense-perl"
 
 BBCLASSEXTEND = "native"

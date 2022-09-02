@@ -17,7 +17,7 @@ SRC_URI[sha256sum] = "0f4993d8a296f2a4b29287849be5af53ed85c0532f7d46cc25b8d3afa4
 
 inherit pypi setuptools3
 
-RPROVIDES_${PN} = "lcov_cobertura"
+RPROVIDES:${PN} = "lcov_cobertura"
 
 BBCLASSEXTEND = "native nativesdk"
 
