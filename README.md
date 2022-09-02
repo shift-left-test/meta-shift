@@ -57,7 +57,6 @@ This is a meta layer for the Yocto project. Please find more information about t
 
 * meta-qt5: To support QT5 based recipes
 * meta-qt6: To support QT6 based recipes
-* meta-clang: To use clang-tidy and the mutation testing
 
 ### Installation
 
@@ -102,7 +101,7 @@ List of bitbake tool commands
 These options can be used by adding to *conf/local.conf*.
 
 * **SHIFT_CHECKCODE_EXCLUDES**: Paths to exclude from the static analysis
-* **SHIFT_CHECKCODE_TOOLS**: Indicates which static analysis tools to use (cppcheck, cpplint, and clang-tidy)
+* **SHIFT_CHECKCODE_TOOLS**: Indicates which static analysis tools to use (cppcheck, cpplint)
 * **SHIFT_CHECKRECIPE_SUPPRESS_RULES**: Exclude rules from bitbake script analysis (A list of rules can be found at https://github.com/priv-kweihmann/oelint-adv)
 * **SHIFT_COVERAGE_EXCLUDES**: Exclude paths from code coverage analysis
 * **SHIFT_COVERAGE_BRANCH**: Generate branch coverage data
