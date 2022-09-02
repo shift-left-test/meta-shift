@@ -2,18 +2,19 @@ inherit shiftutils
 
 
 DEPENDS_prepend_class-target = "\
-    gtest \
-    gmock \
-    lcov-native \
-    python-lcov-cobertura-native \
-    qemu-native \
-    cppcheck-native \
-    cpplint-native \
-    compiledb-native \
-    sage-native \
-    oelint-adv-native \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
+    compiledb-native \
+    coreutils-native \
+    cppcheck-native \
+    cpplint-native \
+    gmock \
+    gtest \
+    lcov-native \
+    oelint-adv-native \
+    python-lcov-cobertura-native \
+    qemu-native \
+    sage-native \
     "
 
 DEBUG_BUILD_class-target = "1"
