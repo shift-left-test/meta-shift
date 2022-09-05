@@ -41,6 +41,7 @@ REPOS = [
     Repo("meta-raspberrypi", "https://git.yoctoproject.org/git/meta-raspberrypi.git", "meta-raspberrypi", "", None),
     Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", None),
     Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "6.2"),
+    Repo("meta-qt6-patch", "https://github.com/shift-left-test/meta-qt6-patch.git", "meta-qt6-patch", "", None),
     Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
