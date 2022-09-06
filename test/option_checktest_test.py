@@ -30,3 +30,35 @@ def test_do_checktest_verbose_option(report_build):
 
         o = report_build.shell.execute("bitbake cmake-project -c checktest")
         assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest: CommandPopulate [INFO] random seed:1234")
+
+
+def test_do_checktest_excludes(report_build):
+    with report_build.files.conf() as conf:
+        conf.set("SHIFT_CHECKTEST_SEED", "1234")
+        conf.set("SHIFT_CHECKTEST_EXCLUDES", "minus.cpp")
+
+        o = report_build.shell.execute("bitbake cmake-project -c checktest")
+        assert not o.stdout.contains("cmake-project/1.0.0-r0/git/minus/minus.cpp,minus,30,12,30,13,*")
+
+
+def test_do_checktest_extensions(report_build):
+    with report_build.files.conf() as conf:
+        conf.set("SHIFT_CHECKTEST_SEED", "1234")
+        conf.set("SHIFT_CHECKTEST_EXTENSIONS", ".unknown")
+
+        o = report_build.shell.execute("bitbake cmake-project -c checktest")
+        assert not o.stdout.contains("cmake-project/1.0.0-r0/git/minus/minus.cpp,minus,30,12,30,13,*")
+
+
+def test_do_checktest_generator(report_build):
+    with report_build.files.conf() as conf:
+        conf.set("SHIFT_CHECKTEST_SEED", "1234")
+        conf.set("SHIFT_CHECKTEST_GENERATOR", "uniform")
+        first = report_build.shell.execute("bitbake cmake-project -c checktest").stdout
+
+    with report_build.files.conf() as conf:
+        conf.set("SHIFT_CHECKTEST_SEED", "1234")
+        conf.set("SHIFT_CHECKTEST_GENERATOR", "weighted")
+        second = report_build.shell.execute("bitbake cmake-project -c checktest").stdout
+
+    assert first != second
