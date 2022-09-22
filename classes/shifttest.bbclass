@@ -515,7 +515,7 @@ python shifttest_do_report() {
         dd.setVar("BB_CURRENTTASK", "checkcache")
         exec_func("do_checkcache", dd)
     else:
-        warn("Skipping do_checkcache because checkcache is not inherited", dd)
+        info("Skipping do_checkcache because checkcache is not inherited", dd)
 
     dd.setVar("BB_CURRENTTASK", "checkrecipe")
     exec_func("do_checkrecipe", dd)
@@ -524,7 +524,7 @@ python shifttest_do_report() {
         dd.setVar("BB_CURRENTTASK", "checktest")
         exec_func("do_checktest", dd)
     else:
-        warn("Skipping do_checktest because there is no clang-layer", dd)
+        info("Skipping do_checktest because there is no clang-layer", dd)
 }
 
 
