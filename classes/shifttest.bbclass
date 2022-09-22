@@ -342,7 +342,7 @@ python shifttest_do_report() {
         dd.setVar("BB_CURRENTTASK", "checkcache")
         exec_func("do_checkcache", dd)
     else:
-        warn("Skipping do_checkcache because checkcache is not inherited", dd)
+        info("Skipping do_checkcache because checkcache is not inherited", dd)
 
     dd.setVar("BB_CURRENTTASK", "checkrecipe")
     exec_func("do_checkrecipe", dd)
