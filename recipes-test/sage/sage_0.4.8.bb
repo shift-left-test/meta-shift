@@ -5,7 +5,8 @@ HOMEPAGE = "https://github.com/shift-left-test/sage"
 BUGTRACKER = "https://github.com/shift-left-test/sage/issues"
 SECTION = "devel"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5 \
+                    file://oss-pkg-info.yaml;md5=f72b54b66db40d89f1246b04ba924707"
 
 SRC_URI = "git://github.com/shift-left-test/sage.git;protocol=https;nobranch=1"
 
@@ -35,4 +36,3 @@ do_install_append_class-native() {
 }
 
 BBCLASSEXTEND = "native nativesdk"
-
