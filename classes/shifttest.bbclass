@@ -1,6 +1,8 @@
 inherit shiftutils
 
 
+DEBUG_BUILD_class-target = "1"
+
 DEPENDS_prepend_class-target = "\
     gtest \
     gmock \
@@ -14,14 +16,15 @@ DEPENDS_prepend_class-target = "\
     oelint-adv-native \
     "
 
-DEBUG_BUILD_class-target = "1"
-
-
 addtask checkcode after do_compile
 do_checkcode[nostamp] = "1"
 do_checkcode[doc] = "Runs static analysis for the target"
 
-python shifttest_do_checkcode() {
+shifttest_do_checkcode() {
+    :
+}
+
+def shifttest_checkcode(d):
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
@@ -77,7 +80,6 @@ python shifttest_do_checkcode() {
     finally:
         if temporary:
             bb.utils.remove(json_file)
-}
 
 
 addtask test after do_compile
@@ -85,7 +87,7 @@ do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
 
 shifttest_do_test() {
-    bbfatal "'inherit shifttest' is not allowed. You should inherit an appropriate bbclass instead."
+    :
 }
 
 
@@ -93,7 +95,11 @@ addtask coverage after do_test
 do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage for the target"
 
-python shifttest_do_coverage() {
+shifttest_do_coverage() {
+    :
+}
+
+def shifttest_coverage(d):
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
@@ -184,14 +190,17 @@ python shifttest_do_coverage() {
             replace_files([xml_file], '(<package.*name=")', d.expand(r'\g<1>${PN}.'))
         else:
             warn("No coverage report files generated at %s" % report_dir, d)
-}
 
 
 addtask checkcache after do_build
 do_checkcache[nostamp] = "1"
 do_checkcache[doc] = "Check cache availability of the recipe"
 
-python shifttest_do_checkcache() {
+shifttest_do_checkcache() {
+    :
+}
+
+def shifttest_checkcache(d):
     def make_plain_report(print_list):
         def newline(new_str=""):
             return "%s\n" % new_str
@@ -250,7 +259,6 @@ python shifttest_do_checkcache() {
 
         with open(os.path.join(report_dir, "caches.json"), "w") as f:
             f.write(make_json_report([("Shared State", [], []), ("Premirror", found_source, missed_source)]))
-}
 
 
 addtask checkrecipe
@@ -258,7 +266,11 @@ do_checkrecipe[nostamp] = "1"
 do_checkrecipe[depends] += "oelint-adv-native:do_populate_sysroot"
 do_checkrecipe[doc] = "Checks the target recipe against the OpenEmbedded style guide"
 
-python shifttest_do_checkrecipe() {
+shifttest_do_checkrecipe() {
+    :
+}
+
+def shifttest_checkrecipe(d):
     def lines_of_code(files):
         pairs = []
         for f in files:
@@ -306,14 +318,17 @@ python shifttest_do_checkrecipe() {
         exec_proc(cmdline, d)
     except bb.process.ExecutionError as e:
         warn("checkrecipe failed: %s" % e, d)
-}
 
 
 addtask report after do_compile
 do_report[nostamp] = "1"
 do_report[doc] = "Generates reports for the target"
 
-python shifttest_do_report() {
+shifttest_do_report() {
+    :
+}
+
+def shifttest_report(d):
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
@@ -340,7 +355,6 @@ python shifttest_do_report() {
 
     dd.setVar("BB_CURRENTTASK", "checkrecipe")
     exec_func("do_checkrecipe", dd)
-}
 
 
 python() {
