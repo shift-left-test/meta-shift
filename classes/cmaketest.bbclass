@@ -1,4 +1,4 @@
-inherit shifttest
+inherit cpptest
 
 
 OECMAKE_C_FLAGS:append:class-target = " -O0 -fprofile-arcs -ftest-coverage"
@@ -13,7 +13,7 @@ cmake_do_compile:prepend:class-target() {
 }
 
 python cmaketest_do_checkcode() {
-    shifttest_checkcode(d)
+    cpptest_checkcode(d)
 }
 
 python cmaketest_do_test() {
@@ -83,11 +83,11 @@ python cmaketest_do_test() {
 }
 
 python cmaketest_do_coverage() {
-    shifttest_coverage(d)
+    cpptest_coverage(d)
 }
 
 python cmaketest_do_checktest() {
-    shifttest_checktest(d)
+    cpptest_checktest(d)
 }
 
 python cmaketest_do_checkrecipe() {
