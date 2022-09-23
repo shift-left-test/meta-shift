@@ -1,4 +1,4 @@
-inherit shifttest
+inherit cpptest
 
 
 do_configure:prepend:class-target() {
@@ -49,7 +49,7 @@ do_configure:append:class-target() {
 }
 
 python autotoolstest_do_checkcode() {
-    shifttest_checkcode(d)
+    cpptest_checkcode(d)
 }
 
 python autotoolstest_do_test() {
@@ -117,11 +117,11 @@ python autotoolstest_do_test() {
 }
 
 python autotoolstest_do_coverage() {
-    shifttest_coverage(d)
+    cpptest_coverage(d)
 }
 
 python autotoolstest_do_checktest() {
-    shifttest_checktest(d)
+    cpptest_checktest(d)
 }
 
 python autotoolstest_do_checkrecipe() {

@@ -1,4 +1,4 @@
-inherit shifttest
+inherit cpptest
 
 
 EXTRA_QMAKEVARS_PRE:append:class-target = " CONFIG+=gcov"
@@ -8,7 +8,7 @@ FILES:${PN}:append:class-target = " ${OE_QMAKE_PATH_TESTS}"
 
 
 python qmaketest_do_checkcode() {
-    shifttest_checkcode(d)
+    cpptest_checkcode(d)
 }
 
 python qmaketest_do_test() {
@@ -89,11 +89,11 @@ python qmaketest_do_test() {
 }
 
 python qmaketest_do_coverage() {
-    shifttest_coverage(d)
+    cpptest_coverage(d)
 }
 
 python qmaketest_do_checktest() {
-    shifttest_checktest(d)
+    cpptest_checktest(d)
 }
 
 python qmaketest_do_checkrecipe() {
