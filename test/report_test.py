@@ -179,6 +179,29 @@ def test_autotools_project_do_checktest(shared_report_build):
     validateChecktestReport(shared_report_build, "report/autotools-project-1.0.0-r0")
 
 
+def test_enact_project_do_test(shared_report_build):
+    validateGTestReport(shared_report_build, "report/enact-project-1.0.0-r0/test/junit.xml", "undefined", "2", "1")
+    validateGTestReport(shared_report_build, "report/enact-project-1.0.0-r0/test/junit.xml", "test suite for converter", "4", "0")
+
+
+def test_enact_project_do_coverage(shared_report_build):
+    data = shared_report_build.files.readAsHtml("report/enact-project-1.0.0-r0/coverage/index.html")
+    assert data["html/head/title"] == "Code coverage report for All files"
+
+    data = shared_report_build.files.readAsXml("report/enact-project-1.0.0-r0/coverage/cobertura-coverage.xml")
+    class_data = data["coverage/packages/package/classes/class"]
+    assert any(map(lambda x: x["name"] == "converter.js" and x["line-rate"] == "1" and x["branch-rate"] != "0.0", class_data))
+
+
+def test_enact_project_do_checkcache(shared_report_build):
+    validateCheckcacheReport(shared_report_build, "report/autotools-project-1.0.0-r0")
+
+
+def test_enact_project_do_checkrecipe(shared_report_build):
+    validateCheckrecipeReport(shared_report_build, "report/autotools-project-1.0.0-r0")
+
+
+
 @pytest.fixture(scope="module")
 def stdout(report_build):
     return report_build.shell.execute("bitbake core-image-minimal -c reportall").stdout
