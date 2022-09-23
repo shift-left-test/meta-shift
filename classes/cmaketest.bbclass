@@ -13,7 +13,7 @@ cmake_do_compile:prepend:class-target() {
 }
 
 python cmaketest_do_checkcode() {
-    bb.build.exec_func("shifttest_do_checkcode", d)
+    shifttest_checkcode(d)
 }
 
 python cmaketest_do_test() {
@@ -83,23 +83,23 @@ python cmaketest_do_test() {
 }
 
 python cmaketest_do_coverage() {
-    bb.build.exec_func("shifttest_do_coverage", d)
+    shifttest_coverage(d)
 }
 
 python cmaketest_do_checktest() {
-    bb.build.exec_func("shifttest_do_checktest", d)
+    shifttest_checktest(d)
 }
 
 python cmaketest_do_checkrecipe() {
-    bb.build.exec_func("shifttest_do_checkrecipe", d)
+    shifttest_checkrecipe(d)
 }
 
 python cmaketest_do_checkcache() {
-    bb.build.exec_func("shifttest_do_checkcache", d)
+    shifttest_checkcache(d)
 }
 
 python cmaketest_do_report() {
-    bb.build.exec_func("shifttest_do_report", d)
+    shifttest_report(d)
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkrecipe do_checkcache do_report
