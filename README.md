@@ -132,8 +132,8 @@ To prepare the meta-shift development environment via Docker:
 
     $ git clone https://github.com/shift-left-test/dockerfiles.git
     $ cd dockerfiles
-    $ docker build -f yocto-dev/18.04/Dockerfile -t yocto-dev-18.04 .
-    $ docker run --rm -it yocto-dev-18.04
+    $ docker build -f yocto-dev/20.04/Dockerfile -t yocto-dev-20.04 .
+    $ docker run --rm -it yocto-dev-20.04
 
 To run all tests:
 
