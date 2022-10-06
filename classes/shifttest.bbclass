@@ -176,7 +176,7 @@ shifttest_do_report() {
     :
 }
 
-def shifttest_report(d):
+def shifttest_report(d, tasks=["checkcode", "test", "coverage", "checkcache", "checkrecipe", "checktest"]):
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
@@ -186,29 +186,35 @@ def shifttest_report(d):
 
     dd = d.createCopy()
 
-    dd.setVar("BB_CURRENTTASK", "checkcode")
-    exec_func("do_checkcode", dd)
+    if "checkcode" in tasks:
+        dd.setVar("BB_CURRENTTASK", "checkcode")
+        exec_func("do_checkcode", dd)
 
-    dd.setVar("BB_CURRENTTASK", "test")
-    exec_func("do_test", dd)
+    if "test" in tasks:
+        dd.setVar("BB_CURRENTTASK", "test")
+        exec_func("do_test", dd)
 
-    dd.setVar("BB_CURRENTTASK", "coverage")
-    exec_func("do_coverage", dd)
+    if "coverage" in tasks:
+        dd.setVar("BB_CURRENTTASK", "coverage")
+        exec_func("do_coverage", dd)
 
-    if "checkcache" in str(dd.getVar("INHERIT", True)):
-        dd.setVar("BB_CURRENTTASK", "checkcache")
-        exec_func("do_checkcache", dd)
-    else:
-        plain("Skipping do_checkcache because checkcache is not inherited", dd)
+    if "checkcache" in tasks:
+        if "checkcache" in str(dd.getVar("INHERIT", True)):
+            dd.setVar("BB_CURRENTTASK", "checkcache")
+            exec_func("do_checkcache", dd)
+        else:
+            plain("Skipping do_checkcache because checkcache is not inherited", dd)
 
-    dd.setVar("BB_CURRENTTASK", "checkrecipe")
-    exec_func("do_checkrecipe", dd)
+    if "checkrecipe" in tasks:
+        dd.setVar("BB_CURRENTTASK", "checkrecipe")
+        exec_func("do_checkrecipe", dd)
 
-    if "clang-layer" in dd.getVar("BBFILE_COLLECTIONS", True).split():
-        dd.setVar("BB_CURRENTTASK", "checktest")
-        exec_func("do_checktest", dd)
-    else:
-        plain("Skipping do_checktest because there is no clang-layer", dd)
+    if "checktest" in tasks:
+        if "clang-layer" in dd.getVar("BBFILE_COLLECTIONS", True).split():
+            dd.setVar("BB_CURRENTTASK", "checktest")
+            exec_func("do_checktest", dd)
+        else:
+            plain("Skipping do_checktest because there is no clang-layer", dd)
 
 
 python() {

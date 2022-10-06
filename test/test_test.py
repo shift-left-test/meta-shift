@@ -22,7 +22,7 @@ def test_core_image_minimal_do_testall(stdout):
     assert stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of PlusTest *********")
     assert stdout.contains("qmake-project-1.0.0-r0 do_test: ********* Start testing of MinusTest *********")
     assert stdout.contains("autotools-project-1.0.0-r0 do_test:    program 1.0: test/test-suite.log")
-    assert stdout.contains("enact-project-1.0.0-r0 do_test: Running tests...")
+    assert stdout.contains("enact-project-1.0.0-r0 do_coverage: Running tests...")
 
 
 def test_core_image_minimal_do_coverageall(stdout):
