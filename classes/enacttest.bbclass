@@ -148,7 +148,8 @@ python enacttest_do_checkcache() {
 }
 
 python enacttest_do_report() {
-    shifttest_report(d)
+    tasks = ["checkcode", "coverage", "checkcache", "checkrecipe", "checktest"]
+    shifttest_report(d, tasks)
 }
 
 EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkrecipe do_checkcache do_report
