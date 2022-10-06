@@ -57,8 +57,8 @@ python enacttest_do_checkcode() {
 
         patterns = ["*.js", "*.jsx", "*.ts", "*.tsx"]
         files = sum([find_files(d.getVar("S", True), pattern) for pattern in patterns], [])
-        excludes = ["/node_modules/", "/build/", "/dist/", "/coverage/"]
-        files = filter(lambda f: not any(exclude in f for exclude in excludes), files)
+        excludes = ["node_modules/", "build/", "dist/", "coverage/"]
+        files = filter(lambda f: not any(exclude in f[len(d.getVar("S", True)):] for exclude in excludes), files)
         files = filter(lambda f: not os.path.basename(f).startswith("."), files)
         for f in files:
             with open(f, "r", encoding="utf-8", errors="ignore") as fd:
