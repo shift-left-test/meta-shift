@@ -1,26 +1,52 @@
 inherit shifttest
 
 
-do_compile:append:class-target() {
-    bbnote "Installing node modules..."
-    STATUS=0
-    npm install || eval "STATUS=\$?"
-    if [ ${STATUS} -ne 0 ]; then
-        bbfatal "Failed to install node modules."
-    fi
+DEPENDS:prepend:class-target = "\
+    coreutils-native \
+"
 
-    bbnote "Checking if @enact/cli installed..."
+enacttest_npm_install() {
+    local modules="$1"
+    local options="$2"
+    local ATTEMPTS=0
+    local STATUS=-1
+
+    while [ ${STATUS} -ne 0 ]; do
+        ATTEMPTS=$(expr ${ATTEMPTS} + 1)
+        if [ ${ATTEMPTS} -gt 5 ]; then
+            bberror "NPM installation failed. Abort!"
+            exit ${STATUS}
+        fi
+
+        bbnote "NPM module installation: #${ATTEMPTS} (of 5)..." && echo
+        STATUS=0
+        timeout --kill-after=5m 15m npm install ${options} ${modules} || eval "STATUS=\$?"
+        if [ ${STATUS} -ne 0 ]; then
+            bbwarn "...NPM installation failed with status ${STATUS}"
+        else
+            bbnote "...NPM installation succeeded" && echo
+        fi
+    done
+}
+
+do_compile:append:class-target() {
+    local STATUS=0
+
+    bbnote "Installing node modules including devDependencies..."
+    enacttest_npm_install
+
+    bbnote "Checking if @enact/cli is installed..."
     npm list @enact/cli || eval "STATUS=\$?"
     if [ ${STATUS} -ne 0 ]; then
-        bbnote "Installing @enact/cli..."
-        npm install @enact/cli
+        bbnote "Unable to locate @enact/cli. Installing the latest version of the module..."
+        enacttest_npm_install @enact/cli --save-dev
     fi
 
-    bbnote "Checking if jest-junit installed..."
+    bbnote "Checking if jest-junit is installed..."
     npm list jest-junit || eval "STATUS=\$?"
     if [ ${STATUS} -ne 0 ]; then
-        bbnote "Installing jest-junit..."
-        npm install jest-junit --save-dev
+        bbnote "Unable to locate jest-junit. Installing the latest version of the module..."
+        enacttest_npm_install jest-junit --save-dev
     fi
 }
 
