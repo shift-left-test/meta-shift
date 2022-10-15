@@ -6,8 +6,6 @@ DEPENDS:prepend:class-target = "\
 "
 
 enacttest_npm_install() {
-    local modules="$1"
-    local options="$2"
     local ATTEMPTS=0
     local STATUS=-1
 
@@ -20,7 +18,7 @@ enacttest_npm_install() {
 
         bbnote "NPM module installation: #${ATTEMPTS} (of 5)..." && echo
         STATUS=0
-        timeout --kill-after=5m 15m npm install ${options} ${modules} || eval "STATUS=\$?"
+        timeout --kill-after=5m 15m npm install "$@" || eval "STATUS=\$?"
         if [ ${STATUS} -ne 0 ]; then
             bbwarn "...NPM installation failed with status ${STATUS}"
         else
