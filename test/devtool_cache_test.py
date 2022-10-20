@@ -42,13 +42,13 @@ def test_cache_with_known_cmd_option(release_build):
 def test_cache_save_as_file(release_build):
     with release_build.files.tempfile("report.json") as f:
         release_build.shell.execute("devtool cache cmake-native -o=%s" % f)
-        data = release_build.files.readAsJson("report.json")
-        for title in ["Shared State", "Premirror"]:
-            assert isinstance(data[title]["Summary"]["Wanted"], int)
-            assert isinstance(data[title]["Summary"]["Found"], int)
-            assert isinstance(data[title]["Summary"]["Missed"], int)
-            assert isinstance(data[title]["Found"], list)
-            assert isinstance(data[title]["Missed"], list)
+        with release_build.files.readAsJson("report.json") as data:
+            for title in ["Shared State", "Premirror"]:
+                assert isinstance(data[title]["Summary"]["Wanted"], int)
+                assert isinstance(data[title]["Summary"]["Found"], int)
+                assert isinstance(data[title]["Summary"]["Missed"], int)
+                assert isinstance(data[title]["Found"], list)
+                assert isinstance(data[title]["Missed"], list)
 
 
 def test_cache_save_as_file_with_unknown_cmd_option(release_build):
@@ -61,10 +61,11 @@ def test_cache_save_as_file_with_unknown_cmd_option(release_build):
 def test_cache_save_as_file_with_known_cmd_option(release_build):
     with release_build.files.tempfile("report.json") as f:
         release_build.shell.execute("devtool cache cmake-native -c configure -o=%s" % f)
-        data = release_build.files.readAsJson("report.json")
-        for title in ["Shared State", "Premirror"]:
-            assert isinstance(data[title]["Summary"]["Wanted"], int)
-            assert isinstance(data[title]["Summary"]["Found"], int)
-            assert isinstance(data[title]["Summary"]["Missed"], int)
-            assert isinstance(data[title]["Found"], list)
-            assert isinstance(data[title]["Missed"], list)
+        with release_build.files.readAsJson("report.json") as data:
+            for title in ["Shared State", "Premirror"]:
+                assert isinstance(data[title]["Summary"]["Wanted"], int)
+                assert isinstance(data[title]["Summary"]["Found"], int)
+                assert isinstance(data[title]["Summary"]["Missed"], int)
+                assert isinstance(data[title]["Found"], list)
+                assert isinstance(data[title]["Missed"], list)
+
