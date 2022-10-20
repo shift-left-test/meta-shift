@@ -82,7 +82,6 @@ class Output(object):
         matcher = re.compile(regexp, re.MULTILINE)
         return bool(matcher.search(self.output))
 
-
     def matchesAll(self, *regexps):
         """Assert that the output contains text which the patterns match
 
@@ -96,6 +95,20 @@ class Output(object):
             if not self.matches(regexp):
                 return False
         return True
+
+    def matchesAny(self, *regexps):
+        """Assert that the output contains text which the patterns match
+
+        Args:
+          regexp (str): search patterns
+
+        Returns:
+          True if the output contains matching text, False otherwise
+        """
+        for regexp in regexps:
+            if self.matches(regexp):
+                return True
+        return False
 
     def __repr__(self):
         """Output string
