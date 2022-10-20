@@ -26,8 +26,9 @@ class Files(object):
     def exists(self, path):
         return os.path.exists(os.path.join(self.build_dir, path))
 
+    @contextmanager
     def read(self, path):
-        return FileOutput(findFiles(self.build_dir, path)[0])
+        yield FileOutput(findFiles(self.build_dir, path)[0])
 
     @contextmanager
     def conf(self):
@@ -42,14 +43,17 @@ class Files(object):
         yield os.path.join(self.build_dir, filename)
         self.remove(filename)
 
+    @contextmanager
     def readAsJson(self, path):
-        return JSON.parse(os.path.join(self.build_dir, path))
+        yield JSON.parse(os.path.join(self.build_dir, path))
 
+    @contextmanager
     def readAsXml(self, path):
-        return XML.parse(os.path.join(self.build_dir, path))
+        yield XML.parse(os.path.join(self.build_dir, path))
 
+    @contextmanager
     def readAsHtml(self, path):
-        return HTML.parse(os.path.join(self.build_dir, path))
+        yield HTML.parse(os.path.join(self.build_dir, path))
 
     def remove(self, path):
         f = os.path.join(self.build_dir, path)
