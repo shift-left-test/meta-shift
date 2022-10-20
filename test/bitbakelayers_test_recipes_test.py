@@ -46,4 +46,4 @@ def test_show_no_recipes_without_test_enabled(release_build):
 
 def test_show_no_untestable_recipes(test_build):
     o = test_build.shell.execute("bitbake-layers test-recipes")
-    assert not o.stdout.matchesAll("nativesdk-*", "*-native")
+    assert not o.stdout.matchesAny(r"nativesdk-.+-project", r".+-project-native")
