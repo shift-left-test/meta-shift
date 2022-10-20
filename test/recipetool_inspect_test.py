@@ -30,8 +30,8 @@ def test_save_as_file(release_build):
     with release_build.files.tempfile("report.json") as f:
         o = release_build.shell.execute("recipetool inspect cpplint --output {}".format(f))
         assert not o.stdout.contains('"Name": "cpplint"')
-        data = release_build.files.readAsJson("report.json")
-        assert data["General Information"]["Name"] == "cpplint"
+        with release_build.files.readAsJson("report.json") as data:
+            assert data["General Information"]["Name"] == "cpplint"
 
 
 def test_inspect_recursive(release_build):

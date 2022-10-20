@@ -28,6 +28,7 @@ def test_populate_sdk_host(release_build):
     assert release_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
     f = "tmp/work/x86_64-nativesdk-pokysdk-linux/nativesdk-cmake/*/sysroot-destdir/" \
         "*/*/*/*/*/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
-    assert release_build.files.read(f).containsAll('set(CMAKE_CROSSCOMPILING_EMULATOR "${QEMU_$ENV{OECORE_TARGET_ARCH}};${QEMU_EXTRAOPTIONS};',
-                                                   '-L;$ENV{SDKTARGETSYSROOT};-E;',
-                                                   'LD_LIBRARY_PATH=$ENV{SDKTARGETSYSROOT}/usr/lib:$ENV{SDKTARGETSYSROOT}/lib:$LD_LIBRARY_PATH"')
+    with release_build.files.read(f) as data:
+        assert data.containsAll('set(CMAKE_CROSSCOMPILING_EMULATOR "${QEMU_$ENV{OECORE_TARGET_ARCH}};${QEMU_EXTRAOPTIONS};',
+                                '-L;$ENV{SDKTARGETSYSROOT};-E;',
+                                'LD_LIBRARY_PATH=$ENV{SDKTARGETSYSROOT}/usr/lib:$ENV{SDKTARGETSYSROOT}/lib:$LD_LIBRARY_PATH"')
