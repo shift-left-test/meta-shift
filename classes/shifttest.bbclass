@@ -140,7 +140,7 @@ def shifttest_coverage(d):
     check_call(["lcov",
                 "--extract", LCOV_DATAFILE_TOTAL,
                 BRANCH_COVERAGE_OPTION,
-                d.expand('"${S}/*"'),
+                '"%s"' % os.path.normpath(d.expand('${S}/*')),
                 "-o", LCOV_DATAFILE], d)
 
     if d.getVar("SHIFT_COVERAGE_EXCLUDES", True):
