@@ -15,12 +15,12 @@ DEPENDS:class-native += "\
     clang-cross-${TUNE_ARCH} \
     libgit2-native \
     ncurses-native \
+    zstd-native \
 "
 
 SRC_URI = "git://github.com/shift-left-test/sentinel.git;protocol=https;nobranch=1"
-SRCREV = "8c11e5eb36111fea52a68a3824a7868c1b42a242"
+SRCREV = "ff836b87a8d8d4d41027a9c91b51de2ef836ed6b"
 
 S = "${WORKDIR}/git"
 
 inherit cmake native
-
