@@ -42,7 +42,7 @@ class Environment(object):
     @contextmanager
     def externalsrc(self, recipe):
         try:
-            self.shell.run("devtool modify " + recipe)
+            self.shell.run("devtool create-workspace && devtool modify {recipe} workspace/sources/{recipe} -x".format(recipe=recipe))
             yield
         finally:
             self.shell.run("devtool reset " + recipe)
