@@ -26,13 +26,5 @@ RDEPENDS:${PN} += "\
     ${PYTHON_PN}-texttable \
 "
 
-do_install:append:class-native() {
-    if test -e ${D}${bindir} ; then
-        for i in ${D}${bindir}/* ; do \
-            sed -i -e s:${bindir}/python-native/python:${USRBINPATH}/env\ nativepython3:g $i
-        done
-    fi
-}
-
 BBCLASSEXTEND = "native nativesdk"
 
