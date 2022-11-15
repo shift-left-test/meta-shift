@@ -1,20 +1,29 @@
-From a3f4a437133a8d973a962e94dd25626cf3ca5cea Mon Sep 17 00:00:00 2001
+From 4f62114d8f5e4c4d293537f43d6e19d2bf5bea57 Mon Sep 17 00:00:00 2001
 From: Konrad Weihmann <kweihmann@outlook.com>
 Date: Sun, 10 May 2020 20:00:35 +0200
 Subject: [PATCH] Makefile fixes
 
 Signed-off-by: Konrad Weihmann <kweihmann@outlook.com>
 ---
- Makefile | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 94e6df241..30fe68f6a 100644
+index dfb2a99ce..132756da5 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -122,11 +122,11 @@ else ifeq ($(CXX), c++)
+@@ -77,7 +77,7 @@ else # !WINNT
+         endif # !CPPCHK_GLIBCXX_DEBUG
+     endif # GNU/kFreeBSD
+
+-    LDFLAGS=-pthread
++    LDFLAGS+=-pthread
+
+ endif # WINNT
+
+@@ -112,11 +112,11 @@ else ifeq ($(CXX), c++)
  endif
- 
+
  ifeq ($(HAVE_RULES),yes)
 -    override CXXFLAGS += -DHAVE_RULES -DTIXML_USE_STL $(shell pcre-config --cflags)
 +    override CXXFLAGS += -DHAVE_RULES -DTIXML_USE_STL $(shell pkg-config libpcre --cflags)
@@ -26,7 +35,7 @@ index 94e6df241..30fe68f6a 100644
 +        LIBS=$(shell pkg-config libpcre --libs)
      endif
  endif
- 
--- 
-2.20.1
+
+--
+2.25.1
 
