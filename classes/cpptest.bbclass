@@ -158,7 +158,7 @@ def cpptest_coverage(d):
                     "--ignore-errors", "source",
                     shiftutils_get_branch_coverage_option(d, "genhtml")], d)
 
-        check_call(["nativepython3", "-m", "lcov_cobertura", LCOV_DATAFILE,
+        check_call(["lcov_cobertura", LCOV_DATAFILE,
                     "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
                     "--demangle",
                     "--output", xml_file], d, cwd=d.getVar("S", True))
