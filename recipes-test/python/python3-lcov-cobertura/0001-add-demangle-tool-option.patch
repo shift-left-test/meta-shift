@@ -1,9 +1,9 @@
 diff --git a/lcov_cobertura/lcov_cobertura.py b/lcov_cobertura/lcov_cobertura.py
-index 9748778..5b89d76 100755
+index 379e405..f0a90d2 100755
 --- a/lcov_cobertura/lcov_cobertura.py
 +++ b/lcov_cobertura/lcov_cobertura.py
-@@ -20,19 +20,15 @@ from optparse import OptionParser
- from distutils.spawn import find_executable
+@@ -23,10 +23,6 @@ from distutils.spawn import find_executable
+ __version__ = '2.0.2'
  
  CPPFILT = "c++filt"
 -HAVE_CPPFILT = False
@@ -11,70 +11,34 @@ index 9748778..5b89d76 100755
 -if find_executable(CPPFILT) is not None:
 -    HAVE_CPPFILT = True
  
- VERSION = '1.6'
- __all__ = ['LcovCobertura']
  
- 
--def demangle(name):
--    pipe = subprocess.Popen([CPPFILT, name], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-+def demangle(name, cppfilt):
-+    pipe = subprocess.Popen([cppfilt, name], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-     stdout, _ = pipe.communicate()
--    return stdout.split("\n")[0]
-+    return stdout.decode().split("\n")[0]
- 
- 
- class LcovCobertura(object):
-@@ -48,7 +44,7 @@ class LcovCobertura(object):
-     >>> print(cobertura_xml)
+ class Demangler():
+@@ -387,6 +383,7 @@ def main(argv=None):
      """
+     if argv is None:
+         argv = sys.argv
++    global CPPFILT
+     parser = OptionParser()
+     parser.usage = ('lcov_cobertura.py lcov-file.dat [-b source/dir] '
+                     '[-e <exclude packages regex>] [-o output.xml] [-d]')
+@@ -403,11 +400,20 @@ def main(argv=None):
+     parser.add_option('-d', '--demangle',
+                       help='Demangle C++ function names using %s' % CPPFILT,
+                       action='store_true', dest='demangle', default=False)
++    parser.add_option('-t', '--demangle-tool',
++                      help='Program to use demangling c++function name',
++                      action='store', dest="cppfilt", default="c++filt")
+     parser.add_option('-v', '--version',
+                       help='Display version info',
+                       action='store_true')
+     (options, args) = parser.parse_args(args=argv)
  
--    def __init__(self, lcov_data, base_dir='.', excludes=None, demangle=False):
-+    def __init__(self, lcov_data, base_dir='.', excludes=None, demangle=False, cppfilt=None):
-         """
-         Create a new :class:`LcovCobertura` object using the given `lcov_data`
-         and `options`.
-@@ -69,6 +65,7 @@ class LcovCobertura(object):
-         self.base_dir = base_dir
-         self.excludes = excludes
-         self.demangle = demangle
-+        self.cppfilt = cppfilt
- 
-     def convert(self):
-         """
-@@ -271,7 +268,7 @@ class LcovCobertura(object):
-                 methods_el = self._el(document, 'methods', {})
-                 for method_name, (line, hits) in list(class_data['methods'].items()):
-                     method_el = self._el(document, 'method', {
--                        'name': demangle(method_name) if self.demangle else method_name,
-+                        'name': demangle(method_name, self.cppfilt) if self.demangle else method_name,
-                         'signature': '',
-                         'line-rate': '1.0' if int(hits) > 0 else '0.0',
-                         'branch-rate': '1.0' if int(hits) > 0 else '0.0',
-@@ -381,10 +378,16 @@ if __name__ == '__main__':
-         parser.add_option('-d', '--demangle',
-                           help='Demangle C++ function names using %s' % CPPFILT,
-                           action='store_true', dest='demangle', default=False)
-+        parser.add_option('-t', '--demangle-tool',
-+                          help='Program to use demangling c++function name',
-+                          action='store', dest="cppfilt", default="c++filt")
-         (options, args) = parser.parse_args(args=argv)
- 
-+        HAVE_CPPFILT = False
-+        if find_executable(options.cppfilt) is not None:
-+            HAVE_CPPFILT = True
-         if options.demangle and not HAVE_CPPFILT:
--            raise RuntimeError("C++ filter executable (%s) not found!" % CPPFILT)
-+            raise RuntimeError("C++ filter executable (%s) not found!" % options.cppfilt)
- 
-         if len(args) != 2:
-             print(main.__doc__)
-@@ -393,7 +396,7 @@ if __name__ == '__main__':
-         try:
-             with open(args[1], 'r') as lcov_file:
-                 lcov_data = lcov_file.read()
--                lcov_cobertura = LcovCobertura(lcov_data, options.base_dir, options.excludes, options.demangle)
-+                lcov_cobertura = LcovCobertura(lcov_data, options.base_dir, options.excludes, options.demangle, options.cppfilt)
-                 cobertura_xml = lcov_cobertura.convert()
-             with open(options.output, mode='wt') as output_file:
-                 output_file.write(cobertura_xml)
++    CPPFILT = options.cppfilt
++
++    HAVE_CPPFILT = False
++    if find_executable(CPPFILT) is not None:
++        HAVE_CPPFILT = True
++
+     if options.demangle and not HAVE_CPPFILT:
+         raise RuntimeError("C++ filter executable (%s) not found!" % CPPFILT)
+     if options.version:

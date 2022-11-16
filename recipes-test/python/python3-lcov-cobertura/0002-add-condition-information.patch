@@ -1,6 +1,8 @@
+diff --git a/lcov_cobertura/lcov_cobertura.py b/lcov_cobertura/lcov_cobertura.py
+index b6564e3..280025e 100755
 --- a/lcov_cobertura/lcov_cobertura.py
 +++ b/lcov_cobertura/lcov_cobertura.py
-@@ -185,6 +185,11 @@ class LcovCobertura(object):
+@@ -191,6 +191,11 @@ class LcovCobertura():
                  file_lines[line_number]['branch'] = 'true'
                  file_lines[line_number]['branches-total'] += 1
                  file_branches_total += 1
@@ -12,7 +14,7 @@
                  if branch_hits != '-' and int(branch_hits) > 0:
                      file_lines[line_number]['branches-covered'] += 1
                      file_branches_covered += 1
-@@ -313,6 +318,12 @@ class LcovCobertura(object):
+@@ -319,6 +324,12 @@ class LcovCobertura():
                          line_el.setAttribute('condition-coverage',
                                               '{0}% ({1}/{2})'.format(
                                                   percentage, covered, total))
