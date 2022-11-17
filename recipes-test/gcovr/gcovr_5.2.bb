@@ -5,7 +5,7 @@ HOMEPAGE = "https://github.com/gcovr/gcovr"
 BUGTRACKER = "https://github.com/gcovr/gcovr/issues"
 SECTION = "devel"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=221e634a1ceafe02ef74462cbff2fb16"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=e59af597b3484fa3b52c0fbfd5d17611"
 
 PYPI_PACKAGE = "gcovr"
 
@@ -13,10 +13,11 @@ DEPENDS += "\
     ${PYTHON_PN}-jinja2 \
     ${PYTHON_PN}-lxml \
     ${PYTHON_PN}-markupsafe \
+    ${PYTHON_PN}-pygments \
 "
 
-SRC_URI[md5sum] = "83f75d78d59cbd8a34275a372a47f557"
-SRC_URI[sha256sum] = "5aae34dc81e51600cfecbbbce3c3a80ce3f7548bc0aa1faa4b74ecd18f6fca3f"
+SRC_URI[md5sum] = "d4bc4239231218193834538ce6335274"
+SRC_URI[sha256sum] = "217195085ec94346291a87b7b1e6d9cfdeeee562b3e0f9a32b25c9530b3bce8f"
 
 inherit pypi setuptools3
 
@@ -26,6 +27,7 @@ RDEPENDS:${PN} += "\
     ${PYTHON_PN}-jinja2 \
     ${PYTHON_PN}-lxml \
     ${PYTHON_PN}-markupsafe \
+    ${PYTHON_PN}-pygments \
     ${PYTHON_PN}-setuptools \
 "
 
