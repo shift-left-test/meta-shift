@@ -1,16 +1,17 @@
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
-index 0d2c193..c7ab242 100644
+index d4c9b0a..b59460d 100644
 --- a/oelint_adv/__main__.py
 +++ b/oelint_adv/__main__.py
-@@ -3,6 +3,7 @@ import json
+@@ -4,6 +4,8 @@ import multiprocessing as mp
  import os
  import re
  import sys
 +import logging
- 
- try:
-     from configparser import ConfigParser
-@@ -29,6 +30,8 @@ from oelint_adv.rule_file import set_suppressions
++
+ from configparser import ConfigParser
+ from configparser import NoOptionError
+ from configparser import NoSectionError
+@@ -30,6 +32,8 @@ from oelint_adv.version import __version__
  
  sys.path.append(os.path.abspath(os.path.join(__file__, '..')))
  
@@ -19,7 +20,7 @@ index 0d2c193..c7ab242 100644
  
  class TypeSafeAppendAction(argparse.Action):
  
-@@ -320,6 +323,9 @@ def make_json_report(issues):
+@@ -376,6 +380,9 @@ def make_json_report(issues):
  
  
  def main():  # pragma: no cover
@@ -29,7 +30,7 @@ index 0d2c193..c7ab242 100644
      args = arguments_post(parse_arguments())
  
      if args.print_rulefile:
-@@ -337,6 +343,8 @@ def main():  # pragma: no cover
+@@ -393,6 +400,8 @@ def main():  # pragma: no cover
      if issues:
          sys.stdout.write('\n')
  
