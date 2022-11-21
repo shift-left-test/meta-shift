@@ -1,8 +1,8 @@
 diff --git a/oelint_parser/parser.py b/oelint_parser/parser.py
-index e415da0..4c6d5a0 100644
+index d75af04..a21d1e8 100644
 --- a/oelint_parser/parser.py
 +++ b/oelint_parser/parser.py
-@@ -148,7 +148,7 @@ def get_items(stash, _file, lineOffset=0):
+@@ -151,7 +151,7 @@ def get_items(stash, _file, lineOffset=0):
          list: List of oelint_parser.cls_item.* representations
      """
      res = []
