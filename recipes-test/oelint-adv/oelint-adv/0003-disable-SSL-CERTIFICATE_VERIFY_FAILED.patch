@@ -1,8 +1,8 @@
 diff --git a/oelint_adv/rule_base/rule_var_homepageping.py b/oelint_adv/rule_base/rule_var_homepageping.py
-index 3e40134..e8535fa 100644
+index 79869b5..be50b14 100644
 --- a/oelint_adv/rule_base/rule_var_homepageping.py
 +++ b/oelint_adv/rule_base/rule_var_homepageping.py
-@@ -12,6 +12,8 @@ except ImportError:
+@@ -6,6 +6,8 @@ from urllib.request import urlopen
  from oelint_adv.cls_rule import Rule
  from oelint_parser.cls_item import Variable
  
@@ -11,7 +11,7 @@ index 3e40134..e8535fa 100644
  
  class VarHomepagePing(Rule):
      def __init__(self):
-@@ -27,7 +29,7 @@ class VarHomepagePing(Rule):
+@@ -21,7 +23,7 @@ class VarHomepagePing(Rule):
              try:
                  req = Request(i.VarValueStripped)  # noqa: S310 - we can take the risk of calling unexpected schemes here
                  try:
