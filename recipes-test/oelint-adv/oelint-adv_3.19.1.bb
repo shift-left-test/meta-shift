@@ -14,7 +14,8 @@ SRC_URI += "file://0001-change-output-option-to-make-json-format-report.patch \
             file://0003-disable-SSL-CERTIFICATE_VERIFY_FAILED.patch \
             file://0004-changes-for-custom-rule.patch \
             file://0005-Patch-for-overridden-syntax-change-in-honister.patch \
-            file://0006-remove-requirements.txt.patch"
+            file://0006-remove-requirements.txt.patch \
+            file://0007-oelint.vars.listappend-except-for-FILESPATHS.patch"
 
 SRC_URI[md5sum] = "f8fa7bbdfa33c9faf275670374317290"
 SRC_URI[sha256sum] = "2220f0ffefc2cecbeee2d0fe4659654a6f729fd38394c2aee51820055a50b197"
