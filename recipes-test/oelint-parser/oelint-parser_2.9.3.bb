@@ -10,7 +10,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=297280a76099d6470990f30683c459d4"
 PYPI_PACKAGE = "oelint_parser"
 
 SRC_URI += "file://0001-changes-for-custom-rule.patch \
-            file://0002-do-not-add-inherited-files.patch"
+            file://0002-do-not-add-inherited-files.patch \
+            file://0003-prevent-false-alarm-in-external-src-context.patch"
 
 
 SRC_URI[md5sum] = "035c2e30b855c878a7a0c3dce96502a6"
