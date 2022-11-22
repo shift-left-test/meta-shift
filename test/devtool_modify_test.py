@@ -17,8 +17,9 @@ def stdout(test_build):
 @pytest.fixture(scope="module")
 def report(report_build):
     report_build.files.remove("report")
-    assert report_build.shell.execute("bitbake cmake-project -c report").stderr.empty()
-    return report_build
+    with report_build.externalsrc("cmake-project"):
+        assert report_build.shell.execute("bitbake cmake-project -c report").stderr.empty()
+        return report_build
 
 
 def test_do_checkcache(stdout, report):
@@ -42,7 +43,7 @@ def test_do_checkcode(stdout, report):
 def test_do_checkrecipe(stdout, report):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
     with report.files.readAsJson("report/cmake-project-1.0.0-r0/checkrecipe/recipe_violations.json") as data:
-        assert len(data["issues"]) == 0
+        assert len(data["issues"]) == 2
     with report.files.readAsJson("report/cmake-project-1.0.0-r0/checkrecipe/files.json") as data:
         assert data["lines_of_code"][0]["file"].endswith("cmake-project_1.0.0.bb")
         assert data["lines_of_code"][1]["file"].endswith("cmake-project_1.0.0.bbappend")
