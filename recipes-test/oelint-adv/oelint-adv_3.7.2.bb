@@ -14,7 +14,8 @@ SRC_URI += "file://0001-compatibility-with-python2.patch \
             file://0002-change-output-option-to-make-json-format-report.patch \
             file://0003-add-logger.patch \
             file://0004-disable-SSL-CERTIFICATE_VERIFY_FAILED.patch \
-            file://0005-changes-for-custom-rule.patch"
+            file://0005-changes-for-custom-rule.patch \
+            file://0006-oelint.vars.listappend-except-for-FILESPATHS.patch"
 
 S = "${WORKDIR}/git"
 
