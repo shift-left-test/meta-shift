@@ -1,0 +1,12 @@
+diff --git a/oelint_parser/data/const-default.json b/oelint_parser/data/const-default.json
+index a67f8d5..d687c9a 100644
+--- a/oelint_parser/data/const-default.json
++++ b/oelint_parser/data/const-default.json
+@@ -1360,7 +1360,6 @@
+             "DL_DIR",
+             "FILE",
+             "FILESDIR",
+-            "FILESPATH",
+             "INHERIT",
+             "LAYERDEPENDS",
+             "LAYERDIR",
