@@ -4,7 +4,7 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarSRCUriGitTag(Rule):
     def __init__(self):
-        super(VarSRCUriGitTag, self).__init__(id='oelint.vars.srcuriappend',
+        super().__init__(id='oelint.vars.srcuriappend',
                          severity='error',
                          message='Use SRC_URI:append otherwise this will override weak defaults by inherit')
 

@@ -6,7 +6,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super(VarBugtrackerIsUrl, self).__init__(id='oelint.vars.fileextrapaths',
+        super().__init__(id='oelint.vars.fileextrapaths',
                          severity='warning',
                          message='\'FILESEXTRAPATHS\' shouldn\'t be used in a bb file')
 
@@ -15,7 +15,7 @@ class VarBugtrackerIsUrl(Rule):
         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
                                   attribute=Variable.ATTR_VAR)
         for i in items:
-            if i.VarName in ['FILESEXTRAPATHS:prepend', 'FILESEXTRAPATHS:append', 'FILESEXTRAPATHS']:
+            if i.VarName in ['FILESEXTRAPATHS_prepend', 'FILESEXTRAPATHS_append', 'FILESEXTRAPATHS']:
                 _, ext = os.path.splitext(i.Origin)
                 if ext == '.bb':
                     res += self.finding(i.Origin, i.InFileLine)

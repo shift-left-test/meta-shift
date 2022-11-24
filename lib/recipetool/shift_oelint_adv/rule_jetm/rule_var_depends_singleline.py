@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarDependsSingleLine(Rule):
     def __init__(self):
-        super(VarDependsSingleLine, self).__init__(id='oelint.jetm.vars.dependssingleline',
+        super().__init__(id='oelint.jetm.vars.dependssingleline',
                          severity='warning',
                          message='Each [R]DEPENDS entry should be put into a single line')
 

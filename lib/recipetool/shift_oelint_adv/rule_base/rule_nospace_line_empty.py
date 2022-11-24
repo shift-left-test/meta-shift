@@ -3,7 +3,7 @@ from shift_oelint_adv.cls_rule import Rule
 
 class NoSpaceEmptyLineRule(Rule):
     def __init__(self):
-        super(NoSpaceEmptyLineRule, self).__init__(id='oelint.spaces.emptyline',
+        super().__init__(id='oelint.spaces.emptyline',
                          severity='warning',
                          message='Empty lines shall not contain spaces')
 

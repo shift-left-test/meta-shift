@@ -6,7 +6,7 @@ from shift_oelint_parser.constants import CONSTANTS
 
 class TaskDocStrings(Rule):
     def __init__(self):
-        super(TaskDocStrings, self).__init__(id='oelint.task.docstrings',
+        super().__init__(id='oelint.task.docstrings',
                          severity='info',
                          message='Every custom task should have a doc string set by task[doc] = \'\'')
 

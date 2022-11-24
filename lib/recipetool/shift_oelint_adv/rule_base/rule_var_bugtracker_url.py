@@ -5,7 +5,7 @@ from shift_oelint_parser.helper_files import get_scr_components
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super(VarBugtrackerIsUrl, self).__init__(id='oelint.vars.bugtrackerisurl',
+        super().__init__(id='oelint.vars.bugtrackerisurl',
                          severity='warning',
                          message='\'BUGTRACKER\' should be an URL')
 
@@ -14,9 +14,9 @@ class VarBugtrackerIsUrl(Rule):
         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
                                   attribute=Variable.ATTR_VAR, attributeValue='BUGTRACKER')
         for i in items:
-            val = i.VarValueStripped
+            val_ = i.VarValueStripped
             try:
-                result = get_scr_components(val)
+                result = get_scr_components(val_)
                 if not result['scheme'] or not result['src']:
                     raise Exception()
             except Exception:

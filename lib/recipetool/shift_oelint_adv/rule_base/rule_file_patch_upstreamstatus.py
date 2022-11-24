@@ -1,14 +1,15 @@
 import os
-import re
 
+  # noqa: I900
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_parser.cls_item import Variable
 from shift_oelint_parser.helper_files import get_files
+import re
 
 
 class FilePatchIsUpstreamStatus(Rule):
     def __init__(self):
-        super(FilePatchIsUpstreamStatus, self).__init__(id='oelint.file.upstreamstatus',
+        super().__init__(id='oelint.file.upstreamstatus',
                          severity='info',
                          message='Patch \'{FILE}\' should contain an Upstream-Status entry')
 
@@ -29,6 +30,7 @@ class FilePatchIsUpstreamStatus(Rule):
             'Denied': r'Denied',
             'Backport': r'Backport',
             'Inappropriate': r'Inappropriate(\s+\[.*\])*',
+            'Inactive-Upstream': r'Inactive-Upstream(\s+\[.*\])*',
         }
         for i in patches:
             with open(i) as _input:
@@ -39,7 +41,8 @@ class FilePatchIsUpstreamStatus(Rule):
                 else:
                     continue  # pragma: no cover
                 try:
-                    for m in re.finditer(r'^Upstream-Status:\s*(?P<class>.*)', _input.read(), re.MULTILINE):
+                    cnt = _input.read()
+                    for m in re.finditer(r'^Upstream-Status:\s*(?P<class>.*)', cnt, flags=re.MULTILINE):
                         found = True
                         if not any(re.match(v, m.group('class')) for k, v in _valid_class.items()):
                             _msg = 'Upstream-Status in \'{FILE}\' doesn\'t pick from valid classifiers {cls}'.format(

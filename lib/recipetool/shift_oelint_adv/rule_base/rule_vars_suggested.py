@@ -5,7 +5,7 @@ from shift_oelint_parser.constants import CONSTANTS
 
 class VarSuggestedExists(Rule):
     def __init__(self):
-        super(VarSuggestedExists, self).__init__(id='oelint.var.suggestedvar',
+        super().__init__(id='oelint.var.suggestedvar',
                          severity='info',
                          message='<FOO>',
                          onappend=False,
@@ -19,11 +19,14 @@ class VarSuggestedExists(Rule):
             if any(x == 'packagegroup' for x in i.get_items()):
                 _is_pkg_group = True
                 break
-        for var in CONSTANTS.VariablesSuggested:
-            if _is_pkg_group and var in ['LICENSE', 'CVE_PRODUCT']:
+        for var_ in CONSTANTS.VariablesSuggested:
+            if var_ == 'BBCLASSEXTEND':
+                # this is better covered by shift_oelint_adv/rule_base/rule_vars_bbclassextends.py
+                continue
+            if _is_pkg_group and var_ in ['LICENSE', 'CVE_PRODUCT']:
                 continue
             items = stash.GetItemsFor(
-                filename=_file, classifier=Variable.CLASSIFIER, attribute=Variable.ATTR_VAR, attributeValue=var)
+                filename=_file, classifier=Variable.CLASSIFIER, attribute=Variable.ATTR_VAR, attributeValue=var_)
             if not any(items):
-                res += self.finding(_file, 0, 'Variable \'{var}\' should be set'.format(var=var), appendix=var)
+                res += self.finding(_file, 0, 'Variable \'{var}\' should be set'.format(var=var_), appendix=var_)
         return res

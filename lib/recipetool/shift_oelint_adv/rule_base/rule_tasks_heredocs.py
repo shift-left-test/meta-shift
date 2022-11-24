@@ -1,11 +1,11 @@
-import re
-from shift_oelint_parser.cls_item import Function
 from shift_oelint_adv.cls_rule import Rule
+from shift_oelint_parser.cls_item import Function
+import re
 
 
 class TaskInstallNoCp(Rule):
     def __init__(self):
-        super(TaskInstallNoCp, self).__init__(id='oelint.task.heredocs',
+        super().__init__(id='oelint.task.heredocs',
                          severity='warning',
                          message='Usage of heredocs should be avoided. Use files instead')
 

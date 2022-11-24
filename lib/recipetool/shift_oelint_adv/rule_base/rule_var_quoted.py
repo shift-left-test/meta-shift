@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarQuoted(Rule):
     def __init__(self):
-        super(VarQuoted, self).__init__(id='oelint.vars.valuequoted',
+        super().__init__(id='oelint.vars.valuequoted',
                          severity='error',
                          message='Variable value should be quoted')
 
@@ -17,7 +17,8 @@ class VarQuoted(Rule):
                 continue
             # Don't use VarValueStripped here as we explicitly want the quotes
             # at the beginning and the end of the value
-            val = i.VarValue.strip()
-            if not val.startswith('"') or not val.endswith('"'):
+            val_ = i.VarValue.strip()
+            if ((not val_.startswith('"') or not val_.endswith('"'))
+                    and (not val_.startswith('\'') or not val_.endswith('\''))): # noqa: W503
                 res += self.finding(i.Origin, i.InFileLine)
         return res

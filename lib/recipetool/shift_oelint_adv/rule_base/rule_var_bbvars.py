@@ -5,7 +5,7 @@ from shift_oelint_parser.constants import CONSTANTS
 
 class VarQuoted(Rule):
     def __init__(self):
-        super(VarQuoted, self).__init__(id='oelint.vars.bbvars',
+        super().__init__(id='oelint.vars.bbvars',
                          severity='warning',
                          message='Variable \'{VAR}\' should be set on a disto/layer or local.conf level, not in a recipe',
                          appendix=CONSTANTS.VariablesProtected)

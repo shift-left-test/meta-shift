@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarAppendOperation(Rule):
     def __init__(self):
-        super(VarAppendOperation, self).__init__(id='oelint.vars.appendop',
+        super().__init__(id='oelint.vars.appendop',
                          severity='error',
                          message='Use \'{a}\' instead of \'{b}\' as it overwrites \'{c}\'')
 

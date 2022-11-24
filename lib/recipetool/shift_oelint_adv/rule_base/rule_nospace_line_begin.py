@@ -5,7 +5,7 @@ from shift_oelint_parser.cls_item import PythonBlock
 
 class NoSpaceBeginningRule(Rule):
     def __init__(self):
-        super(NoSpaceBeginningRule, self).__init__(id='oelint.spaces.linebeginning',
+        super().__init__(id='oelint.spaces.linebeginning',
                          severity='warning',
                          message='Line shall not begin with a space')
 

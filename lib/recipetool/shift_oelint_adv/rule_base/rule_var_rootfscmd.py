@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarRootfsPostprocessCommand(Rule):
     def __init__(self):
-        super(VarRootfsPostprocessCommand, self).__init__(id='oelint.var.rootfspostcmd',
+        super().__init__(id='oelint.var.rootfspostcmd',
                          severity='warning',
                          message='ROOTFS_POSTPROCESS_COMMAND should not have trailing blanks')
 

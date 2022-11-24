@@ -1,14 +1,13 @@
-import re
-
 from anytree import LoopError
 from anytree import Node
-from shift_oelint_parser.cls_item import TaskAdd
 from shift_oelint_adv.cls_rule import Rule
+from shift_oelint_parser.cls_item import TaskAdd
+import re
 
 
 class TaskCustomOrder(Rule):
     def __init__(self):
-        super(TaskCustomOrder, self).__init__(id='oelint.task.customorder',
+        super().__init__(id='oelint.task.customorder',
                          severity='error',
                          message='<FOO>')
 
