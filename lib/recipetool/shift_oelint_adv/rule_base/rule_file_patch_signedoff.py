@@ -7,7 +7,7 @@ from shift_oelint_parser.helper_files import get_files
 
 class FilePatchIsSignedOff(Rule):
     def __init__(self):
-        super(FilePatchIsSignedOff, self).__init__(id='oelint.file.patchsignedoff',
+        super().__init__(id='oelint.file.patchsignedoff',
                          severity='warning',
                          message='Patch \'{FILE}\' should contain a Signed-off-by entry')
 

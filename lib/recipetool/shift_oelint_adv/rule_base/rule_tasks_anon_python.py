@@ -4,7 +4,7 @@ from shift_oelint_adv.cls_rule import Rule
 
 class TaskNoAnonPython(Rule):
     def __init__(self):
-        super(TaskNoAnonPython, self).__init__(id='oelint.task.noanonpython',
+        super().__init__(id='oelint.task.noanonpython',
                          severity='warning',
                          message='Avoid anonymous python functions as they expensive and come with all sorts of side effects')
 

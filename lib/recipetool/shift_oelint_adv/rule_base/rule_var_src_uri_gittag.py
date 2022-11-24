@@ -6,7 +6,7 @@ from shift_oelint_parser.parser import INLINE_BLOCK
 
 class VarSRCUriGitTag(Rule):
     def __init__(self):
-        super(VarSRCUriGitTag, self).__init__(id='oelint.vars.srcurigittag',
+        super().__init__(id='oelint.vars.srcurigittag',
                          severity='warning',
                          message='\'tag\' in SRC_URI-options leads to not-reproducible builds as git-tags can move around. Use explicit SRCREV')
 

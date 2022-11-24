@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarSectionLowercase(Rule):
     def __init__(self):
-        super(VarSectionLowercase, self).__init__(id='oelint.vars.sectionlowercase',
+        super().__init__(id='oelint.vars.sectionlowercase',
                          severity='warning',
                          message='\'SECTION\' should only lowercase characters')
 

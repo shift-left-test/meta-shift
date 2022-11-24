@@ -6,7 +6,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super(VarBugtrackerIsUrl, self).__init__(id='oelint.vars.fileextrapaths',
+        super().__init__(id='oelint.vars.fileextrapaths',
                          severity='warning',
                          message='\'FILESEXTRAPATHS\' shouldn\'t be used in a bb file')
 

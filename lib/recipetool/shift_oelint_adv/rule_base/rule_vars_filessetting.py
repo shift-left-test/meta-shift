@@ -4,17 +4,17 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarUnneededFilesSetting(Rule):
     def __init__(self):
-        super(VarUnneededFilesSetting, self).__init__(id='oelint.vars.filessetting',
+        super().__init__(id='oelint.vars.filessetting',
                          severity='warning',
                          message='Check for improvable FILES settings',
                          appendix=['hidden', 'double'])
 
-    def __find_match_from_stash(self, _file, stash, variable, needle, msg, appendix, onappendonly=False):
+    def __find_match_from_stash(self, _file, stash, variable_, needle, msg, appendix, onappendonly=False):
         res = []
         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
                                   attribute=Variable.ATTR_VAR, attributeValue='FILES')
         for i in items:
-            if variable in i.SubItems and 'remove' not in i.SubItems and needle in i.VarValue:  # pragma: no cover
+            if variable_ in i.SubItems and 'remove' not in i.SubItems and needle in i.VarValue:  # pragma: no cover
                 if (onappendonly and i.IsAppend()) or (not onappendonly):
                     res += self.finding(i.Origin, i.InFileLine,
                                         override_msg=msg, appendix=appendix)
@@ -26,7 +26,7 @@ class VarUnneededFilesSetting(Rule):
             filename=_file, attribute=Variable.ATTR_VAR)
         _seenpath = {}
         for p in _expanded['PACKAGES']:
-            _files = 'FILES_{a}'.format(a=p)
+            _files = 'FILES:{a}'.format(a=p)
             _convfiles = _files.replace(_expanded['PN'][0], '${PN}')
             if _files in _expanded:
                 _pattern = _expanded[_files]

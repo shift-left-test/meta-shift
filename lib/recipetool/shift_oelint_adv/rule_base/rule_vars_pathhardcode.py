@@ -1,9 +1,9 @@
-import re
 from collections import OrderedDict
 
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_parser.cls_item import Comment
 from shift_oelint_parser.cls_item import Variable
+import re
 
 
 class VarsPathHardcode(Rule):
@@ -27,7 +27,7 @@ class VarsPathHardcode(Rule):
             '/com': '${sharedstatedir}',
             '/etc': '${sysconfdir}',
         })
-        super(VarsPathHardcode, self).__init__(id='oelint.vars.pathhardcode',
+        super().__init__(id='oelint.vars.pathhardcode',
                          severity='warning',
                          message='<FOO>',
                          appendix=[v.strip('$').strip('{').strip('}') for v in self._map.values()])

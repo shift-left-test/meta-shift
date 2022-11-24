@@ -8,7 +8,7 @@ from shift_oelint_parser.helper_files import find_local_or_in_layer
 
 class FileIncludeNotFound(Rule):
     def __init__(self):
-        super(FileIncludeNotFound, self).__init__(id='oelint.file.includenotfound',
+        super().__init__(id='oelint.file.includenotfound',
                          severity='warning',
                          message='\'{FILE}\' was not found')
 

@@ -1,11 +1,10 @@
-import re
-
 from shift_oelint_adv.cls_rule import Rule
+import re
 
 
 class NoSpaceTrailingRule(Rule):
     def __init__(self):
-        super(NoSpaceTrailingRule, self).__init__(id='oelint.spaces.lineend',
+        super().__init__(id='oelint.spaces.lineend',
                          severity='warning',
                          message='Line shall not end with a space')
 
