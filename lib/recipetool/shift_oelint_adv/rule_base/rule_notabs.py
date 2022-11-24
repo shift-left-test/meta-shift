@@ -1,11 +1,10 @@
-import re
-
 from shift_oelint_adv.cls_rule import Rule
+import re
 
 
 class NoTabs(Rule):
     def __init__(self):
-        super(NoTabs, self).__init__(id='oelint.tabs.notabs',
+        super().__init__(id='oelint.tabs.notabs',
                          severity='warning',
                          message='Don\'t use tabs use spaces')
 

@@ -8,7 +8,7 @@ from shift_oelint_parser.helper_files import get_valid_package_names
 
 class VarMisspell(Rule):
     def __init__(self):
-        super(VarMisspell, self).__init__(id='oelint.vars.mispell',
+        super().__init__(id='oelint.vars.mispell',
                          severity='warning',
                          message='<FOO>')
 

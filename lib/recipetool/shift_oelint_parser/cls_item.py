@@ -1,11 +1,11 @@
-import textwrap
-import re
 import os
+import textwrap
 
 from shift_oelint_parser.constants import CONSTANTS
+import re
 
 
-class Item(object):
+class Item():
     """Base class for all Stash items
     """
     ATTR_LINE = "Line"
@@ -166,10 +166,10 @@ class Item(object):
             tmp = ""
             if "-" in i:
                 # just use the prefix in case a dash is found
-                # that addresses things like FILES:${PN}-dev
+                # that addresses things like FILES_${PN}-dev
                 tmp = "-" + "-".join(i.split("-")[1:])
                 i = i.split("-")[0]
-            if re.match("[a-z0-9{}$]+", i) and _var[0] != "pkg":
+            if re.match("[a-z0-9{}$]+", i) and _var[0] != "pkg":  # noqa: P103
                 _suffix.append(i + tmp)
             elif i in ["${PN}"]:
                 _suffix.append(i + tmp)
@@ -242,7 +242,7 @@ class Item(object):
         return res
 
     def __repr__(self):
-        return "{} -- {}\n".format(self.__class__.__name__, self.GetAttributes())
+        return "{name} -- {attr}\n".format(name=self.__class__.__name__, attr=self.GetAttributes())
 
 
 class Variable(Item):
@@ -270,7 +270,7 @@ class Variable(Item):
             operator {str} -- Operation performed to the variable
             flag {str} -- Optional variable flag
         """
-        super(Variable, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         if "inherit" != name and not flag:
             self.__VarName, self.__SubItem = self.extract_sub(
                 name)
@@ -282,8 +282,8 @@ class Variable(Item):
         self.__VarValue = value
         self.__VarOp = operator
         self.__Flag = flag or ""
-        self.__RawVarName = "{}[{}]".format(
-            self.VarName, self.Flag) if self.Flag else self.VarName
+        self.__RawVarName = "{name}[{flag}]".format(
+            name=self.VarName, flag=self.Flag) if self.Flag else self.VarName
         self.__VarValueStripped = self.VarValue.strip().lstrip('"').rstrip('"')
 
     @property
@@ -352,7 +352,7 @@ class Variable(Item):
             str: complete variable name
         """
         _var = self._override_delimiter.join([self.VarName] + self.SubItems)
-        return "{}[{}]".format(_var, self.Flag) if self.Flag else _var
+        return "{name}[{flag}]".format(name=_var, flag=self.Flag) if self.Flag else _var
 
     @property
     def RawVarName(self):
@@ -465,7 +465,7 @@ class Comment(Item):
             rawtext {str} -- Raw input string (except inline code blocks)
             realraw {str} -- Unprocessed input
         """
-        super(Comment, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
 
     def get_items(self):
         """Get single lines of block
@@ -493,7 +493,7 @@ class Include(Item):
             incname {str} -- raw name of the include file
             statement {str} -- either include or require
         """
-        super(Include, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__IncName = incname
         self.__Statement = statement
 
@@ -541,7 +541,7 @@ class Export(Item):
             name {str} -- variable name of the export
             value {str} -- (optional) value of the export
         """
-        super(Export, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__Name = name
         self.__Value = value
 
@@ -593,12 +593,13 @@ class Function(Item):
             python {bool} -- python function according to parser (default: {False})
             fakeroot {bool} -- uses fakeroot (default: {False})
         """
-        super(Function, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__IsPython = python is not None
         self.__IsFakeroot = fakeroot is not None
         name = name or ""
         self.__FuncName, self.__SubItem = self.extract_sub_func(name.strip())
-        self.__SubItems = [x for x in self.SubItem.split(self._override_delimiter) if x]
+        self.__SubItems = [x for x in self.SubItem.split(
+            self._override_delimiter) if x]
         self.__FuncBody = body
         self.__FuncBodyStripped = body.replace(
             "{", "").replace("}", "").replace("\n", "").strip()
@@ -738,7 +739,7 @@ class PythonBlock(Item):
             realraw {str} -- Unprocessed input
             name {str} -- Function name
         """
-        super(PythonBlock, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__FuncName = name
 
     @property
@@ -778,7 +779,7 @@ class TaskAssignment(Item):
             ident {str} -- task flag
             value {str} -- value of modification
         """
-        super(TaskAssignment, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__FuncName = name
         self.__VarName = ident
         self.__VarValue = value
@@ -818,6 +819,7 @@ class TaskAssignment(Item):
         """
         return [self.FuncName, self.VarName, self.VarValue]
 
+
 class FunctionExports(Item):
     ATTR_FUNCNAME = "FuncName"
     CLASSIFIER = "FunctionExports"
@@ -833,7 +835,7 @@ class FunctionExports(Item):
             realraw {str} -- Unprocessed input
             name {str} -- name of function to be exported
         """
-        super(FunctionExports, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__FuncNames = name
 
     @property
@@ -860,7 +862,8 @@ class FunctionExports(Item):
             list -- function names in the scope of a bbclass (foo becomes classname-foo in this case)
         """
         _name, _ = os.path.splitext(os.path.basename(self.Origin))
-        return ["{}-{}".format(_name, x) for x in self.get_items()]
+        return ["{name}-{item}".format(name=_name, item=x) for x in self.get_items()]
+
 
 class TaskAdd(Item):
     ATTR_FUNCNAME = "FuncName"
@@ -883,7 +886,7 @@ class TaskAdd(Item):
             before {str} -- before statement (default: {""})
             after {str} -- after statement (default: {""})
         """
-        super(TaskAdd, self).__init__(origin, line, infileline, rawtext, realraw)
+        super().__init__(origin, line, infileline, rawtext, realraw)
         self.__FuncName = name
         self.__Before = [x for x in (before or "").split(" ") if x]
         self.__After = [x for x in (after or "").split(" ") if x]
@@ -939,7 +942,7 @@ class MissingFile(Item):
             filename {str} -- filename of the file that can't be found
             statement {str} -- either include or require
         """
-        super(MissingFile, self).__init__(origin, line, infileline, "", "")
+        super().__init__(origin, line, infileline, "", "")
         self.__Filename = filename
         self.__Statement = statement
 
@@ -963,4 +966,3 @@ class MissingFile(Item):
 
     def get_items(self):
         return [self.Filename, self.Statement]
-

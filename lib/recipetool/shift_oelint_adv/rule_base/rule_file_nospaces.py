@@ -4,7 +4,7 @@ from shift_oelint_parser.helper_files import get_layer_root
 
 class FileNoSpaces(Rule):
     def __init__(self):
-        super(FileNoSpaces, self).__init__(id='oelint.file.nospaces',
+        super().__init__(id='oelint.file.nospaces',
                          severity='error',
                          message='Path to file contains spaces. Please remove them')
 

@@ -1,12 +1,11 @@
-import re
-
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_parser.cls_item import Comment
+import re
 
 
 class NoSpaceRuleCont(Rule):
     def __init__(self):
-        super(NoSpaceRuleCont, self).__init__(id='oelint.spaces.linecont',
+        super().__init__(id='oelint.spaces.linecont',
                          severity='error',
                          message='No spaces after line continuation')
 

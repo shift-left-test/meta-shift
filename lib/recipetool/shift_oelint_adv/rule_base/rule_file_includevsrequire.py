@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Include
 
 class FileIncludeVsRequire(Rule):
     def __init__(self):
-        super(FileIncludeVsRequire, self).__init__(id='oelint.file.requireinclude',
+        super().__init__(id='oelint.file.requireinclude',
                          severity='warning',
                          message='Use \'require {FILE}\' instead of \'include {FILE}\'')
 

@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarAutorev(Rule):
     def __init__(self):
-        super(VarAutorev, self).__init__(id='oelint.vars.autorev',
+        super().__init__(id='oelint.vars.autorev',
                          severity='warning',
                          message='The usage of \'AUTOREV\' for SRCREV leads to not reproducible builds')
 

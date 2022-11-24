@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarDescSame(Rule):
     def __init__(self):
-        super(VarDescSame, self).__init__(id='oelint.vars.descriptionsame',
+        super().__init__(id='oelint.vars.descriptionsame',
                          severity='warning',
                          message='\'DESCRIPTION\' is the same a \'SUMMARY\' - it can be removed then')
 

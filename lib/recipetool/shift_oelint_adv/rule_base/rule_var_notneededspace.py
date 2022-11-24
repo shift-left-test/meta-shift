@@ -1,12 +1,11 @@
-import re
-
-from shift_oelint_parser.cls_item import Variable
 from shift_oelint_adv.cls_rule import Rule
+from shift_oelint_parser.cls_item import Variable
+import re
 
 
 class VarSectionLowercase(Rule):
     def __init__(self):
-        super(VarSectionLowercase, self).__init__(id='oelint.vars.notneededspace',
+        super().__init__(id='oelint.vars.notneededspace',
                          severity='info',
                          message='Space at the beginning of the var is not needed')
 
