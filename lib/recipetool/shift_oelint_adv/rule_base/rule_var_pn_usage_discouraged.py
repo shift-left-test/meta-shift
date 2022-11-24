@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarPnUsageDiscouraged(Rule):
     def __init__(self):
-        super(VarPnUsageDiscouraged, self).__init__(id='oelint.vars.pnusagediscouraged',
+        super().__init__(id='oelint.vars.pnusagediscouraged',
                          severity='warning',
                          message='Variable shouldn\'t contain ${PN} or ${BPN}')
 

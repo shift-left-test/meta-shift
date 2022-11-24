@@ -6,7 +6,7 @@ from shift_oelint_parser.constants import CONSTANTS
 
 class TaskAddNoTaskBody(Rule):
     def __init__(self):
-        super(TaskAddNoTaskBody, self).__init__(id='oelint.task.addnotaskbody',
+        super().__init__(id='oelint.task.addnotaskbody',
                          severity='warning',
                          message='The added task \'{FUNC}\' is not existing or has no body')
 

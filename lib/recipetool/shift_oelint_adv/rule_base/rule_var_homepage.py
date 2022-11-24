@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarHomepagePrefix(Rule):
     def __init__(self):
-        super(VarHomepagePrefix, self).__init__(id='oelint.vars.homepageprefix',
+        super().__init__(id='oelint.vars.homepageprefix',
                          severity='warning',
                          message='\'HOMEPAGE\' should start with \'http://\' or \'https://\'')
 

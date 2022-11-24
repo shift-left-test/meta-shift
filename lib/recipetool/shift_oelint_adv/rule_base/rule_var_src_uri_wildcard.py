@@ -6,7 +6,7 @@ from shift_oelint_parser.parser import INLINE_BLOCK
 
 class VarSRCURIWildcard(Rule):
     def __init__(self):
-        super(VarSRCURIWildcard, self).__init__(id='oelint.var.srcuriwildcard',
+        super().__init__(id='oelint.var.srcuriwildcard',
                          severity='error',
                          message='\'SRC_URI\' should not contain any wildcards')
 

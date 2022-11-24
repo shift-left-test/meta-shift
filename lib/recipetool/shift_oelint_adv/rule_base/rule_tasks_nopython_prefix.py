@@ -6,7 +6,7 @@ from shift_oelint_parser.cls_item import Function
 
 class TaskNoPythonPrefix(Rule):
     def __init__(self):
-        super(TaskNoPythonPrefix, self).__init__(id='oelint.task.nopythonprefix',
+        super().__init__(id='oelint.task.nopythonprefix',
                          severity='warning',
                          message='Tasks containing shell code, should not be prefixed with python in function header')
 

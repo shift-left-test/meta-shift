@@ -6,7 +6,7 @@ from shift_oelint_parser.cls_item import Function
 
 class TaskPythonPrefix(Rule):
     def __init__(self):
-        super(TaskPythonPrefix, self).__init__(id='oelint.task.pythonprefix',
+        super().__init__(id='oelint.task.pythonprefix',
                          severity='warning',
                          message='Tasks containing python code, should be prefixed with python in function header')
 
@@ -21,6 +21,6 @@ class TaskPythonPrefix(Rule):
                 ast.parse(item.FuncBodyRaw, 'tempfile')
                 if not item.IsPython:
                     res += self.finding(item.Origin, item.InFileLine)
-            except Exception:
+            except Exception:  # noqa: S110
                 pass  # noqa: S110 - intentionally ignore all errors
         return res

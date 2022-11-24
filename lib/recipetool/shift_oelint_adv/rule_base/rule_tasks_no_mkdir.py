@@ -4,7 +4,7 @@ from shift_oelint_adv.cls_rule import Rule
 
 class TaskInstallNoMkdir(Rule):
     def __init__(self):
-        super(TaskInstallNoMkdir, self).__init__(id='oelint.task.nomkdir',
+        super().__init__(id='oelint.task.nomkdir',
                          severity='error',
                          message='\'mkdir\' shall not be used in do_install. Use \'install\'')
 

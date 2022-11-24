@@ -1,12 +1,11 @@
-import re
-
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_parser.cls_item import Include
+import re
 
 
 class VarMultiInclude(Rule):
     def __init__(self):
-        super(VarMultiInclude, self).__init__(id='oelint.var.multiinclude',
+        super().__init__(id='oelint.var.multiinclude',
                          severity='warning',
                          message='\'{INC}\' is included multiple times')
 

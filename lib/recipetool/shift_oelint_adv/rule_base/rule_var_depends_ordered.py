@@ -1,13 +1,13 @@
 import os
-import re
 
-from shift_oelint_parser.cls_item import Variable
 from shift_oelint_adv.cls_rule import Rule
+from shift_oelint_parser.cls_item import Variable
+import re
 
 
 class VarDependsOrdered(Rule):
     def __init__(self):
-        super(VarDependsOrdered, self).__init__(id='oelint.vars.dependsordered',
+        super().__init__(id='oelint.vars.dependsordered',
                          severity='warning',
                          message='\'{VAR}\' entries should be ordered alphabetically')
 
@@ -21,7 +21,7 @@ class VarDependsOrdered(Rule):
         items = stash.GetItemsFor(filename=_file, classifier=Variable.CLASSIFIER,
                                   attribute=Variable.ATTR_VAR)
         # ignore the settings from bbclasses
-        items = [x for x in items if not x.Origin.endswith('.bbclass')]
+        items = [x for x in items if not x.Origin.endswith('.bbclass') and 'remove' not in x.SubItems]
         _keys = {x.VarName for x in items if re.match(
             r'DEPENDS|RDEPENDS', x.VarName)}
         _filegroups = {x.Origin for x in items}

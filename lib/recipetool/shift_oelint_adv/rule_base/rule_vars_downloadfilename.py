@@ -7,7 +7,7 @@ from shift_oelint_parser.helper_files import guess_recipe_version
 
 class VarsDownloadfilename(Rule):
     def __init__(self):
-        super(VarsDownloadfilename, self).__init__(id='oelint.vars.downloadfilename',
+        super().__init__(id='oelint.vars.downloadfilename',
                          severity='warning',
                          message='Fetcher does create a download artifact without \'PV\' in the filename')
 

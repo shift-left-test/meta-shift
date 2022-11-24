@@ -5,7 +5,7 @@ from shift_oelint_parser.helper_files import expand_term
 
 class VarTrailingSlash(Rule):
     def __init__(self):
-        super(VarTrailingSlash, self).__init__(id='oelint.vars.notrailingslash',
+        super().__init__(id='oelint.vars.notrailingslash',
                          severity='error',
                          message='\'{a}\' must not end with a \'/\'')
 

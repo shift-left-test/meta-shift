@@ -1,11 +1,11 @@
-import re
-from shift_oelint_parser.cls_item import Function
 from shift_oelint_adv.cls_rule import Rule
+from shift_oelint_parser.cls_item import Function
+import re
 
 
 class TaskInstallNoCp(Rule):
     def __init__(self):
-        super(TaskInstallNoCp, self).__init__(id='oelint.task.nocopy',
+        super().__init__(id='oelint.task.nocopy',
                          severity='error',
                          message='\'cp\' shall not be used in do_install. Use \'install\'')
 

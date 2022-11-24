@@ -1,6 +1,7 @@
 import collections
 import os
-import re
+
+
 
 from shift_oelint_parser.cls_item import Comment
 from shift_oelint_parser.cls_item import Export
@@ -15,8 +16,10 @@ from shift_oelint_parser.cls_item import Variable
 from shift_oelint_parser.helper_files import expand_term
 from shift_oelint_parser.helper_files import find_local_or_in_layer
 from shift_oelint_parser.inlinerep import inlinerep
+import re
 
 INLINE_BLOCK = "!!!inlineblock!!!"
+
 
 def get_full_scope(_string, offset, _sstart, _send):
     """get full block of an inline statement
@@ -40,7 +43,7 @@ def get_full_scope(_string, offset, _sstart, _send):
         pos += 1
         if scopelevel < 0:
             break
-    return _string[:pos+offset]
+    return _string[:pos + offset]
 
 
 def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
@@ -60,13 +63,13 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
     res = []
     raw_line = raw_line or line
     if re.search(r"\\\s*\n", raw_line):
-        _, line = next(_iter)
+        _, line = _iter.__next__()
         while re.search(r"\\\s*\n", line):
             raw_line += line
-            _, line = next(_iter)
+            _, line = _iter.__next__()
         raw_line += line
     elif re.match(__func_start_regexp__, raw_line):
-        _, line = next(_iter)
+        _, line = _iter.__next__()
         stopiter = False
         scope_level = 0
         while not stopiter:
@@ -76,7 +79,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
             if "}" in line:
                 scope_level -= 1
             try:
-                _, line = next(_iter)
+                _, line = _iter.__next__()
             except StopIteration:
                 stopiter = True
             if line.strip() == "}" and not scope_level:
@@ -87,13 +90,13 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
         stopiter = False
         while not stopiter:
             try:
-                _, line = next(_iter)
+                _, line = _iter.__next__()
             except StopIteration:
                 stopiter = True
             if re.match("^[A-Za-z0-9#]+", line) or stopiter:
                 if not stopiter:
                     res += prepare_lines_subparser(_iter,
-                                                lineOffset, num, line)
+                                                   lineOffset, num, line)
                 break
             if line.startswith("def "):
                 raw_line = line
@@ -115,7 +118,7 @@ def prepare_lines_subparser(_iter, lineOffset, num, line, raw_line=None):
 
 
 def prepare_lines(_file, lineOffset=0):
-    """break raw file input into preprocessed chunks 
+    """break raw file input into preprocessed chunks
 
     Args:
         _file (string): Full path to file
@@ -131,7 +134,7 @@ def prepare_lines(_file, lineOffset=0):
             for num, line in _iter:
                 prep_lines += prepare_lines_subparser(
                     _iter, lineOffset, num, line)
-    except (IOError, OSError):
+    except FileNotFoundError:
         pass
     return prep_lines
 
@@ -171,7 +174,7 @@ def get_items(stash, _file, lineOffset=0, addInheritedFile=False, addIncludedFil
         ("addtask", __regex_addtask),
         ("taskassign", __regex_taskass),
         ("exportfunc", __regex_export_func),
-        ("vars", __regex_var)
+        ("vars", __regex_var),
     ])
 
     includeOffset = 0
@@ -217,23 +220,29 @@ def get_items(stash, _file, lineOffset=0, addInheritedFile=False, addIncludedFil
                         inhname = expand_term(stash, _file, m.group("inhname"))
                         if not inhname.endswith(".bbclass"):
                             inhname += ".bbclass"
-                        _path = find_local_or_in_layer(
-                            os.path.join("classes", inhname), 
-                            os.path.dirname(_file))
+                        _path = None
+                        for location in ["classes", "classes-recipe", "classes-global"]:
+                            _path = find_local_or_in_layer(
+                                os.path.join(location, inhname),
+                                os.path.dirname(_file))
+                            if _path:
+                                break
                         if _path:
-                            tmp = stash.AddFile(_path, lineOffset=line["line"], forcedLink=_file)
+                            tmp = stash.AddFile(
+                                _path, lineOffset=line["line"], forcedLink=_file)
                             if any(tmp):
                                 includeOffset += max([x.InFileLine for x in tmp])
                     res.append(Variable(
                         _file, line["line"] + includeOffset, line["line"] -
-                        lineOffset, line["raw"], "inherit", m.group("inhname"), line["realraw"],
+                        lineOffset, line["raw"], "inherit", m.group(
+                            "inhname"), line["realraw"],
                         "", ""))
                     good = True
                     break
                 elif k == "export":
                     res.append(Export(
                         _file, line["line"] + includeOffset, line["line"] -
-                        lineOffset, line["raw"], m.group("name").strip() , m.group("value"), line["realraw"]))
+                        lineOffset, line["raw"], m.group("name").strip(), m.group("value"), line["realraw"]))
                     good = True
                     break
                 elif k == "export_noval":
