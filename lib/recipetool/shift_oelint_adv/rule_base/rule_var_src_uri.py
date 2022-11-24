@@ -6,12 +6,13 @@ from shift_oelint_parser.parser import INLINE_BLOCK
 
 class VarSRCUriOptions(Rule):
     def __init__(self):
-        super(VarSRCUriOptions, self).__init__(id='oelint.vars.srcurioptions',
+        super().__init__(id='oelint.vars.srcurioptions',
                          severity='warning',
                          message='<FOO>')
         self._general_options = [
             'apply',
             'destsuffix',
+            'extract',
             'name',
             'patchdir',
             'striplevel',
@@ -24,6 +25,7 @@ class VarSRCUriOptions(Rule):
                 'protocol',
                 'scmdata',
             ],
+            'crate': [],
             'crcc': [
                 'module',
                 'proto',
@@ -50,6 +52,7 @@ class VarSRCUriOptions(Rule):
             'git': [
                 'branch',
                 'destsuffix',
+                'lfs',
                 'nobranch',
                 'nocheckout',
                 'protocol',
@@ -64,6 +67,7 @@ class VarSRCUriOptions(Rule):
             'gitsm': [
                 'branch',
                 'destsuffix',
+                'lfs',
                 'nobranch',
                 'nocheckout',
                 'protocol',
@@ -126,6 +130,16 @@ class VarSRCUriOptions(Rule):
             ],
         }
 
+        self._required_might_options = {
+            'git': ['protocol'],
+            'gitsm': ['protocol'],
+        }
+
+        self._required_unless_options = {
+            'git': {'branch': ['nobranch']},
+            'gitsm': {'branch': ['nobranch']},
+        }
+
     def __analyse(self, item, _input, _index):
         _url = get_scr_components(_input)
         res = []
@@ -145,6 +159,15 @@ class VarSRCUriOptions(Rule):
                 if k not in self._valid_options[_url['scheme']] + self._general_options:
                     res += self.finding(item.Origin, item.InFileLine + _index,
                                         'Option \'{a}\' is not known with this fetcher type'.format(a=k))
+            for opt in self._required_might_options.get(_url['scheme'], []):
+                if opt not in _url['options']:
+                    res += self.finding(item.Origin, item.InFileLine + _index,
+                                        'Fetcher \'{fetcher}\' might require option \'{option}\' to be set'.format(fetcher=_url['scheme'], option=opt))
+            for key, val_ in self._required_unless_options.get(_url['scheme'], {}).items():
+                if key not in _url['options'] and not any(x in _url['options'] for x in val_):
+                    res += self.finding(item.Origin, item.InFileLine + _index,
+                                        'Fetcher \'{fetcher}\' requires option \'{option}\' or any of \'{other}\' to be set'.format(
+                                            fetcher=_url['scheme'], option=key, other=','.join(val_)))
         return res
 
     def check(self, _file, stash):

@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarInconSpaces(Rule):
     def __init__(self):
-        super(VarInconSpaces, self).__init__(id='oelint.vars.inconspaces',
+        super().__init__(id='oelint.vars.inconspaces',
                          severity='error',
                          message='<FOO>')
 
@@ -25,5 +25,5 @@ class VarInconSpaces(Rule):
                                     'Assignment should be \'VAR += "foo"\' not \'VAR += " foo"\'')
             if 'append' in app_operation and not _stripped.startswith(' '):
                 res += self.finding(i.Origin, i.InFileLine,
-                                    'Assignment should be \'VAR_append = " foo"\' not \'VAR_append = "foo"\'')
+                                    'Assignment should be \'VAR:append = " foo"\' not \'VAR:append = "foo"\'')
         return res

@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Function
 
 class TaskMultiFragments(Rule):
     def __init__(self):
-        super(TaskMultiFragments, self).__init__(id='oelint.task.multifragments',
+        super().__init__(id='oelint.task.multifragments',
                          severity='info',
                          message='Multiple fragments of the same function in the same file should be merged')
 

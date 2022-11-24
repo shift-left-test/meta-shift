@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarBugtrackerIsUrl(Rule):
     def __init__(self):
-        super(VarBugtrackerIsUrl, self).__init__(id='oelint.vars.fileextrapathsop',
+        super().__init__(id='oelint.vars.fileextrapathsop',
                          severity='error',
                          message='\'FILESEXTRAPATHS\' should only be used in combination with \' := \'')
 

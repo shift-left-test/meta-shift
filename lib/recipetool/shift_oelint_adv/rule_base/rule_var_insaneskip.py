@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarInsaneSkip(Rule):
     def __init__(self):
-        super(VarInsaneSkip, self).__init__(id='oelint.vars.insaneskip',
+        super().__init__(id='oelint.vars.insaneskip',
                          severity='error',
                          message='INSANE_SKIP should be avoided at any cost')
 

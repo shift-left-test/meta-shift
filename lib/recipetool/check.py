@@ -14,6 +14,7 @@ import scriptutils
 import bb
 import json
 import subprocess
+import multiprocessing as mp
 from collections import OrderedDict
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -62,6 +63,7 @@ def check(args, files):
             self.quiet = True
             self.fix = False
             self.nobackup = False
+            self.jobs = mp.cpu_count()
 
     set_suppressions([
         "oelint.var.suggestedvar.BBCLASSEXTEND",

@@ -5,7 +5,7 @@ from shift_oelint_parser.constants import CONSTANTS
 
 class TaskOrder(Rule):
     def __init__(self):
-        super(TaskOrder, self).__init__(id='oelint.task.order',
+        super().__init__(id='oelint.task.order',
                          severity='warning',
                          message='<FOO>',
                          appendix=CONSTANTS.FunctionsOrder)

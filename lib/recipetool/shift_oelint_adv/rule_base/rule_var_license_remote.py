@@ -6,7 +6,7 @@ from shift_oelint_parser.helper_files import get_scr_components
 
 class VarLicenseRemoteFile(Rule):
     def __init__(self):
-        super(VarLicenseRemoteFile, self).__init__(id='oelint.var.licenseremotefile',
+        super().__init__(id='oelint.var.licenseremotefile',
                          severity='warning',
                          message='License-File should be a remote file')
 

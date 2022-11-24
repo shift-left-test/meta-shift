@@ -1,13 +1,7 @@
-try:
-    from urllib.error import HTTPError
-    from urllib.error import URLError
-    from urllib.request import Request
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import HTTPError
-    from urllib2 import URLError
-    from urllib2 import Request
-    from urllib2 import urlopen
+from urllib.error import HTTPError
+from urllib.error import URLError
+from urllib.request import Request
+from urllib.request import urlopen
 
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_parser.cls_item import Variable
@@ -17,7 +11,7 @@ from ssl import _create_unverified_context
 
 class VarHomepagePing(Rule):
     def __init__(self):
-        super(VarHomepagePing, self).__init__(id='oelint.vars.homepageping',
+        super().__init__(id='oelint.vars.homepageping',
                          severity='warning',
                          message='\'HOMEPAGE\' isn\'t reachable')
 
@@ -38,6 +32,6 @@ class VarHomepagePing(Rule):
                     res += self.finding(i.Origin, i.InFileLine)
             except ValueError:
                 res += self.finding(i.Origin, i.InFileLine)
-            except Exception:  # pragma: no cover
+            except BaseException:  # noqa: S110, pragma: no cover
                 pass  # pragma: no cover
         return res

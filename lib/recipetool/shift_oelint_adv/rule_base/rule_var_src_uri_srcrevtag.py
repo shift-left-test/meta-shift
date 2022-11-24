@@ -6,7 +6,7 @@ from shift_oelint_parser.parser import INLINE_BLOCK
 
 class VarSRCUriSRCREVTag(Rule):
     def __init__(self):
-        super(VarSRCUriSRCREVTag, self).__init__(id='oelint.vars.srcurisrcrevtag',
+        super().__init__(id='oelint.vars.srcurisrcrevtag',
                          severity='error',
                          message='\'tag\' in SRC_URI and a SRCREV for the same component doesn\'t compute')
 

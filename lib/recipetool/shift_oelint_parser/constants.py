@@ -2,7 +2,9 @@ import os
 import sys
 import json
 
-DEFAULT_DB = os.path.join(os.path.dirname(__file__), 'data', 'const-default.json')
+DEFAULT_DB = os.path.join(os.path.dirname(
+    __file__), 'data', 'const-default.json')
+
 
 class Constants():
     """Interface for constants
@@ -21,22 +23,22 @@ class Constants():
 
     def __init__(self):
         self.__db = self.__load_db(DEFAULT_DB)
-    
+
     def __load_db(self, path):
         try:
             with open(path) as _in:
                 return json.load(_in)
-        except (IOError, OSError, json.JSONDecodeError) as e:
+        except (OSError, json.JSONDecodeError):
             sys.stderr.write('Cannot load constant database\n')
             return {}
 
-    def __get_from_path(self, path):     
+    def __get_from_path(self, path):
         paths = path.rstrip('/').split('/')
         data = self.__db
-        for index, value in enumerate(paths):
+        for _, value in enumerate(paths):
             data = data.get(value, {})
         return data
-    
+
     def AddConstants(self, _dict):
         """Add constants to the existing
 
@@ -86,7 +88,7 @@ class Constants():
             return a
         self.__db = dict_merge(self.__db, _dict)
 
-    def AddFromRuleFile(self, dict):
+    def AddFromRuleFile(self, _dict):
         """Legacy interface to support rule files
 
         Args:
@@ -97,22 +99,22 @@ class Constants():
             if len(path) == 1:
                 d[crumb] = value
             else:
-                if not crumb in d:
+                if crumb not in d:
                     d[crumb] = {}
                 dict_nested_set(d[crumb], path[1:], value)
         _translated = {}
         for n, r in Constants.LEGACY_MAPPING.items():
-            if n in dict:
-                dict_nested_set(_translated, r.split('/'), dict[n])
+            if n in _dict:
+                dict_nested_set(_translated, r.split('/'), _dict[n])
         self.AddConstants(_translated)
 
-    def AddFromConstantFile(self, dict):
+    def AddFromConstantFile(self, _dict):
         """Legacy interface to support constant files
 
         Args:
             dict (dict): constant file dictionary
         """
-        self.AddFromRuleFile(dict)
+        self.AddFromRuleFile(_dict)
 
     @property
     def FunctionsKnown(self):
@@ -240,5 +242,5 @@ class Constants():
         """
         return self.__get_from_path('sets/base')
 
-CONSTANTS = getattr(sys.modules[__name__], 'CONSTANTS', Constants())
 
+CONSTANTS = getattr(sys.modules[__name__], 'CONSTANTS', Constants())

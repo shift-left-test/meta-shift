@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarDescSameTooBrief(Rule):
     def __init__(self):
-        super(VarDescSameTooBrief, self).__init__(id='oelint.vars.descriptiontoobrief',
+        super().__init__(id='oelint.vars.descriptiontoobrief',
                          severity='warning',
                          message='\'DESCRIPTION\' is the shorter than \'SUMMARY\'')
 

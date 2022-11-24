@@ -6,7 +6,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarOverride(Rule):
     def __init__(self):
-        super(VarOverride, self).__init__(id='oelint.var.override',
+        super().__init__(id='oelint.var.override',
                          severity='error',
                          message='<FOO>')
 
