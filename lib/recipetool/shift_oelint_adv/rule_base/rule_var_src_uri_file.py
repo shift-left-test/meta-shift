@@ -6,7 +6,7 @@ from shift_oelint_parser.parser import INLINE_BLOCK
 
 class VarSRCUriGitTag(Rule):
     def __init__(self):
-        super(VarSRCUriGitTag, self).__init__(id='oelint.vars.srcurifile',
+        super().__init__(id='oelint.vars.srcurifile',
                          severity='warning',
                          message='First item of SRC_URI should not be a file:// fetcher, if multiple fetcher are used')
 

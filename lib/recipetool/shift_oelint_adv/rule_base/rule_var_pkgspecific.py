@@ -8,7 +8,7 @@ class VarPkgSpecific(Rule):
     def __init__(self):
         self.needles = ['RDEPENDS', 'RRECOMMENDS', 'RSUGGESTS', 'RCONFLICTS', 'RPROVIDES', 'RREPLACES',
                         'FILES', 'pkg_preinst', 'pkg_postinst', 'pkg_prerm', 'pkg_postrm', 'ALLOW_EMPTY']
-        super(VarPkgSpecific, self).__init__(id='oelint.vars.pkgspecific',
+        super().__init__(id='oelint.vars.pkgspecific',
                          severity='error',
                          message='Variable {VAR} is package-specific and therefore it should be {VAR}_${PN} or {VAR}:${PN}',
                          appendix=self.needles)

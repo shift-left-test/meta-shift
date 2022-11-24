@@ -1,14 +1,13 @@
-import re
-
-from shift_oelint_parser.cls_item import Variable
 from shift_oelint_adv.cls_rule import Rule
+from shift_oelint_parser.cls_item import Variable
+import re
 
 
 class VarMultiInherit(Rule):
     def __init__(self):
-        super(VarMultiInherit, self).__init__(id='oelint.var.multiinherit',
+        super().__init__(id='oelint.var.multiinherit',
                          severity='warning',
-                         message='\'{INH}\' is included multiple times')
+                         message='\'{inherit}\' is included multiple times')
 
     def check(self, _file, stash):
         res = []
@@ -21,5 +20,5 @@ class VarMultiInherit(Rule):
                     keys.append(y)
                 else:
                     res += self.finding(i.Origin, i.InFileLine,
-                                        self.Msg.replace('{INH}', y))
+                                        self.Msg.replace('{inherit}', y))
         return res

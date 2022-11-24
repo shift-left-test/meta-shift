@@ -3,7 +3,7 @@ from shift_oelint_adv.cls_rule import Rule
 
 class NewLineEOF(Rule):
     def __init__(self):
-        super(NewLineEOF, self).__init__(id='oelint.newline.eof',
+        super().__init__(id='oelint.newline.eof',
                          severity='warning',
                          message='File shall end on a newline')
 

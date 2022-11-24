@@ -1,16 +1,15 @@
-import re
-
 from shift_oelint_adv.cls_rule import Rule
 from shift_oelint_parser.cls_item import Function
 from shift_oelint_parser.cls_item import Variable
 from shift_oelint_parser.constants import CONSTANTS
 from shift_oelint_parser.helper_files import get_valid_package_names
 from shift_oelint_parser.parser import INLINE_BLOCK
+import re
 
 
 class VarPnBpnUsage(Rule):
     def __init__(self):
-        super(VarPnBpnUsage, self).__init__(id='oelint.func.specific',
+        super().__init__(id='oelint.func.specific',
                          severity='error',
                          message='\'{func}\' is set specific to [\'{machine}\'] or [\'{distro}\'], but isn\'t known from PACKAGES, MACHINE, DISTRO, or resources')
 

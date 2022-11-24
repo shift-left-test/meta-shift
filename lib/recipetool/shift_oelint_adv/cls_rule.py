@@ -4,6 +4,7 @@ import os
 import pkgutil
 import sys
 
+from shift_oelint_adv.rule_file import get_inlinesuppressions
 from shift_oelint_adv.rule_file import get_messageformat
 from shift_oelint_adv.rule_file import get_noinfo
 from shift_oelint_adv.rule_file import get_nowarn
@@ -12,8 +13,8 @@ from shift_oelint_adv.rule_file import get_rulefile
 from shift_oelint_adv.rule_file import get_suppressions
 
 
-class Rule(object):
-    def __init__(self, id='', severity='', message='', onappend=True, onlyappend=False, appendix=()):
+class Rule:
+    def __init__(self, id='', severity='', message='', onappend=True, onlyappend=False, appendix=()):  # noqa: A002, VNE003
         """constructor
 
         Keyword Arguments:
@@ -95,6 +96,10 @@ class Rule(object):
             # Fix those issues, that don't come with a line
             _line = 1
 
+        # filter out inline suppressions
+        if any(x for x in _id if x in get_inlinesuppressions().get(_file, {}).get(max(1, _line - 1), [])):
+            return []
+
         _path = os.path.abspath(_file)
         if get_relpaths():
             _path = os.path.relpath(_path, os.getcwd())
@@ -105,7 +110,7 @@ class Rule(object):
         _msg = get_messageformat().format(path=_path, line=_line, severity=_severity,
                                           id=_display_id, msg=override_msg)
 
-        return [(_line, '{}{}{}'.format(_color, _msg, _style))]
+        return [(_line, f'{_color}{_msg}{_style}')]
 
     def __repr__(self):
         return '{id}'.format(id=self.ID)  # pragma: no cover
@@ -122,7 +127,7 @@ class Rule(object):
         _rule_file = get_rulefile()
         if not _rule_file:
             return self.Severity
-        _subid = None if appendix is None else '{}.{}'.format(self.ID, appendix)
+        _subid = None if appendix is None else f'{self.ID}.{appendix}'
         if _subid and _subid in _rule_file:
             _severity = _rule_file[_subid]
         elif self.ID in _rule_file:
@@ -147,10 +152,10 @@ class Rule(object):
         Returns:
             dict -- list of rulefile entries
         """
-        return dict(
-            list(({} if self.get_severity() is None else {self.ID: self.get_severity()}).items()) + list(
-                {'{}.{}'.format(self.ID, x): self.get_severity(x) for x in self.Appendix if self.get_severity(x) is not None}.items())
-        )
+        return {
+            **({} if self.get_severity() is None else {self.ID: self.get_severity()}),
+            **{f'{self.ID}.{x}': self.get_severity(x) for x in self.Appendix if self.get_severity(x) is not None},
+        }
 
     def format_message(self, *args, **kwargs):
         """Format message
@@ -225,10 +230,10 @@ def load_rules(args, add_rules=(), add_dirs=()):
                                 if _rule_file and not any(x in _rule_file for x in _potential_ids):
                                     continue  # pragma: no cover
                                 res.append(inst)
-                    except Exception:  # pragma: no cover
+                    except BaseException:  # pragma: no cover
                         pass  # pragma: no cover
             except Exception as e:  # pragma: no cover
                 if not args.quiet:  # pragma: no cover
-                    print(  # noqa: T001 this print is fine here
+                    print(  # noqa: T201 this print is fine here
                         'Can\'t load rule {rule} -> {exp}'.format(rule=name, exp=e))  # pragma: no cover
     return res

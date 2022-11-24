@@ -5,7 +5,7 @@ from shift_oelint_parser.constants import CONSTANTS
 
 class VarsOrder(Rule):
     def __init__(self):
-        super(VarsOrder, self).__init__(id='oelint.var.order',
+        super().__init__(id='oelint.var.order',
                          severity='warning',
                          message='<FOO>',
                          appendix=[self.__cleanname(x) for x in CONSTANTS.VariablesOrder])

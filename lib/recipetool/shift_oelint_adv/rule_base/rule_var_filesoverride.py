@@ -4,7 +4,7 @@ from shift_oelint_parser.cls_item import Variable
 
 class VarFilesOverride(Rule):
     def __init__(self):
-        super(VarFilesOverride, self).__init__(id='oelint.var.filesoverride',
+        super().__init__(id='oelint.var.filesoverride',
                          severity='warning',
                          message='\'{a}\' should not be overriden')
 

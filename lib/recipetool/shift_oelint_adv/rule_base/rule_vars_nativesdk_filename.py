@@ -4,7 +4,7 @@ from shift_oelint_adv.cls_rule import Rule
 
 class VarNativeSDKFilename(Rule):
     def __init__(self):
-        super(VarNativeSDKFilename, self).__init__(id='oelint.var.nativesdkfilename',
+        super().__init__(id='oelint.var.nativesdkfilename',
                          severity='warning',
                          message='nativesdk-recipe-files should include \'nativesdk-\' in file name')
 
