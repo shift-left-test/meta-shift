@@ -1360,7 +1360,6 @@
             "DL_DIR",
             "FILE",
             "FILESDIR",
-            "FILESPATH",
             "INHERIT",
             "LAYERDEPENDS",
             "LAYERDIR",
