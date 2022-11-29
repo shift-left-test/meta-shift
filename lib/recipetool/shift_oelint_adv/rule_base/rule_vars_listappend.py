@@ -17,7 +17,7 @@ class VarListAppend(Rule):
         for i in items:
             if not any(i.VarName.startswith(x) for x in needles):
                 continue
-            if i.VarName.startswith('FILESEXTRAPATHS'):
+            if i.VarName.startswith(('FILESEXTRAPATHS', 'FILESPATH')):
                 # Caught by the `FILES` above but this list is colon separated.
                 continue
             ops = i.AppendOperation()
