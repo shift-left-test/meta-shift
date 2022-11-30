@@ -1,5 +1,5 @@
 diff --git a/oelint_adv/rule_base/rule_vars_listappend.py b/oelint_adv/rule_base/rule_vars_listappend.py
-index 8dff662..c3b40c9 100644
+index 8dff662..e0d11f5 100644
 --- a/oelint_adv/rule_base/rule_vars_listappend.py
 +++ b/oelint_adv/rule_base/rule_vars_listappend.py
 @@ -18,7 +18,7 @@ class VarListAppend(Rule):
@@ -7,7 +7,7 @@ index 8dff662..c3b40c9 100644
              if not any(i.VarName.startswith(x) for x in needles):
                  continue
 -            if i.VarName.startswith('FILESEXTRAPATHS'):
-+            if any(i.VarName.startswith(x) for x in ['FILESEXTRAPATHS', 'FILESPATH']):
++            if i.VarName.startswith(('FILESEXTRAPATHS', 'FILESPATH')):
                  # Caught by the `FILES` above but this list is colon separated.
                  continue
              ops = i.AppendOperation()
