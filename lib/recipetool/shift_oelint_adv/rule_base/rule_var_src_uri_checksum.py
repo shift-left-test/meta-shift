@@ -4,11 +4,11 @@ from shift_oelint_parser.helper_files import get_scr_components
 from shift_oelint_parser.parser import INLINE_BLOCK
 
 
-class VarSRCUriOptions(Rule):
+class VarSRCUriChecksum(Rule):
     def __init__(self):
-        super(VarSRCUriOptions, self).__init__(id="oelint.vars.srcurichecksum",
-                                               severity="error",
-                                               message="<FOO>")
+        super().__init__(id='oelint.vars.srcurichecksum',
+                         severity='error',
+                         message='<FOO>')
 
     def check(self, _file, stash):
         res = []
@@ -34,7 +34,7 @@ class VarSRCUriOptions(Rule):
                     if x == INLINE_BLOCK:
                         continue
                     _url = get_scr_components(x)
-                    if _url["scheme"] in ["http", "https", "ftp", "ftps", "sftp", "s3"]:
+                    if _url["scheme"] in ["http", "https", "ftp", "ftps", "sftp", "s3", "az"]:
                         name = ""
                         if "name" in _url["options"]:
                             name = _url["options"]["name"]
@@ -60,11 +60,11 @@ class VarSRCUriOptions(Rule):
                 no_name_src_uri = True
             else:
                 if name not in md5sum:
-                    message = "SRC_URI[%s.md5sum]" % name
+                    message = "SRC_URI[{n}.md5sum]".format(n=name)
                 if name not in sha256sum:
                     if len(message) > 0:
-                      message += ", "
-                    message += "SRC_URI[%s.sha256sum]" % name
+                        message += ", "
+                    message += "SRC_URI[{n}.sha256sum]".format(n=name)
                 if len(message) > 0:
                     message += " is(are) needed"
             if len(message) > 0:
