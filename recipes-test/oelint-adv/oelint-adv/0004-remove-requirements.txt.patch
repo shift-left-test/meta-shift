@@ -1,11 +1,11 @@
 diff --git a/requirements.txt b/requirements.txt
-index fab1b85..e69de29 100644
+index 4784c69..e69de29 100644
 --- a/requirements.txt
 +++ b/requirements.txt
 @@ -1,5 +0,0 @@
 -anytree ~= 2.8
 -colorama ~= 0.4
--oelint-parser ~= 2.9
+-oelint-parser ~= 2.10
 -urllib3 ~= 1.26
 -wheel ~= 0.38
 \ No newline at end of file
