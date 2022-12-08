@@ -12,13 +12,10 @@ PYPI_PACKAGE = "oelint_adv"
 SRC_URI += "file://0001-change-output-option-to-make-json-format-report.patch \
             file://0002-add-logger.patch \
             file://0003-disable-SSL-CERTIFICATE_VERIFY_FAILED.patch \
-            file://0004-changes-for-custom-rule.patch \
-            file://0005-Patch-for-overridden-syntax-change-in-honister.patch \
-            file://0006-remove-requirements.txt.patch \
-            file://0007-oelint.vars.listappend-except-for-FILESPATHS.patch"
+            file://0004-remove-requirements.txt.patch"
 
-SRC_URI[md5sum] = "f8fa7bbdfa33c9faf275670374317290"
-SRC_URI[sha256sum] = "2220f0ffefc2cecbeee2d0fe4659654a6f729fd38394c2aee51820055a50b197"
+SRC_URI[md5sum] = "b103834dea2da1f47856d1922b2a498c"
+SRC_URI[sha256sum] = "0335a3aa878592f58328b9a4593ad15e67586955251f64d73c8c3cac28456ab0"
 
 inherit pypi setuptools3
 
@@ -35,4 +32,3 @@ RDEPENDS:${PN} += "\
 "
 
 BBCLASSEXTEND = "native nativesdk"
-
