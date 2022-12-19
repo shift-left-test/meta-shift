@@ -37,6 +37,10 @@ class Reporter:
             self.result.append("%s:\n" % key)
             for v_value in sorted(value):
                 self.result.append("    %s\n" % v_value)
+        elif isinstance(value, set):
+            self.result.append("%s:\n" % key)
+            for v_value in sorted(list(value)):
+                self.result.append("    %s\n" % v_value)
         else:
             self.result.append("%s: " % key)
             self.result.append("%s\n" % value)
@@ -56,6 +60,8 @@ class ReporterJson(Reporter):
         self.result[section_name] = self.current_section
 
     def add_value(self, key, value):
+        if isinstance(value, set):
+            vaule = list(value)
         self.current_section[key] = value
         pass
 
@@ -135,3 +141,4 @@ def register_commands(subparsers):
     parser.add_argument("-o", "--output", help="save the output to a file")
     parser.add_argument("layername", help="the layer name to inspect")
     parser.set_defaults(func=inspect, parserecipes=True)
+
