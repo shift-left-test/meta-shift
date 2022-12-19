@@ -38,6 +38,10 @@ class Reporter:
             self.result.append("%s:\n" % key)
             for v_value in sorted(value):
                 self.result.append("    %s\n" % v_value)
+        elif isinstance(value, set):
+            self.result.append("%s:\n" % key)
+            for v_value in sorted(list(value)):
+                self.result.append("    %s\n" % v_value)
         else:
             self.result.append("%s: " % key)
             self.result.append("%s\n" % value)
@@ -57,6 +61,8 @@ class ReporterJson(Reporter):
         self.result[section_name] = self.current_section
 
     def add_value(self, key, value):
+        if isinstance(value, set):
+            vaule = list(value)
         self.current_section[key] = value
         pass
 
