@@ -9,6 +9,6 @@
 *  
 
 
-/wip
+/draft
 /label ~enhancement
 /assign @sunggon82.kim
