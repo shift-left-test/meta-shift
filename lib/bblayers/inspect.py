@@ -62,7 +62,7 @@ class ReporterJson(Reporter):
 
     def add_value(self, key, value):
         if isinstance(value, set):
-            vaule = list(value)
+            value = list(value)
         self.current_section[key] = value
         pass
 
