@@ -453,3 +453,23 @@ def shiftutils_get_coverage_info(data, coverage_file) :
 def shiftutils_get_branch_coverage_option(data, tool) :
     flag = 1 if bb.utils.to_boolean(data.getVar("SHIFT_COVERAGE_BRANCH", True)) else 0
     return "--rc {}_branch_coverage={}".format(tool, flag)
+
+def del_stamp(taskname, d):
+    stamp = d.getVar('STAMP')
+    if not stamp:
+        return
+
+    taskflagname = taskname
+    if taskname.endswith("_setscene"):
+        taskflagname = taskname.replace("_setscene", "")
+
+    file_name = d.getVar('BB_FILENAME')
+    extrainfo = d.getVarFlag(taskflagname, 'stamp-extra-info')  or ""
+
+    stamp = bb.parse.siggen.stampfile(stamp, file_name, taskname, extrainfo)
+
+    stampdir = os.path.dirname(stamp)
+    if bb.parse.cached_mtime_noerror(stampdir) == 0:
+        bb.utils.mkdirhier(stampdir)
+
+    bb.utils.remove(stamp)

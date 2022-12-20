@@ -194,7 +194,7 @@ def cpptest_checktest(d):
     # Invalidate the pseudo database and the stamp to keep the build state safe
     if dd.getVar("PSEUDO_LOCALSTATEDIR", True):
         bb.utils.remove(dd.getVar("PSEUDO_LOCALSTATEDIR", True), True)
-    bb.build.del_stamp("do_configure", dd)
+    del_stamp("do_configure", dd)
 
     # Prepare the work directory
     mkdirhier(work_dir, True)
