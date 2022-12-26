@@ -27,7 +27,7 @@ enacttest_npm_install() {
     local ATTEMPTS=0
     local STATUS=-1
     local NPM_INSTALL_ARCH="${@enacttest_get_nodejs_arch(d)}"
-    local NPM_INSTALL_OPTIONS="--arch=${NPM_INSTALL_ARCH} --target_arch=${NPM_INSTALL_ARCH} --without-ssl --insecure --no-optional"
+    local NPM_INSTALL_OPTIONS="--arch=${NPM_INSTALL_ARCH} --target_arch=${NPM_INSTALL_ARCH} --without-ssl --insecure --no-optional --force"
 
     while [ ${STATUS} -ne 0 ]; do
         ATTEMPTS=$(expr ${ATTEMPTS} + 1)
