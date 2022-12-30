@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5 \
 
 SRC_URI = "git://github.com/shift-left-test/sage.git;protocol=https;nobranch=1"
 
-SRCREV = "da5ff53af1b83a7190f91271fad380e720bd939f"
+SRCREV = "9d8ce4d1feaf86e73cfbc664f73db88e5d9928cc"
 
 S = "${WORKDIR}/git"
 
@@ -19,12 +19,14 @@ inherit setuptools
 
 DEPENDS += "\
     ${PYTHON_PN}-texttable \
+    ${PYTHON_PN}-defusedxml \
     duplo \
     metrixpp \
 "
 
 RDEPENDS_${PN} += "\
     ${PYTHON_PN}-texttable \
+    ${PYTHON_PN}-defusedxml \
 "
 
 do_install_append_class-native() {
