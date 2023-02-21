@@ -60,10 +60,13 @@ def test_do_checktest_excludes(stdout, report):
     with report.files.conf() as conf:
         conf.set("SHIFT_CHECKTEST_SEED", "1234")
         conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
-        conf.set("SHIFT_CHECKTEST_EXCLUDES", "minus.cpp")
+        conf.set("SHIFT_CHECKTEST_EXCLUDES", "plus.cpp minus/minus.cpp")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
+        assert o.stdout.contains("exclude: minus/minus.cpp")
+        assert o.stdout.contains("Mutation Coverage Report")
         assert not o.stdout.contains("cmake-project/1.0.0-r0/git/minus/minus.cpp,minus,30,12,30,13,*")
+        assert not o.stdout.contains("exclude: plus.cpp")
 
 
 def test_do_checktest_extensions(stdout, report):
@@ -186,3 +189,4 @@ def test_do_test_suppress_failures(test_build):
         conf.set("SHIFT_TEST_SUPPRESS_FAILURES", "0")
         o = test_build.shell.execute("bitbake cmake-project -c test")
         assert o.returncode != 0
+
