@@ -48,17 +48,20 @@ def find_files(directory, pattern):
 
 
 def replace_files(files, pattern, repl):
-    import fileinput
+    import io
     import re
     for filename in files:
         debug("Replacing contents: %s" % filename)
-        for line in fileinput.input(filename, inplace=True):
-            print(re.sub(pattern, repl, line).rstrip())
+        with io.open(filename, "r+", encoding="utf-8", errors="replace") as f:
+            data = f.read()
+            f.seek(0)
+            f.write(re.sub(pattern, repl, data))
+            f.truncate()
 
 
 def readlines(path):
     import io
-    with io.open(path, "r", encoding="utf-8") as f:
+    with io.open(path, "r", encoding="utf-8", errors="replace") as f:
         for line in f.read().splitlines():
             yield line
 
