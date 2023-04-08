@@ -5,7 +5,7 @@ To reach the latter goal it was written in C."
 
 HOMEPAGE = "https://metacpan.org/pod/JSON::XS"
 SECTION = "libs"
-LICENSE = "Artistic-1.0 | GPL-1.0+"
+LICENSE = "Artistic-1.0 | GPL-1.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=043dba8b278e1db1b0ef93f30140b02b"
 
 DEPENDS += "perl libcanary-stability-perl libcommon-sense-perl libtypes-serialiser-perl"
