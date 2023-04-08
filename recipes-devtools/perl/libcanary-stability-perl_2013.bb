@@ -4,7 +4,7 @@ It's not, at this stage, meant as a tool for other module authors, although in p
 
 HOMEPAGE = "https://metacpan.org/pod/Canary::Stability"
 SECTION = "libs"
-LICENSE = "Artistic-1.0 | GPL-1.0+"
+LICENSE = "Artistic-1.0 | GPL-1.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=043dba8b278e1db1b0ef93f30140b02b"
 
 DEPENDS += "perl"

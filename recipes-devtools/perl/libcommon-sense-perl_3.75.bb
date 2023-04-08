@@ -4,11 +4,11 @@ as defined by two typical (or not so typical - use your common sense) specimens 
 In fact, after working out details on which warnings and strict modes to enable and make fatal, \
 we found that we (and our code written so far, and others) fully agree on every option, \
 even though we never used warnings before, \
-so it seems this module indeed reflects a "common" sense among some long-time Perl coders."
+so it seems this module indeed reflects a 'common' sense among some long-time Perl coders."
 
 HOMEPAGE = "https://metacpan.org/pod/common::sense"
 SECTION = "libs"
-LICENSE = "Artistic-1.0 | GPL-1.0+"
+LICENSE = "Artistic-1.0 | GPL-1.0-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=043dba8b278e1db1b0ef93f30140b02b"
 
 DEPENDS += "perl"
