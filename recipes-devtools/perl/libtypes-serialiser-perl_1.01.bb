@@ -8,7 +8,7 @@ SECTION = "libs"
 LICENSE = "Artistic-1.0 | GPL-1.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=043dba8b278e1db1b0ef93f30140b02b"
 
-DEPENDS += "perl libcommon-sense-perl"
+DEPENDS += "perl libcommon-sense-perl-native"
 
 SRC_URI = "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/Types-Serialiser-${PV}.tar.gz"
 
