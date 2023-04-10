@@ -8,7 +8,7 @@ SECTION = "libs"
 LICENSE = "Artistic-1.0 | GPL-1.0+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=043dba8b278e1db1b0ef93f30140b02b"
 
-DEPENDS += "perl libcanary-stability-perl libcommon-sense-perl libtypes-serialiser-perl libcanary-stability-perl-native"
+DEPENDS += "perl libcanary-stability-perl-native libcommon-sense-perl-native libtypes-serialiser-perl-native"
 
 SRC_URI = "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-${PV}.tar.gz"
 
