@@ -21,7 +21,7 @@ python checkcacheinternal() {
                 ud = self.ud[u]
                 ud.setup_localpath(self.d)
                 # Check if the source tarball and the stamp exist
-                if os.path.exists(ud.localpath) and os.path.exists(ud.donestamp):
+                if os.path.exists(ud.localpath) and (not ud.needdonestamp or os.path.exists(ud.donestamp)):
                     continue
                 mirrors = mirror_from_string(self.d.getVar("PREMIRRORS", True))
                 ret = bb.fetch2.try_mirrors(self, self.d, ud, mirrors, True)
@@ -41,3 +41,4 @@ python checkcacheinternal() {
 SSTATEPOSTINSTFUNCS_append = " checkcacheinternal"
 sstate_install[vardepsexclude] += "checkcacheinternal"
 SSTATEPOSTINSTFUNCS[vardepvalueexclude] .= "| checkcacheinternal"
+
