@@ -16,6 +16,12 @@ DEPENDS:prepend:class-target = "\
     sage-native \
     "
 
+# Coverage flag causes the binary to store the absolute path to the gcda file, resulting in a 'buildpaths' QA Issue.
+python do_package_qa:prepend() {
+    for package in set((d.getVar('PACKAGES') or '').split()):
+        d.appendVar("INSANE_SKIP:%s" % package, " buildpaths")
+}
+
 def cpptest_checkcode(d):
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
