@@ -18,7 +18,7 @@ DEPENDS:prepend:class-target = "\
 
 # Coverage flag causes the binary to store the absolute path to the gcda file, resulting in a 'buildpaths' QA Issue.
 python do_package_qa:prepend() {
-    for package in set((d.getVar('PACKAGES') or '').split()):
+    for package in set((d.getVar('PACKAGES', True) or '').split()):
         d.appendVar("INSANE_SKIP:%s" % package, " buildpaths")
 }
 
