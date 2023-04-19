@@ -16,6 +16,12 @@ DEPENDS_prepend_class-target = "\
     oelint-adv-native \
     "
 
+# Coverage flag causes the binary to store the absolute path to the gcda file, resulting in a 'buildpaths' QA Issue.
+python do_package_qa_prepend() {
+    for package in set((d.getVar('PACKAGES', True) or '').split()):
+        d.appendVar("INSANE_SKIP_%s" % package, " buildpaths")
+}
+
 addtask checkcode after do_compile
 do_checkcode[nostamp] = "1"
 do_checkcode[doc] = "Runs static analysis for the target"
