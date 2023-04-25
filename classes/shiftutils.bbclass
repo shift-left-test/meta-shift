@@ -182,11 +182,6 @@ def shiftutils_qemu_run_cmd(data):
             sysroot_dir + libdir,
             sysroot_dir + base_libdir
         ]
-        sysroot_destdir = data.getVar('SYSROOT_DESTDIR', True)
-
-        if sysroot_destdir:
-            library_paths.append(sysroot_destdir + libdir)
-            library_paths.append(sysroot_destdir + base_libdir)
 
         import string
         qemu_binary = qemu_target_binary(data)
