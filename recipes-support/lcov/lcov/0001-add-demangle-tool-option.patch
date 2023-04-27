@@ -1,5 +1,5 @@
 diff --git a/bin/genhtml b/bin/genhtml
-index b86102f..17cff16 100755
+index 2352300..d430467 100755
 --- a/bin/genhtml
 +++ b/bin/genhtml
 @@ -284,6 +284,7 @@ our $html_epilog;	# Actual HTML epilog
@@ -10,14 +10,14 @@ index b86102f..17cff16 100755
  our @opt_ignore_errors;	# Ignore certain error classes during processing
  our @ignore;
  our $opt_config_file;	# User-specified configuration file location
-@@ -419,6 +420,7 @@ if (!GetOptions("output-directory|o=s"	=> \$output_directory,
- 		"sort"			=> \$sort,
- 		"no-sort"		=> \$no_sort,
- 		"demangle-cpp"		=> \$demangle_cpp,
-+		"demangle-tool=s"	=> \$cppfilt,
- 		"ignore-errors=s"	=> \@opt_ignore_errors,
- 		"config-file=s"		=> \$opt_config_file,
- 		"rc=s%"			=> \%opt_rc,
+@@ -376,6 +377,7 @@ if ($config || %opt_rc)
+ 		"genhtml_charset"		=> \$charset,
+ 		"genhtml_desc_html"		=> \$rc_desc_html,
+ 		"genhtml_demangle_cpp"		=> \$demangle_cpp,
++		"genhtml_demangle_cpp_tool"	=> \$cppfilt,
+ 		"genhtml_missed"		=> \$opt_missed,
+ 		"lcov_function_coverage"	=> \$lcov_func_coverage,
+ 		"lcov_branch_coverage"		=> \$lcov_branch_coverage,
 @@ -544,7 +546,7 @@ if ($frames)
  # Ensure that the c++filt tool is available when using --demangle-cpp
  if ($demangle_cpp)
@@ -27,15 +27,7 @@ index b86102f..17cff16 100755
  		die("ERROR: could not find c++filt tool needed for ".
  		    "--demangle-cpp\n");
  	}
-@@ -624,6 +626,7 @@ HTML output:
-       --html-gzip                   Use gzip to compress HTML
-       --(no-)sort                   Enable (disable) sorted coverage views
-       --demangle-cpp                Demangle C++ function names
-+	  --demangle-tool				Demangling executable name
-       --precision NUM               Set precision of coverage rate
-       --missed                      Show miss counts as negative numbers
- 
-@@ -5258,7 +5261,7 @@ sub demangle_list($)
+@@ -5258,7 +5260,7 @@ sub demangle_list($)
  	}
  
  	# Build translation hash from c++filt output
