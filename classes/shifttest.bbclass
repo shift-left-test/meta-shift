@@ -180,8 +180,8 @@ def shifttest_coverage(d):
         save_metadata(d)
 
         check_call(["genhtml", LCOV_DATAFILE,
-                    "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
                     "--demangle-cpp",
+                    "--rc", "genhtml_demangle_cpp_tool=%s" % d.expand("${TARGET_PREFIX}c++filt"),
                     "--output-directory", report_dir,
                     "--ignore-errors", "source",
                     shiftutils_get_branch_coverage_option(d, "genhtml")], d)
