@@ -43,8 +43,8 @@ REPOS = [
     Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "6.4"),
     Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
-    Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", "master"),
-    Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", "master"),
+    Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
+    Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", None),
 ]
 
 
