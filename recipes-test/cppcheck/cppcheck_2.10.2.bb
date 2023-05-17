@@ -7,16 +7,17 @@ SECTION = "devel"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 
-SRC_URI = "git://github.com/danmar/cppcheck.git;protocol=https;nobranch=1 \
-           file://0001-Makefile-fixes.patch"
+SRC_URI = "git://github.com/danmar/cppcheck.git;protocol=https;branch=2.10.x \
+    file://0001-cleaned-up-includes-based-on-include-what-you-use-45.patch \
+"
 
-SRCREV = "aca3f6fefa6d6b8c5915f15035c7e5908961f6f1"
+SRCREV = "5c2d64ec4809fcba712b1114cf0462962924b903"
 
 S = "${WORKDIR}/git"
 
 inherit pkgconfig
 
-PACKAGECONFIG ??= "rules"
+PACKAGECONFIG ??= ""
 PACKAGECONFIG[rules] = "HAVE_RULES=yes,,libpcre"
 PACKAGECONFIG[z3] = "USE_Z3=yes,,z3"
 
