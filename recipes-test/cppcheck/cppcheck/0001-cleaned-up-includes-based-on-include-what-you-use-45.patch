@@ -7,8 +7,9 @@ Subject: [PATCH] cleaned up includes based on `include-what-you-use` (#4599)
 MJ: backported only the change for lib/mathlib.cpp which is necessary
     to fix build with gcc-13.
 
-Upstream-Status: Backport [https://github.com/danmar/cppcheck/commit/bd1ae69b00fa0be4df7ccea91604707e70129c6c]
 ---
+Upstream-Status: Backport [https://github.com/danmar/cppcheck/commit/bd1ae69b00fa0be4df7ccea91604707e70129c6c]
+
  lib/mathlib.cpp | 1 +
  1 file changed, 1 insertion(+)
 
