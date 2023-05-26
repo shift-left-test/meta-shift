@@ -1,0 +1,69 @@
+From b99ee6a049636767ba7260a07cc858993bf46ff6 Mon Sep 17 00:00:00 2001
+From: firewave <firewave@users.noreply.github.com>
+Date: Wed, 22 Mar 2023 14:37:53 +0100
+Subject: [PATCH] added CMake option `DISABLE_DMAKE` to disable `run-dmake`
+ dependencies
+
+---
+Upstream-Status: Backport [https://github.com/danmar/cppcheck/commit/5ec0ad6bed8d6ec04dcf6c6c658a1f27c84a8a51 one part of https://github.com/danmar/cppcheck/pull/4910]
+
+ cli/CMakeLists.txt    | 4 +++-
+ cmake/options.cmake   | 1 +
+ cmake/printInfo.cmake | 1 +
+ test/CMakeLists.txt   | 4 +++-
+ 4 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/cli/CMakeLists.txt b/cli/CMakeLists.txt
+index b4f83e4df..e756a7ade 100644
+--- a/cli/CMakeLists.txt
++++ b/cli/CMakeLists.txt
+@@ -61,7 +61,9 @@ endif()
+ add_dependencies(cppcheck copy_cfg)
+ add_dependencies(cppcheck copy_addons)
+ add_dependencies(cppcheck copy_platforms)
+-add_dependencies(cppcheck run-dmake)
++if (NOT DISABLE_DMAKE)
++    add_dependencies(cppcheck run-dmake)
++endif()
+ 
+ install(TARGETS cppcheck
+     RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+diff --git a/cmake/options.cmake b/cmake/options.cmake
+index e9cba1f5d..fb42401e6 100644
+--- a/cmake/options.cmake
++++ b/cmake/options.cmake
+@@ -38,6 +38,7 @@ endif()
+ option(BUILD_TESTS          "Build tests"                                                   OFF)
+ option(REGISTER_TESTS       "Register tests in CTest"                                       ON)
+ option(ENABLE_CHECK_INTERNAL "Enable internal checks"                                       OFF)
++option(DISABLE_DMAKE        "Disable run-dmake dependencies"                                OFF)
+ option(ENABLE_OSS_FUZZ      "Enable the OSS-Fuzz related targets"                           ON)
+ 
+ option(BUILD_GUI            "Build the qt application"                                      OFF)
+diff --git a/cmake/printInfo.cmake b/cmake/printInfo.cmake
+index 716db34bb..aa097193f 100644
+--- a/cmake/printInfo.cmake
++++ b/cmake/printInfo.cmake
+@@ -45,6 +45,7 @@ if(BUILD_TESTS)
+     message( STATUS "REGISTER_TESTS =        ${REGISTER_TESTS}" )
+ endif()
+ message( STATUS "ENABLE_CHECK_INTERNAL = ${ENABLE_CHECK_INTERNAL}" )
++message( STATUS "DISABLE_DMAKE =         ${DISABLE_DMAKE}" )
+ message( STATUS "ENABLE_OSS_FUZZ =       ${ENABLE_OSS_FUZZ}" )
+ message( STATUS )
+ message( STATUS "BUILD_GUI =             ${BUILD_GUI}" )
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index ab6bcf860..164b72bf6 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -43,7 +43,9 @@ if (BUILD_TESTS)
+     add_dependencies(testrunner copy_cfg)
+     add_dependencies(testrunner copy_addons)
+     add_dependencies(testrunner copy_platforms)
+-    add_dependencies(testrunner run-dmake)
++    if (NOT DISABLE_DMAKE)
++        add_dependencies(testrunner run-dmake)
++    endif()
+ 
+     if (LIBXML2_XMLLINT_EXECUTABLE)
+         # TODO: run the CMake implementation of the tests
