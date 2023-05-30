@@ -20,8 +20,20 @@ SRCREV = "5c2d64ec4809fcba712b1114cf0462962924b903"
 
 S = "${WORKDIR}/git"
 
-inherit cmake
+inherit pkgconfig
 
-EXTRA_OECMAKE += "-DFILESDIR=${bindir}"
+PACKAGECONFIG ??= ""
+PACKAGECONFIG[rules] = "HAVE_RULES=yes,,libpcre"
+PACKAGECONFIG[z3] = "USE_Z3=yes,,z3"
+
+do_compile() {
+    oe_runmake ${PACKAGECONFIG_CONFARGS}
+}
+
+do_install() {
+    oe_runmake install DESTDIR=${D} FILESDIR=${bindir} PREFIX=${prefix}
+}
+
+FILES:${PN} = "${bindir} ${datadir}"
 
 BBCLASSEXTEND = "native nativesdk"
