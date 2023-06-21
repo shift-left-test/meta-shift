@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/oelint_parser/parser.py b/oelint_parser/parser.py
 index a21d1e8..11252a7 100644
 --- a/oelint_parser/parser.py

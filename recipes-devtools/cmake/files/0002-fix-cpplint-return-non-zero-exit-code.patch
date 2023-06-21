@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/Source/cmcmd.cxx b/Source/cmcmd.cxx
 index 500f4874..2435d4db 100644
 --- a/Source/cmcmd.cxx

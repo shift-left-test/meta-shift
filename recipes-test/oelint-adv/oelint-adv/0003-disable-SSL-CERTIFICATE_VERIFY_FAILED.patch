@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/oelint_adv/rule_base/rule_var_homepageping.py b/oelint_adv/rule_base/rule_var_homepageping.py
 index 79869b5..be50b14 100644
 --- a/oelint_adv/rule_base/rule_var_homepageping.py

@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/src/FileTypeFactory.cpp b/src/FileTypeFactory.cpp
 index 2088562..759f5c4 100644
 --- a/src/FileTypeFactory.cpp

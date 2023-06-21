@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/metrixpp/ext/std/tools/collect.py b/metrixpp/ext/std/tools/collect.py
 index 3c4bd9a..73ecfb5 100644
 --- a/metrixpp/ext/std/tools/collect.py
