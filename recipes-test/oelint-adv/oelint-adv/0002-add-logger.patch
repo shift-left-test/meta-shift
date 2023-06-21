@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/oelint_adv/__main__.py b/oelint_adv/__main__.py
 index d4c9b0a..b59460d 100644
 --- a/oelint_adv/__main__.py

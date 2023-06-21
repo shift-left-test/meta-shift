@@ -4,6 +4,8 @@ Date: Sun, 21 Feb 2021 12:15:32 +0000
 Subject: [PATCH] #269 Fixes an issue that clang-tidy causes compilation
 
 ---
+Upstream-Status: Pending
+
  Source/cmcmd.cxx | 6 ++++++
  1 file changed, 6 insertions(+)
 

@@ -1,3 +1,5 @@
+Upstream-Status: Pending
+
 diff --git a/lcov_cobertura/lcov_cobertura.py b/lcov_cobertura/lcov_cobertura.py
 index 379e405..f0a90d2 100755
 --- a/lcov_cobertura/lcov_cobertura.py
