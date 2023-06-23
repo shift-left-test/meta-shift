@@ -12,11 +12,6 @@ import shutil
 
 BRANCH = "master"
 
-# This is a workaround to avoid the following error in python 3.8
-# "libgcc_s.so.1 must be installed for pthread_cancel to work"
-# https://stackoverflow.com/questions/64797838/libgcc-s-so-1-must-be-installed-for-pthread-cancel-to-work
-import ctypes
-libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
 @pytest.fixture(scope="session")
 def release_build(request, tmpdir_factory):
