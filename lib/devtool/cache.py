@@ -124,6 +124,8 @@ def parse(args, basepath):
 
     try:
         tinfoil = setup_tinfoil(config_only=False, basepath=basepath)
+        # Ignore unnecessary qa error messages
+        tinfoil.config_data.delVar("ERROR_QA")
         tasks = []
         recipes = []
         for tid in tids:
@@ -173,7 +175,7 @@ def make_plain_report(args, found_shared_state, missed_shared_state,
             ret += newline("Found  : %d (-%%)" % (len(found)))
             ret += newline("Missed : %d (-%%)" % (len(missed)))
         ret += newline()
-    
+
     return ret
 
 
