@@ -177,6 +177,9 @@ def cpptest_coverage(d):
 
 
 def cpptest_checktest(d):
+    if not bb.utils.to_boolean(d.getVar("SHIFT_CHECKTEST_ENABLED", True)):
+        return
+
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
