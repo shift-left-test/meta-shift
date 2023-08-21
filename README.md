@@ -106,6 +106,7 @@ These options can be used by adding to *conf/local.conf*.
 * **SHIFT_CHECKCODE_EXCLUDES**: Paths to exclude from the static analysis
 * **SHIFT_CHECKCODE_TOOLS**: Indicates which static analysis tools to use (cppcheck, cpplint, and clang-tidy)
 * **SHIFT_CHECKRECIPE_SUPPRESS_RULES**: Exclude rules from bitbake script analysis (A list of rules can be found at https://github.com/priv-kweihmann/oelint-adv)
+* **SHIFT_CHECKTEST_ENABLED**: Enables mutation testing (disabled by default)
 * **SHIFT_CHECKTEST_EXCLUDES**: Excludes paths from mutation testing
 * **SHIFT_CHECKTEST_EXTENSIONS**: Extensions of source files to be mutated
 * **SHIFT_CHECKTEST_GENERATOR**: Set the mutation generator (random, uniform, or weighted)
