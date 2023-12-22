@@ -2,8 +2,8 @@ inherit shifttest
 
 
 DEPENDS:prepend:class-target = "\
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', d.expand('clang-cross-${TUNE_ARCH}'), '', d)} \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', bb.utils.contains('SHIFT_CHECKTEST_ENABLED', '1', 'sentinel-native', '', d), '', d)} \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', bb.utils.contains('SHIFT_CHECKCODE_TOOLS', 'clang-tidy', d.expand('clang-cross-${TUNE_ARCH}'), '', d), '', d)} \
     compiledb-native \
     coreutils-native \
     cppcheck-native \
