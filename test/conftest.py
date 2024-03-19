@@ -10,7 +10,7 @@ import pytest
 import shutil
 
 
-BRANCH = "master"
+BRANCH = "scarthgap"
 
 
 @pytest.fixture(scope="session")
