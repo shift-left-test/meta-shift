@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=df949e8c96ecf1483905048fb77276b5 \
 
 SRC_URI = "git://github.com/shift-left-test/sage.git;protocol=https;nobranch=1"
 
-SRCREV = "3a8110e0a5e1c994f9c8aefbd39a96c36fb4c435"
+SRCREV = "55a7d616729c1245863d17933506352e3319b626"
 
 S = "${WORKDIR}/git"
 
