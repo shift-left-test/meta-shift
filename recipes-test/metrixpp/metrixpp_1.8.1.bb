@@ -7,15 +7,20 @@ SECTION = "devel"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2eb11559d123a93fbde4d5567e366e2d"
 
-SRC_URI = "git://github.com/metrixplusplus/metrixplusplus.git;protocol=https;nobranch=1 \
-           file://remove-python-requires.patch \
-           file://fix-to-ignore-errors-when-opening-file.patch"
+SRC_URI = "git://github.com/metrixplusplus/metrixplusplus.git;protocol=https;nobranch=1"
 
-SRCREV = "8b1a4b956507f0097d7761ddad02df897492fecc"
+SRCREV = "ac9a697381d2740165d47526b82bb4e6aa8def48"
 
 S = "${WORKDIR}/git"
 
 inherit setuptools3
 
-BBCLASSEXTEND = "native nativesdk"
+DEPENDS += "\
+    ${PYTHON_PN}-pytablewriter \
+"
 
+RDEPENDS:${PN} += "\
+    ${PYTHON_PN}-pytablewriter \
+"
+
+BBCLASSEXTEND = "native nativesdk"
