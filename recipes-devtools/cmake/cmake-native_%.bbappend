@@ -11,6 +11,6 @@ SRC_URI:append = " \
 
 do_install:append() {
     install -d ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules
-    install -m 644 ${WORKDIR}/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
-    install -m 644 ${WORKDIR}/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
+    install -m 644 ${UNPACKDIR}/CMakeUtils.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
+    install -m 644 ${UNPACKDIR}/FindGMock.cmake ${D}${datadir}/cmake-${CMAKE_MAJOR_VERSION}/Modules/
 }
