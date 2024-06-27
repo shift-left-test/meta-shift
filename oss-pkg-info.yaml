@@ -1,0 +1,11 @@
+Open Source Software Package:
+- name: oelint-adv
+  version: 3.20.2
+  source: https://github.com/priv-kweihmann/oelint-adv
+  license : BSD-2-Clause
+  copyright : Copyright (c) 2019, Konrad Weihmann
+- name: oelint-parser
+  version: 2.10.0
+  source: https://github.com/priv-kweihmann/oelint-parser
+  license : BSD-2-Clause
+  copyright : Copyright (c) 2020, Konrad Weihmann
