@@ -136,3 +136,4 @@ This project is open to any patches. The patches can be submitted as Github pull
 ## License
 
 This project source code is available under MIT license. See [LICENSE](LICENSE).
+If individual files are licensed under different terms, the terms and conditions can be found in the individual file or file header.
