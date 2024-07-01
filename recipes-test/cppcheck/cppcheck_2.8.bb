@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (c) 2019, Konrad Weihmann
+# SPDX-License-Identifier: BSD-2-Clause
+
 SUMMARY = "cppcheck - Static code analyzer for C/C++"
 DESCRIPTION = "Cppcheck is a static analysis tool for C/C++ code"
 AUTHOR = "The cppcheck team"
@@ -31,3 +34,4 @@ do_install() {
 FILES_${PN} = "${bindir} ${datadir}"
 
 BBCLASSEXTEND = "native nativesdk"
+
