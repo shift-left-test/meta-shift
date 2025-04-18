@@ -19,8 +19,8 @@ def release_build(request, tmpdir_factory):
     build_dir = str(tmpdir_factory.mktemp("build"))
 
     def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
+        shutil.rmtree(repo_dir, ignore_errors=True)
+        shutil.rmtree(build_dir, ignore_errors=True)
 
     request.addfinalizer(cleanup)
     return Environment(branch=BRANCH, conf_file="conf/release.conf", repo_dir=repo_dir, build_dir=build_dir)
@@ -32,8 +32,8 @@ def test_build(request, tmpdir_factory):
     build_dir = str(tmpdir_factory.mktemp("build"))
 
     def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
+        shutil.rmtree(repo_dir, ignore_errors=True)
+        shutil.rmtree(build_dir, ignore_errors=True)
 
     request.addfinalizer(cleanup)
     return Environment(branch=BRANCH, conf_file="conf/test.conf", repo_dir=repo_dir, build_dir=build_dir)
@@ -45,8 +45,8 @@ def report_build(request, tmpdir_factory):
     build_dir = str(tmpdir_factory.mktemp("build"))
 
     def cleanup():
-        shutil.rmtree(repo_dir)
-        shutil.rmtree(build_dir)
+        shutil.rmtree(repo_dir, ignore_errors=True)
+        shutil.rmtree(build_dir, ignore_errors=True)
 
     request.addfinalizer(cleanup)
     return Environment(branch=BRANCH, conf_file="conf/report.conf", repo_dir=repo_dir, build_dir=build_dir)
