@@ -12,7 +12,7 @@ PYPI_PACKAGE = "tabledata"
 SRC_URI[md5sum] = "579c4e7454a837d252d4977b73556aae"
 SRC_URI[sha256sum] = "c90daaba9a408e4397934b3ff2f6c06797d5289676420bf520c741ad43e6ff91"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 DEPENDS += "\
     ${PYTHON_PN}-dataproperty \

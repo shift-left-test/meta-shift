@@ -12,6 +12,6 @@ PYPI_PACKAGE = "shutilwhich"
 SRC_URI[md5sum] = "915947c5cdae7afd748ac715ee547adb"
 SRC_URI[sha256sum] = "db1f39c6461e42f630fa617bb8c79090f7711c9ca493e615e43d0610ecb64dc6"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 BBCLASSEXTEND = "native nativesdk"
