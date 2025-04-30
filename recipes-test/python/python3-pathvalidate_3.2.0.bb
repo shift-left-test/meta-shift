@@ -12,6 +12,6 @@ PYPI_PACKAGE = "pathvalidate"
 SRC_URI[md5sum] = "2a76cbe4e08f58087f418d150a1461b5"
 SRC_URI[sha256sum] = "5e8378cf6712bff67fbe7a8307d99fa8c1a0cb28aa477056f8fc374f0dff24ad"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 BBCLASSEXTEND = "native nativesdk"

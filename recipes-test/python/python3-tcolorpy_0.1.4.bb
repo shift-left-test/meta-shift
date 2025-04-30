@@ -12,6 +12,6 @@ PYPI_PACKAGE = "tcolorpy"
 SRC_URI[md5sum] = "ca571cccff812ecdc0c73968c9d24ebf"
 SRC_URI[sha256sum] = "f0dceb1cb95e554cee63024b3cd2fd8d4628c568773de2d1e6b4f0478461901c"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 BBCLASSEXTEND = "native nativesdk"
