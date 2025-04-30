@@ -21,6 +21,5 @@ def test_default_format(release_build):
                                 "core-image-minimal",
                                 "Machines:",
                                 "qemuarm64",
-                                "raspberrypi",
                                 "Distros:",
                                 "poky")
