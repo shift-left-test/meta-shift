@@ -15,7 +15,7 @@ SRC_URI += "file://0001-add-demangle-tool-option.patch \
 SRC_URI[md5sum] = "ca3833facd11177275a2176d58dce7c2"
 SRC_URI[sha256sum] = "c6ce347bf3ee67f8d5d020cd662626a3594cf2be727cc634aa0d11fa3f7f1374"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 RPROVIDES:${PN} = "lcov_cobertura"
 

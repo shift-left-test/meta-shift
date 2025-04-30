@@ -12,7 +12,7 @@ PYPI_PACKAGE = "pytablewriter"
 SRC_URI[md5sum] = "4e3d421d026f30fadec4ac1670e524ee"
 SRC_URI[sha256sum] = "0204a4bb684a22140d640f2599f09e137bcdc18b3dd49426f4a555016e246b46"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 DEPENDS += "\
     ${PYTHON_PN}-dataproperty \
