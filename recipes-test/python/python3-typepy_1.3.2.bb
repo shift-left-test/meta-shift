@@ -12,7 +12,7 @@ PYPI_PACKAGE = "typepy"
 SRC_URI[md5sum] = "2637fdf609b8a7b9b8ec722852efc706"
 SRC_URI[sha256sum] = "b69fd48b9f50cdb3809906eef36b855b3134ff66c8893a4f8580abddb0b39517"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 DEPENDS += "\
     ${PYTHON_PN}-dateutil \
