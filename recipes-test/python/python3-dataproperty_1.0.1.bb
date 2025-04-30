@@ -12,7 +12,7 @@ PYPI_PACKAGE = "DataProperty"
 SRC_URI[md5sum] = "aca50cd5f543b7831d8a48ab1c02a152"
 SRC_URI[sha256sum] = "723e5729fa6e885e127a771a983ee1e0e34bb141aca4ffe1f0bfa7cde34650a4"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 DEPENDS += "\
     ${PYTHON_PN}-mbstrdecoder \
