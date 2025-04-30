@@ -14,6 +14,6 @@ SRC_URI += "file://0001-compatability-for-low-versions-of-setuptools.patch"
 SRC_URI[md5sum] = "8b855bb4aa275a48235257a3b2d048b3"
 SRC_URI[sha256sum] = "dc6f017e49ce2d0fe30ad9f5206da9cd13ded073d365688c9fda525354e8c373"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 BBCLASSEXTEND = "native nativesdk"
