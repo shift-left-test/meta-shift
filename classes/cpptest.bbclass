@@ -16,6 +16,18 @@ DEPENDS:prepend:class-target = "\
     sage-native \
     "
 
+# Fix an issue caused by the '-ffile-prefix-map' option, which modifies source paths in .gcno files, leading to lcov failures
+DEBUG_PREFIX_MAP:class-target := "-fcanon-prefix-map \
+-fmacro-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
+-fdebug-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
+-fmacro-prefix-map=${B}=${TARGET_DBGSRC_DIR} \
+-fdebug-prefix-map=${B}=${TARGET_DBGSRC_DIR} \
+-fdebug-prefix-map=${STAGING_DIR_HOST}= \
+-fmacro-prefix-map=${STAGING_DIR_HOST}= \
+-fdebug-prefix-map=${STAGING_DIR_NATIVE}= \
+-fmacro-prefix-map=${STAGING_DIR_NATIVE}= \
+"
+
 # Coverage flag causes the binary to store the absolute path to the gcda file, resulting in a 'buildpaths' QA Issue.
 python do_package_qa:prepend() {
     for package in set((d.getVar('PACKAGES', True) or '').split()):
