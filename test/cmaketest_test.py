@@ -60,13 +60,13 @@ def test_do_checktest_excludes(stdout, report):
     with report.files.conf() as conf:
         conf.set("SHIFT_CHECKTEST_SEED", "1234")
         conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
-        conf.set("SHIFT_CHECKTEST_EXCLUDES", "plus.cpp minus/minus.cpp")
+        conf.set("SHIFT_CHECKTEST_EXCLUDES", "minus.cpp plus/plus.cpp")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stdout.contains("exclude: minus/minus.cpp")
+        assert o.stdout.contains("exclude: plus/plus.cpp")
         assert o.stdout.contains("Mutation Coverage Report")
-        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/minus/minus.cpp,minus,30,12,30,13,\*")
-        assert not o.stdout.contains("exclude: plus.cpp")
+        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
+        assert not o.stdout.contains("exclude: minus.cpp")
 
 
 def test_do_checktest_extensions(stdout, report):
@@ -76,7 +76,7 @@ def test_do_checktest_extensions(stdout, report):
         conf.set("SHIFT_CHECKTEST_EXTENSIONS", ".unknown")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/minus/minus.cpp,minus,30,12,30,13,\*")
+        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
 
 
 def test_do_checktest_generator(stdout, report):
@@ -99,11 +99,11 @@ def test_do_checktest_seed(stdout, report):
         conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/minus/minus.cpp,minus,30,12,30,13,\*")
+        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
         assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/program/main.cpp,main,37,39,37,40,\*")
 
         o = report.shell.execute("bitbake cmake-project -c checktestall")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/minus/minus.cpp,minus,30,12,30,13,\*")
+        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
         assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/program/main.cpp,main,37,39,37,40,\*")
 
 
