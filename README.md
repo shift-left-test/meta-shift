@@ -51,7 +51,7 @@ This is a meta layer for the Yocto project. Please find more information about t
 **Mandatory layers**
 
 * meta-oe (meta-openembedded)
-* meta-pyton (meta-openembedded)
+* meta-python (meta-openembedded)
 
 **Optional layers**
 
