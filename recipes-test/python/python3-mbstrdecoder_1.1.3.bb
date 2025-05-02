@@ -12,7 +12,7 @@ PYPI_PACKAGE = "mbstrdecoder"
 SRC_URI[md5sum] = "33522a4bd9217dae46ebd0761e1a1e7c"
 SRC_URI[sha256sum] = "dcfd2c759322eb44fe193a9e0b1b86c5b87f3ec5ea8e1bb43b3e9ae423f1e8fe"
 
-inherit pypi setuptools3
+inherit pypi python_setuptools_build_meta
 
 DEPENDS += "\
     ${PYTHON_PN}-chardet \
