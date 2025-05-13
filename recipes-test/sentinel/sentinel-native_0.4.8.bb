@@ -21,7 +21,7 @@ DEPENDS:class-native += "\
 "
 
 SRC_URI = "git://github.com/shift-left-test/sentinel.git;protocol=https;nobranch=1"
-SRCREV = "30256774b7af2439c364ce3bf0bf3c5b0fd3b92b"
+SRCREV = "a332a9a65cc274ace3ae9516540a2223a550703a"
 
 S = "${WORKDIR}/git"
 
