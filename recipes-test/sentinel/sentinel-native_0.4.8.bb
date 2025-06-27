@@ -23,6 +23,4 @@ DEPENDS:class-native += "\
 SRC_URI = "git://github.com/shift-left-test/sentinel.git;protocol=https;nobranch=1"
 SRCREV = "a332a9a65cc274ace3ae9516540a2223a550703a"
 
-S = "${WORKDIR}/git"
-
 inherit cmake native

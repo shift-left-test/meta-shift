@@ -15,7 +15,7 @@ SRC_URI = "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-${PV}.tar.
 SRC_URI[md5sum] = "5358225ebc9f5b74516d7585ac236086"
 SRC_URI[sha256sum] = "515536f45f2fa1a7e88c8824533758d0121d267ab9cb453a1b5887c8a56b9068"
 
-S = "${WORKDIR}/JSON-XS-${PV}"
+S = "${UNPACKDIR}/JSON-XS-${PV}"
 
 inherit cpan
 

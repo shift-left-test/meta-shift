@@ -12,8 +12,6 @@ SRC_URI = "git://github.com/shift-left-test/sage.git;protocol=https;nobranch=1"
 
 SRCREV = "68213cb738688e9f1f0a91370e341bc68f7195bb"
 
-S = "${WORKDIR}/git"
-
 inherit setuptools3
 
 DEPENDS += "\
@@ -29,4 +27,3 @@ RDEPENDS:${PN} += "\
 "
 
 BBCLASSEXTEND = "native nativesdk"
-

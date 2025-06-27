@@ -14,7 +14,7 @@ SRC_URI = "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/Canary-Stability-$
 SRC_URI[md5sum] = "5368520547521b254317ea0e9b3d23ab"
 SRC_URI[sha256sum] = "a5c91c62cf95fcb868f60eab5c832908f6905221013fea2bce3ff57046d7b6ea"
 
-S = "${WORKDIR}/Canary-Stability-${PV}"
+S = "${UNPACKDIR}/Canary-Stability-${PV}"
 
 inherit cpan
 

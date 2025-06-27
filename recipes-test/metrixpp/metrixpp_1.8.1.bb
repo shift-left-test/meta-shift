@@ -11,8 +11,6 @@ SRC_URI = "git://github.com/metrixplusplus/metrixplusplus.git;protocol=https;nob
 
 SRCREV = "ac9a697381d2740165d47526b82bb4e6aa8def48"
 
-S = "${WORKDIR}/git"
-
 inherit setuptools3
 
 DEPENDS += "\

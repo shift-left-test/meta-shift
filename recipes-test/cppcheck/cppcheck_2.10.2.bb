@@ -21,8 +21,6 @@ SRC_URI = "git://github.com/danmar/cppcheck.git;protocol=https;branch=2.10.x \
 
 SRCREV = "5c2d64ec4809fcba712b1114cf0462962924b903"
 
-S = "${WORKDIR}/git"
-
 inherit pkgconfig
 
 PACKAGECONFIG ??= ""

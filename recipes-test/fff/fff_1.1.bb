@@ -11,8 +11,6 @@ SRC_URI = "git://github.com/meekrosoft/fff.git;protocol=https;nobranch=1"
 
 SRCREV = "7e09f07e5b262b1cc826189dc5057379e40ce886"
 
-S = "${WORKDIR}/git"
-
 ALLOW_EMPTY:${PN} = "1"
 
 FILES:${PN} = "${includedir}"

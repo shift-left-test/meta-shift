@@ -15,7 +15,7 @@ SRC_URI = "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/Types-Serialiser-$
 SRC_URI[md5sum] = "4839af5f3fcbacc3945b0e6f3dc9a018"
 SRC_URI[sha256sum] = "f8c7173b0914d0e3d957282077b366f0c8c70256715eaef3298ff32b92388a80"
 
-S = "${WORKDIR}/Types-Serialiser-${PV}"
+S = "${UNPACKDIR}/Types-Serialiser-${PV}"
 
 inherit cpan
 
