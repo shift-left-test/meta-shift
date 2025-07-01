@@ -65,7 +65,7 @@ def test_do_checktest_excludes(stdout, report):
         o = report.shell.execute("bitbake cmake-project -c checktest")
         assert o.stdout.contains("exclude: plus/plus.cpp")
         assert o.stdout.contains("Mutation Coverage Report")
-        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
+        assert not o.stdout.contains("AOR : plus/plus.cpp (30:12-30:13 -> *)")
         assert not o.stdout.contains("exclude: minus.cpp")
 
 
@@ -76,7 +76,7 @@ def test_do_checktest_extensions(stdout, report):
         conf.set("SHIFT_CHECKTEST_EXTENSIONS", ".unknown")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
+        assert not o.stdout.contains("AOR : plus/plus.cpp (30:12-30:13 -> *)")
 
 
 def test_do_checktest_generator(stdout, report):
@@ -99,12 +99,12 @@ def test_do_checktest_seed(stdout, report):
         conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/program/main.cpp,main,37,39,37,40,\*")
+        assert o.stdout.contains("AOR : plus/plus.cpp (30:12-30:13 -> *)")
+        assert o.stdout.contains("AOR : program/main.cpp (37:39-37:40 -> *)")
 
         o = report.shell.execute("bitbake cmake-project -c checktestall")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/program/main.cpp,main,37,39,37,40,\*")
+        assert o.stdout.contains("AOR : plus/plus.cpp (30:12-30:13 -> *)")
+        assert o.stdout.contains("AOR : program/main.cpp (37:39-37:40 -> *)")
 
 
 def test_do_checktest_verbose(stdout, report):
@@ -189,4 +189,3 @@ def test_do_test_suppress_failures(test_build):
         conf.set("SHIFT_TEST_SUPPRESS_FAILURES", "0")
         o = test_build.shell.execute("bitbake cmake-project -c test")
         assert o.returncode != 0
-
