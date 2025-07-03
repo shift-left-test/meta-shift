@@ -38,7 +38,7 @@ REPOS = [
     Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
     Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", None),
     Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
-    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", "master-next"),
+    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", None),
     Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "dev"),
     Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
