@@ -1,15 +1,18 @@
+From 4ea4e4a17c065739c1680409d06b164f082df31a Mon Sep 17 00:00:00 2001
+From: Sung Gon Kim <sunggon82.kim@lge.com>
+Date: Fri, 29 Aug 2025 16:11:46 +0900
+Subject: [PATCH] Fix CMake configure failure due to minimum version issue
+
 Upstream-Status: Pending
+---
+ CMakeLists.txt |  4 +++-
+ src/Duplo.cpp  | 22 +++++++++++++++++-----
+ 2 files changed, 20 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index aeeea15..4f914e3 100644
+index aeeea15..febbaf2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1,4 +1,4 @@
--cmake_minimum_required(VERSION 3.15.5)
-+cmake_minimum_required(VERSION 3.3.1)
- project(duplo)
- file(GLOB SOURCES src/*.cpp)
- 
 @@ -7,6 +7,8 @@ SET(DUPLO_VERSION "\"v1.0.1\"" CACHE STRING "Duplo version")
  if(MSVC)
  else()
