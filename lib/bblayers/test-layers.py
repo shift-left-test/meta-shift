@@ -21,7 +21,7 @@ def tinfoil_init(instance):
 
 def find_top_directory():
     """
-    Find the parent directory of the poky meta-layer
+    Find the parent directory of the core meta-layer
 
     :return: the base path
     """
