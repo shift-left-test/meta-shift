@@ -12,7 +12,7 @@ def test_default_format(release_build):
                                 "---------------------",
                                 "Machine:",
                                 "Codename:",
-                                "Distro: poky",
+                                "Distro: sample",
                                 "Parallelism: True",
                                 "own-mirrors: ",
                                 "Additional Information",
@@ -22,4 +22,4 @@ def test_default_format(release_build):
                                 "Machines:",
                                 "qemuarm64",
                                 "Distros:",
-                                "poky")
+                                "sample")
