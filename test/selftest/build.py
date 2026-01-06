@@ -30,7 +30,7 @@ class Environment(object):
 
     @property
     def shell(self):
-        f = os.path.join(self.repo_dir, "poky", "oe-init-build-env")
+        f = os.path.join(self.repo_dir, "openembedded-core", "oe-init-build-env")
         assert os.path.exists(f)
         assert wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
         return Shell(f, self.build_dir)

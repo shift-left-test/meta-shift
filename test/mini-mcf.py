@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "master"
+BRANCH = "whinlatter"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,16 +31,15 @@ logger = logging.getLogger(__name__)
 Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "branch"])
 
 REPOS = [
-    Repo("poky", "https://git.yoctoproject.org/git/poky.git", "poky", "meta", None),
-    Repo("meta-poky", "https://git.yoctoproject.org/git/poky.git", "poky", "meta-poky", None),
-    Repo("meta-yocto-bsp", "https://git.yoctoproject.org/git/poky.git", "poky", "meta-yocto-bsp", None),
+    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", "2.16"),
+    Repo("openembedded-core", "https://github.com/openembedded/openembedded-core.git", "openembedded-core", "meta", None),
     Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
     Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
     Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", None),
     Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
-    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", None),
-    Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "dev"),
-    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
+    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", "master"),
+    Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "6.9"),
+    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", "master"),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
     Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", None),
@@ -93,14 +92,14 @@ def download_repos(args):
 def configure_template(conf_dir):
     logger.info("Creating 'templateconf.cfg'...")
     with open(os.path.join(conf_dir, "templateconf.cfg"), "w") as f:
-        f.write("meta-poky/conf")
+        f.write("meta/conf")
 
 
 def configure_bblayers(conf_dir, conf_data, repo_dir):
     logger.info("Creating 'bblayers.conf'...")
-    BBLAYERS_CONF = '''# POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
+    BBLAYERS_CONF = '''# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
-POKY_BBLAYERS_CONF_VERSION = "2"
+LCONF_VERSION = "7"
 
 BBPATH = "${{TOPDIR}}"
 BBFILES ?= ""
@@ -178,7 +177,7 @@ def configure(args):
 def print_usage(args):
     print("""\n\n\n### Shell environment set up command ###
 
-    source {0}/poky/oe-init-build-env {1}
+    source {0}/openembedded-core/oe-init-build-env {1}
 
     """.format(args.repo_dir, args.build_dir))
 
