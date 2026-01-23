@@ -96,10 +96,6 @@ python qmaketest_do_checktest() {
     cpptest_checktest(d)
 }
 
-python qmaketest_do_checkrecipe() {
-    shifttest_checkrecipe(d)
-}
-
 python qmaketest_do_checkcache() {
     shifttest_checkcache(d)
 }
@@ -108,4 +104,4 @@ python qmaketest_do_report() {
     shifttest_report(d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkrecipe do_checkcache do_report
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkcache do_report

@@ -38,15 +38,6 @@ def test_do_checkcode(stdout, report):
         assert all(map(lambda x: x in data, ["properties", "complexity", "duplications", "size", "violations"]))
 
 
-def test_do_checkrecipe(stdout, report):
-    assert stdout.contains("autotools-project-1.0.0-r0 do_checkrecipe: INFO:oelint-adv:Done.")
-    with report.files.readAsJson("report/autotools-project-1.0.0-r0/checkrecipe/recipe_violations.json") as data:
-        assert len(data["issues"]) == 0
-    with report.files.readAsJson("report/autotools-project-1.0.0-r0/checkrecipe/files.json") as data:
-        assert data["lines_of_code"][0]["file"].endswith("autotools-project_1.0.0.bb")
-        assert data["lines_of_code"][1]["file"].endswith("autotools-project_1.0.0.bbappend")
-
-
 def test_do_checktest(stdout, report):
     assert stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
     assert stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
