@@ -75,8 +75,6 @@ List of tasks via the bitbake command
 * do_checkcacheall
 * do_checkcode
 * do_checkcodeall
-* do_checkrecipe
-* do_checkrecipeall
 * do_checktest
 * do_checktestall
 * do_coverage
@@ -96,7 +94,6 @@ List of bitbake tool commands
 * bitbake-layers status
 * bitbake-layers test-layers
 * bitbake-layers test-recipes
-* recipetool check
 * recipetool inspect
 
 ### Configuration
@@ -105,7 +102,6 @@ These options can be used by adding to *conf/local.conf*.
 
 * **SHIFT_CHECKCODE_EXCLUDES**: Paths to exclude from the static analysis
 * **SHIFT_CHECKCODE_TOOLS**: Indicates which static analysis tools to use (cppcheck, cpplint, and clang-tidy)
-* **SHIFT_CHECKRECIPE_SUPPRESS_RULES**: Exclude rules from bitbake script analysis (A list of rules can be found at https://github.com/priv-kweihmann/oelint-adv)
 * **SHIFT_CHECKTEST_ENABLED**: Enables mutation testing (disabled by default)
 * **SHIFT_CHECKTEST_EXCLUDES**: Excludes paths from mutation testing
 * **SHIFT_CHECKTEST_EXTENSIONS**: Extensions of source files to be mutated
