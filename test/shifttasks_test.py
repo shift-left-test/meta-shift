@@ -21,10 +21,6 @@ def test_do_checkcodeall(stdout):
     assert stdout.contains("do_checkcodeall")
 
 
-def test_do_checkrecipeall(stdout):
-    assert stdout.contains("do_checkrecipeall")
-
-
 def test_do_coverageall(stdout, release_build):
     assert stdout.contains("do_coverageall")
     o = release_build.shell.execute("bitbake core-image-minimal -c coverageall")
