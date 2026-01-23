@@ -114,7 +114,7 @@ def parse(args, basepath):
         output = execute("bitbake %s -n %s" % (args.recipe, cmd), env=env)
 
         tids = []
-        matcher = re.compile("NOTE: Running(?: setscene)? task [0-9]+ of [0-9]+ \(([^)]+)\)")
+        matcher = re.compile(r"NOTE: Running(?: setscene)? task [0-9]+ of [0-9]+ \(([^)]+)\)")
         for line in output.splitlines():
             matched = matcher.match(line)
             if matched:
