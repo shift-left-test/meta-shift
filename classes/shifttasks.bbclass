@@ -74,17 +74,6 @@ do_checkcacheall() {
     :
 }
 
-addtask checkrecipeall
-do_checkrecipeall[recrdeptask] = "do_checkrecipeall do_checkrecipe"
-do_checkrecipeall[recideptask] = "do_${BB_DEFAULT_TASK}"
-do_checkrecipeall[nostamp] = "1"
-do_checkrecipeall[doc] = "Checks all recipes required to build the target against the OpenEmbedded style guide"
-do_checkrecipeall[postfuncs] = "show_affected_recipes"
-do_checkrecipeall[vardepsexclude] = "show_affected_recipes"
-do_checkrecipeall() {
-    :
-}
-
 addtask reportall
 do_reportall[recrdeptask] = "do_reportall do_report"
 do_reportall[recideptask] = "do_${BB_DEFAULT_TASK}"
