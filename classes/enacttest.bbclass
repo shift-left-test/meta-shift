@@ -183,17 +183,13 @@ enacttest_do_checktest() {
     :
 }
 
-python enacttest_do_checkrecipe() {
-    shifttest_checkrecipe(d)
-}
-
 python enacttest_do_checkcache() {
     shifttest_checkcache(d)
 }
 
 python enacttest_do_report() {
-    tasks = ["checkcode", "coverage", "checkcache", "checkrecipe", "checktest"]
+    tasks = ["checkcode", "coverage", "checkcache", "checktest"]
     shifttest_report(d, tasks)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkrecipe do_checkcache do_report
+EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_checkcache do_report
