@@ -1,148 +1,152 @@
 # meta-shift
 
-> Shift-left testing for the Yocto project
+**Shift-left testing for the Yocto project**
 
-## About
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Shift-left testing](https://en.wikipedia.org/wiki/Shift-left_testing) is an approach to software testing in which testing is performed earlier and often in the software development lifecycle.
+---
 
-The benefits of the shift-left testing approach are:
+## Overview
 
-* Improved software quality since defects are detected in earlier stages
-* Cost effective as early detected defects are cheaper to fix
-* Increased efficiency in the software development process
-* Reduced time to market since the QA stage does not take much time
+[Shift-left testing](https://en.wikipedia.org/wiki/Shift-left_testing) is an approach to software testing in which testing is performed earlier and often in the software development lifecycle. By integrating testing directly into the Bitbake build process, **meta-shift** empowers developers to catch defects where they are cheapest to fix: during the initial development phase.
 
-The **meta-shift** layer is a set of recipes and classes for the Bitbake build system, which allows developers to test or examine their software modules in the host build environment. By enabling meta-shift, developers are able to easily use various tasks for their recipes via the bitbake command, such as:
+The **meta-shift** layer provides a comprehensive suite of recipes and classes to test or examine software modules directly in the host build environment.
 
-* Lines of code
-* Cache hit ratio
-* Static analysis
-* Comments
-* Cyclomatic complexity
-* Duplication
-* Unit testing
-* Code coverage
-* Mutation testing
+### Why meta-shift?
+*   **Improved Software Quality:** Detect defects in earlier stages before they reach target hardware.
+*   **Cost Effective:** Early-stage bug fixes are significantly cheaper than those found in QA or production.
+*   **Increased Efficiency:** Streamline development with automated testing directly in the build loop.
+*   **Faster Time to Market:** Reduce the QA bottleneck by ensuring high quality from the start.
 
-### Features
+---
 
-The main purpose of meta-shift is to provide the shift-left testing tools to the Yocto build environment satisfying the following needs.
+## Features
 
-* Easy to configure
-* Host-based testing
-* Supports major build systems (cmake, qmake, autotools)
-* Supports SDK
-* Supports various Yocto releases and BSPs
-* Jenkins integration
+*   **Static Analysis:** Integration with `cppcheck`, `cpplint`, and `clang-tidy`.
+*   **Unit Testing:** Support for major build systems (**CMake**, **QMake**, **Autotools**).
+*   **Code Coverage:** Measure and report code coverage using `lcov` and `gcovr`.
+*   **Mutation Testing:** Advanced quality verification by mutating source code to test test-suite robustness.
+*   **Metrics:** Track lines of code, cyclomatic complexity, and duplication.
+*   **Cache Analysis:** Monitor shared state and source cache hit ratios.
+*   **Seamless Integration:** Native support for **SDK** generation and **Jenkins** CI/CD.
 
+---
 
-## Quick start
+## Quick Start
 
-Please visit a [build-sample](https://github.com/shift-left-test/build-sample) repository to find more information about how to configure and use features provided by the meta-shift layer.
+1.  **Clone the repository:**
+    ```bash
+    git clone -b scarthgap https://github.com/shift-left-test/meta-shift.git
+    ```
 
+2.  **Add the layer to your build environment:**
+    ```bash
+    source oe-build-init-env
+    bitbake-layers add-layer ../meta-shift
+    ```
+
+3.  **Run a task for your recipe:**
+    ```bash
+    bitbake <recipe> -c test
+    ```
+
+> For a complete walkthrough, visit the [build-sample](https://github.com/shift-left-test/build-sample) repository.
+
+---
 
 ## Usage
 
-This is a meta layer for the Yocto project. Please find more information about the [meta layer](https://docs.yoctoproject.org/overview-manual/concepts.html#layers) if you are not familiar with.
-
 ### Dependencies
 
-**Mandatory layers**
+| Type | Layers |
+| :--- | :--- |
+| **Mandatory** | `meta-oe`, `meta-python` (from meta-openembedded) |
+| **Optional** | `meta-qt5`/`meta-qt6` (for Qt support), `meta-clang` (for clang-tidy & mutation testing) |
 
-* meta-oe (meta-openembedded)
-* meta-python (meta-openembedded)
+### Supported Tasks
 
-**Optional layers**
+You can execute the following tasks via `bitbake <recipe> -c <task>`:
 
-* meta-qt5: To support QT5 based recipes
-* meta-qt6: To support QT6 based recipes
-* meta-clang: To use clang-tidy and the mutation testing
+*   **Analysis & Linting**
+    *   `do_checkcode`: Runs static analysis on the recipe.
+    *   `do_checkcodeall`: Recursively runs static analysis for all dependencies.
+*   **Testing**
+    *   `do_test`: Executes unit tests in the host environment.
+    *   `do_testall`: Recursively runs tests for all dependencies.
+    *   `do_checktest`: Performs mutation testing.
+    *   `do_checktestall`: Recursively performs mutation testing for all dependencies.
+*   **Coverage & Metrics**
+    *   `do_coverage`: Measures code coverage.
+    *   `do_coverageall`: Recursively measures coverage for all dependencies.
+*   **Cache & Reporting**
+    *   `do_checkcache`: Checks SState and Premirror availability.
+    *   `do_report`: Generates a consolidated quality report.
+    *   `do_reportall`: Generates reports for the target and its dependencies.
 
-### Installation
+### Bitbake Tool Extensions
 
-Clone this repository and add the layer to your *bblayer.conf*
+meta-shift extends common bitbake tools with specialized commands:
+*   `devtool cache`: Inspect cache status.
+*   `devtool show`: Display detailed recipe information.
+*   `bitbake-layers inspect`: Detailed layer inspection.
+*   `bitbake-layers status`: Check layer status.
+*   `bitbake-layers test-layers`: Run tests across layers.
+*   `bitbake-layers test-recipes`: List testable recipes.
+*   `recipetool inspect`: Inspect recipe metadata.
 
-    $ git clone -b dunfell https://github.com/shift-left-test/meta-shift.git
-    $ source oe-build-init-env
-    $ bitbake-layers add-layer ../meta-shift
+---
 
-### Supported tasks
+## Configuration
 
-List of tasks via the bitbake command
+Customize meta-shift by adding these variables to your `conf/local.conf`.
 
-* do_checkcache
-* do_checkcacheall
-* do_checkcode
-* do_checkcodeall
-* do_checktest
-* do_checktestall
-* do_coverage
-* do_coverageall
-* do_report
-* do_reportall
-* do_test
-* do_testall
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `SHIFT_CHECKCODE_TOOLS` | Static analysis tools to use (`cppcheck`, `cpplint`, `clang-tidy`) | `cppcheck` |
+| `SHIFT_CHECKCODE_EXCLUDES` | Paths to exclude from static analysis | |
+| `SHIFT_CHECKTEST_ENABLED` | Enable mutation testing | `0` (Disabled) |
+| `SHIFT_CHECKTEST_EXCLUDES` | Excludes paths from mutation testing | |
+| `SHIFT_CHECKTEST_EXTENSIONS` | Extensions of source files to be mutated | |
+| `SHIFT_CHECKTEST_GENERATOR` | Mutation generator (`random`, `uniform`, or `weighted`) | |
+| `SHIFT_CHECKTEST_LIMIT` | Maximum limit of mutants | |
+| `SHIFT_CHECKTEST_MAX_TIMEOUT`| Maximum timeout duration of each test | |
+| `SHIFT_CHECKTEST_SCOPE` | Scope of mutation (`all` or `commit`) | `all` |
+| `SHIFT_CHECKTEST_SEED` | Random seed for the mutation generator | |
+| `SHIFT_CHECKTEST_VERBOSE` | Silence the test output while running `do_checktest` | |
+| `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from code coverage analysis | |
+| `SHIFT_COVERAGE_BRANCH` | Enable branch coverage generation | `0` |
+| `SHIFT_REPORT_DIR` | Directory to store generated reports | `${TMPDIR}/shift-reports` |
+| `SHIFT_TEST_FILTER` | Regex to filter tests to run | |
+| `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
+| `SHIFT_TEST_SUPPRESS_FAILURES`| Don't fail the build if tests fail | `0` |
 
-### Supported bitbake tools
+---
 
-List of bitbake tool commands
+## Integrations
 
-* devtool cache
-* devtool show
-* bitbake-layers inspect
-* bitbake-layers status
-* bitbake-layers test-layers
-* bitbake-layers test-recipes
-* recipetool inspect
+### Jenkins
+Enhance your CI/CD pipeline with [The meta-shift plugin for Jenkins](https://github.com/shift-left-test/meta-shift-plugin). It provides first-class visualization for the reports generated by meta-shift.
 
-### Configuration
+### Docker Development
+We provide pre-configured Dockerfiles for a consistent development environment:
+```bash
+git clone https://github.com/shift-left-test/dockerfiles.git
+cd dockerfiles
+docker build -f yocto-dev/20.04/Dockerfile -t yocto-dev-20.04 .
+docker run --rm -it yocto-dev-20.04
+```
 
-These options can be used by adding to *conf/local.conf*.
-
-* **SHIFT_CHECKCODE_EXCLUDES**: Paths to exclude from the static analysis
-* **SHIFT_CHECKCODE_TOOLS**: Indicates which static analysis tools to use (cppcheck, cpplint, and clang-tidy)
-* **SHIFT_CHECKTEST_ENABLED**: Enables mutation testing (disabled by default)
-* **SHIFT_CHECKTEST_EXCLUDES**: Excludes paths from mutation testing
-* **SHIFT_CHECKTEST_EXTENSIONS**: Extensions of source files to be mutated
-* **SHIFT_CHECKTEST_GENERATOR**: Set the mutation generator (random, uniform, or weighted)
-* **SHIFT_CHECKTEST_LIMIT**: Set the maximum limit of mutants
-* **SHIFT_CHECKTEST_MAX_TIMEOUT**: Set the maximum timeout duration of each test
-* **SHIFT_CHECKTEST_SCOPE**: Indicate which source code to mutate (all or commit)
-* **SHIFT_CHECKTEST_SEED**: Random seed for the mutation generator
-* **SHIFT_CHECKTEST_VERBOSE**: Silence the test ouput while running the `do_checktest` task
-* **SHIFT_COVERAGE_EXCLUDES**: Exclude paths from code coverage analysis
-* **SHIFT_COVERAGE_BRANCH**: Generate branch coverage data
-* **SHIFT_REPORT_DIR**: A path to store report files
-* **SHIFT_TEST_FILTER**: Run tests matching regular expression
-* **SHIFT_TEST_SHUFFLE**: Randomize the order of tests
-* **SHIFT_TEST_SUPPRESS_FAILURES**: Do not return non-zero exit code when tests fail
-
-### Jenkins integration
-
-It is recommended to set up [The meta-shift plugin for Jenkins](https://github.com/shift-left-test/meta-shift-plugin) for your Jenkins instance.
-
-
-## Development
-
-To prepare the meta-shift development environment via Docker:
-
-    $ git clone https://github.com/shift-left-test/dockerfiles.git
-    $ cd dockerfiles
-    $ docker build -f yocto-dev/20.04/Dockerfile -t yocto-dev-20.04 .
-    $ docker run --rm -it yocto-dev-20.04
-
-To run all tests:
-
-    $ pytest
-
+---
 
 ## Contributing
 
-This project is open to any patches. The patches can be submitted as Github pull request in https://github.com/shift-left-test/meta-shift or to the project mailing list.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our pull request process and code of conduct.
 
+*   **Bugs & Features:** Submit via [GitHub Issues](https://github.com/shift-left-test/meta-shift/issues).
+*   **Patches:** Submit as a [Pull Request](https://github.com/shift-left-test/meta-shift/pulls).
+
+---
 
 ## License
 
-This project source code is available under MIT license. See [LICENSE](LICENSE).
-If individual files are licensed under different terms, the terms and conditions can be found in the individual file or file header.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
