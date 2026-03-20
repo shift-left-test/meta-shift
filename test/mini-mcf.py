@@ -39,7 +39,7 @@ REPOS = [
     Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
     Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", "master"),
     Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "6.9"),
-    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", "master"),
+    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
     Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", None),
@@ -152,7 +152,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
         for key, value in conf_data["local.conf"].items():
             value = os.environ.get(key, value)
             f.write('{} ?= "{}"\n'.format(key, value))
-
+        f.write("require conf/distro/include/yocto-uninative.inc\n")
         f.write("include /etc/meta-shift/global.conf\n")
         f.write("include ${TOPDIR}/extra.conf\n")
 
