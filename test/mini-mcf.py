@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "branch"])
 
 REPOS = [
-    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", "2.16"),
+    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", None),
     Repo("openembedded-core", "https://github.com/openembedded/openembedded-core.git", "openembedded-core", "meta", None),
     Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
     Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
