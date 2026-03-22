@@ -152,7 +152,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
         for key, value in conf_data["local.conf"].items():
             value = os.environ.get(key, value)
             f.write('{} ?= "{}"\n'.format(key, value))
-        f.write("require conf/distro/include/yocto-uninative.inc\n")
+
         f.write("include /etc/meta-shift/global.conf\n")
         f.write("include ${TOPDIR}/extra.conf\n")
 
