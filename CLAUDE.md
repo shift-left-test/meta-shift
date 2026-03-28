@@ -91,7 +91,7 @@ All variables have defaults in `conf/layer.conf`. Key ones:
 This project requires applying the same changes across multiple Yocto release branches.
 
 ### Branch Structure
-- **Base branches:** `master`, `kirkstone-next`, `langdale-next`, `nanbield-next`, `scarthgap-next`, `styhead-next`, `walnascar-next`, `whinlatter-next`
+- **Base branches:** `kirkstone-next`, `langdale-next`, `nanbield-next`, `scarthgap-next`, `styhead-next`, `walnascar-next`, `whinlatter-next`, `master`
 - **Feature branches:** `feature/<base-branch>/<issue-number>` (e.g., `feature/master/790`)
 - **Commit prefix:** `#<issue-number> ` (e.g., `#790 Remove do_checkcache task`)
 
