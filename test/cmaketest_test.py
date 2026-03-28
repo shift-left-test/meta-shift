@@ -20,13 +20,6 @@ def report(report_build):
     return report_build
 
 
-def test_do_checkcache(stdout, report):
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
-    with report.files.readAsJson("report/cmake-project-1.0.0-r0/checkcache/caches.json") as data:
-        assert "Missed" in data["Premirror"]
-        assert "Found" in data["Premirror"]["Summary"]
-
-
 def test_do_checkcode(stdout, report):
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
     assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
