@@ -22,7 +22,6 @@ The **meta-shift** layer provides a comprehensive suite of recipes and classes t
 
 ## Features
 
-*   **Static Analysis:** Integration with `cppcheck`, `cpplint`, and `clang-tidy`.
 *   **Unit Testing:** Support for major build systems (**CMake**, **QMake**, **Autotools**).
 *   **Code Coverage:** Measure and report code coverage using `lcov` and `gcovr`.
 *   **Mutation Testing:** Advanced quality verification by mutating source code to test test-suite robustness.
@@ -67,9 +66,6 @@ The **meta-shift** layer provides a comprehensive suite of recipes and classes t
 
 You can execute the following tasks via `bitbake <recipe> -c <task>`:
 
-*   **Analysis & Linting**
-    *   `do_checkcode`: Runs static analysis on the recipe.
-    *   `do_checkcodeall`: Recursively runs static analysis for all dependencies.
 *   **Testing**
     *   `do_test`: Executes unit tests in the host environment.
     *   `do_testall`: Recursively runs tests for all dependencies.
@@ -102,8 +98,6 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `SHIFT_CHECKCODE_TOOLS` | Static analysis tools to use (`cppcheck`, `cpplint`, `clang-tidy`) | `cppcheck` |
-| `SHIFT_CHECKCODE_EXCLUDES` | Paths to exclude from static analysis | |
 | `SHIFT_CHECKTEST_ENABLED` | Enable mutation testing | `0` (Disabled) |
 | `SHIFT_CHECKTEST_EXCLUDES` | Excludes paths from mutation testing | |
 | `SHIFT_CHECKTEST_EXTENSIONS` | Extensions of source files to be mutated | |

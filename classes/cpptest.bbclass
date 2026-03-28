@@ -3,17 +3,13 @@ inherit shifttest
 
 DEPENDS:prepend:class-target = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', bb.utils.contains('SHIFT_CHECKTEST_ENABLED', '1', 'sentinel-native', '', d), '', d)} \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', bb.utils.contains('SHIFT_CHECKCODE_TOOLS', 'clang-tidy', d.expand('clang-cross-${TUNE_ARCH}'), '', d), '', d)} \
     compiledb-native \
     coreutils-native \
-    cppcheck-native \
-    cpplint-native \
     gmock \
     gtest \
     lcov-native \
     python3-lcov-cobertura-native \
     qemu-native \
-    sage-native \
     "
 
 # Fix an issue caused by the '-ffile-prefix-map' option, which modifies source paths in .gcno files, leading to lcov failures
@@ -33,64 +29,6 @@ python do_package_qa:prepend() {
     for package in set((d.getVar('PACKAGES', True) or '').split()):
         d.appendVar("INSANE_SKIP:%s" % package, " buildpaths")
 }
-
-def cpptest_checkcode(d):
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
-
-    # Configure default arguments
-    cmdline = ["sage", "--verbose",
-               "--source-path", d.getVar("S", True),
-               "--build-path", d.getVar("B", True),
-               "--tool-path", d.expand("${STAGING_DIR_NATIVE}${bindir}"),
-               "--target-triple", d.getVar("TARGET_SYS", True)]
-
-    exc_list = shlex_split(d.getVar("SHIFT_CHECKCODE_EXCLUDES", True))
-    if len(exc_list) > 0:
-        cmdline.append('--exclude-path="%s"' % " ".join(exc_list))
-
-    # Configure the output path argument
-    if d.getVar("SHIFT_REPORT_DIR", True):
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checkcode")
-        mkdirhier(report_dir, True)
-
-        save_metadata(d)
-
-        cmdline.extend(["--output-path", report_dir])
-
-    # Configure tool options
-    debug("Configuring the checkcode tool options")
-    for tool in set(["metrix++", "duplo"] + (d.getVar("SHIFT_CHECKCODE_TOOLS", True) or "").split()):
-        options = d.getVarFlag("SHIFT_CHECKCODE_TOOL_OPTIONS", tool, True)
-        if options:
-            cmdline.append(tool + ":" + options.replace(" ", r"\ "))
-        else:
-            cmdline.append(tool)
-
-    try:
-        # Make sure that the compile_commands.json file is available
-        json_file = d.expand("${B}/compile_commands.json")
-        temporary = False
-
-        if not os.path.exists(json_file):
-            plain("Creating the compile_commands.json using compiledb", d)
-            try:
-                exec_proc("compiledb --command-style -n make", d, cwd=d.getVar("B", True))
-                temporary = True
-            except bb.process.ExecutionError as e:
-                warn("Failed to create the compile_commands.json using compiledb", d)
-
-        # Run sage
-        try:
-            exec_proc(cmdline, d, cwd=d.getVar("B", True))
-        except bb.process.ExecutionError as e:
-            error("Failed to run static analysis: %s" % e, d)
-
-    finally:
-        if temporary:
-            bb.utils.remove(json_file)
-
 
 # Execute the do_coverage task after the do_test task completes
 do_coverage[recrdeptask] += "do_test"

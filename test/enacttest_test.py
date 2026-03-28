@@ -27,10 +27,6 @@ def test_do_checkcache(stdout, report):
         assert "Found" in data["Premirror"]["Summary"]
 
 
-def test_do_checkcode(stdout, report):
-    assert stdout.contains("enact-project-1.0.0-r0 do_checkcode: > enact lint")
-
-
 def test_do_checktest(stdout, report):
     pass
 
