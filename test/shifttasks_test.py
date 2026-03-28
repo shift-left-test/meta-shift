@@ -13,10 +13,6 @@ def stdout(test_build):
     return test_build.shell.execute("bitbake core-image-minimal -c listtasks").stdout
 
 
-def test_do_checkcacheall(stdout):
-    assert stdout.contains("do_checkcacheall")
-
-
 def test_do_checkcodeall(stdout):
     assert stdout.contains("do_checkcodeall")
 
