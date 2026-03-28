@@ -78,15 +78,13 @@ You can execute the following tasks via `bitbake <recipe> -c <task>`:
 *   **Coverage & Metrics**
     *   `do_coverage`: Measures code coverage.
     *   `do_coverageall`: Recursively measures coverage for all dependencies.
-*   **Cache & Reporting**
-    *   `do_checkcache`: Checks SState and Premirror availability.
+*   **Reporting**
     *   `do_report`: Generates a consolidated quality report.
     *   `do_reportall`: Generates reports for the target and its dependencies.
 
 ### Bitbake Tool Extensions
 
 meta-shift extends common bitbake tools with specialized commands:
-*   `devtool cache`: Inspect cache status.
 *   `devtool show`: Display detailed recipe information.
 *   `bitbake-layers inspect`: Detailed layer inspection.
 *   `bitbake-layers status`: Check layer status.
