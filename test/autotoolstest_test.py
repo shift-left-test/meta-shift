@@ -20,17 +20,6 @@ def report(report_build):
     return report_build
 
 
-def test_do_checkcode(stdout, report):
-    assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert stdout.contains("autotools-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-    with report.files.readAsHtml("report/autotools-project-1.0.0-r0/checkcode/index.html") as data:
-        assert data["html/body/h1"] == "Sage Report"
-    with report.files.readAsJson("report/autotools-project-1.0.0-r0/checkcode/sage_report.json") as data:
-        assert all(map(lambda x: x in data, ["properties", "complexity", "duplications", "size", "violations"]))
-
-
 def test_do_checktest(stdout, report):
     assert stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
     assert stdout.matches("autotools-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")

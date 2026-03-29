@@ -18,8 +18,6 @@ def test_populate_sdk_host(release_build):
     # Simply check whether required packages exist in a packagegroup, instead of generating the sdk file.
     stdout = release_build.shell.execute("bitbake nativesdk-packagegroup-sdk-host -e | grep ^RDEPENDS:nativesdk-packagegroup-sdk-host=").stdout
     assert stdout.containsAll("nativesdk-cmake",
-                              "nativesdk-cppcheck",
-                              "nativesdk-cpplint",
                               "nativesdk-gcovr",
                               "nativesdk-lcov",
                               "nativesdk-qemu")

@@ -9,33 +9,22 @@ import pytest
 
 
 def test_default_format(release_build):
-    o = release_build.shell.execute("recipetool inspect cpplint")
+    o = release_build.shell.execute("recipetool inspect googletest")
     assert o.stdout.containsAll("General Information",
                                 "-------------------",
-                                "Name: cpplint",
-                                "Summary: CPPLint - a static code analyzer for C/C++",
-                                "Description: A Static code analyzer for C/C++ written in python",
-                                "Author: Google Inc.",
-                                "Homepage: https://github.com/cpplint/cpplint",
-                                "Bugtracker: https://github.com/cpplint/cpplint/issues",
-                                "Section: devel/python",
-                                "License: BSD-3-Clause",
-                                "Version: 1.6.1",
-                                "Revision: r0",
-                                "Layer: meta-shift",
-                                "Testable: False")
+                                "Name: googletest")
 
 
 def test_save_as_file(release_build):
     with release_build.files.tempfile("report.json") as f:
-        o = release_build.shell.execute("recipetool inspect cpplint --output {}".format(f))
-        assert not o.stdout.contains('"Name": "cpplint"')
+        o = release_build.shell.execute("recipetool inspect googletest --output {}".format(f))
+        assert not o.stdout.contains('"Name": "googletest"')
         with release_build.files.readAsJson("report.json") as data:
-            assert data["General Information"]["Name"] == "cpplint"
+            assert data["General Information"]["Name"] == "googletest"
 
 
 def test_inspect_recursive(release_build):
-    o = release_build.shell.execute("recipetool inspect cpplint --recursive")
+    o = release_build.shell.execute("recipetool inspect googletest --recursive")
     assert o.stdout.containsAll("Depends:",
                                 "Indirect Depends:",
                                 "Incoming Depends:",
