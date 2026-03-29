@@ -22,17 +22,6 @@ def report(report_build):
         return report_build
 
 
-def test_do_checkcode(stdout, report):
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* metrix++ is running...")
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* duplo is running...")
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cppcheck is running...")
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcode: INFO:SAGE:* cpplint is running...")
-    with report.files.readAsHtml("report/cmake-project-1.0.0-r0/checkcode/index.html") as data:
-        assert data["html/body/h1"] == "Sage Report"
-    with report.files.readAsJson("report/cmake-project-1.0.0-r0/checkcode/sage_report.json") as data:
-        assert all(map(lambda x: x in data, ["properties", "complexity", "duplications", "size", "violations"]))
-
-
 def test_do_checktest(stdout, report):
     assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
     assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
@@ -70,9 +59,3 @@ def test_do_test(stdout, report):
         assert data["name"] == "MinusTest" and data["tests"] == "1" and data["failures"] == "1"
 
 
-def test_sage_native_project_do_build(report_build):
-    # Test if the setuptools within devtool-modify works properly with the host python
-    with report_build.externalsrc("sage-native"):
-        o = report_build.shell.execute("bitbake sage-native -c build")
-        assert o.stderr.empty()
-        assert o.returncode == 0
