@@ -48,10 +48,6 @@ do_configure:append:class-target() {
     chmod 755 ${WORKDIR}/test-runner.sh
 }
 
-python autotoolstest_do_checkcode() {
-    cpptest_checkcode(d)
-}
-
 python autotoolstest_do_test() {
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
@@ -128,4 +124,4 @@ python autotoolstest_do_report() {
     shifttest_report(d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_report
+EXPORT_FUNCTIONS do_test do_coverage do_checktest do_report
