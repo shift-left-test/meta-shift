@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**meta-shift** is a Yocto/Bitbake layer implementing shift-left testing. It provides recipes and Bitbake classes to run static analysis, unit tests, code coverage, and mutation testing directly in the host build environment during the Bitbake build process.
+**meta-shift** is a Yocto/Bitbake layer implementing shift-left testing. It provides recipes and Bitbake classes to run unit tests, code coverage, and mutation testing directly in the host build environment during the Bitbake build process.
 
 - **License:** MIT
 - **Layer compatibility:** wrynose (current), with branches for older Yocto releases
@@ -38,8 +38,8 @@ Test files follow the pattern `test/*_test.py`. Tests are integration tests that
 
 ```
 shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu helpers, report I/O)
-  └── shifttest.bbclass     # Base task definitions (checkcode, test, coverage, checktest, report)
-        ├── cpptest.bbclass  # C/C++ implementation (sage, lcov, sentinel integration)
+  └── shifttest.bbclass     # Base task definitions (test, coverage, checktest, report)
+        ├── cpptest.bbclass  # C/C++ implementation (lcov, sentinel integration)
         │     ├── cmaketest.bbclass    # CMake-specific build/test logic
         │     ├── autotoolstest.bbclass # Autotools-specific build/test logic
         │     └── qmaketest.bbclass    # QMake-specific build/test logic
@@ -50,7 +50,7 @@ shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu hel
 
 ### Key Design Patterns
 
-- **Task structure:** Each task (checkcode, test, coverage, checktest, report) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
+- **Task structure:** Each task (test, coverage, checktest, report) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
 - **Build system dispatch:** `cpptest.bbclass` implements the core C/C++ logic. Build-system-specific classes (`cmaketest`, `autotoolstest`, `qmaketest`) inherit from it and override configure/compile/test steps.
 - **Report generation:** `do_report` orchestrates all other tasks by calling `exec_func("do_X", dd)` on a copied datastore. Reports go to `${SHIFT_REPORT_DIR}/${PF}/<task>/`.
 - **Conditional features:** `clang-tidy` and mutation testing (`sentinel`) require `meta-clang`. Dynamic layer recipes are in `dynamic-layers/meta-clang/`.
@@ -71,7 +71,7 @@ shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu hel
 
 ### Recipe Organization
 
-- `recipes-test/`: Test tools (googletest, cppcheck, cpplint, sage, sentinel, metrix++, duplo, compiledb, fff)
+- `recipes-test/`: Test tools (googletest, sentinel, compiledb, fff)
 - `recipes-devtools/`: Build tools (cmake, python3 packages, perl)
 - `recipes-support/`: Support tools (lcov)
 - `recipes-core/`: Core recipes (meta-environment)
@@ -81,19 +81,36 @@ shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu hel
 All variables have defaults in `conf/layer.conf`. Key ones:
 
 - `SHIFT_ENABLED` (default: `0`) — master enable switch
-- `SHIFT_CHECKCODE_TOOLS` (default: `cppcheck`) — static analysis tools to run
 - `SHIFT_CHECKTEST_ENABLED` (default: `0`) — enable mutation testing (requires meta-clang)
 - `SHIFT_COVERAGE_BRANCH` (default: `1`) — include branch coverage
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
 - `SHIFT_REPORT_DIR` (default: `${TMPDIR}/shift-reports`) — report output directory
 
+## Multi-Branch Workflow
+
+This project requires applying the same changes across multiple Yocto release branches.
+
+### Branch Structure
+- **Base branches:** `kirkstone-next`, `langdale-next`, `nanbield-next`, `scarthgap-next`, `styhead-next`, `walnascar-next`, `whinlatter-next`, `master`
+- **Feature branches:** `feature/<base-branch>/<issue-number>` (e.g., `feature/master/790`)
+- **Commit prefix:** `#<issue-number> ` (e.g., `#790 Remove do_checkcache task`)
+
+### Workflow
+1. Create `feature/master/<N>` from `master` and implement changes
+2. For the other 7 branches, create `feature/<branch>/<N>` from each base branch and cherry-pick
+3. On conflict: `git rm` for files being deleted, manually resolve others
+4. If a conflict resolution loses the commit message, recreate it with `git commit-tree`
+5. Verify zero remaining references with `grep` on all branches before pushing
+
+### Documentation
+- When modifying code, always update `README.md` accordingly (feature additions/removals, configuration changes, task changes, etc.)
+
 ## Bitbake Task Quick Reference
 
 ```bash
-bitbake <recipe> -c checkcode      # Static analysis
 bitbake <recipe> -c test           # Unit tests
 bitbake <recipe> -c coverage       # Code coverage
 bitbake <recipe> -c checktest      # Mutation testing
 bitbake <recipe> -c report         # All of the above consolidated
-# Add 'all' suffix for recursive variants: testall, checkcodeall, etc.
+# Add 'all' suffix for recursive variants: testall, coverageall, etc.
 ```
