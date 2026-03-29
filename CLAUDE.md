@@ -38,7 +38,7 @@ Test files follow the pattern `test/*_test.py`. Tests are integration tests that
 
 ```
 shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu helpers, report I/O)
-  └── shifttest.bbclass     # Base task definitions (test, coverage, checktest, checkcache, report)
+  └── shifttest.bbclass     # Base task definitions (test, coverage, checktest, report)
         ├── cpptest.bbclass  # C/C++ implementation (lcov, sentinel integration)
         │     ├── cmaketest.bbclass    # CMake-specific build/test logic
         │     ├── autotoolstest.bbclass # Autotools-specific build/test logic
@@ -50,7 +50,7 @@ shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu hel
 
 ### Key Design Patterns
 
-- **Task structure:** Each task (test, coverage, checktest, checkcache, report) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
+- **Task structure:** Each task (test, coverage, checktest, report) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
 - **Build system dispatch:** `cpptest.bbclass` implements the core C/C++ logic. Build-system-specific classes (`cmaketest`, `autotoolstest`, `qmaketest`) inherit from it and override configure/compile/test steps.
 - **Report generation:** `do_report` orchestrates all other tasks by calling `exec_func("do_X", dd)` on a copied datastore. Reports go to `${SHIFT_REPORT_DIR}/${PF}/<task>/`.
 - **Conditional features:** `clang-tidy` and mutation testing (`sentinel`) require `meta-clang`. Dynamic layer recipes are in `dynamic-layers/meta-clang/`.
@@ -111,7 +111,6 @@ This project requires applying the same changes across multiple Yocto release br
 bitbake <recipe> -c test           # Unit tests
 bitbake <recipe> -c coverage       # Code coverage
 bitbake <recipe> -c checktest      # Mutation testing
-bitbake <recipe> -c checkcache     # Cache availability
 bitbake <recipe> -c report         # All of the above consolidated
 # Add 'all' suffix for recursive variants: testall, coverageall, etc.
 ```

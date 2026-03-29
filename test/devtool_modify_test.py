@@ -22,13 +22,6 @@ def report(report_build):
         return report_build
 
 
-def test_do_checkcache(stdout, report):
-    assert stdout.contains("cmake-project-1.0.0-r0 do_checkcache: Source Availability")
-    with report.files.readAsJson("report/cmake-project-1.0.0-r0/checkcache/caches.json") as data:
-        assert "Missed" in data["Premirror"]
-        assert "Found" in data["Premirror"]["Summary"]
-
-
 def test_do_checktest(stdout, report):
     assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
     assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
