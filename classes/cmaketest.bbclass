@@ -12,10 +12,6 @@ cmake_do_compile:prepend:class-target() {
     export TARGET_SYS="${TARGET_SYS}"
 }
 
-python cmaketest_do_checkcode() {
-    cpptest_checkcode(d)
-}
-
 python cmaketest_do_test() {
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
@@ -94,4 +90,4 @@ python cmaketest_do_report() {
     shifttest_report(d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_report
+EXPORT_FUNCTIONS do_test do_coverage do_checktest do_report

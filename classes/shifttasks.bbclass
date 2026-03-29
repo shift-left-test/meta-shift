@@ -19,17 +19,6 @@ python show_affected_recipes() {
         bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
 }
 
-addtask checkcodeall
-do_checkcodeall[recrdeptask] = "do_checkcodeall do_checkcode"
-do_checkcodeall[recideptask] = "do_${BB_DEFAULT_TASK}"
-do_checkcodeall[nostamp] = "1"
-do_checkcodeall[doc] = "Runs static analysis for all recipes required to build the target"
-do_checkcodeall[postfuncs] = "show_affected_recipes"
-do_checkcodeall[vardepsexclude] = "show_affected_recipes"
-do_checkcodeall() {
-    :
-}
-
 addtask testall
 do_testall[recrdeptask] = "do_testall do_test"
 do_testall[recideptask] = "do_${BB_DEFAULT_TASK}"
