@@ -7,10 +7,6 @@ EXTRA_QMAKEVARS_PRE:append:class-target = " ${@bb.utils.contains('SHIFT_TEST_SUP
 FILES:${PN}:append:class-target = " ${OE_QMAKE_PATH_TESTS}"
 
 
-python qmaketest_do_checkcode() {
-    cpptest_checkcode(d)
-}
-
 python qmaketest_do_test() {
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
@@ -100,4 +96,4 @@ python qmaketest_do_report() {
     shifttest_report(d)
 }
 
-EXPORT_FUNCTIONS do_checkcode do_test do_coverage do_checktest do_report
+EXPORT_FUNCTIONS do_test do_coverage do_checktest do_report
