@@ -3,14 +3,6 @@ inherit shiftutils
 
 DEBUG_BUILD:class-target = "1"
 
-addtask checkcode after do_compile
-do_checkcode[nostamp] = "1"
-do_checkcode[doc] = "Runs static analysis for the target"
-
-shifttest_do_checkcode() {
-    :
-}
-
 addtask test after do_compile
 do_test[nostamp] = "1"
 do_test[doc] = "Runs tests for the target"
@@ -43,7 +35,7 @@ shifttest_do_report() {
     :
 }
 
-def shifttest_report(d, tasks=["checkcode", "test", "coverage", "checktest"]):
+def shifttest_report(d, tasks=["test", "coverage", "checktest"]):
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         warn("Unsupported class type of the recipe", d)
         return
@@ -52,10 +44,6 @@ def shifttest_report(d, tasks=["checkcode", "test", "coverage", "checktest"]):
         warn("SHIFT_REPORT_DIR is not set. No reports will be generated.", d)
 
     dd = d.createCopy()
-
-    if "checkcode" in tasks:
-        dd.setVar("BB_CURRENTTASK", "checkcode")
-        exec_func("do_checkcode", dd)
 
     if "test" in tasks:
         dd.setVar("BB_CURRENTTASK", "test")
@@ -79,7 +67,6 @@ python() {
 
     # Synchronize the tasks
     if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
-        d.appendVarFlag("do_checkcode", "lockfiles", "${TMPDIR}/do_checkcode.lock")
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
         d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
