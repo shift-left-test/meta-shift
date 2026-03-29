@@ -91,6 +91,7 @@ All variables have defaults in `conf/layer.conf`. Key ones:
 This project requires applying the same changes across multiple Yocto release branches.
 
 ### Branch Structure
+Base branch names correspond to Yocto release codenames in chronological order.
 - **Base branches:** `kirkstone-next`, `langdale-next`, `mickledore-next`
 - **Feature branches:** `feature/<base-branch>/<issue-number>` (e.g., `feature/master/790`)
 - **Commit prefix:** `#<issue-number> ` (e.g., `#790 Remove do_checkcache task`)
