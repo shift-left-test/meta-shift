@@ -91,13 +91,14 @@ All variables have defaults in `conf/layer.conf`. Key ones:
 This project requires applying the same changes across multiple Yocto release branches.
 
 ### Branch Structure
-- **Base branches:** `kirkstone-next`, `langdale-next`, `nanbield-next`, `scarthgap-next`, `styhead-next`, `walnascar-next`, `whinlatter-next`, `master`
+Base branch names correspond to Yocto release codenames in chronological order.
+- **Base branches:** `kirkstone-next`, `langdale-next`, `mickledore-next`, `nanbield-next`, `scarthgap-next`, `styhead-next`, `walnascar-next`, `whinlatter-next`, `master`
 - **Feature branches:** `feature/<base-branch>/<issue-number>` (e.g., `feature/master/790`)
 - **Commit prefix:** `#<issue-number> ` (e.g., `#790 Remove do_checkcache task`)
 
 ### Workflow
 1. Create `feature/master/<N>` from `master` and implement changes
-2. For the other 7 branches, create `feature/<branch>/<N>` from each base branch and cherry-pick
+2. For the other branches, create `feature/<branch>/<N>` from each base branch and cherry-pick
 3. On conflict: `git rm` for files being deleted, manually resolve others
 4. If a conflict resolution loses the commit message, recreate it with `git commit-tree`
 5. Verify zero remaining references with `grep` on all branches before pushing
