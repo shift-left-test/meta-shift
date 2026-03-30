@@ -86,23 +86,6 @@ All variables have defaults in `conf/layer.conf`. Key ones:
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
 - `SHIFT_REPORT_DIR` (default: `${TMPDIR}/shift-reports`) — report output directory
 
-## Multi-Branch Workflow
-
-This project requires applying the same changes across multiple Yocto release branches.
-
-### Branch Structure
-Base branch names correspond to Yocto release codenames in chronological order.
-- **Base branches:** `kirkstone-next`, `langdale-next`, `mickledore-next`, `nanbield-next`, `scarthgap-next`, `styhead-next`, `walnascar-next`, `whinlatter-next`
-- **Feature branches:** `feature/<base-branch>/<issue-number>` (e.g., `feature/master/790`)
-- **Commit prefix:** `#<issue-number> ` (e.g., `#790 Remove do_checkcache task`)
-
-### Workflow
-1. Create `feature/master/<N>` from `master` and implement changes
-2. For the other branches, create `feature/<branch>/<N>` from each base branch and cherry-pick
-3. On conflict: `git rm` for files being deleted, manually resolve others
-4. If a conflict resolution loses the commit message, recreate it with `git commit-tree`
-5. Verify zero remaining references with `grep` on all branches before pushing
-
 ### Documentation
 - When modifying code, always update `README.md` accordingly (feature additions/removals, configuration changes, task changes, etc.)
 
