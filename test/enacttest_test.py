@@ -9,8 +9,8 @@ import pytest
 
 
 @pytest.fixture(scope="module")
-def stdout(test_build):
-    return test_build.shell.execute("bitbake enact-project -c report").stdout
+def stdout(report_build):
+    return report_build.shell.execute("bitbake enact-project -c report").stdout
 
 
 @pytest.fixture(scope="module")
@@ -61,12 +61,13 @@ def test_do_coverage_excludes(stdout, report):
     pass
 
 
-def test_do_report(stdout, report):
-    assert stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
+def test_do_report(test_build):
+    o = test_build.shell.execute("bitbake enact-project -c report")
+    assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
 
 
 def test_do_test(stdout, report):
-    assert stdout.contains("enact-project-1.0.0-r0 do_coverage: Running tests...")
+    assert stdout.contains("enact-project-1.0.0-r0 do_coverage: Running tests with coverage...")
     with report.files.readAsXml("report/enact-project-1.0.0-r0/test/junit.xml") as data:
         data = data["testsuites/testsuite"]
         assert any(map(lambda x: x["name"] == "undefined" and x["tests"] == "2" and x["failures"] == "1", data))

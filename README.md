@@ -97,14 +97,16 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `SHIFT_CHECKTEST_ENABLED` | Enable mutation testing | `0` (Disabled) |
-| `SHIFT_CHECKTEST_EXCLUDES` | Excludes paths from mutation testing | |
 | `SHIFT_CHECKTEST_EXTENSIONS` | Extensions of source files to be mutated | |
-| `SHIFT_CHECKTEST_GENERATOR` | Mutation generator (`random`, `uniform`, or `weighted`) | |
-| `SHIFT_CHECKTEST_LIMIT` | Maximum limit of mutants | |
-| `SHIFT_CHECKTEST_MAX_TIMEOUT`| Maximum timeout duration of each test | |
-| `SHIFT_CHECKTEST_SCOPE` | Scope of mutation (`all` or `commit`) | `all` |
+| `SHIFT_CHECKTEST_FROM` | Diff base revision for scoping mutants (e.g., `HEAD~5`) | |
+| `SHIFT_CHECKTEST_GENERATOR` | Mutation generator (`random`, `uniform`, or `weighted`) | `uniform` |
+| `SHIFT_CHECKTEST_LIMIT` | Maximum number of mutants | `40` |
+| `SHIFT_CHECKTEST_OPERATORS` | Mutation operators to apply (space-separated) | |
+| `SHIFT_CHECKTEST_PATTERNS` | Glob patterns to constrain mutation scope (`!` prefix to exclude) | |
 | `SHIFT_CHECKTEST_SEED` | Random seed for the mutation generator | |
-| `SHIFT_CHECKTEST_VERBOSE` | Silence the test output while running `do_checktest` | |
+| `SHIFT_CHECKTEST_TIMEOUT` | Per-test timeout in seconds (default: sentinel auto = 1.5x baseline) | |
+| `SHIFT_CHECKTEST_UNCOMMITTED` | Include uncommitted changes in mutation scope | `0` |
+| `SHIFT_CHECKTEST_VERBOSE` | Silence the test output while running `do_checktest` | `0` |
 | `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from code coverage analysis | |
 | `SHIFT_COVERAGE_BRANCH` | Enable branch coverage generation | `0` |
 | `SHIFT_REPORT_DIR` | Directory to store generated reports | `${TMPDIR}/shift-reports` |

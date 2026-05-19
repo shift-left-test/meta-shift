@@ -21,268 +21,232 @@ python do_package_qa:prepend() {
 # Execute the do_coverage task after the do_test task completes
 do_coverage[recrdeptask] += "do_test"
 
-def cpptest_coverage(d):
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
+# do_checktest reuses bitbake's compiled ${T}/run.do_test script for sentinel's
+# --test-command, so do_test must have run at least once first.
+do_checktest[depends] += "${PN}:do_test"
 
-    if d.getVar("SHIFT_REPORT_DIR", True):
-        test_result_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-        if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
-            warn("No test result files generated at %s" % test_result_dir, d)
-            return
+# Capture a zero-coverage baseline from .gcno alone. Shared by all
+# build-system-specific do_test functions to keep their bodies identical.
+cpptest_capture_coverage_baseline() {
+    local LCOV_BRANCH_OPT="${@shiftutils_get_branch_coverage_option(d, 'lcov')}"
+    find "${B}" -name '*.gcda' -delete
+    lcov -c -i \
+        -d "${B}" \
+        -o "${B}/coverage_base.info" \
+        --ignore-errors gcov \
+        --gcov-tool "${TARGET_PREFIX}gcov" \
+        ${LCOV_BRANCH_OPT}
+}
 
-    LCOV_DATAFILE_BASE = d.expand("${B}/coverage_base.info")
-    LCOV_DATAFILE_TEST = d.expand("${B}/coverage_test.info")
-    LCOV_DATAFILE_TOTAL = d.expand("${B}/coverage_total.info")
-    LCOV_DATAFILE = d.expand("${B}/coverage.info")
-    BRANCH_COVERAGE_OPTION = shiftutils_get_branch_coverage_option(d, "lcov")
+# Prepend ${PN}. to gtest XML classname attributes (idempotent).
+cpptest_prefix_xml_classnames() {
+    find "$1" -name '*.xml' -exec sed -E -i \
+        "s|classname=\"(${PN}\.)?|classname=\"${PN}.|g" {} +
+}
 
-    # Remove files if exist
-    bb.utils.remove(LCOV_DATAFILE_TOTAL)
-    bb.utils.remove(LCOV_DATAFILE)
+cpptest_do_coverage() {
+    local LCOV_BRANCH_OPT="${@shiftutils_get_branch_coverage_option(d, 'lcov')}"
+    local GENHTML_BRANCH_OPT="${@shiftutils_get_branch_coverage_option(d, 'genhtml')}"
+    local DATAFILE_BASE="${B}/coverage_base.info"
+    local DATAFILE_TEST="${B}/coverage_test.info"
+    local DATAFILE_TOTAL="${B}/coverage_total.info"
+    local DATAFILE="${B}/coverage.info"
 
-    if not find_files(d.getVar("B", True), "*.gcda"):
-        warn(d.expand("No .gcda files found at ${B}"), d)
-        return
+    rm -f "${DATAFILE_TOTAL}" "${DATAFILE}"
 
-    # Prepare for the coverage reports
-    check_call(["lcov", "-c",
-                "-d", d.getVar("B", True),
-                "-o", LCOV_DATAFILE_TEST,
-                "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
-                BRANCH_COVERAGE_OPTION], d)
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        local TEST_RESULT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+        if ! find "${TEST_RESULT_DIR}" -maxdepth 1 -iname '*.xml' -print -quit 2>/dev/null | grep -q .; then
+            bbwarn "No test result files generated at ${TEST_RESULT_DIR}"
+            return 0
+        fi
+    fi
 
-    check_call(["lcov",
-                "-a", LCOV_DATAFILE_BASE,
-                "-a", LCOV_DATAFILE_TEST,
-                "-o", LCOV_DATAFILE_TOTAL,
-                BRANCH_COVERAGE_OPTION], d)
+    if ! find "${B}" -name '*.gcda' -print -quit 2>/dev/null | grep -q .; then
+        bbwarn "No .gcda files found at ${B}"
+        return 0
+    fi
 
-    check_call(["lcov",
-                "--extract", LCOV_DATAFILE_TOTAL,
-                BRANCH_COVERAGE_OPTION,
-                '"%s"' % os.path.normpath(d.expand('${S}/*')),
-                "-o", LCOV_DATAFILE], d)
+    lcov -c \
+        -d "${B}" \
+        -o "${DATAFILE_TEST}" \
+        --gcov-tool "${TARGET_PREFIX}gcov" \
+        ${LCOV_BRANCH_OPT}
 
-    if d.getVar("SHIFT_COVERAGE_EXCLUDES", True):
-        import glob
-        cmd = ["lcov", "--remove", LCOV_DATAFILE, "-o", LCOV_DATAFILE,
-               BRANCH_COVERAGE_OPTION]
-        exc_path_list = []
-        source_root = d.getVar("S", True)
-        for exc in shlex_split(d.getVar("SHIFT_COVERAGE_EXCLUDES", True)):
-            exc_list = glob.glob("%s/%s" % (source_root, exc))
-            for exc_path in exc_list:
-                if os.path.exists(exc_path):
-                    if os.path.isdir(exc_path):
-                        exc_path_list += find_files(exc_path, "*")
-                    else:
-                        exc_path_list.append(exc_path)
-            if len(exc_list) == 0:
-                warn("SHIFT_COVERAGE_EXCLUDES: no file matches %s" % str(exc), d)
-        if len(exc_path_list) > 0:
-            check_call(cmd + exc_path_list, d)
+    lcov \
+        -a "${DATAFILE_BASE}" \
+        -a "${DATAFILE_TEST}" \
+        -o "${DATAFILE_TOTAL}" \
+        ${LCOV_BRANCH_OPT}
 
-    plain("GCC Code Coverage Report", d)
-    exec_proc(["lcov", "--list", LCOV_DATAFILE, BRANCH_COVERAGE_OPTION], d)
+    lcov \
+        --extract "${DATAFILE_TOTAL}" \
+        ${LCOV_BRANCH_OPT} \
+        "${S}/*" \
+        -o "${DATAFILE}"
 
-    if d.getVar("SHIFT_REPORT_DIR", True):
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
-        xml_file = os.path.join(report_dir, "coverage.xml")
+    if [ -n "${SHIFT_COVERAGE_EXCLUDES}" ]; then
+        # Build a newline-delimited file of paths and pass via xargs so paths
+        # with spaces survive. bash arrays / process-substitution would be
+        # cleaner but BitBake's shell parser only accepts POSIX constructs.
+        local EXC_FILE=$(mktemp)
+        for exc in ${SHIFT_COVERAGE_EXCLUDES}; do
+            local matched=0
+            for path in ${S}/${exc}; do
+                if [ -e "${path}" ]; then
+                    if [ -d "${path}" ]; then
+                        # lcov --remove takes file paths, not directories.
+                        find "${path}" -type f >> "${EXC_FILE}"
+                    else
+                        echo "${path}" >> "${EXC_FILE}"
+                    fi
+                    matched=1
+                fi
+            done
+            if [ ${matched} -eq 0 ]; then
+                bbwarn "SHIFT_COVERAGE_EXCLUDES: no file matches ${exc}"
+            fi
+        done
+        if [ -s "${EXC_FILE}" ]; then
+            xargs -d '\n' -a "${EXC_FILE}" lcov --remove "${DATAFILE}" -o "${DATAFILE}" ${LCOV_BRANCH_OPT}
+        fi
+        rm -f "${EXC_FILE}"
+    fi
 
-        mkdirhier(report_dir, True)
+    bbplain "${PF} do_${BB_CURRENTTASK}: GCC Code Coverage Report"
+    lcov --list "${DATAFILE}" ${LCOV_BRANCH_OPT}
 
-        save_metadata(d)
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/coverage"
+        local XML_FILE="${REPORT_DIR}/coverage.xml"
 
-        check_call(["genhtml", LCOV_DATAFILE,
-                    "--demangle-cpp",
-                    "--rc", "genhtml_demangle_cpp_tool=%s" % d.expand("${TARGET_PREFIX}c++filt"),
-                    "--output-directory", report_dir,
-                    "--ignore-errors", "source",
-                    shiftutils_get_branch_coverage_option(d, "genhtml")], d)
+        mkdir -p "${REPORT_DIR}"
 
-        check_call(["lcov_cobertura", LCOV_DATAFILE,
-                    "--demangle-tool", d.expand("${TARGET_PREFIX}c++filt"),
-                    "--demangle",
-                    "--output", xml_file], d, cwd=d.getVar("S", True))
+        ${@save_metadata(d) or ''}
 
-        if os.path.exists(xml_file):
-            # Prepend the package name to each of the package tags
-            replace_files([xml_file], '(<package.*name=")', d.expand(r'\g<1>${PN}.'))
-        else:
-            warn("No coverage report files generated at %s" % report_dir, d)
+        genhtml "${DATAFILE}" \
+            --demangle-cpp \
+            --rc "genhtml_demangle_cpp_tool=${TARGET_PREFIX}c++filt" \
+            --output-directory "${REPORT_DIR}" \
+            --ignore-errors source \
+            ${GENHTML_BRANCH_OPT}
 
+        ( cd "${S}" && lcov_cobertura "${DATAFILE}" \
+            --demangle-tool "${TARGET_PREFIX}c++filt" \
+            --demangle \
+            --output "${XML_FILE}" )
 
-def cpptest_checktest(d):
-    if not bb.utils.to_boolean(d.getVar("SHIFT_CHECKTEST_ENABLED", True)):
-        return
+        if [ -f "${XML_FILE}" ]; then
+            sed -E -i "s|(<package[[:space:]]+name=\")(${PN}\.)?|\1${PN}.|g" "${XML_FILE}"
+        else
+            bbwarn "No coverage report files generated at ${REPORT_DIR}"
+        fi
+    fi
+}
 
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
+cpptest_do_checktest() {
+    if [ "${SHIFT_CHECKTEST_ENABLED}" != "1" ]; then
+        return 0
+    fi
 
-    dd = d.createCopy()
+    if [ -z "${SHIFT_REPORT_DIR}" ]; then
+        bbwarn "SHIFT_REPORT_DIR is empty; skipping do_checktest (mutation report has nowhere to go)"
+        return 0
+    fi
 
-    if "clang-layer" not in dd.getVar("BBFILE_COLLECTIONS", True).split():
-        fatal("The task requires meta-clang to be present", dd)
+    if ! echo "${BBFILE_COLLECTIONS}" | grep -qw clang-layer; then
+        bbfatal "The task requires meta-clang to be present"
+    fi
 
-    dot_git_path = dd.expand("${S}/.git")
-    if not os.path.exists(dot_git_path) or not os.path.isdir(dot_git_path):
-        warn("No .git directory in source directory", dd)
-        return
+    if [ ! -d "${S}/.git" ]; then
+        bbwarn "No .git directory in source directory"
+        return 0
+    fi
 
-    work_dir = dd.expand("${WORKDIR}/mutation_test_tmp")
-    expected_dir = os.path.join(work_dir, "original")
-    actual_dir = os.path.join(work_dir, "actual")
-    backup_dir = os.path.join(work_dir, "backup")
-    eval_dir = os.path.join(work_dir, "eval")
+    # cmake exports compile_commands.json natively; autotools/qmake do not.
+    if [ ! -f "${B}/compile_commands.json" ]; then
+        ( cd "${B}" && compiledb --command-style make ) || {
+            bbwarn "Failed to create compile_commands.json using compiledb"
+            return 0
+        }
+    fi
 
-    # Invalidate the pseudo database and the stamp to keep the build state safe
-    if dd.getVar("PSEUDO_LOCALSTATEDIR", True):
-        bb.utils.remove(dd.getVar("PSEUDO_LOCALSTATEDIR", True), True)
-    bb.build.del_stamp("do_configure", dd)
+    # Normalize compile_commands.json so Sentinel/Clang can match mutation
+    # candidates. cmake emits "file" and the source argument inside "command"
+    # as absolute paths, but compiledb leaves them relative to "directory".
+    # Sentinel matches candidates by the path Clang reports through
+    # SourceManager, which echoes the source argument from the compile
+    # command verbatim — relative entries therefore produce 0 mutants. The
+    # target triple is also (re-)injected idempotently since this task is
+    # nostamp and the JSON may persist across runs.
+    python3 -c '
+import json, os, re, sys
+p, target_sys = sys.argv[1], sys.argv[2]
+with open(p) as f:
+    db = json.load(f)
+target_opt = "--target=" + target_sys
+for e in db:
+    if not os.path.isabs(e["file"]):
+        e["file"] = os.path.normpath(os.path.join(e["directory"], e["file"]))
+    abs_file = e["file"]
+    base = os.path.basename(abs_file)
+    pattern = re.compile(r"(?<![\w/])\S*?" + re.escape(base) + r"(?!\w)")
+    cmd = pattern.sub(abs_file, e["command"])
+    cmd = re.sub(r"\s*--target=\S+", "", cmd)
+    e["command"] = cmd + " " + target_opt
+with open(p, "w") as f:
+    json.dump(db, f, indent=1)
+' "${B}/compile_commands.json" "${TARGET_SYS}"
 
-    # Prepare the work directory
-    mkdirhier(work_dir, True)
+    # Sentinel's iterations overwrite ${SHIFT_REPORT_DIR}/${PF}/test on every
+    # invocation, so back up any pre-existing baseline and restore it on exit.
+    local TEST_RESULT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+    local BACKUP_DIR="${WORKDIR}/checktest-baseline-backup"
+    # Recover from a prior interrupted run that left baseline only in BACKUP_DIR.
+    if [ -d "${BACKUP_DIR}" ] && [ ! -d "${TEST_RESULT_DIR}" ]; then
+        mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
+    fi
+    rm -rf "${BACKUP_DIR}"
+    if [ -d "${TEST_RESULT_DIR}" ]; then
+        mv "${TEST_RESULT_DIR}" "${BACKUP_DIR}"
+    fi
 
-    json_file = dd.expand("${B}/compile_commands.json")
-    new_file = os.path.join(work_dir, "compile_commands.json")
+    mkdir -p "${SHIFT_REPORT_DIR}/${PF}/checktest"
 
-    # Make sure that compile_commands.json is available
-    if os.path.exists(json_file):
-        bb.utils.copyfile(json_file, new_file)
-    else:
-        debug("Creating compile_commands.json using compiledb")
-        try:
-            check_call("compiledb --command-style make", dd, cwd=dd.getVar("B", True))
-            bb.utils.movefile(json_file, new_file)
-        except bb.process.ExecutionError as e:
-            warn("Failed to create the compile_commands.json using compiledb", dd)
-            return
+    # Stream sentinel's output via bbplain so it surfaces to the console; the
+    # raw exit code is recovered via PIPESTATUS since the while-loop always
+    # succeeds. Option toggles are resolved at BitBake parse time via
+    # ${@...} — shell ${VAR:+...} would silently drop them because BitBake
+    # vars are not exported into the task shell environment.
+    local SENTINEL_RC=0
+    sentinel \
+        --clean \
+        --workspace="${WORKDIR}/sentinel-workspace" \
+        --source-dir="${S}" \
+        --build-command="bash ${T}/run.do_compile" \
+        --test-command="bash ${T}/run.do_test" \
+        --test-result-dir="${TEST_RESULT_DIR}" \
+        --output-dir="${SHIFT_REPORT_DIR}/${PF}/checktest" \
+        --compiledb-dir="${B}" \
+        ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_LIMIT', '--limit')} \
+        ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_TIMEOUT', '--timeout')} \
+        ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_GENERATOR', '--generator')} \
+        ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_SEED', '--seed')} \
+        ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_FROM', '--from')} \
+        ${@shiftutils_cli_bool(d, 'SHIFT_CHECKTEST_UNCOMMITTED', '--uncommitted')} \
+        ${@shiftutils_cli_bool(d, 'SHIFT_CHECKTEST_VERBOSE', '--verbose')} \
+        ${@shiftutils_cli_multi(d, 'SHIFT_CHECKTEST_OPERATORS', '--operator')} \
+        ${@shiftutils_cli_multi(d, 'SHIFT_CHECKTEST_PATTERNS', '--pattern')} \
+        ${@shiftutils_cli_multi(d, 'SHIFT_CHECKTEST_EXTENSIONS', '--extension')} \
+        2>&1 | shiftutils_stream_plain
+    SENTINEL_RC=${PIPESTATUS[0]}
 
-    # Insert the target option to the file
-    replace_files([new_file],
-                  '("command": ".*)(")',
-                  dd.expand(r'\g<1> --target=${TARGET_SYS}\g<2>'))
+    rm -rf "${TEST_RESULT_DIR}"
+    if [ -d "${BACKUP_DIR}" ]; then
+        mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
+    fi
 
-    # Create test reports
-    dd.setVar("SHIFT_REPORT_DIR", expected_dir)
+    ${@save_metadata(d) or ''}
 
-    import time
-    started = time.time()
-    exec_func("do_test", dd)
-    elapsed = max(int(dd.getVar("SHIFT_CHECKTEST_MAX_TIMEOUT", True)), round(time.time() - started) * 2.0)
-
-    test_result_dir = dd.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-    if len(find_files(test_result_dir, "*.[xX][mM][lL]")) == 0:
-        warn("No test result files generated at %s" % test_result_dir, dd)
-        return
-
-    try:
-        exec_func("do_coverage", dd)
-        coverage_file = dd.expand("${B}/coverage.info")
-        coverage_info = shiftutils_get_coverage_info(dd, coverage_file)
-    except Exception as e:
-        warn("Failed to read %s: %s" % (coverage_file, str(e)), dd)
-        coverage_info = dict()
-
-    debug("coverage_info: %s" % str(coverage_info))
-
-    debug("Creating the mutation database")
-    mutant_file = os.path.join(work_dir, "mutables.db")
-    verbose = "--verbose" if bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)) else ""
-
-    try:
-        exec_proc(["sentinel", "populate",
-                   "--work-dir", work_dir,
-                   "--build-dir", work_dir,
-                   "--output-dir", work_dir,
-                   "--generator", dd.getVar("SHIFT_CHECKTEST_GENERATOR", True),
-                   "--scope", dd.getVar("SHIFT_CHECKTEST_SCOPE", True),
-                   "--limit", dd.getVar("SHIFT_CHECKTEST_LIMIT", True),
-                   "--mutants-file-name", os.path.basename(mutant_file),
-                   " ".join(["--extensions=" + ext for ext in dd.getVar("SHIFT_CHECKTEST_EXTENSIONS", True).split()]),
-                   " ".join(['--exclude="%s"' % exc for exc in shlex_split(dd.getVar("SHIFT_CHECKTEST_EXCLUDES", True))]),
-                   verbose,
-                   dd.expand("--seed ${SHIFT_CHECKTEST_SEED}") if dd.getVar("SHIFT_CHECKTEST_SEED", True) else "",
-                   dd.getVar("S", True)], dd)
-    except bb.process.ExecutionError as e:
-        error("Populating failed: %s" % e, dd)
-        return
-
-    for line in readlines(mutant_file):
-        mutated_file = line.split(",")[1]
-        mutated_line = line.split(",")[3]
-        if not (mutated_file in coverage_info and mutated_line in coverage_info[mutated_file]):
-            debug("Mutated code line uncovered by test cases - ignore (%s)" % str(line))
-            try:
-                exec_proc(["sentinel", "evaluate",
-                           "--mutant", '"%s"' % line,
-                           "--expected", expected_dir,
-                           "--actual", actual_dir,
-                           "--output-dir", eval_dir,
-                           "--test-state", "uncovered",
-                           verbose,
-                           dd.getVar("S", True)], dd)
-            except:
-                pass
-            continue
-
-        try:
-            debug("Mutating the source")
-            exec_proc(["sentinel", "mutate",
-                       "--mutant", '"%s"' % line,
-                       "--work-dir", backup_dir,
-                       verbose,
-                       dd.getVar("S", True)], dd)
-            try:
-                test_state = "success"
-                exec_func("do_configure", dd)
-                exec_func("do_compile", dd)
-
-                dd.setVar("SHIFT_REPORT_DIR", actual_dir)
-                bb.utils.remove(actual_dir, True)
-                bb.utils.mkdirhier(actual_dir)
-                exec_func("do_test", dd,
-                          bb.utils.to_boolean(dd.getVar("SHIFT_CHECKTEST_VERBOSE", True)),
-                          timeout=elapsed)
-            except (bb.BBHandledException, bb.process.ExecutionError) as e:
-                debug("Failed to run do_checktest: %s" % e)
-                test_state = "timeout" if e.exitcode == 124 else "build_failure"
-
-            debug("Evaluating the test result")
-            exec_proc(["sentinel", "evaluate",
-                       "--mutant", '"%s"' % line,
-                       "--expected", expected_dir,
-                       "--actual", actual_dir,
-                       "--output-dir", eval_dir,
-                       "--test-state", test_state,
-                       verbose,
-                       dd.getVar("S", True)], dd)
-        finally:
-            debug("Restoring the mutated source")
-            for filename in oe.path.find(backup_dir):
-                os.utime(filename, None)
-            oe.path.copytree(backup_dir, dd.getVar("S", True))
-            bb.utils.remove(backup_dir, True)
-
-    # Create the mutation test report if necessary
-    cmdline = ["sentinel", "report",
-               "--evaluation-file", os.path.join(eval_dir, "EvaluationResults"),
-               verbose,
-               dd.getVar("S", True)]
-
-    if d.getVar("SHIFT_REPORT_DIR", True):  # Use original datastore
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/checktest")
-        mkdirhier(report_dir, True)
-
-        save_metadata(d)
-
-        cmdline.extend(["--output-dir", report_dir])
-
-    try:
-        exec_proc(cmdline, dd)
-    except bb.process.ExecutionError as e:
-        warn("Reporting failed: %s" % e, dd)
-        return
+    return ${SENTINEL_RC}
+}
