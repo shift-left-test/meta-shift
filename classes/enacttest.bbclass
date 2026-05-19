@@ -68,70 +68,56 @@ do_compile:append:class-target() {
     fi
 }
 
-python enacttest_do_test() {
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
+enacttest_do_test() {
+    export HOME="${WORKDIR}"
 
-    env = os.environ.copy()
-    env["HOME"] = d.getVar("WORKDIR")
+    local NPM_ARGS=""
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+        rm -rf "${REPORT_DIR}"
+        mkdir -p "${REPORT_DIR}"
+        export JEST_JUNIT_OUTPUT_DIR="${REPORT_DIR}"
+        NPM_ARGS="--reporters=default --reporters=jest-junit"
 
-    cmd = ["npm", "test", "--"]
+        ${@save_metadata(d) or ''}
+    fi
 
-    if d.getVar("SHIFT_REPORT_DIR", True):
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-        mkdirhier(report_dir, True)
-        env["JEST_JUNIT_OUTPUT_DIR"] = report_dir
-        cmd.append("--reporters=default")
-        cmd.append("--reporters=jest-junit")
-        save_metadata(d)
+    bbplain "${PF} do_${BB_CURRENTTASK}: Running tests..."
 
-    # Redirect stderr to stdout to show test execution results.
-    cmd.append("2>&1")
+    local TEST_RC=0
+    ( cd "${S}" && npm test -- ${NPM_ARGS} 2>&1 ) | shiftutils_stream_plain
+    TEST_RC=${PIPESTATUS[0]}
 
-    plain("Running tests...", d)
-    try:
-        timeout(exec_proc, cmd, d, env=env, cwd=d.getVar("S", True))
-    except bb.process.ExecutionError as e:
-        if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
-            error(str(e), d)
+    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
+        bberror "npm test failed with exit code ${TEST_RC}"
+    fi
 }
 
-python enacttest_do_coverage() {
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
+enacttest_do_coverage() {
+    export HOME="${WORKDIR}"
 
-    env = os.environ.copy()
-    env["HOME"] = d.getVar("WORKDIR")
+    local NPM_ARGS="--coverage"
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        local TEST_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+        local COV_DIR="${SHIFT_REPORT_DIR}/${PF}/coverage"
+        mkdir -p "${TEST_DIR}" "${COV_DIR}"
+        export JEST_JUNIT_OUTPUT_DIR="${TEST_DIR}"
+        NPM_ARGS="${NPM_ARGS} --reporters=default --reporters=jest-junit"
+        NPM_ARGS="${NPM_ARGS} --coverageDirectory=${COV_DIR}"
+        NPM_ARGS="${NPM_ARGS} --coverageReporters=text --coverageReporters=html --coverageReporters=cobertura"
 
-    cmd = ["npm", "test", "--", "--coverage"]
+        ${@save_metadata(d) or ''}
+    fi
 
-    if d.getVar("SHIFT_REPORT_DIR", True):
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-        mkdirhier(report_dir, True)
-        env["JEST_JUNIT_OUTPUT_DIR"] = report_dir
-        cmd.append('--reporters=default')
-        cmd.append('--reporters=jest-junit')
+    bbplain "${PF} do_${BB_CURRENTTASK}: Running tests with coverage..."
 
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/coverage")
-        mkdirhier(report_dir, True)
-        cmd.append('--coverageDirectory="%s"' % report_dir)
-        cmd.append('--coverageReporters="text"')
-        cmd.append('--coverageReporters="html"')
-        cmd.append('--coverageReporters="cobertura"')
+    local TEST_RC=0
+    ( cd "${S}" && npm test -- ${NPM_ARGS} 2>&1 ) | shiftutils_stream_plain
+    TEST_RC=${PIPESTATUS[0]}
 
-        save_metadata(d)
-
-    # Redirect stderr to stdout to show test execution results.
-    cmd.append("2>&1")
-
-    plain("Running tests...", d)
-    try:
-        exec_proc(cmd, d, env=env, cwd=d.getVar("S", True))
-    except bb.process.ExecutionError as e:
-        if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
-            error(str(e), d)
+    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
+        bberror "npm test failed with exit code ${TEST_RC}"
+    fi
 }
 
 enacttest_do_checktest() {
@@ -139,8 +125,7 @@ enacttest_do_checktest() {
 }
 
 python enacttest_do_report() {
-    tasks = ["coverage", "checktest"]
-    shifttest_report(d, tasks)
+    shifttest_report(d, tasks=["coverage", "checktest"])
 }
 
 EXPORT_FUNCTIONS do_test do_coverage do_checktest do_report

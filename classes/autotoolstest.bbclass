@@ -48,80 +48,51 @@ do_configure:append:class-target() {
     chmod 755 ${WORKDIR}/test-runner.sh
 }
 
-python autotoolstest_do_test() {
-    if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        warn("Unsupported class type of the recipe", d)
-        return
+autotoolstest_do_test() {
+    local REPORT_DIR=""
 
-    env = os.environ.copy()
+    export LOG_COMPILER="${WORKDIR}/test-runner.sh"
 
-    # Set up the test runner
-    env["LOG_COMPILER"] = d.expand("${WORKDIR}/test-runner.sh")
+    if ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_SHUFFLE')) else 'false'}; then
+        export GTEST_SHUFFLE=1
+    fi
 
-    # Let tests run in random order
-    if bb.utils.to_boolean(d.getVar("SHIFT_TEST_SHUFFLE", True)):
-        env["GTEST_SHUFFLE"] = "1"
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+        rm -rf "${REPORT_DIR}"
+        mkdir -p "${REPORT_DIR}"
 
-    configured = d.getVar("SHIFT_REPORT_DIR", True)
+        ${@save_metadata(d) or ''}
 
-    if configured:
-        report_dir = d.expand("${SHIFT_REPORT_DIR}/${PF}/test")
-        mkdirhier(report_dir, True)
+        export GTEST_OUTPUT="xml:${REPORT_DIR}/"
+    fi
 
-        save_metadata(d)
+    cpptest_capture_coverage_baseline
 
-        # Create Google test report files
-        env["GTEST_OUTPUT"] = "xml:%s/" % report_dir
+    if [ -n "${SHIFT_TEST_FILTER}" ]; then
+        export GTEST_FILTER="${SHIFT_TEST_FILTER}"
+    fi
 
-    for gcdaFile in find_files(d.getVar("B", True), "*.gcda"):
-        bb.utils.remove(gcdaFile)
+    local TEST_RC=0
+    ( cd "${B}" && make check ) || TEST_RC=$?
 
-    # Prepare for the coverage reports
-    check_call(["lcov", "-c", "-i",
-                "-d", d.getVar("B", True),
-                "-o", d.expand("${B}/coverage_base.info"),
-                "--ignore-errors", "gcov",
-                "--gcov-tool", d.expand("${TARGET_PREFIX}gcov"),
-                shiftutils_get_branch_coverage_option(d, "lcov")], d)
+    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
+        bberror "make check failed with exit code ${TEST_RC}"
+    fi
 
-    # Run tests matching regular expression
-    if d.getVar("SHIFT_TEST_FILTER", True):
-        env["GTEST_FILTER"] = d.getVar("SHIFT_TEST_FILTER", True)
+    find "${B}" -name 'test-suite.log' -exec cat {} \; | shiftutils_stream_plain
 
-    try:
-        timeout(check_call ,"make check", d, env=env, cwd=d.getVar("B", True))
-    except bb.process.ExecutionError as e:
-        if not bb.utils.to_boolean(d.getVar("SHIFT_TEST_SUPPRESS_FAILURES", True)):
-            error(str(e), d)
-        if d.getVar("SHIFT_TIMEOUT", True) and e.exitcode == 124:
-            err = bb.BBHandledException(e)
-            err.exitcode = e.exitcode
-            raise err
-
-    # Print test logs
-    for f in find_files(d.getVar("B", True), "test-suite.log"):
-        for line in readlines(f):
-            plain(line, d)
-
-    if configured:
-        if os.path.exists(report_dir):
-            # Prepend the package name to each of the classname tags for GTest reports
-            xml_files = find_files(report_dir, "*.xml")
-            replace_files(xml_files, 'classname="', d.expand('classname="${PN}.'))
-        else:
-            warn("No test report files found at %s" % report_dir, d)
+    if [ -n "${REPORT_DIR}" ] && [ -d "${REPORT_DIR}" ]; then
+        cpptest_prefix_xml_classnames "${REPORT_DIR}"
+    fi
 }
 
-python autotoolstest_do_coverage() {
-    cpptest_coverage(d)
+autotoolstest_do_coverage() {
+    cpptest_do_coverage
 }
 
-python autotoolstest_do_checktest() {
-    cpptest_checktest(d)
+autotoolstest_do_checktest() {
+    cpptest_do_checktest
 }
 
-python autotoolstest_do_report() {
-    shifttest_report(d)
-}
-
-EXPORT_FUNCTIONS do_test do_coverage do_checktest do_report
+EXPORT_FUNCTIONS do_test do_coverage do_checktest
