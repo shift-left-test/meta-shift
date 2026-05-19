@@ -9,8 +9,8 @@ import pytest
 
 
 @pytest.fixture(scope="module")
-def stdout(test_build):
-    return test_build.shell.execute("bitbake cmake-project -c report").stdout
+def stdout(report_build):
+    return report_build.shell.execute("bitbake cmake-project -c report").stdout
 
 
 @pytest.fixture(scope="module")
@@ -21,10 +21,8 @@ def report(report_build):
 
 
 def test_do_checktest(stdout, report):
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
-    with report.files.readAsHtml("report/cmake-project-1.0.0-r0/checktest/index.html") as data:
-        assert data["html/body/h1"] == "Sentinel Mutation Coverage Report"
+    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Generation Summary")
+    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Score Report")
     with report.files.readAsXml("report/cmake-project-1.0.0-r0/checktest/mutations.xml") as data:
         assert len(data["mutations/mutation"]) == 2
 
@@ -32,14 +30,13 @@ def test_do_checktest(stdout, report):
 def test_do_checktest_excludes(stdout, report):
     with report.files.conf() as conf:
         conf.set("SHIFT_CHECKTEST_SEED", "1234")
-        conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
-        conf.set("SHIFT_CHECKTEST_EXCLUDES", "minus.cpp plus/plus.cpp")
-
-        o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stdout.contains("exclude: plus/plus.cpp")
-        assert o.stdout.contains("Mutation Coverage Report")
-        assert not o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
-        assert not o.stdout.contains("exclude: minus.cpp")
+        conf.set("SHIFT_CHECKTEST_PATTERNS", "!plus/plus.cpp")
+        report.shell.execute("bitbake cmake-project -c checktest")
+        with report.files.readAsXml("report/cmake-project-1.0.0-r0/checktest/mutations.xml") as data:
+            paths = data["mutations/mutation/sourceFilePath"]
+            if not isinstance(paths, list):
+                paths = [paths]
+            assert "plus/plus.cpp" not in paths
 
 
 def test_do_checktest_extensions(stdout, report):
@@ -67,17 +64,24 @@ def test_do_checktest_generator(stdout, report):
 
 
 def test_do_checktest_seed(stdout, report):
+    def collect_mutation_ids():
+        with report.files.readAsXml("report/cmake-project-1.0.0-r0/checktest/mutations.xml") as data:
+            paths = data["mutations/mutation/sourceFilePath"]
+            lines = data["mutations/mutation/lineNumber"]
+            mutators = data["mutations/mutation/mutator"]
+            if not isinstance(paths, list):
+                paths, lines, mutators = [paths], [lines], [mutators]
+            return sorted(zip(paths, lines, mutators))
+
     with report.files.conf() as conf:
         conf.set("SHIFT_CHECKTEST_SEED", "1234")
-        conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
-
-        o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/program/main.cpp,main,37,39,37,40,\*")
-
-        o = report.shell.execute("bitbake cmake-project -c checktestall")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/plus/plus.cpp,plus,30,12,30,13,\*")
-        assert o.stdout.matches(r"cmake-project/1.0.0(-r0)?/git/program/main.cpp,main,37,39,37,40,\*")
+        report.shell.execute("bitbake cmake-project -c checktest")
+        first = collect_mutation_ids()
+    with report.files.conf() as conf:
+        conf.set("SHIFT_CHECKTEST_SEED", "1234")
+        report.shell.execute("bitbake cmake-project -c checktest")
+        second = collect_mutation_ids()
+    assert first == second
 
 
 def test_do_checktest_verbose(stdout, report):
@@ -86,7 +90,7 @@ def test_do_checktest_verbose(stdout, report):
         conf.set("SHIFT_CHECKTEST_VERBOSE", "1")
 
         o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stdout.contains("cmake-project-1.0.0-r0 do_checktest: CommandPopulate [INFO] random seed:1234")
+        assert o.stdout.contains("(seed: 1234)")
 
 
 def test_do_coverage(stdout, report):
@@ -125,8 +129,9 @@ def test_do_coverage_excludes(stdout, report):
             assert data["coverage/packages/package/classes/class"]["branch-rate"] != "0.0"
 
 
-def test_do_report(stdout, report):
-    assert stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
+def test_do_report(test_build):
+    o = test_build.shell.execute("bitbake cmake-project -c report")
+    assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
 
 
 def test_do_test(stdout, report):

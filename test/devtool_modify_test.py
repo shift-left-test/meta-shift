@@ -9,9 +9,9 @@ import pytest
 
 
 @pytest.fixture(scope="module")
-def stdout(test_build):
-    with test_build.externalsrc("cmake-project"):
-        return test_build.shell.execute("bitbake cmake-project -c report").stdout
+def stdout(report_build):
+    with report_build.externalsrc("cmake-project"):
+        return report_build.shell.execute("bitbake cmake-project -c report").stdout
 
 
 @pytest.fixture(scope="module")
@@ -23,10 +23,8 @@ def report(report_build):
 
 
 def test_do_checktest(stdout, report):
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Population Report")
-    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Coverage Report")
-    with report.files.readAsHtml("report/cmake-project-1.0.0-r0/checktest/index.html") as data:
-        assert data["html/body/h1"] == "Sentinel Mutation Coverage Report"
+    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Generation Summary")
+    assert stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Score Report")
     with report.files.readAsXml("report/cmake-project-1.0.0-r0/checktest/mutations.xml") as data:
         assert len(data["mutations/mutation"]) == 2
 
@@ -45,8 +43,10 @@ def test_do_coverage(stdout, report):
         assert any(map(lambda x: x["name"] == "test.PlusTest.cpp" and x["branch-rate"] != "0.0", class_data))
 
 
-def test_do_report(stdout, report):
-    assert stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
+def test_do_report(test_build):
+    with test_build.externalsrc("cmake-project"):
+        o = test_build.shell.execute("bitbake cmake-project -c report")
+        assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
 
 
 def test_do_test(stdout, report):
