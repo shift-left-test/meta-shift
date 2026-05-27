@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "master"
+BRANCH = "wrynose"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,13 +31,13 @@ logger = logging.getLogger(__name__)
 Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "branch"])
 
 REPOS = [
-    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", None),
+    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", "2.18"),
     Repo("openembedded-core", "https://github.com/openembedded/openembedded-core.git", "openembedded-core", "meta", None),
     Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
     Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
     Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", None),
     Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
-    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", None),
+    Repo("meta-qt5", "https://github.com/meta-qt5/meta-qt5.git", "meta-qt5", "", "master"),
     Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "6.11"),
     Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),

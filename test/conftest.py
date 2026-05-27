@@ -10,7 +10,7 @@ import pytest
 import shutil
 
 
-BRANCH = "master"
+BRANCH = "wrynose"
 
 
 @pytest.fixture(scope="session")
