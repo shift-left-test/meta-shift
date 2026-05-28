@@ -37,7 +37,7 @@ Test files follow the pattern `test/*_test.py`. Tests are integration tests that
 ### Class Inheritance Chain
 
 ```
-shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu helpers, report I/O)
+shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders, metadata I/O, branch-coverage flag, isNativeCrossSDK)
   └── shifttest.bbclass     # Base task definitions (test, coverage, checktest, report)
         ├── cpptest.bbclass  # C/C++ implementation (lcov, sentinel integration)
         │     ├── cmaketest.bbclass    # CMake-specific build/test logic
@@ -53,13 +53,13 @@ shiftutils.bbclass          # Utility functions (exec_proc, check_call, qemu hel
 - **Task structure:** Each task (test, coverage, checktest, report) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
 - **Build system dispatch:** `cpptest.bbclass` implements the core C/C++ logic. Build-system-specific classes (`cmaketest`, `autotoolstest`, `qmaketest`) inherit from it and override configure/compile/test steps.
 - **Report generation:** `do_report` orchestrates all other tasks by calling `exec_func("do_X", dd)` on a copied datastore. Reports go to `${SHIFT_REPORT_DIR}/${PF}/<task>/`.
-- **Conditional features:** `clang-tidy` and mutation testing (`sentinel`) require `meta-clang`. Dynamic layer recipes are in `dynamic-layers/meta-clang/`.
+- **Conditional features:** Mutation testing (`sentinel`) requires `meta-clang`. Dynamic layer recipes are in `dynamic-layers/meta-clang/`.
 - **Task serialization:** When `SHIFT_PARALLEL_TASKS=0`, tasks use lockfiles to prevent concurrent execution.
 - **Native/cross/SDK filtering:** Tasks skip recipes detected as native, cross, or SDK variants via `isNativeCrossSDK()`.
 
 ### Bitbake Extensions (lib/)
 
-- `devtool/` plugins: `show` (recipe info), `cache` (cache status)
+- `devtool/` plugins: `show` (recipe info)
 - `bblayers/` plugins: `inspect`, `status`, `test-layers`, `test-recipes`
 - `recipetool/` plugins: `inspect` (recipe metadata)
 
@@ -84,7 +84,7 @@ All variables have defaults in `conf/layer.conf`. Key ones:
 - `SHIFT_CHECKTEST_ENABLED` (default: `0`) — enable mutation testing (requires meta-clang)
 - `SHIFT_COVERAGE_BRANCH` (default: `1`) — include branch coverage
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
-- `SHIFT_REPORT_DIR` (default: `${TMPDIR}/shift-reports`) — report output directory
+- `SHIFT_REPORT_DIR` (no default — must be set in `local.conf` to enable report output)
 
 ### Documentation
 - When modifying code, always update `README.md` accordingly (feature additions/removals, configuration changes, task changes, etc.)
