@@ -54,6 +54,7 @@ do_compile:append:class-target() {
     enacttest_npm_install
 
     bbnote "Checking if @enact/cli is installed..."
+    STATUS=0
     ${STAGING_BINDIR_NATIVE}/npm list @enact/cli || eval "STATUS=\$?"
     if [ ${STATUS} -ne 0 ]; then
         bbnote "Unable to locate @enact/cli. Installing the latest version of the module..."
@@ -61,6 +62,7 @@ do_compile:append:class-target() {
     fi
 
     bbnote "Checking if jest-junit is installed..."
+    STATUS=0
     ${STAGING_BINDIR_NATIVE}/npm list jest-junit || eval "STATUS=\$?"
     if [ ${STATUS} -ne 0 ]; then
         bbnote "Unable to locate jest-junit. Installing the latest version of the module..."
