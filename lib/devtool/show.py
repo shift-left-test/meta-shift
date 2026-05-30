@@ -163,6 +163,7 @@ def parse_metadata(tinfoil, recipe):
 def show(args, config, basepath, workspace):
     """Show the bitbake metadata variables
     """
+    tinfoil = None
     try:
         tinfoil = setup_tinfoil(config_only=True, basepath=basepath)
         data = parse_metadata(tinfoil, args.recipe)
@@ -181,7 +182,8 @@ def show(args, config, basepath, workspace):
         logger.error(str(e))
         return 2
     finally:
-        tinfoil.shutdown()
+        if tinfoil:
+            tinfoil.shutdown()
 
 
 def register_commands(subparsers, context):
