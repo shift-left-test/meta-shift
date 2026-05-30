@@ -190,7 +190,7 @@ for e in db:
         e["file"] = os.path.normpath(os.path.join(e["directory"], e["file"]))
     abs_file = e["file"]
     base = os.path.basename(abs_file)
-    pattern = re.compile(r"(?<![\w/])\S*?" + re.escape(base) + r"(?!\w)")
+    pattern = re.compile(r"(?<![\w/])(?:\S*/)?" + re.escape(base) + r"(?=\s|$)")
     cmd = pattern.sub(abs_file, e["command"])
     cmd = re.sub(r"\s*--target=\S+", "", cmd)
     e["command"] = cmd + " " + target_opt
