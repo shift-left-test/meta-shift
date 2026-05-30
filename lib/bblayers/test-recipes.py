@@ -40,14 +40,14 @@ def do_test_recipes(args):
     print("=" * 74)
 
     for p in sorted(pkg_pn):
+        if args.pnspec:
+            if not fnmatch.fnmatch(p, args.pnspec):
+                continue
+
         pref = preferred_versions[p]
         realfn = bb.cache.virtualfn2realfn(pref[1])
         preffile = realfn[0]
         layerdir = bb.utils.get_file_layer(preffile, tinfoil.config_data)
-
-        if args.pnspec:
-            if not fnmatch.fnmatch(p, args.pnspec):
-                continue
 
         if not is_testable(preffile):
             continue
