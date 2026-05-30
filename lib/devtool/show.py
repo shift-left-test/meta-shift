@@ -19,7 +19,7 @@ def escape_shell_value(value):
     return value
 
 
-def format_variable(data, variable, flag=None, shell=False, show_unexpanded=True):
+def format_variable(data, variable, flag=None, show_unexpanded=True):
     if flag:
         value, parser = data.getVarFlag(variable, flag, False, retparser=True)
         unexpanded = parser.value
@@ -92,7 +92,7 @@ def print_variable(data, variable, show_unexpanded=True):
 
             print("%s () {\n%s}\n" % (variable, value))
     else:
-        print(format_variable(data, variable, shell=True, show_unexpanded=show_unexpanded))
+        print(format_variable(data, variable, show_unexpanded=show_unexpanded))
 
 
 def variable_function_deps(data, variable, deps, seen):
@@ -139,7 +139,7 @@ def sorted_variables(data, variables=None, show_deps=True):
     else:
         for variable in variables:
             if variable not in all_variables:
-                logger.warn("Requested variable '%s' does not exist", variable)
+                logger.warning("Requested variable '%s' does not exist", variable)
         variables = sorted(variables, key=lambda v: v.lower())
         if show_deps:
             deps = bb.data.generate_dependencies(data, set())[1]
