@@ -49,7 +49,8 @@ cmaketest_do_test() {
     fi
 
     local TEST_RC=0
-    ( cd "${B}" && ${CTEST_CMD} ) || TEST_RC=$?
+    ( cd "${B}" && ${CTEST_CMD} ) 2>&1 | shiftutils_stream_plain
+    TEST_RC=${PIPESTATUS[0]}
 
     if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
         bberror "ctest failed with exit code ${TEST_RC}"
