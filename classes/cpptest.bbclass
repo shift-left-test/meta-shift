@@ -126,7 +126,7 @@ cpptest_do_coverage() {
     fi
 
     bbplain "${PF} do_${BB_CURRENTTASK}: GCC Code Coverage Report"
-    lcov --list "${DATAFILE}" ${LCOV_BRANCH_OPT}
+    lcov --list "${DATAFILE}" ${LCOV_BRANCH_OPT} | shiftutils_stream_plain
 
     if [ -n "${SHIFT_REPORT_DIR}" ]; then
         local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/coverage"
