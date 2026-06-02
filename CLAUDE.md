@@ -81,7 +81,7 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 All variables have defaults in `conf/layer.conf`. Key ones:
 
 - `SHIFT_ENABLED` (default: `0`) — master enable switch
-- `SHIFT_CHECKTEST_ENABLED` (default: `0`) — enable mutation testing (requires meta-clang)
+- `SHIFT_CHECKTEST_ENABLED` (default: `1`) — enable mutation testing (requires meta-clang)
 - `SHIFT_COVERAGE_BRANCH` (default: `1`) — include branch coverage
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
 - `SHIFT_REPORT_DIR` (no default — must be set in `local.conf` to enable report output)
