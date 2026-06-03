@@ -10,13 +10,13 @@ import pytest
 
 @pytest.fixture(scope="module")
 def stdout(report_build):
-    return report_build.shell.execute("bitbake enact-project -c report").stdout
+    return report_build.shell.execute("bitbake enact-project -c verify").stdout
 
 
 @pytest.fixture(scope="module")
 def report(report_build):
     report_build.files.remove("report")
-    assert report_build.shell.execute("bitbake enact-project -c report").stderr.empty()
+    assert report_build.shell.execute("bitbake enact-project -c verify").stderr.empty()
     return report_build
 
 
@@ -61,8 +61,8 @@ def test_do_coverage_excludes(stdout, report):
     pass
 
 
-def test_do_report(test_build):
-    o = test_build.shell.execute("bitbake enact-project -c report")
+def test_do_verify(test_build):
+    o = test_build.shell.execute("bitbake enact-project -c verify")
     assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
 
 
