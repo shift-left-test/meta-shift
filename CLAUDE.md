@@ -38,7 +38,7 @@ Test files follow the pattern `test/*_test.py`. Tests are integration tests that
 
 ```
 shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders, metadata I/O, branch-coverage flag, isNativeCrossSDK)
-  └── shifttest.bbclass     # Base task definitions (test, coverage, checktest, report)
+  └── shifttest.bbclass     # Base task definitions (test, coverage, checktest, verify)
         ├── cpptest.bbclass  # C/C++ implementation (lcov, sentinel integration)
         │     ├── cmaketest.bbclass    # CMake-specific build/test logic
         │     ├── autotoolstest.bbclass # Autotools-specific build/test logic
@@ -50,9 +50,9 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 
 ### Key Design Patterns
 
-- **Task structure:** Each task (test, coverage, checktest, report) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
+- **Task structure:** Each task (test, coverage, checktest, verify) has a `do_X` (single recipe) and `do_Xall` (recursive over dependencies) variant. All tasks are `nostamp` (always re-run).
 - **Build system dispatch:** `cpptest.bbclass` implements the core C/C++ logic. Build-system-specific classes (`cmaketest`, `autotoolstest`, `qmaketest`) inherit from it and override configure/compile/test steps.
-- **Report generation:** `do_report` orchestrates all other tasks by calling `exec_func("do_X", dd)` on a copied datastore. Reports go to `${SHIFT_REPORT_DIR}/${PF}/<task>/`.
+- **Verification:** `do_verify` orchestrates all other tasks by calling `exec_func("do_X", dd)` on a copied datastore. Reports go to `${SHIFT_REPORT_DIR}/${PF}/<task>/`.
 - **Conditional features:** Mutation testing (`sentinel`) requires `meta-clang`. Dynamic layer recipes are in `dynamic-layers/meta-clang/`.
 - **Task serialization:** When `SHIFT_PARALLEL_TASKS=0`, tasks use lockfiles to prevent concurrent execution.
 - **Native/cross/SDK filtering:** Tasks skip recipes detected as native, cross, or SDK variants via `isNativeCrossSDK()`.
@@ -95,6 +95,6 @@ All variables have defaults in `conf/layer.conf`. Key ones:
 bitbake <recipe> -c test           # Unit tests
 bitbake <recipe> -c coverage       # Code coverage
 bitbake <recipe> -c checktest      # Mutation testing
-bitbake <recipe> -c report         # All of the above consolidated
+bitbake <recipe> -c verify         # All of the above consolidated
 # Add 'all' suffix for recursive variants: testall, coverageall, etc.
 ```
