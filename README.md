@@ -58,7 +58,7 @@ The **meta-shift** layer provides a comprehensive suite of recipes and classes t
 | Type | Layers |
 | :--- | :--- |
 | **Mandatory** | `meta-oe`, `meta-python` (from meta-openembedded) |
-| **Optional** | `meta-qt5`/`meta-qt6` (for Qt support), `meta-clang` (for mutation testing) |
+| **Optional** | `meta-qt6` (for Qt support), `meta-clang` (for mutation testing) |
 
 ### Supported Tasks
 
