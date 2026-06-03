@@ -126,8 +126,8 @@ enacttest_do_checktest() {
     :
 }
 
-python enacttest_do_report() {
+python enacttest_do_verify() {
     shifttest_report(d, tasks=["coverage", "checktest"])
 }
 
-EXPORT_FUNCTIONS do_test do_coverage do_checktest do_report
+EXPORT_FUNCTIONS do_test do_coverage do_checktest do_verify
