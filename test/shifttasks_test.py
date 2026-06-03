@@ -19,10 +19,10 @@ def test_do_coverageall(stdout, release_build):
     assert o.stdout.contains("WARNING: core-image-minimal-1.0-r0 do_coverageall: No recipes found to run 'do_coverage' task.")
 
 
-def test_do_reportall(stdout, release_build):
-    assert stdout.contains("do_reportall")
-    o = release_build.shell.execute("bitbake core-image-minimal -c reportall")
-    assert o.stdout.contains("WARNING: core-image-minimal-1.0-r0 do_reportall: No recipes found to run 'do_report' task.")
+def test_do_verifyall(stdout, release_build):
+    assert stdout.contains("do_verifyall")
+    o = release_build.shell.execute("bitbake core-image-minimal -c verifyall")
+    assert o.stdout.contains("WARNING: core-image-minimal-1.0-r0 do_verifyall: No recipes found to run 'do_verify' task.")
 
 
 def test_do_testall(stdout, release_build):

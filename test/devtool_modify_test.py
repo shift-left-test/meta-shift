@@ -11,14 +11,14 @@ import pytest
 @pytest.fixture(scope="module")
 def stdout(report_build):
     with report_build.externalsrc("cmake-project"):
-        return report_build.shell.execute("bitbake cmake-project -c report").stdout
+        return report_build.shell.execute("bitbake cmake-project -c verify").stdout
 
 
 @pytest.fixture(scope="module")
 def report(report_build):
     report_build.files.remove("report")
     with report_build.externalsrc("cmake-project"):
-        assert report_build.shell.execute("bitbake cmake-project -c report").stderr.empty()
+        assert report_build.shell.execute("bitbake cmake-project -c verify").stderr.empty()
         return report_build
 
 
@@ -43,9 +43,9 @@ def test_do_coverage(stdout, report):
         assert any(map(lambda x: x["name"] == "test.PlusTest.cpp" and x["branch-rate"] != "0.0", class_data))
 
 
-def test_do_report(test_build):
+def test_do_verify(test_build):
     with test_build.externalsrc("cmake-project"):
-        o = test_build.shell.execute("bitbake cmake-project -c report")
+        o = test_build.shell.execute("bitbake cmake-project -c verify")
         assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
 
 
