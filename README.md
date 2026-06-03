@@ -72,9 +72,9 @@ You can execute the following tasks via `bitbake <recipe> -c <task>`:
 *   **Coverage & Metrics**
     *   `do_coverage`: Measures code coverage.
     *   `do_coverageall`: Recursively measures coverage for all dependencies.
-*   **Reporting**
-    *   `do_report`: Generates a consolidated quality report.
-    *   `do_reportall`: Generates reports for the target and its dependencies.
+*   **Verification**
+    *   `do_verify`: Runs all test, coverage, and mutation tasks for the target.
+    *   `do_verifyall`: Runs verification tasks for the target and its dependencies.
 
 ### Bitbake Tool Extensions
 
