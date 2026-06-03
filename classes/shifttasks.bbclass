@@ -52,13 +52,13 @@ do_checktestall() {
     :
 }
 
-addtask reportall
-do_reportall[recrdeptask] = "do_reportall do_report"
-do_reportall[recideptask] = "do_${BB_DEFAULT_TASK}"
-do_reportall[nostamp] = "1"
-do_reportall[doc] = "Generates reports for all recipes required to build the target"
-do_reportall[postfuncs] = "show_affected_recipes"
-do_reportall[vardepsexclude] = "show_affected_recipes"
-do_reportall() {
+addtask verifyall
+do_verifyall[recrdeptask] = "do_verifyall do_verify"
+do_verifyall[recideptask] = "do_${BB_DEFAULT_TASK}"
+do_verifyall[nostamp] = "1"
+do_verifyall[doc] = "Runs test, coverage, and mutation tasks for all recipes required to build the target"
+do_verifyall[postfuncs] = "show_affected_recipes"
+do_verifyall[vardepsexclude] = "show_affected_recipes"
+do_verifyall() {
     :
 }
