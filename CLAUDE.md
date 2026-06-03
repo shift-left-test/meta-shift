@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **License:** MIT
 - **Layer compatibility:** wrynose (current), with branches for older Yocto releases
-- **Dependencies:** meta-oe, meta-python (mandatory); meta-qt5/meta-qt6, meta-clang (optional)
+- **Dependencies:** meta-oe, meta-python (mandatory); meta-qt6, meta-clang (optional)
 
 ## Running Tests
 
@@ -66,7 +66,7 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 ### Test Infrastructure (test/)
 
 - `selftest/` module: Build environment management (`build.py`), shell execution (`shell.py`), report parsers (`parsers/`)
-- `mini-mcf.py`: Multi-repo cloner that sets up a complete Yocto workspace (bitbake, OE-core, meta-openembedded, meta-qt5/6, meta-clang, sample projects)
+- `mini-mcf.py`: Multi-repo cloner that sets up a complete Yocto workspace (bitbake, OE-core, meta-openembedded, meta-qt6, meta-clang, sample projects)
 - Test configs in `test/conf/`: `test.conf` (full suite), `release.conf` (core), `report.conf` (reports)
 
 ### Recipe Organization
