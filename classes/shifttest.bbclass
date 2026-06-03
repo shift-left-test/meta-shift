@@ -27,9 +27,9 @@ shifttest_do_checktest() {
     :
 }
 
-addtask report after do_compile
-do_report[nostamp] = "1"
-do_report[doc] = "Generates reports for the target"
+addtask verify after do_compile
+do_verify[nostamp] = "1"
+do_verify[doc] = "Runs test, coverage, and mutation tasks for the target"
 
 def shifttest_report(d, tasks=None):
     if tasks is None:
@@ -54,7 +54,7 @@ def shifttest_report(d, tasks=None):
         # this, sentinel cannot find ${T}/run.do_test as its --test-command.
         dd.setVar("BB_RUNTASK", "do_" + task)
         # In devtool/externalsrc env, externalsrc.bbclass adds
-        # ${S}/singletask.lock to every task. do_report already holds that
+        # ${S}/singletask.lock to every task. do_verify already holds that
         # lock, so the nested exec_func call would self-deadlock. Rewrite to
         # a task-specific path so the sub-task takes a different lock.
         func = "do_" + task
@@ -65,11 +65,11 @@ def shifttest_report(d, tasks=None):
                           lockfiles.replace(src_lock, dd.expand("${S}/%s_singletask.lock" % func)))
         bb.build.exec_func(func, dd)
 
-python shifttest_do_report() {
+python shifttest_do_verify() {
     shifttest_report(d)
 }
 
-EXPORT_FUNCTIONS do_report
+EXPORT_FUNCTIONS do_verify
 
 
 shiftutils_stream_plain() {
@@ -83,12 +83,12 @@ python() {
     # shift tasks no-op to avoid the boilerplate `case "${PN}" in nativesdk-*|...`
     # guard previously duplicated in every shell function.
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
-        for task in ("do_test", "do_coverage", "do_checktest", "do_report"):
+        for task in ("do_test", "do_coverage", "do_checktest", "do_verify"):
             d.setVarFlag(task, "noexec", "1")
 
     if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
         d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
         d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
         d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
-        d.appendVarFlag("do_report", "lockfiles", "${TMPDIR}/do_report.lock")
+        d.appendVarFlag("do_verify", "lockfiles", "${TMPDIR}/do_verify.lock")
 }
