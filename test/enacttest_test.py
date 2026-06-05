@@ -50,7 +50,7 @@ def test_do_coverage(stdout, report):
         assert data["html/head/title"] == "Code coverage report for All files"
     with report.files.readAsXml("report/enact-project-1.0.0-r0/coverage/cobertura-coverage.xml") as data:
         class_data = data["coverage/packages/package/classes/class"]
-        assert any(map(lambda x: x["name"] == "converter.js" and x["line-rate"] == "1" and x["branch-rate"] != "0.0", class_data))
+        assert any(map(lambda x: x["name"] == "converter.js" and float(x["line-rate"]) == 1.0 and float(x["branch-rate"]) > 0.0, class_data))
 
 
 def test_do_coverage_branch(stdout, report):
