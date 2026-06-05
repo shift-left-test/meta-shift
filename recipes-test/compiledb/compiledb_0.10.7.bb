@@ -4,26 +4,29 @@ AUTHOR = "Nick Yamane"
 HOMEPAGE = "https://github.com/nickdiego/compiledb"
 BUGTRACKER = "https://github.com/nickdiego/compiledb/issues"
 SECTION = "devel"
-LICENSE = "GPL-3.0-only"
-LIC_FILES_CHKSUM = "file://PKG-INFO;md5=1edc0f0ce6c3b1c976f0c74187d93b15"
+LICENSE = "GPL-3.0-or-later"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=784d7dc7357bd924e8d5642892bf1b6b"
 
 PYPI_PACKAGE = "compiledb"
 
 DEPENDS += "\
     ${PYTHON_PN}-bashlex \
     ${PYTHON_PN}-click \
-    ${PYTHON_PN}-shutilwhich \
+    ${PYTHON_PN}-setuptools-scm-native \
 "
 
-SRC_URI[md5sum] = "957ea6c6b66017f7ecefe9edf8ee7a80"
-SRC_URI[sha256sum] = "06bb47dd1fa04de3a12720379ff382d40441074476db7c16a27e2ad79b7e966e"
+SRC_URI[sha256sum] = "97752d8810b6977654a11a22cdc41bf6b71473bcdb5da312bc135f36d6af8271"
 
-inherit pypi setuptools3
+# compiledb >= 0.10.5 builds via PEP 517 (pyproject.toml + setuptools-scm).
+# It is fetched as a PyPI sdist with no SCM metadata, so pin the version
+# explicitly instead of letting setuptools-scm probe for a git tree.
+export SETUPTOOLS_SCM_PRETEND_VERSION = "${PV}"
+
+inherit pypi python_setuptools_build_meta
 
 RDEPENDS:${PN} += "\
     ${PYTHON_PN}-bashlex \
     ${PYTHON_PN}-click \
-    ${PYTHON_PN}-shutilwhich \
 "
 
 BBCLASSEXTEND = "native nativesdk"
