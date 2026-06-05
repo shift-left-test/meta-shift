@@ -25,7 +25,7 @@ cmaketest_do_test() {
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"
     fi
 
-    cpptest_capture_coverage_baseline
+    cpptest_reset_coverage_counters
 
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests..."
 
