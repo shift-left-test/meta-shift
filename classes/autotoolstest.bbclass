@@ -67,7 +67,7 @@ autotoolstest_do_test() {
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"
     fi
 
-    cpptest_capture_coverage_baseline
+    cpptest_reset_coverage_counters
 
     if [ -n "${SHIFT_TEST_FILTER}" ]; then
         export GTEST_FILTER="${SHIFT_TEST_FILTER}"

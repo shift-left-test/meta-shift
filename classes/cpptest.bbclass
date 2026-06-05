@@ -7,13 +7,15 @@ DEPENDS:prepend:class-target = "\
     coreutils-native \
     gmock \
     gtest \
-    lcov-native \
-    python3-lcov-cobertura-native \
+    python3-gcovr-native \
     qemu-native \
     "
 
-# Fix an issue caused by the '-ffile-prefix-map' option, which modifies source paths in .gcno files, leading to lcov failures
-DEBUG_PREFIX_MAP:class-target := "-fcanon-prefix-map \
+# Fix an issue caused by the '-ffile-prefix-map' option, which modifies source paths in .gcno files, leading to coverage parsing failures.
+# -fcanon-prefix-map is only added when the base toolchain already uses it; older
+# compilers (e.g. kirkstone's gcc-11) do not recognise the flag and would fail to build.
+DEBUG_PREFIX_MAP:class-target := "\
+${@'-fcanon-prefix-map ' if '-fcanon-prefix-map' in (d.getVar('DEBUG_PREFIX_MAP', False) or '') else ''}\
 -fmacro-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
 -fdebug-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
 -fmacro-prefix-map=${B}=${TARGET_DBGSRC_DIR} \
@@ -37,17 +39,11 @@ do_coverage[recrdeptask] += "do_test"
 # --test-command, so do_test must have run at least once first.
 do_checktest[depends] += "${PN}:do_test"
 
-# Capture a zero-coverage baseline from .gcno alone. Shared by all
-# build-system-specific do_test functions to keep their bodies identical.
-cpptest_capture_coverage_baseline() {
-    local LCOV_BRANCH_OPT="${@shiftutils_get_branch_coverage_option(d, 'lcov')}"
+# Reset coverage counters before a test run so re-runs (nostamp) do not
+# accumulate execution counts. gcovr derives zero-coverage for never-executed
+# files directly from .gcno, so no lcov baseline capture is needed.
+cpptest_reset_coverage_counters() {
     find "${B}" -name '*.gcda' -delete
-    lcov -c -i \
-        -d "${B}" \
-        -o "${B}/coverage_base.info" \
-        --ignore-errors gcov \
-        --gcov-tool "${TARGET_PREFIX}gcov" \
-        ${LCOV_BRANCH_OPT}
 }
 
 # Prepend ${PN}. to gtest XML classname attributes (idempotent).
@@ -57,14 +53,8 @@ cpptest_prefix_xml_classnames() {
 }
 
 cpptest_do_coverage() {
-    local LCOV_BRANCH_OPT="${@shiftutils_get_branch_coverage_option(d, 'lcov')}"
-    local GENHTML_BRANCH_OPT="${@shiftutils_get_branch_coverage_option(d, 'genhtml')}"
-    local DATAFILE_BASE="${B}/coverage_base.info"
-    local DATAFILE_TEST="${B}/coverage_test.info"
-    local DATAFILE_TOTAL="${B}/coverage_total.info"
-    local DATAFILE="${B}/coverage.info"
-
-    rm -f "${DATAFILE_TOTAL}" "${DATAFILE}"
+    local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/coverage"
+    local XML_FILE="${REPORT_DIR}/coverage.xml"
 
     if [ -n "${SHIFT_REPORT_DIR}" ]; then
         local TEST_RESULT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
@@ -79,80 +69,57 @@ cpptest_do_coverage() {
         return 0
     fi
 
-    lcov -c \
-        -d "${B}" \
-        -o "${DATAFILE_TEST}" \
-        --gcov-tool "${TARGET_PREFIX}gcov" \
-        ${LCOV_BRANCH_OPT}
+    # autoconf leaves conftest.gc{no,da} artifacts whose sources are removed
+    # after configure. gcovr >= 6 treats the missing source as a fatal error
+    # (gcovr <= 5 only warns), so drop them before scanning ${B}.
+    find "${B}" -name '*conftest*.gcno' -delete
+    find "${B}" -name '*conftest*.gcda' -delete
 
-    lcov \
-        -a "${DATAFILE_BASE}" \
-        -a "${DATAFILE_TEST}" \
-        -o "${DATAFILE_TOTAL}" \
-        ${LCOV_BRANCH_OPT}
-
-    lcov \
-        --extract "${DATAFILE_TOTAL}" \
-        ${LCOV_BRANCH_OPT} \
-        "${S}/*" \
-        -o "${DATAFILE}"
-
-    if [ -n "${SHIFT_COVERAGE_EXCLUDES}" ]; then
-        # Build a newline-delimited file of paths and pass via xargs so paths
-        # with spaces survive. bash arrays / process-substitution would be
-        # cleaner but BitBake's shell parser only accepts POSIX constructs.
-        local EXC_FILE=$(mktemp)
-        for exc in ${SHIFT_COVERAGE_EXCLUDES}; do
-            local matched=0
-            for path in ${S}/${exc}; do
-                if [ -e "${path}" ]; then
-                    if [ -d "${path}" ]; then
-                        # lcov --remove takes file paths, not directories.
-                        find "${path}" -type f >> "${EXC_FILE}"
-                    else
-                        echo "${path}" >> "${EXC_FILE}"
-                    fi
-                    matched=1
-                fi
-            done
-            if [ ${matched} -eq 0 ]; then
-                bbwarn "SHIFT_COVERAGE_EXCLUDES: no file matches ${exc}"
-            fi
-        done
-        if [ -s "${EXC_FILE}" ]; then
-            xargs -d '\n' -a "${EXC_FILE}" lcov --remove "${DATAFILE}" -o "${DATAFILE}" ${LCOV_BRANCH_OPT}
-        fi
-        rm -f "${EXC_FILE}"
-    fi
+    # SHIFT_COVERAGE_EXCLUDES are regexes (gcovr --exclude), space-separated.
+    local EXCLUDE_OPTS=""
+    for exc in ${SHIFT_COVERAGE_EXCLUDES}; do
+        EXCLUDE_OPTS="${EXCLUDE_OPTS} --exclude ${exc}"
+    done
 
     bbplain "${PF} do_${BB_CURRENTTASK}: GCC Code Coverage Report"
-    lcov --list "${DATAFILE}" ${LCOV_BRANCH_OPT} | shiftutils_stream_plain
 
+    # Report files only when SHIFT_REPORT_DIR is set; gcovr emits all formats
+    # (stdout text + HTML + Cobertura) in a single invocation (gcovr >= 5.0).
+    local REPORT_OPTS=""
     if [ -n "${SHIFT_REPORT_DIR}" ]; then
-        local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/coverage"
-        local XML_FILE="${REPORT_DIR}/coverage.xml"
-
         mkdir -p "${REPORT_DIR}"
-
         ${@save_metadata(d) or ''}
+        REPORT_OPTS="--html-details ${REPORT_DIR}/index.html --html-self-contained --cobertura ${XML_FILE}"
+    fi
 
-        genhtml "${DATAFILE}" \
-            --demangle-cpp \
-            --rc "genhtml_demangle_cpp_tool=${TARGET_PREFIX}c++filt" \
-            --output-directory "${REPORT_DIR}" \
-            --ignore-errors source \
-            ${GENHTML_BRANCH_OPT}
-
-        ( cd "${S}" && lcov_cobertura "${DATAFILE}" \
-            --demangle-tool "${TARGET_PREFIX}c++filt" \
-            --demangle \
-            --output "${XML_FILE}" )
-
-        if [ -f "${XML_FILE}" ]; then
-            sed -E -i "s|(<package[[:space:]]+name=\")(${PN}\.)?|\1${PN}.|g" "${XML_FILE}"
+    # SHIFT_COVERAGE_BRANCH=1 switches the text report from line to branch
+    # coverage. gcovr's text report carries a single metric, so this is a
+    # line/branch toggle; the HTML and Cobertura reports always include both.
+    # gcovr >= 7.0 replaced -b/--branches with --txt-metric (the old flag still
+    # works but warns), so feature-detect what the installed gcovr understands:
+    # kirkstone's 5.1 only has --branches, newer releases avoid the warning.
+    local BRANCH_OPT=""
+    if [ "${SHIFT_COVERAGE_BRANCH}" = "1" ]; then
+        if gcovr --help 2>&1 | grep -q -- '--txt-metric'; then
+            BRANCH_OPT="--txt-metric branch"
         else
-            bbwarn "No coverage report files generated at ${REPORT_DIR}"
+            BRANCH_OPT="--branches"
         fi
+    fi
+
+    gcovr \
+        --root "${S}" \
+        --gcov-executable "${TARGET_PREFIX}gcov" \
+        ${EXCLUDE_OPTS} \
+        --txt - \
+        ${BRANCH_OPT} \
+        ${REPORT_OPTS} \
+        "${B}" 2>&1 | shiftutils_stream_plain
+
+    # Preserve per-recipe attribution: prefix the Cobertura package name with
+    # ${PN}. (idempotent), mirroring the previous lcov_cobertura post-process.
+    if [ -n "${SHIFT_REPORT_DIR}" ] && [ -f "${XML_FILE}" ]; then
+        sed -E -i "s|(<package[[:space:]]+name=\")(${PN}\.)?|\1${PN}.|g" "${XML_FILE}"
     fi
 }
 
