@@ -23,7 +23,7 @@ The **meta-shift** layer provides a comprehensive suite of recipes and classes t
 ## Features
 
 *   **Unit Testing:** Support for major build systems (**CMake**, **QMake**, **Autotools**).
-*   **Code Coverage:** Measure and report code coverage using `lcov` and `gcovr`.
+*   **Code Coverage:** Measure and report code coverage using `gcovr`.
 *   **Mutation Testing:** Advanced quality verification by mutating source code to test test-suite robustness.
 *   **Seamless Integration:** Native support for **SDK** generation and **Jenkins** CI/CD.
 
@@ -105,8 +105,8 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_CHECKTEST_TIMEOUT` | Per-test timeout in seconds (default: sentinel auto = 1.5x baseline) | |
 | `SHIFT_CHECKTEST_UNCOMMITTED` | Include uncommitted changes in mutation scope | `0` |
 | `SHIFT_CHECKTEST_VERBOSE` | Silence the test output while running `do_checktest` | `0` |
-| `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from code coverage analysis | |
-| `SHIFT_COVERAGE_BRANCH` | Enable branch coverage generation | `1` |
+| `SHIFT_COVERAGE_BRANCH` | Show branch coverage instead of line in the text report (HTML/Cobertura always include both) | `0` |
+| `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from coverage (gcovr `--exclude` regexes, space-separated) | |
 | `SHIFT_REPORT_DIR` | Directory to store generated reports (unset = reports disabled) | |
 | `SHIFT_TEST_FILTER` | Regex to filter tests to run | |
 | `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
