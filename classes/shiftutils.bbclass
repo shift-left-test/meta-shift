@@ -68,8 +68,3 @@ def shiftutils_qemu_run_cmd(data):
 
 def shiftutils_qemu_cmake_emulator(data):
     return shiftutils_qemu_run_cmd(data).replace(' ', ';')
-
-
-def shiftutils_get_branch_coverage_option(data, tool) :
-    flag = 1 if bb.utils.to_boolean(data.getVar("SHIFT_COVERAGE_BRANCH", True)) else 0
-    return "--rc {}_branch_coverage={}".format(tool, flag)
