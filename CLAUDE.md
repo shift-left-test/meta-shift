@@ -71,7 +71,7 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 
 ### Recipe Organization
 
-- `recipes-test/`: Test tools (googletest, sentinel, compiledb, fff)
+- `recipes-test/`: Test tools (sentinel, compiledb, fff)
 - `recipes-devtools/`: Build tools (cmake, python3 packages, perl)
 - `recipes-core/`: Core recipes (meta-environment)
 
