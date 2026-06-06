@@ -8,19 +8,16 @@ DEPENDS:prepend:class-target = "\
 
 def enacttest_get_nodejs_arch(d):
     target_arch = d.getVar('TRANSLATED_TARGET_ARCH', True)
-
-    if target_arch == "x86-64":
-        target_arch = "x64"
-    elif target_arch == "aarch64":
-        target_arch = "arm64"
-    elif target_arch == "powerpc":
-        target_arch = "ppc"
-    elif target_arch == "powerpc64":
-        target_arch = "ppc64"
-    elif (target_arch == "i486" or target_arch == "i586" or target_arch == "i686"):
-        target_arch = "ia32"
-
-    return target_arch
+    arch_map = {
+        "x86-64": "x64",
+        "aarch64": "arm64",
+        "powerpc": "ppc",
+        "powerpc64": "ppc64",
+        "i486": "ia32",
+        "i586": "ia32",
+        "i686": "ia32",
+    }
+    return arch_map.get(target_arch, target_arch)
 
 
 enacttest_npm_install() {
@@ -90,9 +87,7 @@ enacttest_do_test() {
     ( cd "${S}" && npm test -- ${NPM_ARGS} 2>&1 ) | shiftutils_stream_plain
     TEST_RC=${PIPESTATUS[0]}
 
-    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
-        bberror "npm test failed with exit code ${TEST_RC}"
-    fi
+    shifttest_handle_test_rc ${TEST_RC} "npm test"
 }
 
 enacttest_do_coverage() {
@@ -117,9 +112,7 @@ enacttest_do_coverage() {
     ( cd "${S}" && npm test -- ${NPM_ARGS} 2>&1 ) | shiftutils_stream_plain
     TEST_RC=${PIPESTATUS[0]}
 
-    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
-        bberror "npm test failed with exit code ${TEST_RC}"
-    fi
+    shifttest_handle_test_rc ${TEST_RC} "npm test"
 }
 
 enacttest_do_checktest() {
@@ -127,7 +120,7 @@ enacttest_do_checktest() {
 }
 
 python enacttest_do_verify() {
-    shifttest_report(d, tasks=["coverage", "checktest"])
+    shifttest_verify(d, tasks=["coverage", "checktest"])
 }
 
 EXPORT_FUNCTIONS do_test do_coverage do_checktest do_verify

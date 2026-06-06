@@ -4,7 +4,6 @@ SPDX-License-Identifier: MIT
 """
 
 import bb.utils
-import collections
 import json
 import logging
 import os
