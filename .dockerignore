@@ -1,0 +1,3 @@
+# This Dockerfile builds an environment image and never COPYs the repository
+# (it is mounted at runtime instead), so exclude the entire build context.
+*
