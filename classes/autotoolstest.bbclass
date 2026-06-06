@@ -76,9 +76,7 @@ autotoolstest_do_test() {
     local TEST_RC=0
     ( cd "${B}" && make check ) || TEST_RC=$?
 
-    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
-        bberror "make check failed with exit code ${TEST_RC}"
-    fi
+    shifttest_handle_test_rc ${TEST_RC} "make check"
 
     find "${B}" -name 'test-suite.log' -exec cat {} \; | shiftutils_stream_plain
 

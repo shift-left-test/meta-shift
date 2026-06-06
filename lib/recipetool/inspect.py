@@ -5,12 +5,7 @@ SPDX-License-Identifier: MIT
 
 import sys
 import os
-import argparse
-import glob
-import fnmatch
-import re
 import logging
-import scriptutils
 import bb
 import json
 
@@ -61,7 +56,6 @@ class ReporterJson(Reporter):
 
     def add_value(self, key, value):
         self.current_section[key] = value
-        pass
 
     def dump(self, output=sys.stdout):
         output.write(json.dumps(self.result, indent=2))

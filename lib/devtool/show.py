@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 import bb
 import logging
 import sys
-from devtool import setup_tinfoil, DevtoolError
+from devtool import setup_tinfoil
 
 
 logger = logging.getLogger("devtool")
@@ -68,7 +68,6 @@ def print_variable_flags(data, variable, show_unexpanded=True):
     for flag, value in flags.items():
         if flag.startswith('_') or flag in ignored_flags:
             continue
-        value = str(value)
         print(format_variable(data, variable, flag, show_unexpanded=show_unexpanded))
 
 
@@ -77,7 +76,6 @@ def print_variable(data, variable, show_unexpanded=True):
     if unexpanded is None:
         return
     unexpanded = str(unexpanded)
-
 
     flags = data.getVarFlags(variable, expand=False) or {}
     if flags.get('func'):
