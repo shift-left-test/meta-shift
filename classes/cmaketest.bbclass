@@ -52,9 +52,7 @@ cmaketest_do_test() {
     ( cd "${B}" && ${CTEST_CMD} ) 2>&1 | shiftutils_stream_plain
     TEST_RC=${PIPESTATUS[0]}
 
-    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
-        bberror "ctest failed with exit code ${TEST_RC}"
-    fi
+    shifttest_handle_test_rc ${TEST_RC} "ctest"
 
     if [ -n "${REPORT_DIR}" ] && [ -d "${REPORT_DIR}" ]; then
         cpptest_prefix_xml_classnames "${REPORT_DIR}"

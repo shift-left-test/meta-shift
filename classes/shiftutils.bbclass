@@ -53,7 +53,6 @@ def shiftutils_qemu_run_cmd(data):
             sysroot_dir + base_libdir
         ]
 
-        import string
         qemu_binary = qemu_target_binary(data)
         if qemu_binary == "qemu-allarch":
             qemu_binary = "qemuwrapper"

@@ -31,7 +31,7 @@ addtask verify after do_compile
 do_verify[nostamp] = "1"
 do_verify[doc] = "Runs test, coverage, and mutation tasks for the target"
 
-def shifttest_report(d, tasks=None):
+def shifttest_verify(d, tasks=None):
     if tasks is None:
         tasks = ["test", "coverage", "checktest"]
 
@@ -48,25 +48,20 @@ def shifttest_report(d, tasks=None):
             continue
         dd = d.createCopy()
         dd.setVar("BB_CURRENTTASK", task)
-        # Make bb.build.exec_func treat this call as if do_<task> were the
-        # top-level task: it writes ${T}/run.do_<task>.<PID> AND creates the
-        # ${T}/run.do_<task> symlink (only when BB_RUNTASK == func). Without
-        # this, sentinel cannot find ${T}/run.do_test as its --test-command.
+        # exec_func only writes the ${T}/run.do_<task> symlink (which sentinel
+        # uses as --test-command) when BB_RUNTASK matches the function name.
         dd.setVar("BB_RUNTASK", "do_" + task)
-        # In devtool/externalsrc env, externalsrc.bbclass adds
-        # ${S}/singletask.lock to every task. do_verify already holds that
-        # lock, so the nested exec_func call would self-deadlock. Rewrite to
-        # a task-specific path so the sub-task takes a different lock.
+        # externalsrc adds ${S}/singletask.lock to every task; do_verify already
+        # holds it, so give the nested task its own lock to avoid self-deadlock.
         func = "do_" + task
         lockfiles = dd.getVarFlag(func, "lockfiles", True) or ""
         src_lock = dd.expand("${S}/singletask.lock")
         if src_lock in lockfiles:
-            dd.setVarFlag(func, "lockfiles",
-                          lockfiles.replace(src_lock, dd.expand("${S}/%s_singletask.lock" % func)))
+            dd.setVarFlag(func, "lockfiles", lockfiles.replace(src_lock, dd.expand("${S}/%s_singletask.lock" % func)))
         bb.build.exec_func(func, dd)
 
 python shifttest_do_verify() {
-    shifttest_report(d)
+    shifttest_verify(d)
 }
 
 EXPORT_FUNCTIONS do_verify
@@ -78,17 +73,22 @@ shiftutils_stream_plain() {
     done
 }
 
+# Raise a build error when a test runner exits non-zero, unless the recipe set
+# SHIFT_TEST_SUPPRESS_FAILURES.
+shifttest_handle_test_rc() {
+    if [ "$1" -ne 0 ] && ! ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_SUPPRESS_FAILURES')) else 'false'}; then
+        bberror "$2 failed with exit code $1"
+    fi
+}
+
 python() {
-    # Native/cross/SDK recipes have no meaningful unit-test surface; mark all
-    # shift tasks no-op to avoid the boilerplate `case "${PN}" in nativesdk-*|...`
-    # guard previously duplicated in every shell function.
+    # Native/cross/SDK recipes have no unit-test surface, so mark their shift
+    # tasks no-op.
     if isNativeCrossSDK(d.getVar("PN", True) or ""):
         for task in ("do_test", "do_coverage", "do_checktest", "do_verify"):
             d.setVarFlag(task, "noexec", "1")
 
     if not bb.utils.to_boolean(d.getVar("SHIFT_PARALLEL_TASKS", True)):
-        d.appendVarFlag("do_test", "lockfiles", "${TMPDIR}/do_test.lock")
-        d.appendVarFlag("do_coverage", "lockfiles", "${TMPDIR}/do_coverage.lock")
-        d.appendVarFlag("do_checktest", "lockfiles", "${TMPDIR}/do_checktest.lock")
-        d.appendVarFlag("do_verify", "lockfiles", "${TMPDIR}/do_verify.lock")
+        for task in ("do_test", "do_coverage", "do_checktest", "do_verify"):
+            d.appendVarFlag(task, "lockfiles", "${TMPDIR}/%s.lock" % task)
 }
