@@ -2,21 +2,22 @@ python show_affected_recipes() {
     task = d.expand("do_${BB_CURRENTTASK}")
     subtask = task[:-3]
     pf = d.getVar("PF", True)
+    divider = "{pf} {task}: --------------------------------------------------".format(pf=pf, task=task)
     taskdepdata = d.getVar("BB_TASKDEPDATA", True)
     recipes = [taskdepdata[dep] for dep in taskdepdata if taskdepdata[dep][1] == subtask]
     affected = len(recipes)
     if affected > 0:
         recipes.sort(key=lambda recipe: recipe[0])
-        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
+        bb.plain(divider)
         bb.plain("{pf} {task}: Attempted '{subtask}' task of {affected} recipes.".format(pf=pf, task=task, subtask=subtask, affected=affected))
-        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
+        bb.plain(divider)
         for recipe in recipes:
             bb.plain("{pf} {task}:     {recipe}".format(pf=pf, task=task, recipe=recipe[0]))
-        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
+        bb.plain(divider)
     else:
-        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
+        bb.plain(divider)
         bb.warn("No recipes found to run '{subtask}' task.".format(subtask=subtask))
-        bb.plain("{pf} {task}: --------------------------------------------------".format(pf=pf, task=task))
+        bb.plain(divider)
 }
 
 addtask testall

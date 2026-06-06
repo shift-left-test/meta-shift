@@ -2,7 +2,7 @@ inherit cpptest
 
 
 EXTRA_QMAKEVARS_PRE:append:class-target = " CONFIG+=gcov"
-EXTRA_QMAKEVARS_PRE:append:class-target = " ${@bb.utils.contains('SHIFT_TEST_SUPPRESS_FAILURES', '1', 'CONFIG+=insignificant_test', '', d)}"
+EXTRA_QMAKEVARS_PRE:append:class-target = " ${@'CONFIG+=insignificant_test' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_SUPPRESS_FAILURES')) else ''}"
 
 FILES:${PN}:append:class-target = " ${OE_QMAKE_PATH_TESTS}"
 
@@ -42,9 +42,7 @@ qmaketest_do_test() {
     ( cd "${B}" && make --quiet check ) 2>&1 | shiftutils_stream_plain
     TEST_RC=${PIPESTATUS[0]}
 
-    if [ ${TEST_RC} -ne 0 ] && [ "${SHIFT_TEST_SUPPRESS_FAILURES}" != "1" ]; then
-        bberror "make check failed with exit code ${TEST_RC}"
-    fi
+    shifttest_handle_test_rc ${TEST_RC} "make check"
 
     if [ -n "${REPORT_DIR}" ] && [ -d "${REPORT_DIR}" ]; then
         cpptest_prefix_xml_classnames "${REPORT_DIR}"
