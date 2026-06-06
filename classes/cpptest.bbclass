@@ -2,7 +2,7 @@ inherit shifttest
 
 
 DEPENDS:prepend:class-target = "\
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', bb.utils.contains('SHIFT_CHECKTEST_ENABLED', '1', 'sentinel-native', '', d), '', d)} \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native' if bb.utils.to_boolean(d.getVar('SHIFT_CHECKTEST_ENABLED')) else '', '', d)} \
     compiledb-native \
     coreutils-native \
     gmock \
@@ -11,9 +11,9 @@ DEPENDS:prepend:class-target = "\
     qemu-native \
     "
 
-# Fix an issue caused by the '-ffile-prefix-map' option, which modifies source paths in .gcno files, leading to coverage parsing failures.
-# -fcanon-prefix-map is only added when the base toolchain already uses it; older
-# compilers (e.g. kirkstone's gcc-11) do not recognise the flag and would fail to build.
+# '-ffile-prefix-map' rewrites source paths in .gcno files and breaks coverage
+# parsing. '-fcanon-prefix-map' is added only when the base toolchain already
+# uses it; older compilers (e.g. gcc-11) reject the flag and fail to build.
 DEBUG_PREFIX_MAP:class-target := "\
 ${@'-fcanon-prefix-map ' if '-fcanon-prefix-map' in (d.getVar('DEBUG_PREFIX_MAP', False) or '') else ''}\
 -fmacro-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
@@ -26,13 +26,13 @@ ${@'-fcanon-prefix-map ' if '-fcanon-prefix-map' in (d.getVar('DEBUG_PREFIX_MAP'
 -fmacro-prefix-map=${STAGING_DIR_NATIVE}= \
 "
 
-# Coverage flag causes the binary to store the absolute path to the gcda file, resulting in a 'buildpaths' QA Issue.
+# The coverage flag bakes absolute .gcda paths into the binary, tripping the
+# 'buildpaths' QA check.
 python do_package_qa:prepend() {
     for package in set((d.getVar('PACKAGES', True) or '').split()):
         d.appendVar("INSANE_SKIP:%s" % package, " buildpaths")
 }
 
-# Execute the do_coverage task after the do_test task completes
 do_coverage[recrdeptask] += "do_test"
 
 # do_checktest reuses bitbake's compiled ${T}/run.do_test script for sentinel's
@@ -92,14 +92,11 @@ cpptest_do_coverage() {
         REPORT_OPTS="--html-details ${REPORT_DIR}/index.html --html-self-contained --cobertura ${XML_FILE}"
     fi
 
-    # SHIFT_COVERAGE_BRANCH=1 switches the text report from line to branch
-    # coverage. gcovr's text report carries a single metric, so this is a
-    # line/branch toggle; the HTML and Cobertura reports always include both.
-    # gcovr >= 7.0 replaced -b/--branches with --txt-metric (the old flag still
-    # works but warns), so feature-detect what the installed gcovr understands:
-    # kirkstone's 5.1 only has --branches, newer releases avoid the warning.
+    # SHIFT_COVERAGE_BRANCH switches the text report from line to branch coverage
+    # (HTML and Cobertura always carry both). gcovr >= 7.0 renamed --branches to
+    # --txt-metric, so feature-detect which flag the installed gcovr accepts.
     local BRANCH_OPT=""
-    if [ "${SHIFT_COVERAGE_BRANCH}" = "1" ]; then
+    if ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_COVERAGE_BRANCH')) else 'false'}; then
         if gcovr --help 2>&1 | grep -q -- '--txt-metric'; then
             BRANCH_OPT="--txt-metric branch"
         else
@@ -116,15 +113,15 @@ cpptest_do_coverage() {
         ${REPORT_OPTS} \
         "${B}" 2>&1 | shiftutils_stream_plain
 
-    # Preserve per-recipe attribution: prefix the Cobertura package name with
-    # ${PN}. (idempotent), mirroring the previous lcov_cobertura post-process.
+    # Prefix the Cobertura package name with ${PN}. (idempotent) to keep
+    # per-recipe attribution.
     if [ -n "${SHIFT_REPORT_DIR}" ] && [ -f "${XML_FILE}" ]; then
         sed -E -i "s|(<package[[:space:]]+name=\")(${PN}\.)?|\1${PN}.|g" "${XML_FILE}"
     fi
 }
 
 cpptest_do_checktest() {
-    if [ "${SHIFT_CHECKTEST_ENABLED}" != "1" ]; then
+    if ! ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_CHECKTEST_ENABLED')) else 'false'}; then
         return 0
     fi
 
@@ -150,14 +147,11 @@ cpptest_do_checktest() {
         }
     fi
 
-    # Normalize compile_commands.json so Sentinel/Clang can match mutation
-    # candidates. cmake emits "file" and the source argument inside "command"
-    # as absolute paths, but compiledb leaves them relative to "directory".
-    # Sentinel matches candidates by the path Clang reports through
-    # SourceManager, which echoes the source argument from the compile
-    # command verbatim — relative entries therefore produce 0 mutants. The
-    # target triple is also (re-)injected idempotently since this task is
-    # nostamp and the JSON may persist across runs.
+    # Normalize compile_commands.json so sentinel/clang can match mutation
+    # candidates: compiledb leaves source paths relative to "directory", but
+    # clang echoes them verbatim and relative entries produce 0 mutants. Also
+    # (re-)inject the target triple idempotently, since this nostamp task may
+    # reuse a JSON left from a previous run.
     python3 -c '
 import json, os, re, sys
 p, target_sys = sys.argv[1], sys.argv[2]
@@ -192,11 +186,10 @@ with open(p, "w") as f:
 
     mkdir -p "${SHIFT_REPORT_DIR}/${PF}/checktest"
 
-    # Stream sentinel's output via bbplain so it surfaces to the console; the
-    # raw exit code is recovered via PIPESTATUS since the while-loop always
-    # succeeds. Option toggles are resolved at BitBake parse time via
-    # ${@...} — shell ${VAR:+...} would silently drop them because BitBake
-    # vars are not exported into the task shell environment.
+    # Stream sentinel's output through bbplain so it reaches the console, and
+    # recover its real exit code via PIPESTATUS. Option toggles resolve at parse
+    # time via ${@...}; shell ${VAR:+...} would drop them since BitBake vars are
+    # not exported into the task shell.
     local SENTINEL_RC=0
     sentinel \
         --clean \
