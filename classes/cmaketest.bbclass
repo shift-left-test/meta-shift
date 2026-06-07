@@ -48,6 +48,10 @@ cmaketest_do_test() {
         [ -n "${EXCLUDE}" ] && CTEST_CMD="${CTEST_CMD} -E ${EXCLUDE}"
     fi
 
+    if [ -n "${SHIFT_TEST_PARALLEL_JOBS}" ]; then
+        CTEST_CMD="${CTEST_CMD} --parallel ${SHIFT_TEST_PARALLEL_JOBS}"
+    fi
+
     local TEST_RC=0
     ( cd "${B}" && ${CTEST_CMD} ) 2>&1 | shiftutils_stream_plain
     TEST_RC=${PIPESTATUS[0]}
