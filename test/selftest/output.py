@@ -10,142 +10,61 @@ import re
 
 
 class Output(object):
-    """The output holder class
+    """Holds a command/file output and provides comparison helpers.
 
-    This class provides variout output comparison helper functions.
+    Every helper returns a bool; tests wrap them in ``assert``.
     """
 
     def __init__(self, output):
-        """ Default constructor
-
-        Args:
-          output (str): an output string
-        """
         self.output = output.strip()
 
     def empty(self):
-        """Assert that the output is empty
-
-        Returns:
-          True if the output is empty, False otherwise
-        """
+        """Return True if the output is empty."""
         return not self.output
 
     def contains(self, keyword):
-        """Assert that the output contains the given keyword
-
-        Args:
-          keyword (str): keyword to examine
-
-        Returns:
-          True if the output contains the keyword, False otherwise
-        """
+        """Return True if the output contains the keyword."""
         return keyword in self.output
 
     def containsAll(self, *keywords):
-        """Assert that the output contains all the given keywords
-
-        Args:
-          keywords (str): keywords to examine
-
-        Returns:
-          True if the output contains all the keywords, False otherwise
-        """
-        for keyword in keywords:
-            if not self.contains(keyword):
-                return False
-        return True
+        """Return True if the output contains every keyword."""
+        return all(self.contains(keyword) for keyword in keywords)
 
     def containsAny(self, *keywords):
-        """Assert that the output contains any of the given keywords
-
-        Args:
-          keywords (str): keywords to examine
-
-        Returns:
-          True if the output contains any of the keywords, False otherwise
-        """
-        for keyword in keywords:
-            if self.contains(keyword):
-                return True
-        return False
+        """Return True if the output contains any of the keywords."""
+        return any(self.contains(keyword) for keyword in keywords)
 
     def matches(self, regexp):
-        """Assert that the output contains text which the patten matches
-
-        Args:
-          regexp (str): search pattern
-
-        Returns:
-          True if the output contains matching text, False otherwise
-        """
-        matcher = re.compile(regexp, re.MULTILINE)
-        return bool(matcher.search(self.output))
+        """Return True if the output matches the pattern (multiline search)."""
+        return bool(re.compile(regexp, re.MULTILINE).search(self.output))
 
     def matchesAll(self, *regexps):
-        """Assert that the output contains text which the patterns match
-
-        Args:
-          regexp (str): search patterns
-
-        Returns:
-          True if the output contains matching text, False otherwise
-        """
-        for regexp in regexps:
-            if not self.matches(regexp):
-                return False
-        return True
+        """Return True if the output matches every pattern."""
+        return all(self.matches(regexp) for regexp in regexps)
 
     def matchesAny(self, *regexps):
-        """Assert that the output contains text which the patterns match
-
-        Args:
-          regexp (str): search patterns
-
-        Returns:
-          True if the output contains matching text, False otherwise
-        """
-        for regexp in regexps:
-            if self.matches(regexp):
-                return True
-        return False
+        """Return True if the output matches any of the patterns."""
+        return any(self.matches(regexp) for regexp in regexps)
 
     def __repr__(self):
-        """Output string
-        """
         return "'{0}'".format(self.output)
 
     def __str__(self):
-        """Output string
-        """
         return self.__repr__()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        pass
 
 
 class Outputs(object):
-    def __init__(self, kwargs={}):
+    def __init__(self, items=None):
         self.outputs = {}
-        for key, value in kwargs.items():
-            self.__setitem__(key, value)
+        for key, value in (items or {}).items():
+            self[key] = value
 
     def __setitem__(self, key, value):
         self.outputs[key] = value
-        setattr(self, key, self.outputs[key])
+        setattr(self, key, value)
 
     def __getitem__(self, key):
         return self.outputs[key]
-
-    def __delitem__(self, key):
-        self.outputs.pop(key)
-        delattr(self, key)
-
-    def keys(self):
-        return self.outputs.keys()
 
     def __repr__(self):
         data = ", ".join("'{0}': {1}".format(key, value) for (key, value) in self.outputs.items())
