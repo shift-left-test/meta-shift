@@ -82,6 +82,16 @@ def assert_coverage_excludes(report, recipe):
             assert float(plus["branch-rate"]) > 0.0
 
 
+def assert_coverage_extra_options(report, recipe):
+    with report.files.conf() as conf:
+        # SHIFT_COVERAGE_EXTRA_OPTIONS is passed verbatim to gcovr; --print-summary
+        # makes gcovr emit a "lines: NN%" summary the default text report omits.
+        conf.set("SHIFT_COVERAGE_EXTRA_OPTIONS", "--print-summary")
+        o = report.shell.execute("bitbake " + recipe + " -c coverage")
+        assert o.stderr.empty()
+        assert o.stdout.matches(recipe + "-1.0.0-r0 do_coverage:.*lines:.*%")
+
+
 def assert_verify_without_report_dir(test_build, recipe):
     o = test_build.shell.execute("bitbake " + recipe + " -c verify")
     assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
