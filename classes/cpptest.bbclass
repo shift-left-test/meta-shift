@@ -11,20 +11,10 @@ DEPENDS:prepend:class-target = "\
     qemu-native \
     "
 
-# '-ffile-prefix-map' rewrites source paths in .gcno files and breaks coverage
-# parsing. '-fcanon-prefix-map' is added only when the base toolchain already
-# uses it; older compilers (e.g. gcc-11) reject the flag and fail to build.
-DEBUG_PREFIX_MAP:class-target := "\
-${@'-fcanon-prefix-map ' if '-fcanon-prefix-map' in (d.getVar('DEBUG_PREFIX_MAP', False) or '') else ''}\
--fmacro-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
--fdebug-prefix-map=${S}=${TARGET_DBGSRC_DIR} \
--fmacro-prefix-map=${B}=${TARGET_DBGSRC_DIR} \
--fdebug-prefix-map=${B}=${TARGET_DBGSRC_DIR} \
--fdebug-prefix-map=${STAGING_DIR_HOST}= \
--fmacro-prefix-map=${STAGING_DIR_HOST}= \
--fdebug-prefix-map=${STAGING_DIR_NATIVE}= \
--fmacro-prefix-map=${STAGING_DIR_NATIVE}= \
-"
+# Coverage needs the real on-disk paths in .gcno. The default DEBUG_PREFIX_MAP
+# remaps them (-ffile-prefix-map, and even -fdebug-prefix-map rewrites the
+# paths gcov reads), making sysroot headers unresolvable, so disable it here.
+DEBUG_PREFIX_MAP:class-target = ""
 
 # The coverage flag bakes absolute .gcda paths into the binary, tripping the
 # 'buildpaths' QA check.
@@ -75,6 +65,9 @@ cpptest_do_coverage() {
     find "${B}" -name '*conftest*.gcno' -delete
     find "${B}" -name '*conftest*.gcda' -delete
 
+    # Code under test may call umask(), leaving .gcda the owner cannot read.
+    find "${B}" -name '*.gcda' -exec chmod u+rw {} +
+
     # SHIFT_COVERAGE_EXCLUDES are regexes (gcovr --exclude), space-separated.
     local EXCLUDE_OPTS=""
     for exc in ${SHIFT_COVERAGE_EXCLUDES}; do
@@ -104,9 +97,14 @@ cpptest_do_coverage() {
         fi
     fi
 
+    local GCOV_TOOL="${TARGET_PREFIX}gcov"
+    case "${CC}" in
+        *clang*) GCOV_TOOL="llvm-cov gcov" ;;
+    esac
+
     gcovr \
         --root "${S}" \
-        --gcov-executable "${TARGET_PREFIX}gcov" \
+        --gcov-executable "${GCOV_TOOL}" \
         ${EXCLUDE_OPTS} \
         --txt - \
         ${BRANCH_OPT} \
