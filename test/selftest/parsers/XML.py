@@ -35,7 +35,9 @@ class XMLReportParser(object):
             self.add(data.strip())
 
     def feed(self, text):
-        self.parser.Parse(text)
+        # Final chunk: forces expat to validate that the document is complete,
+        # so truncated/malformed XML raises instead of parsing silently.
+        self.parser.Parse(text, True)
 
 
 def parse(path):

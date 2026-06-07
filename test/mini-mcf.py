@@ -23,6 +23,12 @@ REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.g
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# bitbake and meta-qt6 follow their own release cadences; pin the branch paired
+# with this Yocto release (version-adaptation -- adjust per branch). None follows
+# the --branch argument.
+BITBAKE_BRANCH = "2.18"
+META_QT6_BRANCH = "6.11"
+
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -31,13 +37,13 @@ logger = logging.getLogger(__name__)
 Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "branch"])
 
 REPOS = [
-    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", "2.18"),
+    Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", BITBAKE_BRANCH),
     Repo("openembedded-core", "https://github.com/openembedded/openembedded-core.git", "openembedded-core", "meta", None),
     Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
     Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
     Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", None),
     Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
-    Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", "6.11"),
+    Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", META_QT6_BRANCH),
     Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
@@ -61,16 +67,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def execute(cmd):
-    return subprocess.check_call(cmd, shell=True)
-
-
 def download_repo(url, branch, path):
     logger.info(url)
     if os.path.exists(path):
-        print("[INFO] Removing '%s'..." % path)
+        logger.info("Removing '%s'...", path)
         shutil.rmtree(path)
-    execute("git clone {0} -b {1} --depth 1 {2}".format(url, branch, path))
+    try:
+        subprocess.check_call(["git", "clone", url, "-b", branch, "--depth", "1", path])
+    except subprocess.CalledProcessError:
+        logger.error("Failed to clone %s (branch %s)", url, branch)
+        raise
 
 
 def download_repos(args):
