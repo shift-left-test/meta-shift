@@ -94,7 +94,6 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `SHIFT_CHECKTEST_ENABLED` | Enable mutation testing | `1` (Enabled) |
 | `SHIFT_CHECKTEST_EXTENSIONS` | Extensions of source files to be mutated | |
 | `SHIFT_CHECKTEST_FROM` | Diff base revision for scoping mutants (e.g., `HEAD~5`) | |
 | `SHIFT_CHECKTEST_GENERATOR` | Mutation generator (`random`, `uniform`, or `weighted`) | `uniform` |
