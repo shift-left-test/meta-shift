@@ -30,7 +30,7 @@ export DL_DIR=$HOME/build-res/downloads
 export SSTATE_DIR=$HOME/build-res/sstate-cache
 ```
 
-Test files follow the pattern `test/*_test.py`. Tests are integration tests that run real Bitbake builds via session-scoped fixtures (`release_build`, `test_build`, `report_build`).
+Test files follow the pattern `test/*_test.py`. Tests are integration tests that run real Bitbake builds via session-scoped fixtures (`release_build`, `test_build`, `verify_build`).
 
 ## Architecture
 
@@ -67,7 +67,7 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 
 - `selftest/` module: Build environment management (`build.py`), shell execution (`shell.py`), report parsers (`parsers/`)
 - `mini-mcf.py`: Multi-repo cloner that sets up a complete Yocto workspace (bitbake, OE-core, meta-openembedded, meta-qt6, meta-clang, sample projects)
-- Test configs in `test/conf/`: `test.conf` (full suite), `release.conf` (core), `report.conf` (reports)
+- Test configs in `test/conf/`: `test.conf` (full suite), `release.conf` (core), `verify.conf` (consolidated verify task)
 
 ### Recipe Organization
 
