@@ -80,12 +80,14 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 All variables have defaults in `conf/layer.conf`. Key ones:
 
 - `SHIFT_ENABLED` (default: `0`) — master enable switch
-- `SHIFT_CHECKTEST_ENABLED` (default: `1`) — enable mutation testing (requires meta-clang)
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
 - `SHIFT_REPORT_DIR` (no default — must be set in `local.conf` to enable report output)
 
 ### Documentation
 - When modifying code, always update `README.md` accordingly (feature additions/removals, configuration changes, task changes, etc.)
+
+### Commit Messages
+- Write each commit message as a single concise line that is easy to understand.
 
 ## Bitbake Task Quick Reference
 

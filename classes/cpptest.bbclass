@@ -2,7 +2,7 @@ inherit shifttest
 
 
 DEPENDS:prepend:class-target = "\
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native' if bb.utils.to_boolean(d.getVar('SHIFT_CHECKTEST_ENABLED')) else '', '', d)} \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'clang-layer', 'sentinel-native', '', d)} \
     compiledb-native \
     coreutils-native \
     gmock \
@@ -42,9 +42,6 @@ def cpptest_test_command(d):
 # exec_task) does not run prefuncs.
 def cpptest_provide_test_command(d):
     if d.getVar("BB_RUNTASK") != "do_checktest":
-        return ""
-
-    if not bb.utils.to_boolean(d.getVar("SHIFT_CHECKTEST_ENABLED")):
         return ""
 
     import os, shutil
@@ -163,10 +160,6 @@ cpptest_do_coverage() {
 }
 
 cpptest_do_checktest() {
-    if ! ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_CHECKTEST_ENABLED')) else 'false'}; then
-        return 0
-    fi
-
     if [ -z "${SHIFT_REPORT_DIR}" ]; then
         bbwarn "SHIFT_REPORT_DIR is empty; skipping do_checktest (mutation report has nowhere to go)"
         return 0
