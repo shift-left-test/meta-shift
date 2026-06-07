@@ -25,9 +25,53 @@ python do_package_qa:prepend() {
 
 do_coverage[recrdeptask] += "do_test"
 
-# do_checktest reuses bitbake's compiled ${T}/run.do_test script for sentinel's
-# --test-command, so do_test must have run at least once first.
-do_checktest[depends] += "${PN}:do_test"
+# sentinel needs a runnable test script. do_checktest keeps its own copy under
+# ${WORKDIR}/checktest instead of touching do_test's ${T}/run.do_test: reuse that
+# script if do_test already produced it (e.g. the verify flow), else synthesise
+# it without running do_test (the file-writing half of bb.build.exec_func_shell).
+def cpptest_test_command(d):
+    return d.expand("${WORKDIR}/checktest/run.do_test")
+
+# Runs inline as ${@...} in the do_checktest body. BitBake expands that body
+# twice: during parse-time dependency analysis AND when generating the task
+# runfile (which is when the file writes below must actually happen, just before
+# sentinel runs). Only runfile generation sets BB_RUNTASK, so gate the I/O on it:
+# parse-time expansion leaves ${WORKDIR} unset (resolving to a forbidden
+# //checktest path), so it must be a no-op. A prefunc can't replace this because
+# do_verify drives do_checktest through bb.build.exec_func(), which (unlike
+# exec_task) does not run prefuncs.
+def cpptest_provide_test_command(d):
+    if d.getVar("BB_RUNTASK") != "do_checktest":
+        return ""
+
+    if not bb.utils.to_boolean(d.getVar("SHIFT_CHECKTEST_ENABLED")):
+        return ""
+
+    import os, shutil
+    dest = cpptest_test_command(d)
+    bb.utils.mkdirhier(os.path.dirname(dest))
+
+    src = d.expand("${T}/run.do_test")
+    if os.path.exists(src):
+        shutil.copyfile(src, dest)
+    elif d.getVarFlag("do_test", "func", False):  # skip a body-less do_test (no build-system class)
+        # Emit run.do_test under the test task's identity without executing it.
+        dd = d.createCopy()
+        dd.setVar("BB_CURRENTTASK", "test")
+        dd.setVar("BB_RUNTASK", "do_test")
+        dd.delVarFlag("PWD", "export")  # exec_func_shell drops this before emitting
+        with open(dest, "w") as f:
+            f.write(bb.build.shell_trap_code())
+            bb.data.emit_func("do_test", f, dd)
+            if bb.utils.to_boolean(dd.getVar("BB_VERBOSE_LOGS")):
+                f.write("set -x\n")
+            f.write("do_test\n")
+            f.write("\n# cleanup\nret=$?\ntrap '' 0\nexit $ret\n")
+    else:
+        return ""
+
+    os.chmod(dest, 0o775)
+    return ""
 
 # Reset coverage counters before a test run so re-runs (nostamp) do not
 # accumulate execution counts. gcovr derives zero-coverage for never-executed
@@ -184,6 +228,10 @@ with open(p, "w") as f:
 
     mkdir -p "${SHIFT_REPORT_DIR}/${PF}/checktest"
 
+    # Give sentinel its own test runfile (copy do_test's, or synthesise it). The
+    # ${@...} side effect runs when this runfile is generated, before sentinel.
+    ${@cpptest_provide_test_command(d) or ''}
+
     # Stream sentinel's output through bbplain so it reaches the console, and
     # recover its real exit code via PIPESTATUS. Option toggles resolve at parse
     # time via ${@...}; shell ${VAR:+...} would drop them since BitBake vars are
@@ -194,7 +242,7 @@ with open(p, "w") as f:
         --workspace="${WORKDIR}/sentinel-workspace" \
         --source-dir="${S}" \
         --build-command="bash ${T}/run.do_compile" \
-        --test-command="bash ${T}/run.do_test" \
+        --test-command="bash ${@cpptest_test_command(d)}" \
         --test-result-dir="${TEST_RESULT_DIR}" \
         --output-dir="${SHIFT_REPORT_DIR}/${PF}/checktest" \
         --compiledb-dir="${B}" \
