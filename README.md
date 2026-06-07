@@ -108,6 +108,7 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from coverage (gcovr `--exclude` regexes, space-separated) | |
 | `SHIFT_REPORT_DIR` | Directory to store generated reports (unset = reports disabled) | |
 | `SHIFT_TEST_FILTER` | Regex to filter tests to run | |
+| `SHIFT_TEST_PARALLEL_JOBS` | Number of tests to run in parallel (CMake/ctest only; passed to `ctest --parallel`). Empty = serial; set a number or `${@oe.utils.cpu_count()}` for all host cores | |
 | `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
 | `SHIFT_TEST_SUPPRESS_FAILURES`| Don't fail the build if tests fail | `0` |
 
