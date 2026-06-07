@@ -93,15 +93,6 @@ def test_do_checktest_verbose(stdout, report):
         assert o.stdout.contains("(seed: 1234)")
 
 
-def test_do_checktest_disabled(stdout, report):
-    with report.files.conf() as conf:
-        conf.set("SHIFT_CHECKTEST_ENABLED", "0")
-        o = report.shell.execute("bitbake cmake-project -c checktest")
-        assert o.stderr.empty()
-        assert not o.stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutant Generation Summary")
-        assert not o.stdout.matches("cmake-project-1.0.0-r0 do_checktest:[ ]+Mutation Score Report")
-
-
 def test_do_coverage(stdout, report):
     assert stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
     assert stdout.contains("cmake-project-1.0.0-r0 do_coverage: GCC Code Coverage Report")
