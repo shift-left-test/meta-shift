@@ -150,6 +150,7 @@ cpptest_do_coverage() {
         --txt - \
         ${BRANCH_OPT} \
         ${REPORT_OPTS} \
+        ${SHIFT_COVERAGE_EXTRA_OPTIONS} \
         "${B}" 2>&1 | shiftutils_stream_plain
 
     # Prefix the Cobertura package name with ${PN}. (idempotent) to keep

@@ -12,6 +12,7 @@ from cpptest_base import (
     assert_coverage_branch_in_xml,
     assert_coverage_branch_text,
     assert_coverage_excludes,
+    assert_coverage_extra_options,
     assert_test_filter,
     assert_test_shuffle,
     assert_test_suppress_failures,
@@ -104,6 +105,10 @@ def test_do_coverage_branch_text(report):
 
 def test_do_coverage_excludes(stdout, report):
     assert_coverage_excludes(report, RECIPE)
+
+
+def test_do_coverage_extra_options(report):
+    assert_coverage_extra_options(report, RECIPE)
 
 
 def test_do_verify(test_build):
