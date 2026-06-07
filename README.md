@@ -106,6 +106,7 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_CHECKTEST_VERBOSE` | Silence the test output while running `do_checktest` | `0` |
 | `SHIFT_COVERAGE_BRANCH` | Show branch coverage instead of line in the text report (HTML/Cobertura always include both) | `0` |
 | `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from coverage (gcovr `--exclude` regexes, space-separated) | |
+| `SHIFT_COVERAGE_EXTRA_OPTIONS` | Extra options passed verbatim to `gcovr` (e.g., `--gcov-ignore-errors all`) | |
 | `SHIFT_REPORT_DIR` | Directory to store generated reports (unset = reports disabled) | |
 | `SHIFT_TEST_FILTER` | Regex to filter tests to run | |
 | `SHIFT_TEST_PARALLEL_JOBS` | Number of tests to run in parallel (CMake/ctest only; passed to `ctest --parallel`). Empty = serial; set a number or `${@oe.utils.cpu_count()}` for all host cores | |
