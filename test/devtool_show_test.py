@@ -21,12 +21,16 @@ def test_show_global_variables(release_build):
 
 def test_show_global_unexpanded_variables(release_build):
     o = release_build.shell.execute("devtool show MACHINE_ARCH -u")
-    assert o.stdout.contains("# MACHINE_ARCH=${@[d.getVar('TUNE_PKGARCH'), d.getVar('MACHINE')][bool(d.getVar('MACHINE'))].replace('-', '_')}")
+    # Assert the variable is rendered unexpanded (leading "# NAME=${@") without
+    # binding to the exact upstream OE-core expression, which drifts by version.
+    assert o.stdout.matches(r"^# MACHINE_ARCH=\$\{@")
 
 
 def test_show_global_variable_flags(release_build):
     o = release_build.shell.execute("devtool show BUILD_ARCH -f")
-    assert o.stdout.contains('BUILD_ARCH[doc]="The name of the building architecture (e.g. i686)."')
+    # Validate the flag-rendering (NAME[doc]="...") without pinning the exact
+    # upstream doc string, which is OE-core-owned and version-dependent.
+    assert o.stdout.matches(r'BUILD_ARCH\[doc\]=".+"')
 
 
 def test_show_unknown_recipe(release_build):
