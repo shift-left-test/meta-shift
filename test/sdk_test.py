@@ -3,25 +3,23 @@
 """
 Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
-"""
 
-import pytest
+These tests check that the required packages appear in the SDK packagegroups
+(via bitbake -e) rather than generating a full SDK.
+"""
 
 
 def test_populate_sdk_target(release_build):
-    # Simply check whether required packages exist in a packagegroup, instead of generating the sdk file.
     stdout = release_build.shell.execute("bitbake packagegroup-core-standalone-sdk-target -e | grep ^RDEPENDS:packagegroup-core-standalone-sdk-target=").stdout
     assert stdout.containsAll("fff", "googletest")
 
 
 def test_populate_sdk_host(release_build):
-    # Simply check whether required packages exist in a packagegroup, instead of generating the sdk file.
     stdout = release_build.shell.execute("bitbake nativesdk-packagegroup-sdk-host -e | grep ^RDEPENDS:nativesdk-packagegroup-sdk-host=").stdout
     assert stdout.containsAll("nativesdk-cmake",
                               "nativesdk-python3-gcovr",
                               "nativesdk-qemu")
 
-    # nativesdk-cmake
     assert release_build.shell.execute("bitbake nativesdk-cmake").stderr.empty()
     f = "tmp-glibc/work/x86_64-nativesdk-oesdk-linux/nativesdk-cmake/*/sysroot-destdir/" \
         "*/*/*/*/*/usr/share/cmake/OEToolchainConfig.cmake.d/crosscompiling_emulator.cmake"
