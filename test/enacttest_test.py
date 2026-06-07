@@ -5,43 +5,10 @@ Copyright (c) 2022 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
+from selftest.parsers.data import asList
 
 
-@pytest.fixture(scope="module")
-def stdout(report_build):
-    return report_build.shell.execute("bitbake enact-project -c verify").stdout
-
-
-@pytest.fixture(scope="module")
-def report(report_build):
-    report_build.files.remove("report")
-    assert report_build.shell.execute("bitbake enact-project -c verify").stderr.empty()
-    return report_build
-
-
-def test_do_checktest(stdout, report):
-    pass
-
-
-def test_do_checktest_excludes(stdout, report):
-    pass
-
-
-def test_do_checktest_extensions(stdout, report):
-    pass
-
-
-def test_do_checktest_generator(stdout, report):
-    pass
-
-
-def test_do_checktest_seed(stdout, report):
-    pass
-
-
-def test_do_checktest_verbose(stdout, report):
-    pass
+RECIPE = "enact-project"
 
 
 def test_do_coverage(stdout, report):
@@ -49,16 +16,8 @@ def test_do_coverage(stdout, report):
     with report.files.readAsHtml("report/enact-project-1.0.0-r0/coverage/index.html") as data:
         assert data["html/head/title"] == "Code coverage report for All files"
     with report.files.readAsXml("report/enact-project-1.0.0-r0/coverage/cobertura-coverage.xml") as data:
-        class_data = data["coverage/packages/package/classes/class"]
+        class_data = asList(data["coverage/packages/package/classes/class"])
         assert any(map(lambda x: x["name"] == "converter.js" and float(x["line-rate"]) == 1.0 and float(x["branch-rate"]) > 0.0, class_data))
-
-
-def test_do_coverage_branch(stdout, report):
-    pass
-
-
-def test_do_coverage_excludes(stdout, report):
-    pass
 
 
 def test_do_verify(test_build):
@@ -69,17 +28,9 @@ def test_do_verify(test_build):
 def test_do_test(stdout, report):
     assert stdout.contains("enact-project-1.0.0-r0 do_coverage: Running tests with coverage...")
     with report.files.readAsXml("report/enact-project-1.0.0-r0/test/junit.xml") as data:
-        data = data["testsuites/testsuite"]
-        assert any(map(lambda x: x["name"] == "undefined" and x["tests"] == "2" and x["failures"] == "1", data))
-        assert any(map(lambda x: x["name"] == "test suite for converter" and x["tests"] == "4" and x["failures"] == "0", data))
-
-
-def test_do_test_filter(test_build):
-    pass
-
-
-def test_do_test_shuffle(test_build):
-    pass
+        suites = asList(data["testsuites/testsuite"])
+        assert any(x["name"] == "undefined" and x["tests"] == "2" and x["failures"] == "1" for x in suites)
+        assert any(x["name"] == "test suite for converter" and x["tests"] == "4" and x["failures"] == "0" for x in suites)
 
 
 def test_do_test_suppress_failures(test_build):

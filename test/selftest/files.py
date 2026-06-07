@@ -11,7 +11,7 @@ from selftest.output import FileOutput
 from selftest.parsers import HTML
 from selftest.parsers import JSON
 from selftest.parsers import XML
-from selftest.util import findFiles
+from selftest.util import findFiles, randomString
 import os
 import shutil
 

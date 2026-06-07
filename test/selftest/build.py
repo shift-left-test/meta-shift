@@ -26,13 +26,13 @@ class Environment(object):
     def initWorkspace(self):
         mini_mcf = os.path.join(self.base_dir, "mini-mcf.py")
         cmd = "{} -r {} -b {} -c {} -d {}".format(mini_mcf, self.repo_dir, self.branch, self.conf_file, self.build_dir)
-        subprocess.call(cmd, shell=True)
+        subprocess.run(cmd, shell=True, check=True)
 
     @property
     def shell(self):
         f = os.path.join(self.repo_dir, "openembedded-core", "oe-init-build-env")
         assert os.path.exists(f)
-        assert wait_until(not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
+        assert wait_until(lambda: not os.path.exists(os.path.join(self.build_dir, "hashserve.lock")), 10)
         return Shell(f, self.build_dir)
 
     @property
