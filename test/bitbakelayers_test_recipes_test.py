@@ -35,7 +35,7 @@ def test_show_recipes_with_pnspec(test_build):
     assert not o.stdout.matchesAll("sqlite3wrapper[ ]+0.1.0[ ]+meta-sample")
 
 
-def test_show_no_recipes_without_test_enabled(release_build):
+def test_show_no_recipes_with_pnspec_without_test_enabled(release_build):
     o = release_build.shell.execute("bitbake-layers test-recipes *-project")
     assert not o.stdout.containsAny("autotools-project",
                                     "cmake-project",
