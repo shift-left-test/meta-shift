@@ -128,5 +128,13 @@ def test_do_test_shuffle(test_build):
     assert_test_shuffle(test_build, RECIPE)
 
 
+def test_do_test_parallel(test_build):
+    with test_build.files.conf() as conf:
+        conf.set("SHIFT_TEST_PARALLEL_JOBS", "2")
+        conf.set("BB_VERBOSE_LOGS", "1")
+        o = test_build.shell.execute("bitbake cmake-project -c test")
+        assert o.stdout.contains("--parallel 2") or o.stderr.contains("--parallel 2")
+
+
 def test_do_test_suppress_failures(test_build):
     assert_test_suppress_failures(test_build, RECIPE)
