@@ -25,7 +25,9 @@ def test_do_verify(test_build):
     assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
 
 
-def test_do_test(stdout, report):
+def test_do_coverage_junit_report(stdout, report):
+    # enact's do_verify runs coverage + checktest (not do_test), so the jest-junit
+    # report under <PF>/test/ is emitted by the coverage run; validate it here.
     assert stdout.contains("enact-project-1.0.0-r0 do_coverage: Running tests with coverage...")
     with report.files.readAsXml("report/enact-project-1.0.0-r0/test/junit.xml") as data:
         suites = asList(data["testsuites/testsuite"])
