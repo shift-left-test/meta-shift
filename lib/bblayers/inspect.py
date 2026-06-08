@@ -62,7 +62,6 @@ class ReporterJson(Reporter):
         if isinstance(value, set):
             value = list(value)
         self.current_section[key] = value
-        pass
 
     def dump(self, output=sys.stdout):
         output.write(json.dumps(self.result, indent=2))
