@@ -22,10 +22,10 @@ The **meta-shift** layer provides a comprehensive suite of recipes and classes t
 
 ## Features
 
-*   **Unit Testing:** Support for major build systems (**CMake**, **QMake**, **Autotools**).
+*   **Unit Testing:** Support for major build systems (**CMake**, **QMake**, **Autotools**) and **Enact** (webOS JavaScript framework) via npm/jest.
 *   **Code Coverage:** Measure and report code coverage using `gcovr`.
 *   **Mutation Testing:** Advanced quality verification by mutating source code to test test-suite robustness.
-*   **Seamless Integration:** Native support for **SDK** generation and **Jenkins** CI/CD.
+*   **CI/CD Friendly:** Generates standard reports (JUnit XML, Cobertura, HTML) ready for CI pipelines, with a dedicated Jenkins plugin for visualization.
 
 ---
 
@@ -33,7 +33,7 @@ The **meta-shift** layer provides a comprehensive suite of recipes and classes t
 
 1.  **Clone the repository:**
     ```bash
-    git clone -b scarthgap https://github.com/shift-left-test/meta-shift.git
+    git clone -b wrynose https://github.com/shift-left-test/meta-shift.git
     ```
 
 2.  **Add the layer to your build environment:**
@@ -82,7 +82,7 @@ meta-shift extends common bitbake tools with specialized commands:
 *   `devtool show`: Display detailed recipe information.
 *   `bitbake-layers inspect`: Detailed layer inspection.
 *   `bitbake-layers status`: Check layer status.
-*   `bitbake-layers test-layers`: Run tests across layers.
+*   `bitbake-layers test-layers`: Show, add, or remove test-configured layers (those depending on meta-shift).
 *   `bitbake-layers test-recipes`: List testable recipes.
 *   `recipetool inspect`: Inspect recipe metadata.
 
@@ -103,12 +103,13 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_CHECKTEST_SEED` | Random seed for the mutation generator | |
 | `SHIFT_CHECKTEST_TIMEOUT` | Per-test timeout in seconds (default: sentinel auto = 1.5x baseline) | |
 | `SHIFT_CHECKTEST_UNCOMMITTED` | Include uncommitted changes in mutation scope | `0` |
-| `SHIFT_CHECKTEST_VERBOSE` | Silence the test output while running `do_checktest` | `0` |
+| `SHIFT_CHECKTEST_VERBOSE` | Enable verbose sentinel output while running `do_checktest` (passes `--verbose`) | `0` |
 | `SHIFT_COVERAGE_BRANCH` | Show branch coverage instead of line in the text report (HTML/Cobertura always include both) | `0` |
 | `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from coverage (gcovr `--exclude` regexes, space-separated) | |
 | `SHIFT_COVERAGE_EXTRA_OPTIONS` | Extra options passed verbatim to `gcovr` (e.g., `--gcov-ignore-errors all`) | |
-| `SHIFT_REPORT_DIR` | Directory to store generated reports (unset = reports disabled) | |
-| `SHIFT_TEST_FILTER` | Regex to filter tests to run | |
+| `SHIFT_PARALLEL_TASKS` | Allow shift tasks to run in parallel; set to `0` to serialize them via per-task lockfiles | `1` |
+| `SHIFT_REPORT_DIR` | Directory for generated reports; each recipe writes to `<dir>/<PF>/{test,coverage,checktest}/` plus `metadata.json` (unset = reports disabled) | |
+| `SHIFT_TEST_FILTER` | GoogleTest-style test filter (`:`-separated patterns, `*`/`?` wildcards, leading `-` to exclude); CMake translates it to `ctest -R/-E`, Autotools/QMake pass it via `GTEST_FILTER`, Enact ignores it | |
 | `SHIFT_TEST_PARALLEL_JOBS` | Number of tests to run in parallel (CMake/ctest only; passed to `ctest --parallel`). Empty = serial; set a number or `${@oe.utils.cpu_count()}` for all host cores | |
 | `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
 | `SHIFT_TEST_SUPPRESS_FAILURES`| Don't fail the build if tests fail | `0` |
