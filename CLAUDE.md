@@ -71,15 +71,14 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 
 ### Recipe Organization
 
-- `recipes-test/`: Test tools (sentinel, compiledb, fff)
+- `recipes-test/`: Test tools (sentinel, compiledb, gcovr, fff) and their Python dependencies (`python/`)
 - `recipes-devtools/`: Build tools (cmake, python3 packages, perl)
 - `recipes-core/`: Core recipes (meta-environment)
 
 ## Configuration Variables
 
-All variables have defaults in `conf/layer.conf`. Key ones:
+Most variables have defaults in `conf/layer.conf` (a few, like `SHIFT_REPORT_DIR` and `SHIFT_TEST_FILTER`, have none). Key ones:
 
-- `SHIFT_ENABLED` (default: `0`) — master enable switch
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
 - `SHIFT_REPORT_DIR` (no default — must be set in `local.conf` to enable report output)
 

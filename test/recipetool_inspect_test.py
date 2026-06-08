@@ -5,8 +5,6 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
-
 
 def test_default_format(release_build):
     o = release_build.shell.execute("recipetool inspect googletest")
