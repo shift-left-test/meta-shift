@@ -5,8 +5,6 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
-
 
 def test_show_global_unknown_variable(release_build):
     o = release_build.shell.execute("devtool show UNKNOWN_VARIABLE")

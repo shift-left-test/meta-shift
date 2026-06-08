@@ -5,8 +5,6 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
-
 
 def test_show_recipes(test_build):
     o = test_build.shell.execute("bitbake-layers test-recipes")
