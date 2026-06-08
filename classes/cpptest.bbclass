@@ -25,10 +25,6 @@ python do_package_qa:prepend() {
 
 do_coverage[recrdeptask] += "do_test"
 
-# sentinel needs a runnable test script. do_checktest keeps its own copy under
-# ${WORKDIR}/checktest instead of touching do_test's ${T}/run.do_test: reuse that
-# script if do_test already produced it (e.g. the verify flow), else synthesise
-# it without running do_test (the file-writing half of bb.build.exec_func_shell).
 def cpptest_test_command(d):
     return d.expand("${WORKDIR}/checktest/run.do_test")
 
@@ -44,28 +40,25 @@ def cpptest_provide_test_command(d):
     if d.getVar("BB_RUNTASK") != "do_checktest":
         return ""
 
-    import os, shutil
+    if not d.getVarFlag("do_test", "func", False):
+        return ""
+
+    import os
     dest = cpptest_test_command(d)
     bb.utils.mkdirhier(os.path.dirname(dest))
 
-    src = d.expand("${T}/run.do_test")
-    if os.path.exists(src):
-        shutil.copyfile(src, dest)
-    elif d.getVarFlag("do_test", "func", False):  # skip a body-less do_test (no build-system class)
-        # Emit run.do_test under the test task's identity without executing it.
-        dd = d.createCopy()
-        dd.setVar("BB_CURRENTTASK", "test")
-        dd.setVar("BB_RUNTASK", "do_test")
-        dd.delVarFlag("PWD", "export")  # exec_func_shell drops this before emitting
-        with open(dest, "w") as f:
-            f.write(bb.build.shell_trap_code())
-            bb.data.emit_func("do_test", f, dd)
-            if bb.utils.to_boolean(dd.getVar("BB_VERBOSE_LOGS")):
-                f.write("set -x\n")
-            f.write("do_test\n")
-            f.write("\n# cleanup\nret=$?\ntrap '' 0\nexit $ret\n")
-    else:
-        return ""
+    dd = d.createCopy()
+    dd.setVar("BB_CURRENTTASK", "test")
+    dd.setVar("BB_RUNTASK", "do_test")
+    dd.setVar("LOGFIFO", "/dev/null")
+    dd.delVarFlag("PWD", "export")  # exec_func_shell drops this before emitting
+    with open(dest, "w") as f:
+        f.write(bb.build.shell_trap_code())
+        bb.data.emit_func("do_test", f, dd)
+        if bb.utils.to_boolean(dd.getVar("BB_VERBOSE_LOGS")):
+            f.write("set -x\n")
+        f.write("do_test\n")
+        f.write("\n# cleanup\nret=$?\ntrap '' 0\nexit $ret\n")
 
     os.chmod(dest, 0o775)
     return ""
