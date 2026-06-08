@@ -1,12 +1,9 @@
 #-*- coding: utf-8 -*-
-#!/usr/bin/python3
 
 """
 Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
-
-import pytest
 
 
 def test_default_format(release_build):

@@ -5,8 +5,6 @@ Copyright (c) 2020 LG Electronics Inc.
 SPDX-License-Identifier: MIT
 """
 
-import pytest
-
 
 def test_mutually_exclusive_options(release_build):
     assert not release_build.shell.execute("bitbake-layers test-layers --add --remove").stderr.empty()
