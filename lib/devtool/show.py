@@ -5,7 +5,6 @@ SPDX-License-Identifier: MIT
 
 import bb
 import logging
-import sys
 from devtool import setup_tinfoil
 
 
