@@ -59,6 +59,10 @@ def cpptest_provide_test_command(d):
     with open(dest, "w") as f:
         f.write(bb.build.shell_trap_code())
         bb.data.emit_func("do_test", f, dd)
+        # do_checktest already streams sentinel's output under its own
+        # "<PF> do_checktest:" prefix, so strip do_test's own "<PF> do_test:"
+        # decoration here to avoid a doubled prefix on every test line.
+        f.write('bbplain() { _m="$*"; echo "${_m#"${PF} do_${BB_CURRENTTASK}: "}"; }\n')
         if bb.utils.to_boolean(dd.getVar("BB_VERBOSE_LOGS")):
             f.write("set -x\n")
         f.write("do_test\n")
