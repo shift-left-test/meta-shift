@@ -29,7 +29,7 @@ qmaketest_do_test() {
 
         bbplain "${PF} do_${BB_CURRENTTASK}: Generating the test result report"
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"
-        export TESTARGS=" -o -,txt -o test_result.xml,xunitxml"
+        export TESTARGS=" -o -,txt -o test_result.xml,junitxml"
     fi
 
     cpptest_reset_coverage_counters
