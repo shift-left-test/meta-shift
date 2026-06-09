@@ -17,6 +17,10 @@ from selftest.parsers.data import asList
 def assert_checktest_summary(stdout, report, recipe):
     assert stdout.matches(recipe + "-1.0.0-r0 do_checktest:[ ]+Mutant Generation Summary")
     assert stdout.matches(recipe + "-1.0.0-r0 do_checktest:[ ]+Mutation Score Report")
+    # do_checktest synthesises its own run.do_test for sentinel; the streamed
+    # output must not carry do_test's "<PF> do_test:" prefix on top of the outer
+    # "<PF> do_checktest:" one.
+    assert not stdout.contains(recipe + "-1.0.0-r0 do_checktest: " + recipe + "-1.0.0-r0 do_test:")
     with report.files.readAsXml("report/" + recipe + "-1.0.0-r0/checktest/mutations.xml") as data:
         assert len(data["mutations/mutation"]) == 2
 
