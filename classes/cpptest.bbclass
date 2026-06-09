@@ -51,6 +51,10 @@ def cpptest_provide_test_command(d):
     dd.setVar("BB_CURRENTTASK", "test")
     dd.setVar("BB_RUNTASK", "do_test")
     dd.setVar("LOGFIFO", "/dev/null")
+    # With no report dir, point the synthesised do_test's XML output at the same
+    # throwaway root do_checktest uses, so sentinel still finds test results.
+    if not dd.getVar("SHIFT_REPORT_DIR"):
+        dd.setVar("SHIFT_REPORT_DIR", dd.expand("${WORKDIR}/checktest/report"))
     dd.delVarFlag("PWD", "export")  # exec_func_shell drops this before emitting
     with open(dest, "w") as f:
         f.write(bb.build.shell_trap_code())
@@ -154,11 +158,6 @@ cpptest_do_coverage() {
 }
 
 cpptest_do_checktest() {
-    if [ -z "${SHIFT_REPORT_DIR}" ]; then
-        bbwarn "SHIFT_REPORT_DIR is empty; skipping do_checktest (mutation report has nowhere to go)"
-        return 0
-    fi
-
     if ! echo "${BBFILE_COLLECTIONS}" | grep -qw clang-layer; then
         bbfatal "The task requires meta-clang to be present"
     fi
@@ -200,23 +199,35 @@ with open(p, "w") as f:
     json.dump(db, f, indent=1)
 ' "${B}/compile_commands.json" "${TARGET_SYS}"
 
-    # Sentinel's iterations overwrite ${SHIFT_REPORT_DIR}/${PF}/test on every
-    # invocation, so back up any pre-existing baseline and restore it on exit.
-    local TEST_RESULT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+    # Persist reports under SHIFT_REPORT_DIR; without it, run console-only against
+    # a throwaway root under ${WORKDIR} (like do_test/do_coverage).
+    local REPORT_ROOT=""
+    local OUTPUT_OPT=""
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        REPORT_ROOT="${SHIFT_REPORT_DIR}"
+        OUTPUT_OPT="--output-dir=${SHIFT_REPORT_DIR}/${PF}/checktest"
+        mkdir -p "${SHIFT_REPORT_DIR}/${PF}/checktest"
+    else
+        REPORT_ROOT="${WORKDIR}/checktest/report"
+    fi
+
+    # Sentinel overwrites ${REPORT_ROOT}/${PF}/test each iteration; when persisting,
+    # back up the real do_test baseline and restore it on exit.
+    local TEST_RESULT_DIR="${REPORT_ROOT}/${PF}/test"
     local BACKUP_DIR="${WORKDIR}/checktest-baseline-backup"
-    # Recover from a prior interrupted run that left baseline only in BACKUP_DIR.
-    if [ -d "${BACKUP_DIR}" ] && [ ! -d "${TEST_RESULT_DIR}" ]; then
-        mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
-    fi
-    rm -rf "${BACKUP_DIR}"
-    if [ -d "${TEST_RESULT_DIR}" ]; then
-        mv "${TEST_RESULT_DIR}" "${BACKUP_DIR}"
+    if [ -n "${SHIFT_REPORT_DIR}" ]; then
+        # Recover from a prior interrupted run that left baseline only in BACKUP_DIR.
+        if [ -d "${BACKUP_DIR}" ] && [ ! -d "${TEST_RESULT_DIR}" ]; then
+            mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
+        fi
+        rm -rf "${BACKUP_DIR}"
+        if [ -d "${TEST_RESULT_DIR}" ]; then
+            mv "${TEST_RESULT_DIR}" "${BACKUP_DIR}"
+        fi
     fi
 
-    mkdir -p "${SHIFT_REPORT_DIR}/${PF}/checktest"
-
-    # Give sentinel its own test runfile (copy do_test's, or synthesise it). The
-    # ${@...} side effect runs when this runfile is generated, before sentinel.
+    # Synthesise sentinel's test runfile from do_test. The ${@...} side effect
+    # runs when this runfile is generated, before sentinel.
     ${@cpptest_provide_test_command(d) or ''}
 
     # Stream sentinel's output through bbplain so it reaches the console, and
@@ -231,7 +242,7 @@ with open(p, "w") as f:
         --build-command="bash ${T}/run.do_compile" \
         --test-command="bash ${@cpptest_test_command(d)}" \
         --test-result-dir="${TEST_RESULT_DIR}" \
-        --output-dir="${SHIFT_REPORT_DIR}/${PF}/checktest" \
+        ${OUTPUT_OPT} \
         --compiledb-dir="${B}" \
         ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_LIMIT', '--limit')} \
         ${@shiftutils_cli_opt(d, 'SHIFT_CHECKTEST_TIMEOUT', '--timeout')} \
@@ -247,7 +258,7 @@ with open(p, "w") as f:
     SENTINEL_RC=${PIPESTATUS[0]}
 
     rm -rf "${TEST_RESULT_DIR}"
-    if [ -d "${BACKUP_DIR}" ]; then
+    if [ -n "${SHIFT_REPORT_DIR}" ] && [ -d "${BACKUP_DIR}" ]; then
         mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
     fi
 
