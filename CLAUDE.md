@@ -90,8 +90,12 @@ Most variables have defaults in `conf/layer.conf` (a few, like `SHIFT_REPORT_DIR
 - Remove redundant or self-evident comments; trim verbose ones to the essential point.
 - Don't put external sample-project proper nouns in comments; describe behavior in layer-generic terms.
 
+### Branching
+- Name topic branches `feature/<base>/<topic>` or `bugfix/<base>/<topic>`, where `<base>` is the target base branch (`<release>-next` or `master`) — e.g. `feature/scarthgap-next/junitxml`.
+
 ### Commit Messages
 - Write each commit message as a single concise line that is easy to understand.
+- Use `<scope>: <desc>` — scope is the affected task (`do_coverage:`, `do_checktest:`) or class/file (`cmaketest:`, `selftest:`); prefix `#NNN ` for a GitLab issue/MR.
 
 ## Bitbake Task Quick Reference
 
