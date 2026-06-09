@@ -61,8 +61,12 @@ def cpptest_provide_test_command(d):
         bb.data.emit_func("do_test", f, dd)
         # do_checktest already streams sentinel's output under its own
         # "<PF> do_checktest:" prefix, so strip do_test's own "<PF> do_test:"
-        # decoration here to avoid a doubled prefix on every test line.
-        f.write('bbplain() { _m="$*"; echo "${_m#"${PF} do_${BB_CURRENTTASK}: "}"; }\n')
+        # decoration here to avoid a doubled prefix on every test line. The
+        # producer (shiftutils_stream_plain) has ${PF}/${BB_CURRENTTASK} expanded
+        # at emit time, so bake the same literal prefix in: raw shell ${PF} would
+        # be empty here since those vars are not exported into the task shell.
+        prefix = dd.expand("${PF} do_${BB_CURRENTTASK}: ")
+        f.write('bbplain() { _m="$*"; echo "${_m#"%s"}"; }\n' % prefix)
         if bb.utils.to_boolean(dd.getVar("BB_VERBOSE_LOGS")):
             f.write("set -x\n")
         f.write("do_test\n")
