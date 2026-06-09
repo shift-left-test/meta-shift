@@ -77,8 +77,6 @@ enacttest_do_test() {
         mkdir -p "${REPORT_DIR}"
         export JEST_JUNIT_OUTPUT_DIR="${REPORT_DIR}"
         NPM_ARGS="--reporters=default --reporters=jest-junit"
-
-        ${@save_metadata(d) or ''}
     fi
 
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests..."
@@ -102,8 +100,6 @@ enacttest_do_coverage() {
         NPM_ARGS="${NPM_ARGS} --reporters=default --reporters=jest-junit"
         NPM_ARGS="${NPM_ARGS} --coverageDirectory=${COV_DIR}"
         NPM_ARGS="${NPM_ARGS} --coverageReporters=text --coverageReporters=html --coverageReporters=cobertura"
-
-        ${@save_metadata(d) or ''}
     fi
 
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests with coverage..."
