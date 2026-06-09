@@ -23,7 +23,7 @@ python do_package_qa:prepend() {
         d.appendVar("INSANE_SKIP:%s" % package, " buildpaths")
 }
 
-do_coverage[recrdeptask] += "do_test"
+do_coverage[depends] += "${PN}:do_test"
 
 def cpptest_test_command(d):
     return d.expand("${WORKDIR}/checktest/run.do_test")
