@@ -25,8 +25,6 @@ qmaketest_do_test() {
         rm -rf "${REPORT_DIR}"
         mkdir -p "${REPORT_DIR}"
 
-        ${@save_metadata(d) or ''}
-
         bbplain "${PF} do_${BB_CURRENTTASK}: Generating the test result report"
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"
         export TESTARGS=" -o -,txt -o test_result.xml,junitxml"
