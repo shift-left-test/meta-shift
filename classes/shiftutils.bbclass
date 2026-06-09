@@ -18,20 +18,6 @@ def shiftutils_cli_multi(d, var, flag):
     return " ".join("{}={}".format(flag, x) for x in (d.getVar(var) or "").split())
 
 
-def save_metadata(d):
-    import json, os
-    if not d.getVar("SHIFT_REPORT_DIR", True):
-        return ""
-    path = d.expand("${SHIFT_REPORT_DIR}/${PF}/metadata.json")
-    bb.utils.mkdirhier(os.path.dirname(path))
-    with open(path, "w") as f:
-        f.write(json.dumps({
-            "S": d.getVar("S", True) or "",
-            "PWD": os.getcwd(),
-        }, indent=2) + "\n")
-    return ""
-
-
 def _get_qemu_options(data, arch):
     bb.debug(1, "TUNE_CCARGS: " + data.getVar("TUNE_CCARGS", True))
     options = data.getVar("QEMU_EXTRAOPTIONS_%s" % arch, True)
