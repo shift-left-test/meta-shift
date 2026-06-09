@@ -80,10 +80,15 @@ shiftutils.bbclass          # Utility functions (qemu helpers, CLI flag builders
 Most variables have defaults in `conf/layer.conf` (a few, like `SHIFT_REPORT_DIR` and `SHIFT_TEST_FILTER`, have none). Key ones:
 
 - `SHIFT_PARALLEL_TASKS` (default: `1`) — allow parallel task execution
-- `SHIFT_REPORT_DIR` (no default — must be set in `local.conf` to enable report output)
+- `SHIFT_REPORT_DIR` (no default — set in `local.conf` to write report files; unset still runs all tasks console-only)
 
 ### Documentation
 - When modifying code, always update `README.md` accordingly (feature additions/removals, configuration changes, task changes, etc.)
+
+### Code Comments
+- Keep comments concise. Explain *why* (non-obvious rationale, BitBake quirks, constraints), not *what* the code already states.
+- Remove redundant or self-evident comments; trim verbose ones to the essential point.
+- Don't put external sample-project proper nouns in comments; describe behavior in layer-generic terms.
 
 ### Commit Messages
 - Write each commit message as a single concise line that is easy to understand.
