@@ -62,8 +62,6 @@ autotoolstest_do_test() {
         rm -rf "${REPORT_DIR}"
         mkdir -p "${REPORT_DIR}"
 
-        ${@save_metadata(d) or ''}
-
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"
     fi
 
