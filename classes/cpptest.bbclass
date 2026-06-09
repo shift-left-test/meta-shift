@@ -214,7 +214,8 @@ with open(p, "w") as f:
     # Sentinel overwrites ${REPORT_ROOT}/${PF}/test each iteration; when persisting,
     # back up the real do_test baseline and restore it on exit.
     local TEST_RESULT_DIR="${REPORT_ROOT}/${PF}/test"
-    local BACKUP_DIR="${WORKDIR}/checktest-baseline-backup"
+    local BACKUP_DIR="${WORKDIR}/checktest/baseline-backup"
+    mkdir -p "${WORKDIR}/checktest"
     if [ -n "${SHIFT_REPORT_DIR}" ]; then
         # Recover from a prior interrupted run that left baseline only in BACKUP_DIR.
         if [ -d "${BACKUP_DIR}" ] && [ ! -d "${TEST_RESULT_DIR}" ]; then
@@ -237,7 +238,7 @@ with open(p, "w") as f:
     local SENTINEL_RC=0
     sentinel \
         --clean \
-        --workspace="${WORKDIR}/sentinel-workspace" \
+        --workspace="${WORKDIR}/checktest/sentinel-workspace" \
         --source-dir="${S}" \
         --build-command="bash ${T}/run.do_compile" \
         --test-command="bash ${@cpptest_test_command(d)}" \
