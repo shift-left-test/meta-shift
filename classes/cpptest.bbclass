@@ -127,7 +127,6 @@ cpptest_do_coverage() {
     local REPORT_OPTS=""
     if [ -n "${SHIFT_REPORT_DIR}" ]; then
         mkdir -p "${REPORT_DIR}"
-        ${@save_metadata(d) or ''}
         REPORT_OPTS="--html-details ${REPORT_DIR}/index.html --html-self-contained --cobertura ${XML_FILE}"
     fi
 
@@ -270,8 +269,6 @@ with open(p, "w") as f:
     if [ -n "${SHIFT_REPORT_DIR}" ] && [ -d "${BACKUP_DIR}" ]; then
         mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
     fi
-
-    ${@save_metadata(d) or ''}
 
     return ${SENTINEL_RC}
 }
