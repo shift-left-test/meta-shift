@@ -108,7 +108,7 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_COVERAGE_EXCLUDES` | Exclude paths from coverage (gcovr `--exclude` regexes, space-separated) | |
 | `SHIFT_COVERAGE_EXTRA_OPTIONS` | Extra options passed verbatim to `gcovr` (e.g., `--gcov-ignore-errors all`) | |
 | `SHIFT_PARALLEL_TASKS` | Allow shift tasks to run in parallel; set to `0` to serialize them via per-task lockfiles | `1` |
-| `SHIFT_REPORT_DIR` | Directory for generated reports; each recipe writes to `<dir>/<PF>/{test,coverage,checktest}/` plus `metadata.json`. Unset = no report files are written, but every task still runs and streams results to the console — mutation testing then runs in full, so bound it with `SHIFT_CHECKTEST_LIMIT` | |
+| `SHIFT_REPORT_DIR` | Directory for generated reports; each recipe writes to `<dir>/<PF>/{test,coverage,checktest}/`. Unset = no report files are written, but every task still runs and streams results to the console — mutation testing then runs in full, so bound it with `SHIFT_CHECKTEST_LIMIT` | |
 | `SHIFT_TEST_FILTER` | GoogleTest-style test filter (`:`-separated patterns, `*`/`?` wildcards, leading `-` to exclude); CMake translates it to `ctest -R/-E`, Autotools/QMake pass it via `GTEST_FILTER`, Enact ignores it | |
 | `SHIFT_TEST_PARALLEL_JOBS` | Number of tests to run in parallel (CMake/ctest only; passed to `ctest --parallel`). Empty = serial; set a number or `${@oe.utils.cpu_count()}` for all host cores | |
 | `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
