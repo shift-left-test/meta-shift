@@ -95,6 +95,9 @@ def assert_coverage_extra_options(report, recipe):
 def assert_verify_without_report_dir(test_build, recipe):
     o = test_build.shell.execute("bitbake " + recipe + " -c verify")
     assert o.stdout.contains("SHIFT_REPORT_DIR is not set. No reports will be generated.")
+    # do_checktest now runs console-only without a report dir (it used to be
+    # skipped); sentinel still prints the mutation score.
+    assert o.stdout.matches(recipe + "-1.0.0-r0 do_checktest:[ ]+Mutation Score Report")
 
 
 def assert_test_filter(test_build, recipe):
