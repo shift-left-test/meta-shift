@@ -51,6 +51,10 @@ cmaketest_do_test() {
         [ -n "${EXCLUDE}" ] && CTEST_CMD="${CTEST_CMD} -E ${EXCLUDE}"
     fi
 
+    if ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_STOP_ON_FAILURE')) else 'false'}; then
+        CTEST_CMD="${CTEST_CMD} --stop-on-failure"
+    fi
+
     if [ -n "${SHIFT_TEST_PARALLEL_JOBS}" ]; then
         CTEST_CMD="${CTEST_CMD} --parallel ${SHIFT_TEST_PARALLEL_JOBS}"
     fi
