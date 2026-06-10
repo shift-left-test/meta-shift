@@ -111,6 +111,7 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_REPORT_DIR` | Directory for generated reports; each recipe writes to `<dir>/<PF>/{test,coverage,checktest}/`. Unset = no report files are written, but every task still runs and streams results to the console — mutation testing then runs in full, so bound it with `SHIFT_CHECKTEST_LIMIT` | |
 | `SHIFT_TEST_FILTER` | GoogleTest-style test filter (`:`-separated patterns, `*`/`?` wildcards, leading `-` to exclude); CMake translates it to `ctest -R/-E`, Autotools/QMake pass it via `GTEST_FILTER`, Enact ignores it | |
 | `SHIFT_TEST_PARALLEL_JOBS` | Number of tests to run in parallel (CMake/ctest only; passed to `ctest --parallel`). Empty = serial; set a number or `${@oe.utils.cpu_count()}` for all host cores | |
+| `SHIFT_TEST_QEMU_SET_ENV` | Extra env vars forwarded into the qemu-emulated test process via `QEMU_SET_ENV` (space-separated `VAR=VALUE` list, e.g. an `LD_PRELOAD` interposer). CMake test path only | |
 | `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
 | `SHIFT_TEST_SUPPRESS_FAILURES`| Don't fail the build if tests fail | `0` |
 
