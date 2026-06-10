@@ -25,6 +25,11 @@ cmaketest_do_test() {
 
     cpptest_reset_coverage_counters
 
+    # Forward env into the qemu guest test process via QEMU_SET_ENV so an
+    # LD_PRELOAD interposer reaches the guest, not the host loader.
+    local QEMU_SET_ENV_VAL="${@shiftutils_qemu_set_env(d)}"
+    [ -n "${QEMU_SET_ENV_VAL}" ] && export QEMU_SET_ENV="${QEMU_SET_ENV_VAL}"
+
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests..."
 
     local CTEST_CMD="ctest --output-on-failure"
