@@ -40,3 +40,11 @@ def test_do_test_suppress_failures(test_build):
         conf.set("SHIFT_TEST_SUPPRESS_FAILURES", "0")
         o = test_build.shell.execute("bitbake enact-project -c test")
         assert o.returncode != 0
+
+
+def test_do_test_stop_on_failure(test_build):
+    with test_build.files.conf() as conf:
+        conf.set("SHIFT_TEST_STOP_ON_FAILURE", "1")
+        conf.set("BB_VERBOSE_LOGS", "1")
+        o = test_build.shell.execute("bitbake enact-project -c test")
+        assert o.stdout.contains("--bail") or o.stderr.contains("--bail")
