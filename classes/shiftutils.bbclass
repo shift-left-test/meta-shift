@@ -18,6 +18,11 @@ def shiftutils_cli_multi(d, var, flag):
     return " ".join("{}={}".format(flag, x) for x in (d.getVar(var) or "").split())
 
 
+def shiftutils_qemu_set_env(d):
+    # QEMU_SET_ENV wants comma-separated VAR=VALUE; the variable is space-separated.
+    return ",".join((d.getVar("SHIFT_TEST_QEMU_SET_ENV") or "").split())
+
+
 def _get_qemu_options(data, arch):
     bb.debug(1, "TUNE_CCARGS: " + data.getVar("TUNE_CCARGS", True))
     options = data.getVar("QEMU_EXTRAOPTIONS_%s" % arch, True)

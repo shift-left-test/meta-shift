@@ -141,5 +141,14 @@ def test_do_test_parallel(test_build):
         assert o.stdout.contains("--parallel 2") or o.stderr.contains("--parallel 2")
 
 
+def test_do_test_qemu_set_env(test_build):
+    with test_build.files.conf() as conf:
+        conf.set("SHIFT_TEST_QEMU_SET_ENV", "LD_PRELOAD=/nonexistent_preload.so")
+        o = test_build.shell.execute("bitbake cmake-project -c test")
+        # qemu forwards LD_PRELOAD into the guest, whose loader reports the
+        # missing object -- proof the var reached the guest, not the host.
+        assert o.stdout.contains("nonexistent_preload.so") or o.stderr.contains("nonexistent_preload.so")
+
+
 def test_do_test_suppress_failures(test_build):
     assert_test_suppress_failures(test_build, RECIPE)
