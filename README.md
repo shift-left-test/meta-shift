@@ -113,6 +113,7 @@ Customize meta-shift by adding these variables to your `conf/local.conf`.
 | `SHIFT_TEST_PARALLEL_JOBS` | Number of tests to run in parallel (CMake/ctest only; passed to `ctest --parallel`). Empty = serial; set a number or `${@oe.utils.cpu_count()}` for all host cores | |
 | `SHIFT_TEST_QEMU_SET_ENV` | Extra env vars forwarded into the qemu-emulated test process via `QEMU_SET_ENV` (space-separated `VAR=VALUE` list, e.g. an `LD_PRELOAD` interposer). CMake test path only | |
 | `SHIFT_TEST_SHUFFLE` | Randomize test execution order | `0` |
+| `SHIFT_TEST_STOP_ON_FAILURE` | Stop at the first failing test (CMake/Enact only) | `0` |
 | `SHIFT_TEST_SUPPRESS_FAILURES`| Don't fail the build if tests fail | `0` |
 
 ---
