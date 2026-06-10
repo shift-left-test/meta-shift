@@ -152,3 +152,11 @@ def test_do_test_qemu_set_env(test_build):
 
 def test_do_test_suppress_failures(test_build):
     assert_test_suppress_failures(test_build, RECIPE)
+
+
+def test_do_test_stop_on_failure(test_build):
+    with test_build.files.conf() as conf:
+        conf.set("SHIFT_TEST_STOP_ON_FAILURE", "1")
+        conf.set("BB_VERBOSE_LOGS", "1")
+        o = test_build.shell.execute("bitbake cmake-project -c test")
+        assert o.stdout.contains("--stop-on-failure") or o.stderr.contains("--stop-on-failure")
