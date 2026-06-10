@@ -79,6 +79,10 @@ enacttest_do_test() {
         NPM_ARGS="--reporters=default --reporters=jest-junit"
     fi
 
+    if ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_STOP_ON_FAILURE')) else 'false'}; then
+        NPM_ARGS="${NPM_ARGS} --bail"
+    fi
+
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests..."
 
     local TEST_RC=0
@@ -100,6 +104,10 @@ enacttest_do_coverage() {
         NPM_ARGS="${NPM_ARGS} --reporters=default --reporters=jest-junit"
         NPM_ARGS="${NPM_ARGS} --coverageDirectory=${COV_DIR}"
         NPM_ARGS="${NPM_ARGS} --coverageReporters=text --coverageReporters=html --coverageReporters=cobertura"
+    fi
+
+    if ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_STOP_ON_FAILURE')) else 'false'}; then
+        NPM_ARGS="${NPM_ARGS} --bail"
     fi
 
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests with coverage..."
