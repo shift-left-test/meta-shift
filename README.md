@@ -83,7 +83,7 @@ meta-shift extends common bitbake tools with specialized commands:
 *   `bitbake-layers inspect`: Detailed layer inspection.
 *   `bitbake-layers status`: Check layer status.
 *   `bitbake-layers test-layers`: Show, add, or remove test-configured layers (those depending on meta-shift).
-*   `bitbake-layers test-recipes`: List testable recipes.
+*   `bitbake-layers test-recipes [--image <image>]`: List testable recipes, optionally limited to those in an image's build graph.
 *   `recipetool inspect`: Inspect recipe metadata.
 
 ---
