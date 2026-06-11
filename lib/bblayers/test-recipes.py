@@ -24,6 +24,37 @@ def is_testable(recipefile):
                inherit_class in tinfoil.cooker_data.inherits.get(recipefile, []))
 
 
+def image_recipe_closure(image):
+    """Collect the PNs reachable from the image via build and runtime deps.
+
+    Mirrors do_testall's recrdeptask traversal (DEPENDS + RDEPENDS) so the
+    listing matches what 'bitbake <image> -c testall' would actually run.
+    """
+    cooker_data = tinfoil.cooker_data
+    if not tinfoil.cooker.findBestProvider(image)[3]:
+        logger.error("Unable to find a recipe providing image '%s'", image)
+        sys.exit(1)
+
+    pns = set()
+    visited = set()
+    queue = [image]
+    while queue:
+        p = queue.pop()
+        if p in visited:
+            continue
+        visited.add(p)
+        fn = tinfoil.cooker.findBestProvider(p)[3]
+        if not fn:
+            continue
+        pn = cooker_data.pkg_fn.get(fn)
+        if pn:
+            pns.add(pn)
+        queue.extend(cooker_data.deps.get(fn, []))
+        for rdeps in cooker_data.rundeps.get(fn, {}).values():
+            queue.extend(rdeps)
+    return pns
+
+
 def do_test_recipes(args):
     bbpath = str(tinfoil.config_data.getVar("BBPATH", True))
 
@@ -32,6 +63,8 @@ def do_test_recipes(args):
         logger.error("Unable to locate %s in BBPATH", classfile)
         sys.exit(1)
 
+    image_recipes = image_recipe_closure(args.image) if args.image else None
+
     pkg_pn = tinfoil.cooker.recipecaches[''].pkg_pn
     (latest_versions, preferred_versions, required) = tinfoil.find_providers()
 
@@ -39,6 +72,9 @@ def do_test_recipes(args):
     print("=" * 74)
 
     for p in sorted(pkg_pn):
+        if image_recipes is not None and p not in image_recipes:
+            continue
+
         if args.pnspec:
             if not fnmatch.fnmatch(p, args.pnspec):
                 continue
@@ -62,7 +98,10 @@ def register_commands(subparsers):
     parser = subparsers.add_parser("test-recipes",
                                    help="List testable recipes, showing the layer they are provided by",
                                    description="Lists the name and version of recipes in each layer. "
-                                   "Optionally you may specify pnspec to match a specified recipe name (supports wildcards).")
+                                   "Optionally restrict the listing to an image's build graph with --image, "
+                                   "and/or match recipe names with pnspec (supports wildcards).")
+    parser.add_argument("--image",
+                        help="restrict the listing to recipes in the given image's build graph")
     parser.add_argument("pnspec",
                         nargs="?",
                         help="optional recipe name specification (wildcards allowed, enclose in quotes to avoid shell expansion)")
