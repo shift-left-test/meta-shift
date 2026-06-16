@@ -104,6 +104,13 @@ def assert_verify_without_report_dir(test_build, recipe):
     assert o.stdout.matches(recipe + "-1.0.0-r0 do_checktest:[ ]+Mutation Score Report")
 
 
+def assert_test_html_report(report, recipe):
+    # do_test renders the merged JUnit XML into a single index.html titled after PF.
+    pf = recipe + "-1.0.0-r0"
+    with report.files.readAsHtml("report/" + pf + "/test/index.html") as data:
+        assert data["html/head/title"] == pf
+
+
 def assert_test_filter(test_build, recipe):
     with test_build.files.conf() as conf:
         conf.set("SHIFT_TEST_FILTER", "PlusTest.*-*Fail:*AlsoFail")
