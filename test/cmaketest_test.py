@@ -14,6 +14,7 @@ from cpptest_base import (
     assert_coverage_excludes,
     assert_coverage_extra_options,
     assert_test_filter,
+    assert_test_html_report,
     assert_test_shuffle,
     assert_test_suppress_failures,
     assert_verify_without_report_dir,
@@ -123,6 +124,13 @@ def test_do_test(stdout, report):
     with report.files.readAsXml("report/cmake-project-1.0.0-r0/test/OperatorTest_3.xml") as data:
         data = data["testsuites/testsuite"]
         assert data["name"] == "MinusTest" and data["tests"] == "1" and data["failures"] == "1"
+
+
+def test_do_test_html_report(report):
+    assert_test_html_report(report, RECIPE)
+    # the multiple gtest XMLs must be merged into the single report
+    with report.files.read("report/cmake-project-1.0.0-r0/test/index.html") as html:
+        assert html.containsAll("PlusTest", "MinusTest")
 
 
 def test_do_test_filter(test_build):
