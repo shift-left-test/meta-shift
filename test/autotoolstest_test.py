@@ -12,6 +12,7 @@ from cpptest_base import (
     assert_coverage_branch_text,
     assert_coverage_excludes,
     assert_test_filter,
+    assert_test_html_report,
     assert_test_shuffle,
     assert_test_suppress_failures,
     assert_verify_without_report_dir,
@@ -53,6 +54,12 @@ def test_do_test(stdout, report):
         data = data["testsuites/testsuite"]
         assert any(x["name"] == "MinusTest" and x["tests"] == "2" and x["failures"] == "1" for x in data)
         assert any(x["name"] == "PlusTest" and x["tests"] == "2" and x["failures"] == "1" for x in data)
+
+
+def test_do_test_html_report(report):
+    assert_test_html_report(report, RECIPE)
+    with report.files.read("report/autotools-project-1.0.0-r0/test/index.html") as html:
+        assert html.containsAll("PlusTest", "MinusTest")
 
 
 def test_do_test_filter(test_build):
