@@ -11,6 +11,28 @@ shifttest_do_test() {
     :
 }
 
+# Render do_test's JUnit XML into a single HTML report, like coverage's index.html.
+DEPENDS:append:class-target = " python3-junit2html-native"
+do_test[postfuncs] += "shifttest_generate_html_report"
+
+shifttest_generate_html_report() {
+    [ -n "${SHIFT_REPORT_DIR}" ] || return 0
+    local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
+    [ -d "${REPORT_DIR}" ] || return 0
+
+    # qmake nests its XML in subdirs, so recurse.
+    local xmls
+    xmls=$(find "${REPORT_DIR}" -name '*.xml' | sort)
+    [ -n "${xmls}" ] || return 0
+
+    # --report-matrix drops failure details, so merge then render single-file.
+    # The merged file's basename becomes the report title, so name it after PF.
+    local MERGED="${T}/${PF}"
+    junit2html --merge "${MERGED}" ${xmls}
+    junit2html "${MERGED}" "${REPORT_DIR}/index.html"
+    rm -f "${MERGED}"
+}
+
 addtask coverage after do_compile
 do_coverage[nostamp] = "1"
 do_coverage[doc] = "Measures code coverage for the target"
