@@ -27,4 +27,7 @@ SRCREV = "14e36d949287a6546561326516e45b09a748c666"
 
 EXTRA_OECMAKE += "-DClang_USE_STATIC_LIBS=OFF"
 
+# Keep FindClang.cmake from falling back to a host llvm-config
+EXTRA_OECMAKE += "-DLLVM_ROOT_DIR=${STAGING_DIR_NATIVE}${prefix_native}"
+
 inherit cmake native
