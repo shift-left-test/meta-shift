@@ -11,6 +11,7 @@ from cpptest_base import (
     assert_coverage_branch_in_xml,
     assert_coverage_branch_text,
     assert_coverage_excludes,
+    assert_task_metadata,
     assert_test_filter,
     assert_test_html_report,
     assert_test_shuffle,
@@ -72,3 +73,7 @@ def test_do_test_shuffle(test_build):
 
 def test_do_test_suppress_failures(test_build):
     assert_test_suppress_failures(test_build, RECIPE)
+
+
+def test_task_metadata(report):
+    assert_task_metadata(report, RECIPE)
