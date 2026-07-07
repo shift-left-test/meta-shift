@@ -19,6 +19,7 @@ cmaketest_do_test() {
         REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
         rm -rf "${REPORT_DIR}"
         mkdir -p "${REPORT_DIR}"
+        shifttest_write_metadata "${REPORT_DIR}"
 
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"
     fi
