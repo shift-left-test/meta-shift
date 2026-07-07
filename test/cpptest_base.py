@@ -12,6 +12,7 @@ individual *_test.py modules. This is a helper module, not a test module
 """
 
 from selftest.parsers.data import asList
+import os
 
 
 def assert_checktest_summary(stdout, report, recipe):
@@ -137,3 +138,9 @@ def assert_test_suppress_failures(test_build, recipe):
         conf.set("SHIFT_TEST_SUPPRESS_FAILURES", "0")
         o = test_build.shell.execute("bitbake " + recipe + " -c test")
         assert o.returncode != 0
+
+
+def assert_task_metadata(report, recipe):
+    for task in ("test", "coverage", "checktest"):
+        with report.files.readAsJson("report/" + recipe + "-1.0.0-r0/" + task + "/metadata.json") as data:
+            assert os.path.isdir(data["S"])

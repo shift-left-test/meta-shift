@@ -75,6 +75,7 @@ enacttest_do_test() {
         local REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
         rm -rf "${REPORT_DIR}"
         mkdir -p "${REPORT_DIR}"
+        shifttest_write_metadata "${REPORT_DIR}"
         export JEST_JUNIT_OUTPUT_DIR="${REPORT_DIR}"
         NPM_ARGS="--reporters=default --reporters=jest-junit"
     fi
@@ -100,6 +101,9 @@ enacttest_do_coverage() {
         local TEST_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
         local COV_DIR="${SHIFT_REPORT_DIR}/${PF}/coverage"
         mkdir -p "${TEST_DIR}" "${COV_DIR}"
+        # do_verify runs only do_coverage, which also emits the test report.
+        shifttest_write_metadata "${TEST_DIR}"
+        shifttest_write_metadata "${COV_DIR}"
         export JEST_JUNIT_OUTPUT_DIR="${TEST_DIR}"
         NPM_ARGS="${NPM_ARGS} --reporters=default --reporters=jest-junit"
         NPM_ARGS="${NPM_ARGS} --coverageDirectory=${COV_DIR}"
