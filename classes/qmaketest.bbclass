@@ -24,6 +24,7 @@ qmaketest_do_test() {
         REPORT_DIR="${SHIFT_REPORT_DIR}/${PF}/test"
         rm -rf "${REPORT_DIR}"
         mkdir -p "${REPORT_DIR}"
+        shifttest_write_metadata "${REPORT_DIR}"
 
         bbplain "${PF} do_${BB_CURRENTTASK}: Generating the test result report"
         export GTEST_OUTPUT="xml:${REPORT_DIR}/"

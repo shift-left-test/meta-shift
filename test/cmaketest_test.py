@@ -13,6 +13,7 @@ from cpptest_base import (
     assert_coverage_branch_text,
     assert_coverage_excludes,
     assert_coverage_extra_options,
+    assert_task_metadata,
     assert_test_filter,
     assert_test_html_report,
     assert_test_shuffle,
@@ -168,3 +169,7 @@ def test_do_test_stop_on_failure(test_build):
         conf.set("BB_VERBOSE_LOGS", "1")
         o = test_build.shell.execute("bitbake cmake-project -c test")
         assert o.stdout.contains("--stop-on-failure") or o.stderr.contains("--stop-on-failure")
+
+
+def test_task_metadata(report):
+    assert_task_metadata(report, RECIPE)
