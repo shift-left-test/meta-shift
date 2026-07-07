@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 """
 
 from selftest.parsers.data import asList
+import os
 
 
 RECIPE = "enact-project"
@@ -48,3 +49,10 @@ def test_do_test_stop_on_failure(test_build):
         conf.set("BB_VERBOSE_LOGS", "1")
         o = test_build.shell.execute("bitbake enact-project -c test")
         assert o.stdout.contains("--bail") or o.stderr.contains("--bail")
+
+
+def test_task_metadata(report):
+    # both directories are emitted by do_coverage; enact has no checktest report
+    for task in ("test", "coverage"):
+        with report.files.readAsJson("report/enact-project-1.0.0-r0/" + task + "/metadata.json") as data:
+            assert os.path.isdir(data["S"])
