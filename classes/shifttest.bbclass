@@ -103,6 +103,14 @@ shifttest_handle_test_rc() {
     fi
 }
 
+# Record the source path with each task's reports so consumers can resolve
+# report-relative paths.
+shifttest_write_metadata() {
+    [ -n "${SHIFT_REPORT_DIR}" ] || return 0
+    mkdir -p "$1"
+    printf '{\n  "S": "%s"\n}\n' "${S}" > "$1/metadata.json"
+}
+
 python() {
     # Native/cross/SDK recipes have no unit-test surface, so mark their shift
     # tasks no-op.
