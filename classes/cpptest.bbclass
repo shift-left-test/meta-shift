@@ -127,6 +127,7 @@ cpptest_do_coverage() {
     local REPORT_OPTS=""
     if [ -n "${SHIFT_REPORT_DIR}" ]; then
         mkdir -p "${REPORT_DIR}"
+        shifttest_write_metadata "${REPORT_DIR}"
         REPORT_OPTS="--html-details ${REPORT_DIR}/index.html --html-self-contained --cobertura ${XML_FILE}"
     fi
 
@@ -269,6 +270,9 @@ with open(p, "w") as f:
     if [ -n "${SHIFT_REPORT_DIR}" ] && [ -d "${BACKUP_DIR}" ]; then
         mv "${BACKUP_DIR}" "${TEST_RESULT_DIR}"
     fi
+
+    # Written after sentinel, which owns the --output-dir contents.
+    shifttest_write_metadata "${SHIFT_REPORT_DIR}/${PF}/checktest"
 
     return ${SENTINEL_RC}
 }
