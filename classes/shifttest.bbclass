@@ -81,6 +81,10 @@ def shifttest_verify(d, tasks=None):
         if src_lock in lockfiles:
             dd.setVarFlag(func, "lockfiles", lockfiles.replace(src_lock, dd.expand("${S}/%s_singletask.lock" % func)))
         bb.build.exec_func(func, dd)
+        # exec_func runs only the task body; replay the task's postfuncs
+        # (e.g. do_test's HTML rendering) as bb.build.exec_task would.
+        for post in (dd.getVarFlag(func, "postfuncs", True) or "").split():
+            bb.build.exec_func(post, dd)
 
 python shifttest_do_verify() {
     shifttest_verify(d)
