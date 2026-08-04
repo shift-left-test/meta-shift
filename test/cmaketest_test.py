@@ -119,17 +119,21 @@ def test_do_verify(test_build):
 
 def test_do_test(stdout, report):
     assert stdout.contains("cmake-project-1.0.0-r0 do_test: Running tests...")
-    with report.files.readAsXml("report/cmake-project-1.0.0-r0/test/OperatorTest_1.xml") as data:
-        data = data["testsuites/testsuite"]
-        assert data["name"] == "PlusTest" and data["tests"] == "1" and data["failures"] == "1"
-    with report.files.readAsXml("report/cmake-project-1.0.0-r0/test/OperatorTest_3.xml") as data:
-        data = data["testsuites/testsuite"]
-        assert data["name"] == "MinusTest" and data["tests"] == "1" and data["failures"] == "1"
+    # ctest aggregates every registered test into one JUnit file, so the report
+    # is a single report.xml with a flat <testsuite> root.
+    with report.files.readAsXml("report/cmake-project-1.0.0-r0/test/report.xml") as data:
+        suite = data["testsuite"]
+        assert suite["name"] == RECIPE and suite["tests"] == "4" and suite["failures"] == "2"
+        cases = {tc["name"]: tc["status"] for tc in asList(data["testsuite/testcase"])}
+        assert cases["PlusTest.testShouldReturnExpectedValue"] == "run"
+        assert cases["PlusTest.testShouldFail"] == "fail"
+        assert cases["MinusTest.testShouldReturnExpectedValue"] == "run"
+        assert cases["MinusTest.testShouldAlsoFail"] == "fail"
 
 
 def test_do_test_html_report(report):
     assert_test_html_report(report, RECIPE)
-    # the multiple gtest XMLs must be merged into the single report
+    # every ctest test must show up in the rendered report
     with report.files.read("report/cmake-project-1.0.0-r0/test/index.html") as html:
         assert html.containsAll("PlusTest", "MinusTest")
 
@@ -145,9 +149,15 @@ def test_do_test_shuffle(test_build):
 def test_do_test_parallel(test_build):
     with test_build.files.conf() as conf:
         conf.set("SHIFT_TEST_PARALLEL_JOBS", "2")
+        conf.set("SHIFT_REPORT_DIR", "${TOPDIR}/report")
         conf.set("BB_VERBOSE_LOGS", "1")
         o = test_build.shell.execute("bitbake cmake-project -c test")
         assert o.stdout.contains("--parallel 2") or o.stderr.contains("--parallel 2")
+        # Regression: gtest's own XML writer picked filenames with a non-atomic
+        # exists-check, so parallel tests sharing a binary clobbered each other's
+        # report. ctest writes one file, so every case must survive.
+        with test_build.files.readAsXml("report/cmake-project-1.0.0-r0/test/report.xml") as data:
+            assert len(asList(data["testsuite/testcase"])) == 4
 
 
 def test_do_test_qemu_set_env(test_build):
