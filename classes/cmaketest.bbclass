@@ -20,8 +20,6 @@ cmaketest_do_test() {
         rm -rf "${REPORT_DIR}"
         mkdir -p "${REPORT_DIR}"
         shifttest_write_metadata "${REPORT_DIR}"
-
-        export GTEST_OUTPUT="xml:${REPORT_DIR}/"
     fi
 
     cpptest_reset_coverage_counters
@@ -34,6 +32,14 @@ cmaketest_do_test() {
     bbplain "${PF} do_${BB_CURRENTTASK}: Running tests..."
 
     local CTEST_CMD="ctest --output-on-failure"
+
+    # gtest picks its XML filename with a non-atomic exists-check, so ctest tests
+    # sharing one binary clobber each other's report when run in parallel. Let
+    # ctest aggregate the results instead (--output-junit needs cmake >= 3.21).
+    if [ -n "${REPORT_DIR}" ]; then
+        CTEST_CMD="${CTEST_CMD} --output-junit ${REPORT_DIR}/report.xml"
+    fi
+
     if ${@'true' if bb.utils.to_boolean(d.getVar('SHIFT_TEST_SHUFFLE')) else 'false'}; then
         CTEST_CMD="${CTEST_CMD} --schedule-random"
     fi
@@ -68,6 +74,11 @@ cmaketest_do_test() {
 
     if [ -n "${REPORT_DIR}" ] && [ -d "${REPORT_DIR}" ]; then
         cpptest_prefix_xml_classnames "${REPORT_DIR}"
+        # ctest takes the suite name from CTest's BuildName, which is unset in
+        # this flow; report consumers use it as the suite label, so pin it.
+        if [ -f "${REPORT_DIR}/report.xml" ]; then
+            sed -E -i 's|(<testsuite name=)"[^"]*"|\1"${PN}"|' "${REPORT_DIR}/report.xml"
+        fi
     fi
 }
 
