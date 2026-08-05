@@ -25,9 +25,9 @@ pytest test/cmaketest_test.py::ClassName::test_method
 # Tests require a Yocto build workspace. Set up with:
 ./test/mini-mcf.py -c test/conf/test.conf
 
-# Speed up repeated runs with cached downloads:
-export DL_DIR=$HOME/build-res/downloads
-export SSTATE_DIR=$HOME/build-res/sstate-cache
+# Downloads and sstate are cached under ${TOPDIR}/build-res by default, so they
+# are lost whenever the build directory is recreated. Export DL_DIR/SSTATE_DIR
+# before running mini-mcf.py to point them elsewhere.
 ```
 
 Test files follow the pattern `test/*_test.py`. Tests are integration tests that run real Bitbake builds via session-scoped fixtures (`release_build`, `test_build`, `verify_build`).
