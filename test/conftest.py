@@ -10,7 +10,7 @@ import pytest
 import shutil
 
 
-BRANCH = "master"
+BRANCH = "blacksail"
 
 
 def _make_build(request, tmpdir_factory, conf_file):

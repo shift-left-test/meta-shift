@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 
 
-BRANCH = "master"
+BRANCH = "blacksail"
 REPO_DIR = os.path.join(tempfile.gettempdir(), "meta-shift-repos-%s" % getpass.getuser())
 BUILD_DIR = "build"
 META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +26,7 @@ META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # bitbake and meta-qt6 follow their own release cadences; pin the branch paired
 # with this Yocto release (version-adaptation -- adjust per branch). None follows
 # the --branch argument.
-BITBAKE_BRANCH = None
+BITBAKE_BRANCH = "2.20"
 META_QT6_BRANCH = "dev"
 
 
@@ -39,12 +39,12 @@ Repo = collections.namedtuple("Repo", ["name", "url", "location", "layer", "bran
 REPOS = [
     Repo("bitbake", "https://github.com/openembedded/bitbake.git", "bitbake", "", BITBAKE_BRANCH),
     Repo("openembedded-core", "https://github.com/openembedded/openembedded-core.git", "openembedded-core", "meta", None),
-    Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", None),
-    Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", None),
-    Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", None),
-    Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", None),
+    Repo("meta-oe", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-oe", "master"),
+    Repo("meta-multimedia", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-multimedia", "master"),
+    Repo("meta-python", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-python", "master"),
+    Repo("meta-networking", "https://github.com/openembedded/meta-openembedded.git", "meta-openembedded", "meta-networking", "master"),
     Repo("meta-qt6", "https://code.qt.io/yocto/meta-qt6.git", "meta-qt6", "", META_QT6_BRANCH),
-    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", None),
+    Repo("meta-clang", "https://github.com/kraj/meta-clang.git", "meta-clang", "", "master"),
     Repo("meta-shift", None, "meta-shift", "", None),
     Repo("meta-sample", "https://github.com/shift-left-test/meta-sample.git", "meta-sample", "", None),
     Repo("meta-sample-test", "https://github.com/shift-left-test/meta-sample-test.git", "meta-sample-test", "", None),
