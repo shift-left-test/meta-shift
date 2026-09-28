@@ -16,6 +16,8 @@ SRC_URI[sha256sum] = "d6ae8aa4a76b66fa7c5efc460a4a28ae56430e0bc683f8a64d7f3e3443
 
 inherit pypi python_setuptools_build_meta
 
+DEPENDS += "python3-wheel-native"
+
 RDEPENDS:${PN} += "${PYTHON_PN}-jinja2"
 
 # Used as a build-host tool by the shift tasks; native is enough.

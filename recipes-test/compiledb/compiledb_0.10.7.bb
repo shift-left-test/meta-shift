@@ -13,6 +13,7 @@ DEPENDS += "\
     ${PYTHON_PN}-bashlex \
     ${PYTHON_PN}-click \
     ${PYTHON_PN}-setuptools-scm-native \
+    python3-wheel-native \
 "
 
 SRC_URI[sha256sum] = "97752d8810b6977654a11a22cdc41bf6b71473bcdb5da312bc135f36d6af8271"

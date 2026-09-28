@@ -27,7 +27,7 @@ META_SHIFT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # with this Yocto release (version-adaptation -- adjust per branch). None follows
 # the --branch argument.
 BITBAKE_BRANCH = None
-META_QT6_BRANCH = "6.11"
+META_QT6_BRANCH = "dev"
 
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")

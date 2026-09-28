@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **meta-shift** is a Yocto/Bitbake layer implementing shift-left testing. It provides recipes and Bitbake classes to run unit tests, code coverage, and mutation testing directly in the host build environment during the Bitbake build process.
 
 - **License:** MIT
-- **Layer compatibility:** wrynose (current), with branches for older Yocto releases
+- **Layer compatibility:** blacksail (current), with branches for older Yocto releases
 - **Dependencies:** meta-oe, meta-python (mandatory); meta-qt6, meta-clang (optional)
 
 ## Running Tests
